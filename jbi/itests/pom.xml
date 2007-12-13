@@ -42,84 +42,89 @@
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.aopalliance</artifactId>
+		    <version>0.1-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.asm</artifactId>
+		    <version>0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.jaxb-api</artifactId>
+		    <version>4.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.jaxb-impl</artifactId>
+		    <version>4.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.junit</artifactId>
+		    <version>0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.httpcore</artifactId>
+		    <version>4.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>
             <artifactId>org.apache.servicemix.nmr.api</artifactId>
+		    <version>4.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>
             <artifactId>org.apache.servicemix.nmr.core</artifactId>
+		    <version>4.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>
             <artifactId>org.apache.servicemix.nmr.osgi</artifactId>
+		    <version>4.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>
             <artifactId>org.apache.servicemix.nmr.spring</artifactId>
+		    <version>4.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.jbi</groupId>
             <artifactId>org.apache.servicemix.jbi.api</artifactId>
+		    <version>4.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.jbi</groupId>
             <artifactId>org.apache.servicemix.jbi.runtime</artifactId>
+		    <version>4.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.jbi</groupId>
             <artifactId>org.apache.servicemix.jbi.osgi</artifactId>
+		    <version>4.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.jbi</groupId>
             <artifactId>org.apache.servicemix.jbi.deployer</artifactId>
+		    <version>4.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.jbi</groupId>
             <artifactId>org.apache.servicemix.jbi.offline</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.openejb</groupId>
-            <artifactId>org.apache.servicemix.openejb</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix</groupId>
-            <artifactId>org.apache.servicemix.transaction</artifactId>
+		    <version>4.0-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -131,88 +136,58 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
+            <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
+            <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
+            <version>${spring.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.osgi</groupId>
             <artifactId>spring-osgi-core</artifactId>
+            <version>${spring.osgi.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.osgi</groupId>
             <artifactId>spring-osgi-io</artifactId>
+            <version>${spring.osgi.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.osgi</groupId>
             <artifactId>spring-osgi-extender</artifactId>
+            <version>${spring.osgi.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.osgi</groupId>
             <artifactId>spring-osgi-test</artifactId>
+            <version>${spring.osgi.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.osgi</groupId>
             <artifactId>spring-osgi-annotation</artifactId>
+            <version>${spring.osgi.version}</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-spring</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-jms</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-osgi</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-jhc</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.osgi</groupId>
-            <artifactId>spring-osgi-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.osgi</groupId>
-            <artifactId>spring-osgi-extender</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.osgi</groupId>
-            <artifactId>spring-osgi-annotation</artifactId>
-            <scope>test</scope>
-        </dependency>
+<!--
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
@@ -277,6 +252,7 @@
             <groupId>org.ops4j.pax.logging</groupId>
             <artifactId>pax-logging-service</artifactId>
         </dependency>
+-->
     </dependencies>
 
     <build>

@@ -58,7 +58,7 @@
         <artifactId>servicemix-eip</artifactId>
         <classifier>installer</classifier>
         <type>zip</type>
-        <version>3.1.2</version>
+	    <version>${smx3.version}</version>
         <scope>provided</scope>
     </dependency>
     <dependency>

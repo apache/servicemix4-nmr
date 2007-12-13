@@ -23,63 +23,47 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.servicemix.jbi</groupId>
-        <artifactId>jbi</artifactId>
+        <groupId>org.apache.servicemix.nmr</groupId>
+        <artifactId>parent</artifactId>
         <version>4.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.servicemix.jbi</groupId>
-    <artifactId>org.apache.servicemix.jbi.deployer</artifactId>
-    <packaging>bundle</packaging>
+    <groupId>org.apache.servicemix.runtime.bundles</groupId>
+    <artifactId>bundles</artifactId>
+    <packaging>pom</packaging>
     <version>4.0-SNAPSHOT</version>
-    <name>ServiceMix JBI Deployer</name>
+    <name>ServiceMix OSGI Common Bundles</name>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.apache.servicemix.jbi</groupId>
-            <artifactId>org.apache.servicemix.jbi.api</artifactId>
-	        <version>4.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.xbean</groupId>
-            <artifactId>xbean-classloader</artifactId>
-            <version>${xbean.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.osgi</groupId>
-            <artifactId>spring-osgi-core</artifactId>
-	        <version>${spring.osgi.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.osgi.core</artifactId>
-	        <version>${felix.osgi.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+    <modules>
+    </modules>
+
+    <properties>
+        <servicemix.osgi.export>${servicemix.osgi.export.pkg}*;version=${pkgVersion}</servicemix.osgi.export>
+        <servicemix.osgi.export.pkg></servicemix.osgi.export.pkg>
+        <servicemix.osgi.import.pkg></servicemix.osgi.import.pkg>
+        <servicemix.osgi.private.pkg></servicemix.osgi.private.pkg>
+    </properties>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Private-Package>org.apache.xbean*</Private-Package>
-                        <Export-Package>${pom.artifactId}*</Export-Package>
-                        <DynamicImport-Package>*</DynamicImport-Package>
+                        <Export-Package>${servicemix.osgi.export}</Export-Package>
+                        <Import-Package>${servicemix.osgi.import.pkg}*</Import-Package>
+                        <Private-Package>${servicemix.osgi.private.pkg}</Private-Package>
                     </instructions>
+                    <unpackBundle>true</unpackBundle>
                 </configuration>
             </plugin>
         </plugins>
