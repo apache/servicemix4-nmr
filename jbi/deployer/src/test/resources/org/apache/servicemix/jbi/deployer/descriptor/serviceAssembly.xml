@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<jbi version="1" xmlns="http://java.sun.com/xml/ns/jbi"
+	 xmlns:csi="urn:csi" xmlns:ems="urn:ems">
+	<service-assembly>
+		<identification>
+			<name>ServiceAssembly_041207153211-0800_saId</name>
+			<description>Description of Service Assembly : ServiceAssembly</description>
+		</identification>
+		<service-unit>
+			<identification>
+				<name>TransformationSU_041207152821-0800_suId</name>
+				<description>Description of Serviceunit: TransformationSU</description>
+			</identification>
+			<target>
+				<artifacts-zip>TransformationSU.zip</artifacts-zip>
+				<component-name>SunTransformationEngine</component-name>
+			</target>
+		</service-unit>
+		<service-unit>
+			<identification>
+				<name>FileBindingSU_041207152212-0800_suId</name>
+				<description>Description of ServiceUnit: FileBindingSU</description>
+			</identification>
+			<target>
+				<artifacts-zip>FileBindingSU.zip</artifacts-zip>
+				<component-name>SunFileBinding</component-name>
+			</target>
+		</service-unit>
+		<service-unit>
+			<identification>
+				<name>SoapBindingSU_041207152833-0800_suId</name>
+				<description>
+					Description of Service unit: SoapBindingSU
+				</description>
+			</identification>
+			<target>
+				<artifacts-zip>SoapBindingSU.zip</artifacts-zip>
+				<component-name>SunSOAPBinding</component-name>
+			</target>
+		</service-unit>
+		<service-unit>
+			<identification>
+				<name>SequencingEngineSU_041207152507-0800_suId</name>
+				<description>Description of Serviceunit: SequencingEngineSU</description>
+			</identification>
+			<target>
+				<artifacts-zip>SequencingEngineSU.zip</artifacts-zip>
+				<component-name>SunSequencingEngine</component-name>
+			</target>
+		</service-unit>
+		<connections>
+			<connection>
+				<consumer service-name="csi:csi-service"
+					endpoint-name="csi-email-endpoint" />
+				<provider service-name="ems:ems-service"
+					endpoint-name="ems-smtp-endpoint" />
+			</connection>
+			<connection>
+				<consumer service-name="csi:csi-service"
+					endpoint-name="csi-soap-email-endpoint" />
+				<provider service-name="ems:ems-service"
+					endpoint-name="ems-smtp-endpoint" />
+			</connection>
+		</connections>
+	</service-assembly>
+</jbi>

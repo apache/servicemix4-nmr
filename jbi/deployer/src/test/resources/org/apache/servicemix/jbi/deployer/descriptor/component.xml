@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<jbi version="1.0" xmlns="http://java.sun.com/xml/ns/jbi"
+  xmlns:foo="http://www.foo.com/ns/bar">
+  <component type="service-engine">
+    <identification>
+      <name>example-engine-1</name>
+      <description>An example service engine</description>
+      <foo:TypeInfo part-number="012AB490-578F-114FAA">
+        BPEL:2.0:XQuery:1.0:XPath:2.0:XPath:1.0
+      </foo:TypeInfo>
+    </identification>
+    <component-class-name description="foo">com.foo.Engine1</component-class-name>
+    <component-class-path>
+      <path-element>Engine1.jar</path-element>
+    </component-class-path>
+    <bootstrap-class-name>com.foo.Engine1Bootstrap</bootstrap-class-name>
+    <bootstrap-class-path>
+      <path-element>Engine2.jar</path-element>
+    </bootstrap-class-path>
+    <shared-library>slib1</shared-library>
+
+    
+    <foo:Configuration version="1.0">
+      <foo:ThreadPool size="10"/>
+      <foo:Queue1 size="50"/>
+    </foo:Configuration>
+  </component>
+</jbi>
