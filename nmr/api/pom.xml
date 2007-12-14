@@ -31,7 +31,6 @@
     <groupId>org.apache.servicemix.nmr</groupId>
     <artifactId>org.apache.servicemix.nmr.api</artifactId>
     <packaging>bundle</packaging>
-    <version>4.0-SNAPSHOT</version>
     <name>ServiceMix NMR API</name>
 
     <dependencies>
@@ -44,7 +43,7 @@
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <version>${felix.version}</version>
+            <version>${felix.osgi.version}</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

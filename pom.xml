@@ -35,8 +35,8 @@
   <name>Apache ServiceMix NMR</name>
 
   <modules>
-    <module>jbi</module>
     <module>nmr</module>
+    <module>jbi</module>
   </modules>
 
   <scm>
@@ -79,6 +79,7 @@
       <smx3.version>3.2.1</smx3.version>
       <spring.osgi.version>1.0-m3</spring.osgi.version>
       <spring.version>2.5</spring.version>
+      <xbean.version>3.3-SNAPSHOT</xbean.version>
       <xstream.version>1.2.2</xstream.version>
   </properties>
 
@@ -145,6 +146,17 @@
           <groupId>org.springframework</groupId>
           <artifactId>spring-context</artifactId>
           <version>${spring.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.springframework.osgi</groupId>
+          <artifactId>spring-osgi-test</artifactId>
+          <version>${spring.osgi.version}</version>
+          <exclusions>
+              <exclusion>
+                  <groupId>org.springframework.osgi</groupId>
+                  <artifactId>asm.osgi</artifactId>
+              </exclusion>
+          </exclusions>
       </dependency>
       <dependency>
           <groupId>org.apache.mina</groupId>

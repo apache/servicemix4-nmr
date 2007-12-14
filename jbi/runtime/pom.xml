@@ -31,19 +31,18 @@
     <groupId>org.apache.servicemix.jbi</groupId>
     <artifactId>org.apache.servicemix.jbi.runtime</artifactId>
     <packaging>bundle</packaging>
-    <version>4.0-SNAPSHOT</version>
     <name>ServiceMix JBI Runtime</name>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>
             <artifactId>org.apache.servicemix.nmr.core</artifactId>
-		    <version>4.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.jbi</groupId>
             <artifactId>org.apache.servicemix.jbi.api</artifactId>
-		    <version>4.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix</groupId>

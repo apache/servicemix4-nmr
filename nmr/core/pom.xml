@@ -31,19 +31,19 @@
     <groupId>org.apache.servicemix.nmr</groupId>
     <artifactId>org.apache.servicemix.nmr.core</artifactId>
     <packaging>bundle</packaging>
-    <version>4.0-SNAPSHOT</version>
     <name>ServiceMix NMR Core</name>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>
             <artifactId>org.apache.servicemix.nmr.api</artifactId>
-		    <version>4.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
+            <version>${junit.version}</version>
         </dependency>
     </dependencies>
 
