@@ -188,6 +188,16 @@
           <artifactId>commons-logging</artifactId>
           <version>${commons.logging.version}</version>
       </dependency>
+      <dependency>
+          <groupId>org.apache.geronimo.specs</groupId>
+          <artifactId>geronimo-servlet_2.5_spec</artifactId>
+          <version>${geronimo.servlet.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.geronimo.specs</groupId>
+          <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+          <version>${geronimo.stax.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 

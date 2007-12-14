@@ -34,44 +34,14 @@
     <name>ServiceMix JBI Integration Tests</name>
 
     <properties>
-        <osgi.test.platform>org.springframework.osgi.test.platform.EquinoxPlatform</osgi.test.platform>
+        <osgi.test.platform>org.springframework.osgi.internal.test.platform.FelixPlatform</osgi.test.platform>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.aopalliance</artifactId>
+            <groupId>org.apache.servicemix.runtime.testing</groupId>
+            <artifactId>org.apache.servicemix.runtime.testing.support</artifactId>
 		    <version>0.1-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.asm</artifactId>
-		    <version>0.1-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.junit</artifactId>
-		    <version>0.1-SNAPSHOT</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.jaxb-api</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.jaxb-impl</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.httpcore</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -129,154 +99,28 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-            <version>${spring.version}</version>
-            <scope>test</scope>
+            <groupId>org.apache.servicemix</groupId>
+            <artifactId>servicemix-shared-compat</artifactId>
+            <version>${smx3.version}</version>
+            <classifier>installer</classifier>
+            <type>zip</type>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-            <version>${spring.version}</version>
-            <scope>test</scope>
+            <groupId>org.apache.servicemix</groupId>
+            <artifactId>servicemix-eip</artifactId>
+            <version>${smx3.version}</version>
+            <classifier>installer</classifier>
+            <type>zip</type>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-            <version>${spring.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-aop</artifactId>
-            <version>${spring.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <version>${spring.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.osgi</groupId>
-            <artifactId>spring-osgi-core</artifactId>
-            <version>${spring.osgi.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.osgi</groupId>
-            <artifactId>spring-osgi-io</artifactId>
-            <version>${spring.osgi.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.osgi</groupId>
-            <artifactId>spring-osgi-extender</artifactId>
-            <version>${spring.osgi.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.osgi</groupId>
-            <artifactId>spring-osgi-test</artifactId>
-            <version>${spring.osgi.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.osgi</groupId>
-            <artifactId>spring-osgi-annotation</artifactId>
-            <version>${spring.osgi.version}</version>
-            <scope>test</scope>
-        </dependency>
-<!--
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-tx</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jms</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jms_1.1_spec</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-j2ee-management_1.1_spec</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-stax-api_1.0_spec</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-servlet_2.5_spec</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jms_1.1_spec</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-activation_1.1_spec</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-core</artifactId>
-            <version>${activemq.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.osgi</groupId>
-            <artifactId>org.eclipse.osgi</artifactId>
-            <version>3.2.2</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.logging</groupId>
-            <artifactId>pax-logging-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.logging</groupId>
-            <artifactId>pax-logging-service</artifactId>
-        </dependency>
--->
-<dependency>
-    <groupId>org.apache.servicemix</groupId>
-    <artifactId>servicemix-shared-compat</artifactId>
-    <version>${smx3.version}</version>
-    <classifier>installer</classifier>
-    <type>zip</type>
-</dependency>
-<dependency>
-    <groupId>org.apache.servicemix</groupId>
-    <artifactId>servicemix-eip</artifactId>
-    <version>${smx3.version}</version>
-    <classifier>installer</classifier>
-    <type>zip</type>
-</dependency>
     </dependencies>
 
     <build>
         <plugins>
             <!-- generate dependencies versions -->
             <plugin>
-                <groupId>org.apache.servicemix.tooling</groupId>
+                <groupId>org.apache.servicemix.runtime.testing</groupId>
                 <artifactId>depends-maven-plugin</artifactId>
-                <version>4.0-SNAPSHOT</version>
+                <version>0.1-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <id>generate-depends-file</id>
