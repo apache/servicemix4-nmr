@@ -16,29 +16,43 @@
  */
 package org.apache.servicemix.jbi.deployer.impl;
 
+import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.jbi.JBIException;
 import javax.jbi.component.Component;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.SharedLibrary;
+import org.apache.servicemix.jbi.deployer.descriptor.ComponentDesc;
 import org.apache.servicemix.jbi.deployer.descriptor.Descriptor;
 import org.apache.servicemix.jbi.deployer.descriptor.DescriptorFactory;
+import org.apache.servicemix.jbi.deployer.descriptor.ServiceAssemblyDesc;
+import org.apache.servicemix.jbi.deployer.descriptor.ServiceUnitDesc;
+import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryDesc;
 import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryList;
 import org.apache.xbean.classloader.MultiParentClassLoader;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
+import org.osgi.framework.ServiceReference;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.osgi.context.BundleContextAware;
 import org.springframework.osgi.internal.context.support.BundleDelegatingClassLoader;
+import org.springframework.osgi.util.OsgiServiceReferenceUtils;
+import org.springframework.osgi.util.OsgiServiceUtils;
+import org.springframework.osgi.util.OsgiStringUtils;
 
 /**
  * Deployer for JBI artifacts
@@ -46,19 +60,27 @@ import org.springframework.osgi.internal.context.support.BundleDelegatingClassLo
  */
 public class Deployer implements BundleListener, BundleContextAware, InitializingBean, DisposableBean {
 
+    public static final String NAME = "NAME";
+    public static final String TYPE = "TYPE";
+
     private static final Log LOGGER = LogFactory.getLog(Deployer.class);
 
     private static final String JBI_DESCRIPTOR = "META-INF/jbi.xml";
-
-    private static final String NAME = "NAME";
-    private static final String TYPE = "TYPE";
 
     private BundleContext context;
 
     private Map<String, SharedLibrary> sharedLibraries;
 
-    public Deployer() {
+    private Map<String, ServiceAssembly> serviceAssemblies;
+
+    private File jbiRootDir;
+
+    public Deployer() throws JBIException{
         sharedLibraries = new ConcurrentHashMap<String, SharedLibrary>();
+        serviceAssemblies = new ConcurrentHashMap<String, ServiceAssembly>();
+        // TODO: control that using properties
+        jbiRootDir = new File(System.getProperty("servicemix.base"), "jbi");
+        jbiRootDir.mkdirs();
     }
 
     public void setBundleContext(BundleContext context) {
@@ -67,6 +89,9 @@ public class Deployer implements BundleListener, BundleContextAware, Initializin
 
     public void afterPropertiesSet() throws Exception {
         this.context.addBundleListener(this);
+        for (Bundle bundle : this.context.getBundles()) {
+            checkInstalledBundle(bundle);
+        }
     }
 
     public void destroy() throws Exception {
@@ -74,48 +99,107 @@ public class Deployer implements BundleListener, BundleContextAware, Initializin
     }
 
     public void bundleChanged(BundleEvent event) {
-        try {
             if (event.getType() == BundleEvent.INSTALLED) {
-                LOGGER.debug("Checking bundle: " + event.getBundle().getSymbolicName());
-                URL url = event.getBundle().getResource(JBI_DESCRIPTOR);
-                Descriptor descriptor = DescriptorFactory.buildDescriptor(url);
-                // TODO: check descriptor
-                if (descriptor.getComponent() != null) {
-                    LOGGER.debug("Bundle '" + event.getBundle().getSymbolicName() + "' is a JBI component");
-                    // Create component class loader
-                    ClassLoader classLoader = createComponentClassLoader(descriptor.getComponent(), event.getBundle());
-                    // Instanciate component
-                    Class clazz = classLoader.loadClass(descriptor.getComponent().getComponentClassName());
-                    Component component = (Component) clazz.newInstance();
-                    Dictionary<String, String> props = new Hashtable<String, String>();
-                    // populate props from the component meta-data
-                    props.put(NAME, descriptor.getComponent().getIdentification().getName());
-                    props.put(TYPE, descriptor.getComponent().getType());
-                    // register the component in the OSGi registry
-                    LOGGER.debug("Registering JBI component");
-                    context.registerService(Component.class.getName(), component, props);
-                } else if (descriptor.getServiceAssembly() != null) {
-                    LOGGER.debug("Bundle '" + event.getBundle().getSymbolicName() + "' is a JBI service assembly");
-                    // TODO:
-                } else if (descriptor.getSharedLibrary() != null) {
-                    LOGGER.debug("Bundle '" + event.getBundle().getSymbolicName() + "' is a JBI shared library");
-                    SharedLibraryImpl sl = new SharedLibraryImpl(descriptor.getSharedLibrary(), event.getBundle());
-                    sharedLibraries.put(sl.getName(), sl);
-                    Dictionary<String, String> props = new Hashtable<String, String>();
-                    // populate props from the library meta-data
-                    props.put(NAME, descriptor.getSharedLibrary().getIdentification().getName());
-                    LOGGER.debug("Registering JBI Shared Library");
-                    context.registerService(SharedLibrary.class.getName(), sl, props);
-                } else {
-                    // WARN: unhandled JBI artifact
-                }
+                checkInstalledBundle(event.getBundle());
+            } else if (event.getType() == BundleEvent.UNINSTALLED) {
+            	//TODO: uninstall the bundle.
+            }
+    }
+
+    private void checkInstalledBundle(Bundle bundle) {
+        try {
+            LOGGER.debug("Checking bundle: '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "'");
+            URL url = bundle.getResource(JBI_DESCRIPTOR);
+            if (url == null) {
+                LOGGER.debug("Bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' does not contain any JBI descriptor.");
+                return;
+            }
+            Descriptor descriptor = DescriptorFactory.buildDescriptor(url);
+            DescriptorFactory.checkDescriptor(descriptor);
+            if (descriptor.getComponent() != null) {
+                installComponent(descriptor.getComponent(), bundle);
+            } else if (descriptor.getServiceAssembly() != null) {
+                deployServiceAssembly(descriptor.getServiceAssembly(), bundle);
+            } else if (descriptor.getSharedLibrary() != null) {
+                installSharedLibrary(descriptor.getSharedLibrary(), bundle);
+            } else {
+                // WARN: unhandled JBI artifact
             }
         } catch (Exception e) {
             LOGGER.error("Error handling bundle event", e);
         }
     }
 
-    private ClassLoader createComponentClassLoader(org.apache.servicemix.jbi.deployer.descriptor.Component component, Bundle bundle) {
+    protected void installComponent(ComponentDesc componentDesc, Bundle bundle) throws Exception {
+        LOGGER.debug("Bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' is a JBI component");
+        // Create component class loader
+        ClassLoader classLoader = createComponentClassLoader(componentDesc, bundle);
+        // Instanciate component
+        Class clazz = classLoader.loadClass(componentDesc.getComponentClassName());
+        Component component = (Component) clazz.newInstance();
+        // populate props from the component meta-data
+        Dictionary<String, String> props = new Hashtable<String, String>();
+        props.put(NAME, componentDesc.getIdentification().getName());
+        props.put(TYPE, componentDesc.getType());
+        // register the component in the OSGi registry
+        LOGGER.debug("Registering JBI component");
+        context.registerService(Component.class.getName(), component, props);
+    }
+
+    protected void deployServiceAssembly(ServiceAssemblyDesc serviceAssembyDesc, Bundle bundle) throws Exception {
+        LOGGER.debug("Bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' is a JBI service assembly");
+        // Create the SA directory
+        File saDir = new File(jbiRootDir, Long.toString(bundle.getBundleId()));
+        FileUtil.deleteFile(saDir);
+        FileUtil.buildDirectory(saDir);
+        // Iterate each SU and deploy it
+        List<ServiceUnitImpl> sus = new ArrayList<ServiceUnitImpl>();
+        for (ServiceUnitDesc sud : Arrays.asList(serviceAssembyDesc.getServiceUnits())) {
+            // Create directory for this SU
+            File suRootDir = new File(saDir, sud.getIdentification().getName());
+            suRootDir.mkdirs();
+            // Unpack it
+            String zip = sud.getTarget().getArtifactsZip();
+            URL zipUrl = bundle.getResource(zip);
+            FileUtil.unpackArchive(zipUrl, suRootDir);
+            // Find component
+            String componentName = sud.getTarget().getComponentName();
+            Component component = getComponent(componentName);
+            // Create service unit object
+            ServiceUnitImpl su = new ServiceUnitImpl(sud, suRootDir, component);
+            su.deploy();
+            // Add it to the list
+            sus.add(su);
+        }
+        // Now create the SA and initialize it
+        ServiceAssemblyImpl sa = new ServiceAssemblyImpl(serviceAssembyDesc, sus);
+        sa.init();
+        // populate props from the component meta-data
+        Dictionary<String, String> props = new Hashtable<String, String>();
+        props.put(NAME, serviceAssembyDesc.getIdentification().getName());
+        // register the service assembly in the OSGi registry
+        LOGGER.debug("Registering JBI service assembly");
+        context.registerService(ServiceAssembly.class.getName(), sa, props);
+    }
+
+    protected void installSharedLibrary(SharedLibraryDesc sharedLibraryDesc, Bundle bundle) {
+        LOGGER.debug("Bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' is a JBI shared library");
+        SharedLibraryImpl sl = new SharedLibraryImpl(sharedLibraryDesc, bundle);
+        sharedLibraries.put(sl.getName(), sl);
+        Dictionary<String, String> props = new Hashtable<String, String>();
+        // populate props from the library meta-data
+        props.put(NAME, sharedLibraryDesc.getIdentification().getName());
+        LOGGER.debug("Registering JBI Shared Library");
+        context.registerService(SharedLibrary.class.getName(), sl, props);
+    }
+
+    protected Component getComponent(String name) {
+        String filter = "(" + NAME + "=" + name + ")"; 
+        ServiceReference reference = OsgiServiceReferenceUtils.getServiceReference(context, Component.class.getName(), filter);
+        return (Component) OsgiServiceUtils.getService(context, reference);
+    }
+
+    protected ClassLoader createComponentClassLoader(ComponentDesc component, Bundle bundle) {
         // Create parents classloaders
         ClassLoader[] parents;
         if (component.getSharedLibraries() != null) {
@@ -148,7 +232,7 @@ public class Deployer implements BundleListener, BundleContextAware, Initializin
                         new String[] {"java.", "javax." });
     }
 
-    private ClassLoader getSharedLibraryClassLoader(SharedLibraryList sharedLibraryList) {
+    protected ClassLoader getSharedLibraryClassLoader(SharedLibraryList sharedLibraryList) {
         SharedLibrary sl = sharedLibraries.get(sharedLibraryList.getName());
         if (sl != null) {
             return sl.createClassLoader();

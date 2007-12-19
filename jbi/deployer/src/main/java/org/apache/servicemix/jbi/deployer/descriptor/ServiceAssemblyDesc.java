@@ -19,13 +19,13 @@ package org.apache.servicemix.jbi.deployer.descriptor;
 /**
  * @version $Revision: 426415 $
  */
-public class ServiceAssembly {	
+public class ServiceAssemblyDesc {
 
 	private Connections connections = new Connections();
 
 	private Identification identification;
 
-	private ServiceUnit[] serviceUnits;
+	private ServiceUnitDesc[] serviceUnits;
 	
 	private String state = "";
 
@@ -37,7 +37,7 @@ public class ServiceAssembly {
 		return identification;
 	}
 
-	public ServiceUnit[] getServiceUnits() {
+	public ServiceUnitDesc[] getServiceUnits() {
 		return serviceUnits;
 	}
 
@@ -56,7 +56,7 @@ public class ServiceAssembly {
 		this.identification = identification;
 	}
 
-	public void setServiceUnits(ServiceUnit[] serviceUnits) {
+	public void setServiceUnits(ServiceUnitDesc[] serviceUnits) {
 		this.serviceUnits = serviceUnits;
 	}
 

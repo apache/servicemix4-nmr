@@ -19,13 +19,13 @@ package org.apache.servicemix.jbi.deployer.descriptor;
 /**
  * @version $Revision: 426415 $
  */
-public class SharedLibrary {
+public class SharedLibraryDesc {
     private String classLoaderDelegation = "parent-first";
     private String version;
     private Identification identification;
     private ClassPath sharedLibraryClassPath;
 
-    public SharedLibrary() {
+    public SharedLibraryDesc() {
     }
 
     public String getClassLoaderDelegation() {

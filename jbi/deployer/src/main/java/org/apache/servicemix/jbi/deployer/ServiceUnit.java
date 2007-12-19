@@ -16,14 +16,13 @@
  */
 package org.apache.servicemix.jbi.deployer;
 
+import java.io.File;
+
 import javax.jbi.JBIException;
 
-/**
- * This interface represents a JBI Service Assembly and will be registered
- * in the OSGi registry
- */
-public interface ServiceAssembly {
 
+public interface ServiceUnit {
+	
     /**
      * Retrieves the name of this service assembly
      * @return the name
@@ -35,19 +34,5 @@ public interface ServiceAssembly {
      * @return the description
      */
     String getDescription();
-
-    /**
-     * Get the list of service units included in this Service Assembly
-     * @return
-     */
-    ServiceUnit[] getServiceUnits();
-
-	void init() throws JBIException;
-
-	void start() throws JBIException;
-
-	void stop() throws JBIException;
-
-	void shutdown() throws JBIException;
 
 }

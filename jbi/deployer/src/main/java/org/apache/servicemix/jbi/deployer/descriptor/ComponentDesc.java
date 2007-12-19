@@ -21,7 +21,7 @@ import org.apache.servicemix.jbi.deployer.descriptor.ClassPath;
 /**
  * @version $Revision: 426415 $
  */
-public class Component {
+public class ComponentDesc {
     private String type;
     private String componentClassLoaderDelegation = "parent-first";
     private String bootstrapClassLoaderDelegation = "parent-first";

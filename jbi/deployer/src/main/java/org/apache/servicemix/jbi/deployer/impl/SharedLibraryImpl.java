@@ -16,13 +16,11 @@
  */
 package org.apache.servicemix.jbi.deployer.impl;
 
-import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.servicemix.jbi.deployer.SharedLibrary;
 import org.apache.servicemix.jbi.deployer.descriptor.ClassPath;
-import org.apache.xbean.classloader.JarFileClassLoader;
+import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryDesc;
 import org.apache.xbean.classloader.MultiParentClassLoader;
 import org.osgi.framework.Bundle;
 import org.springframework.osgi.internal.context.support.BundleDelegatingClassLoader;
@@ -32,10 +30,10 @@ import org.springframework.osgi.internal.context.support.BundleDelegatingClassLo
  */
 public class SharedLibraryImpl implements SharedLibrary {
 
-    private org.apache.servicemix.jbi.deployer.descriptor.SharedLibrary library;
+    private SharedLibraryDesc library;
     private Bundle bundle;
 
-    public SharedLibraryImpl(org.apache.servicemix.jbi.deployer.descriptor.SharedLibrary library, Bundle bundle) {
+    public SharedLibraryImpl(SharedLibraryDesc library, Bundle bundle) {
         this.library = library;
         this.bundle = bundle;
     }

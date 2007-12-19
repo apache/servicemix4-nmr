@@ -146,7 +146,7 @@ public class DescriptorFactory {
             desc.setVersion(Double.parseDouble(getAttribute(jbi, "version")));
             Element child = getFirstChildElement(jbi);
             if ("component".equals(child.getLocalName())) {
-                Component component = new Component();
+                ComponentDesc component = new ComponentDesc();
                 component.setType(child.getAttribute("type"));
                 component.setComponentClassLoaderDelegation(getAttribute(child, "component-class-loader-delegation"));
                 component.setBootstrapClassLoaderDelegation(getAttribute(child, "bootstrap-class-loader-delegation"));
@@ -200,7 +200,7 @@ public class DescriptorFactory {
                 }
                 desc.setComponent(component);
             } else if ("shared-library".equals(child.getLocalName())) {
-                SharedLibrary sharedLibrary = new SharedLibrary();
+                SharedLibraryDesc sharedLibrary = new SharedLibraryDesc();
                 sharedLibrary.setClassLoaderDelegation(getAttribute(child, "class-loader-delegation"));
                 sharedLibrary.setVersion(getAttribute(child, "version"));
                 for (Element e = getFirstChildElement(child); e != null; e = getNextSiblingElement(e)) {
@@ -220,13 +220,13 @@ public class DescriptorFactory {
                 }
                 desc.setSharedLibrary(sharedLibrary);
             } else if ("service-assembly".equals(child.getLocalName())) {
-                ServiceAssembly serviceAssembly = new ServiceAssembly();
-                ArrayList<ServiceUnit> sus = new ArrayList<ServiceUnit>();
+                ServiceAssemblyDesc serviceAssembly = new ServiceAssemblyDesc();
+                ArrayList<ServiceUnitDesc> sus = new ArrayList<ServiceUnitDesc>();
                 for (Element e = getFirstChildElement(child); e != null; e = getNextSiblingElement(e)) {
                     if ("identification".equals(e.getLocalName())) {
                         serviceAssembly.setIdentification(readIdentification(e));
                     } else if ("service-unit".equals(e.getLocalName())) {
-                        ServiceUnit su = new ServiceUnit();
+                        ServiceUnitDesc su = new ServiceUnitDesc();
                         for (Element e2 = getFirstChildElement(e); e2 != null; e2 = getNextSiblingElement(e2)) {
                             if ("identification".equals(e2.getLocalName())) {
                                 su.setIdentification(readIdentification(e2));
@@ -270,7 +270,7 @@ public class DescriptorFactory {
                         serviceAssembly.setConnections(connections);
                     }
                 }
-                serviceAssembly.setServiceUnits(sus.toArray(new ServiceUnit[sus.size()]));
+                serviceAssembly.setServiceUnits(sus.toArray(new ServiceUnitDesc[sus.size()]));
                 desc.setServiceAssembly(serviceAssembly);
             } else if ("services".equals(child.getLocalName())) {
                 Services services = new Services();
@@ -379,7 +379,7 @@ public class DescriptorFactory {
      * @param component
      *            The component descriptor that is being checked
      */
-    private static void checkComponent(List<String> violations, Component component) {
+    private static void checkComponent(List<String> violations, ComponentDesc component) {
         if (component.getIdentification() == null) {
             violations.add("The component has not identification");
         } else {
@@ -404,7 +404,7 @@ public class DescriptorFactory {
      * @param serviceAssembly
      *            The service assembly descriptor that is being checked
      */
-    private static void checkServiceAssembly(List<String> violations, ServiceAssembly serviceAssembly) {
+    private static void checkServiceAssembly(List<String> violations, ServiceAssemblyDesc serviceAssembly) {
         if (serviceAssembly.getIdentification() == null) {
             violations.add("The service assembly has not identification");
         } else {
@@ -437,7 +437,7 @@ public class DescriptorFactory {
      * @param sharedLibrary
      *            The shared library descriptor that is being checked
      */
-    private static void checkSharedLibrary(List<String> violations, SharedLibrary sharedLibrary) {
+    private static void checkSharedLibrary(List<String> violations, SharedLibraryDesc sharedLibrary) {
         if (sharedLibrary.getIdentification() == null) {
             violations.add("The shared library has not identification");
         } else {

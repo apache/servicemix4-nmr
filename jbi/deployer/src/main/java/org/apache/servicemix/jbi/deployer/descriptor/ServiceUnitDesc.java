@@ -19,7 +19,7 @@ package org.apache.servicemix.jbi.deployer.descriptor;
 /**
  * @version $Revision: 426415 $
  */
-public class ServiceUnit {
+public class ServiceUnitDesc {
     private Identification identification;
     private Target target;
 

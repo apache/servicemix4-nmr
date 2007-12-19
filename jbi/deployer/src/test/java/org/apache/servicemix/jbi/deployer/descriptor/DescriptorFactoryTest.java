@@ -52,7 +52,7 @@ public class DescriptorFactoryTest {
         Descriptor root = DescriptorFactory.buildDescriptor(getClass().getResource("sharedLibrary.xml"));
         assertNotNull("Unable to parse descriptor", root);
 
-        SharedLibrary sl = root.getSharedLibrary();
+        SharedLibraryDesc sl = root.getSharedLibrary();
         Identification identification = sl.getIdentification();
         assertEquals("getName", "TestSharedLibrary", identification.getName());
         assertEquals("getDescription", "This is a test shared library.", identification.getDescription());
@@ -63,7 +63,7 @@ public class DescriptorFactoryTest {
         Descriptor root = DescriptorFactory.buildDescriptor(getClass().getResource("serviceAssembly.xml"));
         assertNotNull("Unable to parse descriptor", root);
 
-        ServiceAssembly serviceAssembly = root.getServiceAssembly();
+        ServiceAssemblyDesc serviceAssembly = root.getServiceAssembly();
         assertNotNull("serviceAssembly is null", serviceAssembly);
 
         Identification identification = serviceAssembly.getIdentification();
@@ -71,7 +71,7 @@ public class DescriptorFactoryTest {
         assertEquals("getName", "ServiceAssembly_041207153211-0800_saId", identification.getName());
         assertEquals("getDescription", "Description of Service Assembly : ServiceAssembly", identification.getDescription());
 
-        ServiceUnit[] serviceUnits = serviceAssembly.getServiceUnits();
+        ServiceUnitDesc[] serviceUnits = serviceAssembly.getServiceUnits();
         assertNotNull("serviceUnits are null", serviceUnits);
         assertEquals("serviceUnits size", 4, serviceUnits.length);
 
@@ -102,7 +102,7 @@ public class DescriptorFactoryTest {
         assertNotNull("Unable to parse descriptor", root);
 
         // component stuff
-        Component component = root.getComponent();
+        ComponentDesc component = root.getComponent();
         assertNotNull("component is null", component);
         assertEquals("getBootstrapClassName", "com.foo.Engine1Bootstrap", component.getBootstrapClassName());
         assertEquals("getComponentClassName", "com.foo.Engine1", component.getComponentClassName());

@@ -16,16 +16,16 @@
  */
 package org.apache.servicemix.jbi.deployer.descriptor;
 
-import org.apache.servicemix.jbi.deployer.descriptor.Component;
+import org.apache.servicemix.jbi.deployer.descriptor.ComponentDesc;
 
 /**
  * @version $Revision: 426415 $
  */
 public class Descriptor {
     private double version;
-    private Component component;
-    private SharedLibrary sharedLibrary;
-    private ServiceAssembly serviceAssembly;
+    private ComponentDesc component;
+    private SharedLibraryDesc sharedLibrary;
+    private ServiceAssemblyDesc serviceAssembly;
     private Services services;
 
     public double getVersion() {
@@ -36,27 +36,27 @@ public class Descriptor {
         this.version = version;
     }
 
-    public Component getComponent() {
+    public ComponentDesc getComponent() {
         return component;
     }
 
-    public void setComponent(Component component) {
+    public void setComponent(ComponentDesc component) {
         this.component = component;
     }
 
-    public SharedLibrary getSharedLibrary() {
+    public SharedLibraryDesc getSharedLibrary() {
         return sharedLibrary;
     }
 
-    public void setSharedLibrary(SharedLibrary sharedLibrary) {
+    public void setSharedLibrary(SharedLibraryDesc sharedLibrary) {
         this.sharedLibrary = sharedLibrary;
     }
 
-    public ServiceAssembly getServiceAssembly() {
+    public ServiceAssemblyDesc getServiceAssembly() {
         return serviceAssembly;
     }
 
-    public void setServiceAssembly(ServiceAssembly serviceAssembly) {
+    public void setServiceAssembly(ServiceAssemblyDesc serviceAssembly) {
         this.serviceAssembly = serviceAssembly;
     }
 
