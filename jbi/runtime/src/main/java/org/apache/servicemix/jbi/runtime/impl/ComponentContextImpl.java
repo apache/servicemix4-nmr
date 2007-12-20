@@ -39,6 +39,7 @@ import javax.xml.namespace.QName;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 
+import org.apache.servicemix.jbi.runtime.ComponentRegistry;
 import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.NMR;
@@ -61,11 +62,9 @@ public class ComponentContextImpl implements ComponentContext {
     private DeliveryChannel dc;
     private List<EndpointImpl> endpoints;
     private EndpointImpl componentEndpoint;
+    private String name;
 
     public ComponentContextImpl(NMR nmr, Component component, Map<String,?> properties) {
-        if (properties == null) {
-            properties = new HashMap<String, Object>();
-        }
         this.nmr = nmr;
         this.component = component;
         this.properties = properties;
@@ -75,6 +74,7 @@ public class ComponentContextImpl implements ComponentContext {
         this.componentEndpoint.setQueue(queue);
         this.nmr.getEndpointRegistry().register(componentEndpoint, properties);
         this.dc = new DeliveryChannelImpl(this, componentEndpoint.getChannel(), queue);
+        this.name = (String) properties.get(ComponentRegistry.NAME);
     }
 
     public NMR getNmr() {
@@ -113,7 +113,7 @@ public class ComponentContextImpl implements ComponentContext {
     }
 
     public String getComponentName() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return name;
     }
 
     public DeliveryChannel getDeliveryChannel() throws MessagingException {

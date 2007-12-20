@@ -28,4 +28,14 @@ import javax.jbi.component.Component;
  */
 public interface ComponentRegistry extends ServiceRegistry<Component>  {
 
+    public static final String NAME = "NAME";
+    public static final String TYPE = "TYPE";
+
+    /**
+     * Retrieve a component given its name
+     * @param name the name of the component
+     * @return the component, or null if not registered
+     */
+    Component getComponent(String name);
+
 }
