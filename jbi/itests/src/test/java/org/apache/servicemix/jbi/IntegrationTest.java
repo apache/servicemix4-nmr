@@ -16,25 +16,13 @@
  */
 package org.apache.servicemix.jbi;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 import javax.jbi.component.Component;
 
-import org.apache.servicemix.jbi.offline.Main;
+import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.runtime.testing.support.AbstractIntegrationTest;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.ServiceEvent;
-import org.osgi.framework.ServiceListener;
-import org.springframework.osgi.internal.util.concurrent.Counter;
-import org.springframework.osgi.util.OsgiFilterUtils;
-import org.springframework.osgi.util.OsgiListenerUtils;
 
 public class IntegrationTest extends AbstractIntegrationTest {
 
@@ -92,5 +80,20 @@ public class IntegrationTest extends AbstractIntegrationTest {
         Component cmp = (Component) getOsgiService(Component.class);
         assertNotNull(cmp);
     }
+
+    /*
+    public void testServiceAssembly() throws Exception {
+        System.out.println("Waiting for NMR");
+        NMR nmr = getOsgiService(NMR.class);
+        assertNotNull(nmr);
+        installBundle("org.apache.servicemix", "servicemix-shared-compat", "installer", "zip");
+        installBundle("org.apache.servicemix", "servicemix-jsr181", "installer", "zip");
+        installBundle("org.apache.servicemix", "servicemix-http", "installer", "zip");
+        installBundle("org.apache.servicemix.samples.wsdl-first", "wsdl-first-sa", null, "zip");
+        System.out.println("Waiting for JBI Service Assembly");
+        ServiceAssembly sa = (ServiceAssembly) getOsgiService(ServiceAssembly.class);
+        assertNotNull(sa);
+    }
+    */
 
 }

@@ -39,6 +39,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>${felix.osgi.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.servicemix.runtime.testing</groupId>
             <artifactId>org.apache.servicemix.runtime.testing.support</artifactId>
 		    <version>0.1-SNAPSHOT</version>
@@ -112,6 +117,32 @@
             <classifier>installer</classifier>
             <type>zip</type>
         </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix</groupId>
+            <artifactId>servicemix-jsr181</artifactId>
+            <version>${smx3.version}</version>
+            <classifier>installer</classifier>
+            <type>zip</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix</groupId>
+            <artifactId>servicemix-http</artifactId>
+            <version>${smx3.version}</version>
+            <classifier>installer</classifier>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.samples.wsdl-first</groupId>
+            <artifactId>wsdl-first-sa</artifactId>
+            <version>${smx3.version}</version>
+            <type>zip</type>
+        </dependency>
     </dependencies>
 
     <build>
@@ -156,6 +187,26 @@
                                     <artifactId>servicemix-eip</artifactId>
                                     <version>${smx3.version}</version>
                                     <classifier>installer</classifier>
+                                    <type>zip</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.servicemix</groupId>
+                                    <artifactId>servicemix-jsr181</artifactId>
+                                    <version>${smx3.version}</version>
+                                    <classifier>installer</classifier>
+                                    <type>zip</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.servicemix</groupId>
+                                    <artifactId>servicemix-http</artifactId>
+                                    <version>${smx3.version}</version>
+                                    <classifier>installer</classifier>
+                                    <type>zip</type>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.apache.servicemix.samples.wsdl-first</groupId>
+                                    <artifactId>wsdl-first-sa</artifactId>
+                                    <version>${smx3.version}</version>
                                     <type>zip</type>
                                 </artifactItem>
                             </artifactItems>
