@@ -143,7 +143,7 @@ public class Deployer implements BundleListener, BundleContextAware, Initializin
         props.put(TYPE, componentDesc.getType());
         // register the component in the OSGi registry
         LOGGER.debug("Registering JBI component");
-        context.registerService(Component.class.getName(), component, props);
+        bundle.getBundleContext().registerService(Component.class.getName(), component, props);
     }
 
     protected void deployServiceAssembly(ServiceAssemblyDesc serviceAssembyDesc, Bundle bundle) throws Exception {
@@ -179,7 +179,7 @@ public class Deployer implements BundleListener, BundleContextAware, Initializin
         props.put(NAME, serviceAssembyDesc.getIdentification().getName());
         // register the service assembly in the OSGi registry
         LOGGER.debug("Registering JBI service assembly");
-        context.registerService(ServiceAssembly.class.getName(), sa, props);
+        bundle.getBundleContext().registerService(ServiceAssembly.class.getName(), sa, props);
     }
 
     protected void installSharedLibrary(SharedLibraryDesc sharedLibraryDesc, Bundle bundle) {
@@ -190,7 +190,7 @@ public class Deployer implements BundleListener, BundleContextAware, Initializin
         // populate props from the library meta-data
         props.put(NAME, sharedLibraryDesc.getIdentification().getName());
         LOGGER.debug("Registering JBI Shared Library");
-        context.registerService(SharedLibrary.class.getName(), sl, props);
+        bundle.getBundleContext().registerService(SharedLibrary.class.getName(), sl, props);
     }
 
     protected Component getComponent(String name) {
