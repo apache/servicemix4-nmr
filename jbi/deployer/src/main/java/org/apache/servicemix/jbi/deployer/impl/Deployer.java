@@ -49,7 +49,7 @@ import org.osgi.framework.ServiceReference;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.osgi.context.BundleContextAware;
-import org.springframework.osgi.internal.context.support.BundleDelegatingClassLoader;
+import org.springframework.osgi.util.BundleDelegatingClassLoader;
 import org.springframework.osgi.util.OsgiServiceReferenceUtils;
 import org.springframework.osgi.util.OsgiServiceUtils;
 import org.springframework.osgi.util.OsgiStringUtils;

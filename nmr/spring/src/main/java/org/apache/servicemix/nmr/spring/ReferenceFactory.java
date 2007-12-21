@@ -16,6 +16,11 @@
  */
 package org.apache.servicemix.nmr.spring;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.xml.namespace.QName;
+
 import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.nmr.api.Reference;
@@ -23,11 +28,7 @@ import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.osgi.context.BundleContextAware;
-import org.springframework.osgi.service.importer.OsgiSingleServiceProxyFactoryBean;
-
-import javax.xml.namespace.QName;
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.osgi.service.importer.support.OsgiServiceProxyFactoryBean;
 
 /**
  * Created by IntelliJ IDEA.
@@ -127,7 +128,7 @@ public class ReferenceFactory implements FactoryBean, InitializingBean, BundleCo
             if (bundleContext == null) {
                 throw new IllegalArgumentException("nmr not set while bundleContext is null");
             }
-            OsgiSingleServiceProxyFactoryBean factory = new OsgiSingleServiceProxyFactoryBean();
+            OsgiServiceProxyFactoryBean factory = new OsgiServiceProxyFactoryBean();
             factory.setInterface(new Class[] { NMR.class });
             factory.setBundleContext(getBundleContext());
             nmr = (NMR) factory.getObject();

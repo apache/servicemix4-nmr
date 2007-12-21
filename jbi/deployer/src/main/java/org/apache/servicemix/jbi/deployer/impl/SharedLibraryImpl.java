@@ -23,7 +23,7 @@ import org.apache.servicemix.jbi.deployer.descriptor.ClassPath;
 import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryDesc;
 import org.apache.xbean.classloader.MultiParentClassLoader;
 import org.osgi.framework.Bundle;
-import org.springframework.osgi.internal.context.support.BundleDelegatingClassLoader;
+import org.springframework.osgi.util.BundleDelegatingClassLoader;
 
 /**
  * SharedLibrary object

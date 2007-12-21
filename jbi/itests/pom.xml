@@ -34,20 +34,33 @@
     <name>ServiceMix JBI Integration Tests</name>
 
     <properties>
-        <osgi.test.platform>org.springframework.osgi.internal.test.platform.FelixPlatform</osgi.test.platform>
+        <osgi.test.platform>org.springframework.osgi.test.platform.FelixPlatform</osgi.test.platform>
     </properties>
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <version>${felix.osgi.version}</version>
+            <groupId>org.apache.servicemix.runtime</groupId>
+            <artifactId>org.apache.servicemix.runtime.main</artifactId>
+            <version>${smx.runtime.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>org.osgi.core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.runtime.testing</groupId>
             <artifactId>org.apache.servicemix.runtime.testing.support</artifactId>
-		    <version>0.1-SNAPSHOT</version>
+		    <version>${smx.runtime.version}</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>org.osgi.core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>
@@ -151,7 +164,7 @@
             <plugin>
                 <groupId>org.apache.servicemix.runtime.testing</groupId>
                 <artifactId>depends-maven-plugin</artifactId>
-                <version>0.1-SNAPSHOT</version>
+                <version>${smx.runtime.version}</version>
                 <executions>
                     <execution>
                         <id>generate-depends-file</id>
