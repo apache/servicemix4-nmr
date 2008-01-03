@@ -19,14 +19,14 @@ package org.apache.servicemix.jbi.deployer.impl;
 import java.io.File;
 
 import javax.jbi.JBIException;
-import javax.jbi.component.Component;
+import javax.jbi.management.ComponentLifeCycleMBean;
+import javax.jbi.management.DeploymentException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
 import org.apache.servicemix.jbi.deployer.descriptor.ServiceUnitDesc;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 
 
 public class ServiceUnitImpl implements ServiceUnit {
@@ -66,23 +66,43 @@ public class ServiceUnitImpl implements ServiceUnit {
 	}
 
     public void deploy() throws JBIException {
-        component.getServiceUnitManager().deploy(getName(), getRootDir().getAbsolutePath());
+        component.getComponent().getServiceUnitManager().deploy(getName(), getRootDir().getAbsolutePath());
     }
 
 	public void init() throws JBIException {
-        component.getServiceUnitManager().init(getName(), getRootDir().getAbsolutePath());
+        component.getComponent().getServiceUnitManager().init(getName(), getRootDir().getAbsolutePath());
 	}
 		
-	public void shutdown() throws JBIException {
-        component.getServiceUnitManager().shutDown(getName());
-	}
-
 	public void start() throws JBIException {
-        component.getServiceUnitManager().start(getName());
+        checkComponentStarted("start");
+        component.getComponent().getServiceUnitManager().start(getName());
     }
 
 	public void stop() throws JBIException {
-        component.getServiceUnitManager().stop(getName());
+        checkComponentStarted("stop");
+        component.getComponent().getServiceUnitManager().stop(getName());
+    }
+
+    public void shutdown() throws JBIException {
+        checkComponentStartedOrStopped("shutDown");
+        component.getComponent().getServiceUnitManager().shutDown(getName());
+    }
+
+    public void undeploy() throws JBIException {
+        component.getComponent().getServiceUnitManager().undeploy(getName(), getRootDir().getAbsolutePath());
+    }
+
+    protected void checkComponentStarted(String task) throws DeploymentException {
+        if (!ComponentLifeCycleMBean.STARTED.equals(component.getCurrentState())) {
+            throw new DeploymentException("Component " + component.getName() + " is not started!");
+        }
+    }
+    
+    protected void checkComponentStartedOrStopped(String task) throws DeploymentException {
+        if (!ComponentLifeCycleMBean.STARTED.equals(component.getCurrentState())
+                && !ComponentLifeCycleMBean.STOPPED.equals(component.getCurrentState())) {
+            throw new DeploymentException("Component " + component.getName() + " is shut down!");
+        }
     }
 
 }

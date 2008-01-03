@@ -95,7 +95,7 @@ public class ServiceAssemblyImpl implements ServiceAssembly {
 	public void stop() throws JBIException {
         transition(State.Stopped);
 	}
-    
+
     protected void transition(State to) throws JBIException {
         // TODO: reject invalid transitions, for example Started -> Shutdown
         // we need to either automatically follow the intermediate steps, or just throw an exception

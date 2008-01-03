@@ -96,7 +96,7 @@ public class ComponentContextImpl implements ComponentContext {
 
     public synchronized void deactivateEndpoint(ServiceEndpoint endpoint) throws JBIException {
         EndpointImpl ep = (EndpointImpl) endpoint;
-        nmr.getEndpointRegistry().register(ep, null);
+        nmr.getEndpointRegistry().unregister(ep, null);
         endpoints.remove(ep);
     }
 

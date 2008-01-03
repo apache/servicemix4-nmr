@@ -76,6 +76,7 @@ public class IntegrationTest {
         ep.getTarget().setService(new QName("target"));
         eip.setEndpoints(new EIPEndpoint[] { ep });
         reg.register(eip, null);
+        eip.getLifeCycle().start();
 
         Channel channel = smx.createChannel();
         Exchange e = channel.createExchange(Pattern.InOnly);

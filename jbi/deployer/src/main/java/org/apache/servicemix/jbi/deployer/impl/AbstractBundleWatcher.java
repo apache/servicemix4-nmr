@@ -74,7 +74,7 @@ public abstract class AbstractBundleWatcher implements BundleContextAware, Initi
     }
 
     private void onBundleStarted(Bundle bundle) {
-        if (match(bundle)) {
+        if (match(bundle) && !bundles.contains(bundle)) {
             register(bundle);
             bundles.add(bundle);
         }

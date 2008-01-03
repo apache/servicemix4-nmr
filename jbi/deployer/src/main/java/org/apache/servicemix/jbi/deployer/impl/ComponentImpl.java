@@ -55,7 +55,7 @@ public class ComponentImpl implements Component {
 
     public ComponentImpl(ComponentDesc componentDesc, javax.jbi.component.Component component) {
         this.componentDesc = componentDesc;
-        this.component = component;
+        this.component = new ComponentWrapper(component);
     }
 
     public String getName() {

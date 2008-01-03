@@ -23,4 +23,9 @@ public interface Component extends ComponentLifeCycleMBean {
      */
     String getDescription();
 
+    /**
+     * Access to the JBI component
+     * @return
+     */
+    javax.jbi.component.Component getComponent();
 }

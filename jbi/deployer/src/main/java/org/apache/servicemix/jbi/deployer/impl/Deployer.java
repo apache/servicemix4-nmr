@@ -69,12 +69,15 @@ public class Deployer extends AbstractBundleWatcher {
 
     private Map<Bundle, List<ServiceRegistration>> services;
 
+    private List<Bundle> pendingBundles;
+
     private File jbiRootDir;
 
     public Deployer() throws JBIException{
         sharedLibraries = new ConcurrentHashMap<String, SharedLibraryImpl>();
         serviceAssemblies = new ConcurrentHashMap<String, ServiceAssemblyImpl>();
         services = new ConcurrentHashMap<Bundle, List<ServiceRegistration>>();
+        pendingBundles = new ArrayList<Bundle>();
         // TODO: control that using properties
         jbiRootDir = new File(System.getProperty("servicemix.base"), "jbi");
         jbiRootDir.mkdirs();
@@ -104,6 +107,9 @@ public class Deployer extends AbstractBundleWatcher {
             } else {
                 installSharedLibrary(descriptor.getSharedLibrary(), bundle);
             }
+        } catch (PendingException e) {
+            pendingBundles.add(e.getBundle());
+            LOGGER.warn("JBI artifact requirements not met. Installation pending.");
         } catch (Exception e) {
             LOGGER.error("Error handling bundle event", e);
         }
@@ -111,14 +117,29 @@ public class Deployer extends AbstractBundleWatcher {
 
     @Override
     protected void unregister(Bundle bundle) {
+        pendingBundles.remove(bundle);
         List<ServiceRegistration> registrations = services.remove(bundle);
-        for (ServiceRegistration reg : registrations) {
-            reg.unregister();
+        if (registrations != null) {
+            for (ServiceRegistration reg : registrations) {
+                try {
+                    reg.unregister();
+                } catch (IllegalStateException e) {
+                    // Ignore
+                }
+            }
         }
     }
 
     protected void installComponent(ComponentDesc componentDesc, Bundle bundle) throws Exception {
         LOGGER.debug("Bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' is a JBI component");
+        // Check requirements
+        if (componentDesc.getSharedLibraries() != null) {
+            for (SharedLibraryList sl : componentDesc.getSharedLibraries()) {
+                if (sharedLibraries.get(sl.getName()) == null) {
+                    throw new PendingException(bundle, "SharedLibrary not installed: " + sl.getName());
+                }
+            }
+        }
         // Create component class loader
         ClassLoader classLoader = createComponentClassLoader(componentDesc, bundle);
         Thread.currentThread().setContextClassLoader(classLoader);
@@ -134,17 +155,27 @@ public class Deployer extends AbstractBundleWatcher {
         LOGGER.debug("Registering JBI component");
         registerService(bundle, Component.class.getName(), component, props);
         registerService(bundle, javax.jbi.component.Component.class.getName(), component.getComponent(), props);
+        // Check pending bundles
+        checkPendingBundles();
     }
 
     protected void deployServiceAssembly(ServiceAssemblyDesc serviceAssembyDesc, Bundle bundle) throws Exception {
         LOGGER.debug("Bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' is a JBI service assembly");
+        // Check requirements
+        for (ServiceUnitDesc sud : serviceAssembyDesc.getServiceUnits()) {
+            String componentName = sud.getTarget().getComponentName();
+            Component component = getComponent(componentName);
+            if (component == null) {
+                throw new PendingException(bundle, "Component not installed: " + componentName);
+            }
+        }
         // Create the SA directory
         File saDir = new File(jbiRootDir, Long.toString(bundle.getBundleId()));
         FileUtil.deleteFile(saDir);
         FileUtil.buildDirectory(saDir);
         // Iterate each SU and deploy it
         List<ServiceUnitImpl> sus = new ArrayList<ServiceUnitImpl>();
-        for (ServiceUnitDesc sud : Arrays.asList(serviceAssembyDesc.getServiceUnits())) {
+        for (ServiceUnitDesc sud : serviceAssembyDesc.getServiceUnits()) {
             // Create directory for this SU
             File suRootDir = new File(saDir, sud.getIdentification().getName());
             suRootDir.mkdirs();
@@ -154,7 +185,7 @@ public class Deployer extends AbstractBundleWatcher {
             FileUtil.unpackArchive(zipUrl, suRootDir);
             // Find component
             String componentName = sud.getTarget().getComponentName();
-            javax.jbi.component.Component component = getComponent(componentName);
+            Component component = getComponent(componentName);
             // Create service unit object
             ServiceUnitImpl su = new ServiceUnitImpl(sud, suRootDir, component);
             su.deploy();
@@ -181,6 +212,16 @@ public class Deployer extends AbstractBundleWatcher {
         props.put(NAME, sharedLibraryDesc.getIdentification().getName());
         LOGGER.debug("Registering JBI Shared Library");
         registerService(bundle, SharedLibrary.class.getName(), sl, props);
+        // Check pending bundles
+        checkPendingBundles();
+    }
+
+    protected void checkPendingBundles() {
+        List<Bundle> pending = pendingBundles;
+        pendingBundles = new ArrayList<Bundle>();
+        for (Bundle bundle : pending) {
+            register(bundle);
+        }
     }
 
     protected void registerService(Bundle bundle, String clazz, Object service, Dictionary props) {
@@ -194,11 +235,11 @@ public class Deployer extends AbstractBundleWatcher {
         registrations.add(reg);
     }
 
-    protected javax.jbi.component.Component getComponent(String name) {
+    protected Component getComponent(String name) {
         String filter = "(" + NAME + "=" + name + ")";
         BundleContext context = getBundleContext();
-        ServiceReference reference = OsgiServiceReferenceUtils.getServiceReference(context, javax.jbi.component.Component.class.getName(), filter);
-        return (javax.jbi.component.Component) OsgiServiceUtils.getService(context, reference);
+        ServiceReference reference = OsgiServiceReferenceUtils.getServiceReference(context, Component.class.getName(), filter);
+        return (Component) OsgiServiceUtils.getService(context, reference);
     }
 
     protected ClassLoader createComponentClassLoader(ComponentDesc component, Bundle bundle) {

@@ -46,6 +46,7 @@ public class ListCommand extends JbiCommandSupport {
             for (Component component : components) {
                 io.out.println(component.getName() + " - " + component.getCurrentState() + " - " + component.getDescription());
             }
+            io.out.println();
         }
 
         List<ServiceAssembly> assemblies = getServiceAssemblies();
@@ -55,6 +56,7 @@ public class ListCommand extends JbiCommandSupport {
             for (ServiceAssembly assembly : assemblies) {
                 io.out.println(assembly.getName() + " - " + assembly.getCurrentState() + " - " + assembly.getDescription());
             }
+            io.out.println();
         }
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }

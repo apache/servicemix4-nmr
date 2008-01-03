@@ -61,13 +61,16 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<Component>  imple
      */
     public void register(Component component, Map<String, ?> properties) {
         try {
+            if (components.containsValue(component)) {
+                // Component is already registered
+                return;
+            }
             if (properties == null) {
                 properties = new HashMap<String, Object>();
             }
             String name = (String) properties.get(NAME);
             ComponentContext context = new ComponentContextImpl(nmr, component, properties);
             component.getLifeCycle().init(context);
-            component.getLifeCycle().start();
             if (name != null) {
                 components.put(name, component);
             } else {
@@ -84,16 +87,14 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<Component>  imple
      * @param component the component to unregister
      */
     public void unregister(Component component, Map<String, ?> properties) {
-        try {
-            component.getLifeCycle().stop();
-            component.getLifeCycle().shutDown();
+        //try {
             String name = properties != null ? (String) properties.get(NAME) : null;
             if (name != null) {
                 components.remove(name);
             }
-        } catch (JBIException e) {
-            throw new ServiceMixException(e);
-        }
+        //} catch (JBIException e) {
+        //    throw new ServiceMixException(e);
+        //}
     }
 
     public Component getComponent(String name) {
