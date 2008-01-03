@@ -25,13 +25,13 @@
     <parent>
         <groupId>org.apache.servicemix.jbi</groupId>
         <artifactId>jbi</artifactId>
-        <version>4.0-SNAPSHOT</version>
+        <version>1.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.apache.servicemix.jbi</groupId>
     <artifactId>org.apache.servicemix.jbi.api</artifactId>
     <packaging>bundle</packaging>
-    <version>4.0-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
     <name>ServiceMix JBI API</name>
 
     <dependencies>

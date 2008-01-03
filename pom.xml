@@ -31,7 +31,7 @@
   <groupId>org.apache.servicemix.nmr</groupId>
   <artifactId>nmr-parent</artifactId>
   <packaging>pom</packaging>
-  <version>4.0-SNAPSHOT</version>
+  <version>1.0-SNAPSHOT</version>
   <name>Apache ServiceMix NMR</name>
 
   <modules>
@@ -69,16 +69,16 @@
       <felix.compendium.version>0.9.0-r605854</felix.compendium.version>
       <felix.bundlerepository.version>1.1.0-r605854</felix.bundlerepository.version>
       <geronimo.activation.version>1.0.1</geronimo.activation.version>
-      <geronimo.servlet.version>1.1.1-SNAPSHOT</geronimo.servlet.version>
-      <geronimo.stax.version>1.0.1-SNAPSHOT</geronimo.stax.version>
-      <gshell.version>1.0-alpha-1-SNAPSHOT</gshell.version>
+      <geronimo.servlet.version>1.1.1</geronimo.servlet.version>
+      <geronimo.stax.version>1.0.1</geronimo.stax.version>
+      <gshell.version>1.0-alpha-1</gshell.version>
       <junit.version>4.4</junit.version>
       <jline.version>0.9.93</jline.version>
       <log4j.version>1.2.14</log4j.version>
       <mina.version>1.1.6-r602102</mina.version>
       <pax.logging.version>1.0-RC2</pax.logging.version>
       <smx3.version>3.2.1</smx3.version>
-      <smx.runtime.version>1.0-m1-SNAPSHOT</smx.runtime.version>
+      <smx.runtime.version>1.0-m2-SNAPSHOT</smx.runtime.version>
       <spring.osgi.version>1.0-rc1</spring.osgi.version>
       <spring.version>2.5</spring.version>
       <xbean.version>3.3-SNAPSHOT</xbean.version>
