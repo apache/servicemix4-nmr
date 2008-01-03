@@ -20,13 +20,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.jbi.JBIException;
+import javax.jbi.management.LifeCycleMBean;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
 import org.apache.servicemix.jbi.deployer.descriptor.ServiceAssemblyDesc;
-import org.osgi.framework.BundleContext;
 
 /**
  * ServiceAssembly object
@@ -66,11 +66,25 @@ public class ServiceAssemblyImpl implements ServiceAssembly {
 		return serviceUnits.toArray(new ServiceUnit[serviceUnits.size()]);
 	}
 
-	public void init() throws JBIException {
+    public String getCurrentState() {
+        switch (state) {
+            case Started:
+                return LifeCycleMBean.STARTED;
+            case Stopped:
+                return LifeCycleMBean.STOPPED;
+            case Initialized:
+            case Shutdown:
+                return LifeCycleMBean.SHUTDOWN;
+            default:
+                return LifeCycleMBean.UNKNOWN;
+        }
+    }
+
+    public void init() throws JBIException {
         transition(State.Initialized);
 	}
 
-	public void shutdown() throws JBIException {
+	public void shutDown() throws JBIException {
         transition(State.Shutdown);
 	}
 

@@ -17,12 +17,13 @@
 package org.apache.servicemix.jbi.deployer;
 
 import javax.jbi.JBIException;
+import javax.jbi.management.LifeCycleMBean;
 
 /**
  * This interface represents a JBI Service Assembly and will be registered
  * in the OSGi registry
  */
-public interface ServiceAssembly {
+public interface ServiceAssembly extends LifeCycleMBean {
 
     /**
      * Retrieves the name of this service assembly
@@ -41,13 +42,5 @@ public interface ServiceAssembly {
      * @return
      */
     ServiceUnit[] getServiceUnits();
-
-	void init() throws JBIException;
-
-	void start() throws JBIException;
-
-	void stop() throws JBIException;
-
-	void shutdown() throws JBIException;
 
 }

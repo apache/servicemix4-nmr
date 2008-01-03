@@ -14,36 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicemix.jbi.deployer;
+package org.apache.servicemix.nmr.commands;
+
+import org.apache.geronimo.gshell.support.OsgiCommandSupport;
 
 /**
- * This interface represents a JBI Shared Library and will be registered in
- * the OSGi registry
+ * Base class for NMR related commands
  */
-public interface SharedLibrary {
-
-    /**
-     * Retrieves the name of this shared library
-     * @return the name
-     */
-    String getName();
-
-    /**
-     * Retrieves the description of this shared library
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Retrieves the version of this shared library
-     * @return the version
-     */
-    String getVersion();
-
-    /**
-     * Create a classloader for this shared library
-     * @return a new classloader
-     */
-    //ClassLoader createClassLoader();
-    
+public abstract class NmrCommandSupport extends OsgiCommandSupport {
 }

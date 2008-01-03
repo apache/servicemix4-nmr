@@ -14,36 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicemix.jbi.deployer;
+package org.apache.servicemix.jbi.commands;
+
+import javax.jbi.JBIException;
+import javax.jbi.management.LifeCycleMBean;
 
 /**
- * This interface represents a JBI Shared Library and will be registered in
- * the OSGi registry
+ * Stop a JBI artifact
  */
-public interface SharedLibrary {
+@org.apache.geronimo.gshell.command.annotation.CommandComponent(id = "jbi:stop", description = "Stop a JBI artifact")
+public class StopCommand extends JbiLifeCycleCommandSupport {
 
-    /**
-     * Retrieves the name of this shared library
-     * @return the name
-     */
-    String getName();
-
-    /**
-     * Retrieves the description of this shared library
-     * @return the description
-     */
-    String getDescription();
-
-    /**
-     * Retrieves the version of this shared library
-     * @return the version
-     */
-    String getVersion();
-
-    /**
-     * Create a classloader for this shared library
-     * @return a new classloader
-     */
-    //ClassLoader createClassLoader();
-    
+    protected void handle(LifeCycleMBean artifact) throws JBIException {
+        artifact.stop();
+    }
 }
