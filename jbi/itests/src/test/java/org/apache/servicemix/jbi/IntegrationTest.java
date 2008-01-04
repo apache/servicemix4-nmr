@@ -67,6 +67,8 @@ public class IntegrationTest extends AbstractIntegrationTest {
             getBundle("org.apache.servicemix.jbi", "org.apache.servicemix.jbi.deployer"),
             getBundle("org.apache.servicemix.jbi", "org.apache.servicemix.jbi.offline"),
             getBundle("org.apache.servicemix.jbi", "org.apache.servicemix.jbi.osgi"),
+            getBundle("org.apache.servicemix.runtime", "org.apache.servicemix.runtime.filemonitor"),
+            getBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.ant-1.7.0"),
 		};
 	}
 

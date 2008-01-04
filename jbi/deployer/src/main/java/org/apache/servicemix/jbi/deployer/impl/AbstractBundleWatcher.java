@@ -19,6 +19,7 @@ package org.apache.servicemix.jbi.deployer.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.servicemix.runtime.filemonitor.DeploymentListener;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -44,6 +45,9 @@ public abstract class AbstractBundleWatcher implements BundleContextAware, Initi
     }
 
     public void afterPropertiesSet() throws Exception {
+    	
+    	bundleContext.registerService(DeploymentListener.class.getName(), new JBIDeploymentListener(), null);
+    	
         bundleContext.addBundleListener(bundleListener = new SynchronousBundleListener() {
             public void bundleChanged(BundleEvent event) {
                 switch (event.getType()) {

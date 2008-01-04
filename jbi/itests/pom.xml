@@ -63,6 +63,23 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>org.apache.servicemix.runtime</groupId>
+            <artifactId>org.apache.servicemix.runtime.filemonitor</artifactId>
+            <version>${smx.runtime.version}</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>org.osgi.core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.ant-${ant.version}</artifactId>
+            <version>${smx.runtime.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>
             <artifactId>org.apache.servicemix.nmr.api</artifactId>
             <version>${project.version}</version>
