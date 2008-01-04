@@ -16,11 +16,12 @@
  */
 package org.apache.servicemix.nmr.api;
 
-import org.apache.servicemix.nmr.api.service.ServiceRegistry;
+import java.util.List;
+import java.util.Map;
 
 import org.w3c.dom.Document;
 
-import java.util.Map;
+import org.apache.servicemix.nmr.api.service.ServiceRegistry;
 
 /**
  * The Registry is used to register endpoints, unregister them, query endpoints
@@ -47,8 +48,17 @@ public interface EndpointRegistry extends ServiceRegistry<Endpoint> {
      * In an OSGi world, this would be performed automatically by a ServiceTracker.
      *
      * @param endpoint the endpoint to unregister
+     * @param properties the metadata associated with this endpoint
      */
     void unregister(Endpoint endpoint, Map<String, ?> properties);
+
+    /**
+     * Query the registry for a list of registered endpoints.
+     *
+     * @param properties filtering data
+     * @return the list of endpoints matching the filters
+     */
+    List<Endpoint> query(Map<String, ?> properties);
 
     /**
      * From a given amount of metadata which could include interface name, service name
@@ -56,6 +66,8 @@ public interface EndpointRegistry extends ServiceRegistry<Endpoint> {
      * for invocations.
      *
      * This could return actual endpoints, or a dynamic proxy to a number of endpoints
+     *
+     * @param properties filtering data
      */
     Reference lookup(Map<String, ?> properties);
 

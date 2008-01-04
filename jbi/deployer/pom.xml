@@ -90,6 +90,7 @@
                         <Private-Package>org.apache.xbean*</Private-Package>
                         <Export-Package>${pom.artifactId}*</Export-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
+                        <Spring-Context>*;publish-context:=false;create-asynchronously:=false</Spring-Context>
                     </instructions>
                 </configuration>
             </plugin>

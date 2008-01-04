@@ -45,9 +45,6 @@ public abstract class AbstractBundleWatcher implements BundleContextAware, Initi
     }
 
     public void afterPropertiesSet() throws Exception {
-    	
-    	bundleContext.registerService(DeploymentListener.class.getName(), new JBIDeploymentListener(), null);
-    	
         bundleContext.addBundleListener(bundleListener = new SynchronousBundleListener() {
             public void bundleChanged(BundleEvent event) {
                 switch (event.getType()) {

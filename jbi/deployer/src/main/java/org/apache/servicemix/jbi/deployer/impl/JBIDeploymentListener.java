@@ -41,16 +41,25 @@ public class JBIDeploymentListener implements DeploymentListener {
 	private static final Log Logger = LogFactory.getLog(JBIDeploymentListener.class);
 	
 	public boolean canHandle(File artifact) {
-		if (!artifact.getName().endsWith(".zip")) {
-			return false;
-		}
 		try {
+            // Accept jars and zips
+            if (!artifact.getName().endsWith(".zip") &&
+                !artifact.getName().endsWith(".jar")) {
+                return false;
+            }
 			JarFile jar = new JarFile(artifact);
 			JarEntry entry = jar.getJarEntry("META-INF/jbi.xml");
-			if (entry == null) {
+            // Only handle JBI artifacts
+            if (entry == null) {
 				return false;
 			}
-			return true;
+            // Only handle non OSGi bundles
+            Manifest m = jar.getManifest();
+            if (m.getMainAttributes().getValue(new Attributes.Name("Bundle-SymbolicName")) != null &&
+                m.getMainAttributes().getValue(new Attributes.Name("Bundle-Version")) != null) {
+                return false;
+            }
+            return true;
 		} catch (Exception e) {
 			return false;
 		}

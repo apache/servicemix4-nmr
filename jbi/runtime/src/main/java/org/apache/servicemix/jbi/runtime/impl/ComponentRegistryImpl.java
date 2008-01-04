@@ -16,8 +16,8 @@
  */
 package org.apache.servicemix.jbi.runtime.impl;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jbi.JBIException;
@@ -25,6 +25,7 @@ import javax.jbi.component.Component;
 import javax.jbi.component.ComponentContext;
 
 import org.apache.servicemix.jbi.runtime.ComponentRegistry;
+import org.apache.servicemix.jbi.runtime.DocumentRepository;
 import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.nmr.api.ServiceMixException;
 import org.apache.servicemix.nmr.core.ServiceRegistryImpl;
@@ -39,6 +40,7 @@ import org.apache.servicemix.nmr.core.ServiceRegistryImpl;
 public class ComponentRegistryImpl extends ServiceRegistryImpl<Component>  implements ComponentRegistry {
 
     private NMR nmr;
+    private DocumentRepository documentRepository;
     private Map<String, Component> components;
 
     public ComponentRegistryImpl() {
@@ -51,6 +53,14 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<Component>  imple
 
     public void setNmr(NMR nmr) {
         this.nmr = nmr;
+    }
+
+    public DocumentRepository getDocumentRepository() {
+        return documentRepository;
+    }
+
+    public void setDocumentRepository(DocumentRepository documentRepository) {
+        this.documentRepository = documentRepository;
     }
 
     /**
@@ -69,7 +79,7 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<Component>  imple
                 properties = new HashMap<String, Object>();
             }
             String name = (String) properties.get(NAME);
-            ComponentContext context = new ComponentContextImpl(nmr, component, properties);
+            ComponentContext context = new ComponentContextImpl(nmr, documentRepository, component, properties);
             component.getLifeCycle().init(context);
             if (name != null) {
                 components.put(name, component);

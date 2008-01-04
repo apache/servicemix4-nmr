@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -108,8 +109,9 @@ public class EndpointRegistryImpl implements EndpointRegistry {
      *
      * @return the registered services
      */
+    @SuppressWarnings("unchecked")
     public Set<Endpoint> getServices() {
-        return null;  // TODO
+        return (Set<Endpoint>) (Set) registry.getServices();
     }
 
     /**
@@ -128,6 +130,18 @@ public class EndpointRegistryImpl implements EndpointRegistry {
         return registry.getProperties(wrapper);
     }
 
+
+    /**
+     * Query the registry for a list of registered endpoints.
+     *
+     * @param properties filtering data
+     * @return the list of endpoints matching the filters
+     */
+    @SuppressWarnings("unchecked")
+    public List<Endpoint> query(Map<String, ?> properties) {
+        return (List<Endpoint>) (List) internalQuery(properties);
+    }
+
     /**
      * From a given amount of metadata which could include interface name, service name
      * policy data and so forth, choose an available endpoint reference to use
@@ -136,19 +150,7 @@ public class EndpointRegistryImpl implements EndpointRegistry {
      * This could return actual endpoints, or a dynamic proxy to a number of endpoints
      */
     public Reference lookup(Map<String, ?> properties) {
-        List<InternalEndpoint> endpoints = new ArrayList<InternalEndpoint>();
-        for (InternalEndpoint e : registry.getServices()) {
-            boolean match = true;
-            for (String name : properties.keySet()) {
-                if (!properties.get(name).equals(registry.getProperties(e).get(name))) {
-                    match = false;
-                    break;
-                }
-            }
-            if (match) {
-                endpoints.add(e);
-            }
-        }
+        List<InternalEndpoint> endpoints = internalQuery(properties);
         if (endpoints.isEmpty()) {
             throw new ServiceMixException("No matching endpoints");
         }
@@ -165,6 +167,23 @@ public class EndpointRegistryImpl implements EndpointRegistry {
     public synchronized Reference lookup(Document xml) {
         // TODO: implement
         return null;
+    }
+
+    protected List<InternalEndpoint> internalQuery(Map<String, ?> properties) {
+        List<InternalEndpoint> endpoints = new ArrayList<InternalEndpoint>();
+        for (InternalEndpoint e : registry.getServices()) {
+            boolean match = true;
+            for (String name : properties.keySet()) {
+                if (!properties.get(name).equals(registry.getProperties(e).get(name))) {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) {
+                endpoints.add(e);
+            }
+        }
+        return endpoints;
     }
 
 }

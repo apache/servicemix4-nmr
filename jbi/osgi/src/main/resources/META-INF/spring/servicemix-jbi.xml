@@ -32,6 +32,11 @@
     <!-- JBI Component Registry -->
     <bean id="componentRegistry" class="org.apache.servicemix.jbi.runtime.impl.ComponentRegistryImpl">
         <property name="nmr" ref="nmr" />
+        <property name="documentRepository" ref="documentRepository" />
+    </bean>
+
+    <!-- URL handler for in memory documents -->
+    <bean id="documentRepository" class="org.apache.servicemix.jbi.runtime.impl.DocumentRepositoryImpl">
     </bean>
 
     <!-- Service tracker for JBI components -->
@@ -50,6 +55,17 @@
         <osgi:interfaces>
             <value>org.apache.servicemix.jbi.runtime.ComponentRegistry</value>
         </osgi:interfaces>
+    </osgi:service>
+
+    <!-- Expose the Document Registry / URL Handler -->
+    <osgi:service ref="documentRepository" >
+        <osgi:interfaces>
+            <value>org.apache.servicemix.jbi.runtime.DocumentRepository</value>
+            <value>org.osgi.service.url.URLStreamHandlerService</value>
+        </osgi:interfaces>
+        <osgi:service-properties>
+            <entry key="url.handler.protocol" value="document" />       
+        </osgi:service-properties>
     </osgi:service>
 
 </beans>

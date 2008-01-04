@@ -177,7 +177,8 @@ public class DeliveryChannelImpl implements DeliveryChannel {
         if (exchange.getTarget() == null) {
             Map<String, Object> props = new HashMap<String, Object>();
             if (messageExchange.getEndpoint() != null) {
-                // TODO: handle explicit addressing
+                props.put(Endpoint.SERVICE_NAME, messageExchange.getEndpoint().getServiceName());
+                props.put(Endpoint.ENDPOINT_NAME, messageExchange.getEndpoint().getEndpointName());
             } else {
                 QName serviceName = messageExchange.getService();
                 if (serviceName != null) {

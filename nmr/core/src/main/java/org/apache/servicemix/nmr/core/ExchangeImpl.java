@@ -231,7 +231,7 @@ public class ExchangeImpl implements InternalExchange {
     }
     
     public Message getIn(boolean lazyCreate) {
-        if (this.in == null) {
+        if (this.in == null && lazyCreate) {
             this.in = createMessage();
         }
         return this.in;
@@ -252,7 +252,7 @@ public class ExchangeImpl implements InternalExchange {
     }
 
     public Message getOut(boolean lazyCreate) {
-        if (this.out == null) {
+        if (this.out == null && lazyCreate) {
             if (this.pattern != Pattern.InOnly && this.pattern != Pattern.RobustInOnly) {
                 this.out = createMessage();
             }
@@ -274,7 +274,7 @@ public class ExchangeImpl implements InternalExchange {
     }
 
     public Message getFault(boolean lazyCreate) {
-        if (this.fault == null) {
+        if (this.fault == null && lazyCreate) {
             if (this.pattern != Pattern.InOnly) {
                 this.fault = createMessage();
             }

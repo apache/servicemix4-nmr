@@ -33,4 +33,9 @@
     <bean id="deployer" class="org.apache.servicemix.jbi.deployer.impl.Deployer">
     </bean>
 
+    <!-- Deployment listener -->
+    <bean id="listener" class="org.apache.servicemix.jbi.deployer.impl.JBIDeploymentListener" />
+
+    <osgi:service ref="listener" interface="org.apache.servicemix.runtime.filemonitor.DeploymentListener" />
+
 </beans>

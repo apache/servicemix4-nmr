@@ -79,7 +79,7 @@ public class Deployer extends AbstractBundleWatcher {
         services = new ConcurrentHashMap<Bundle, List<ServiceRegistration>>();
         pendingBundles = new ArrayList<Bundle>();
         // TODO: control that using properties
-        jbiRootDir = new File(System.getProperty("servicemix.base"), "jbi");
+        jbiRootDir = new File(System.getProperty("servicemix.base"), "data/jbi");
         jbiRootDir.mkdirs();
     }
 

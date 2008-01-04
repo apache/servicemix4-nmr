@@ -38,6 +38,10 @@ public class InternalEndpointWrapper implements InternalEndpoint {
         return channel;
     }
 
+    public Endpoint getEndpoint() {
+        return endpoint;
+    }
+
     /**
      * Set the channel so that the endpoint can send exchanges back
      * when they are processed or act as a consumer itself.
