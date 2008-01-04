@@ -35,6 +35,7 @@
   <name>Apache ServiceMix NMR</name>
 
   <modules>
+    <module>bundles</module>
     <module>nmr</module>
     <module>jbi</module>
   </modules>
@@ -81,6 +82,7 @@
       <smx.runtime.version>1.0-m2-SNAPSHOT</smx.runtime.version>
       <spring.osgi.version>1.0-rc1</spring.osgi.version>
       <spring.version>2.5</spring.version>
+      <woodstox.version>3.2.3</woodstox.version>
       <xbean.version>3.3-SNAPSHOT</xbean.version>
       <xstream.version>1.2.2</xstream.version>
   </properties>
