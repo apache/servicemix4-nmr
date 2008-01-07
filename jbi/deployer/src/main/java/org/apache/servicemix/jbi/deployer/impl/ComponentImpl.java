@@ -150,8 +150,14 @@ public class ComponentImpl implements Component {
         }
 
         public void init(ComponentContext context) throws JBIException {
-            lifeCycle.init(context);
-            state = State.Initialized;
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            try {
+                Thread.currentThread().setContextClassLoader(lifeCycle.getClass().getClassLoader());
+                lifeCycle.init(context);
+                state = State.Initialized;
+            } finally {
+                Thread.currentThread().setContextClassLoader(cl);
+            }
         }
 
         public void shutDown() throws JBIException {

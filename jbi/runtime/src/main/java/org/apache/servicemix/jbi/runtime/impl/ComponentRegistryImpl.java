@@ -70,7 +70,9 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<Component>  imple
      * @param properties the associated metadata
      */
     public void register(Component component, Map<String, ?> properties) {
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
         try {
+            Thread.currentThread().setContextClassLoader(component.getClass().getClassLoader());
             if (components.containsValue(component)) {
                 // Component is already registered
                 return;
@@ -88,6 +90,8 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<Component>  imple
             }
         } catch (JBIException e) {
             throw new ServiceMixException(e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(cl);
         }
     }
 

@@ -96,7 +96,9 @@ public class Deployer extends AbstractBundleWatcher {
 
     @Override
     protected void register(Bundle bundle) {
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
         try {
+            Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
             URL url = bundle.getResource(JBI_DESCRIPTOR);
             Descriptor descriptor = DescriptorFactory.buildDescriptor(url);
             DescriptorFactory.checkDescriptor(descriptor);
@@ -112,6 +114,8 @@ public class Deployer extends AbstractBundleWatcher {
             LOGGER.warn("JBI artifact requirements not met. Installation pending.");
         } catch (Exception e) {
             LOGGER.error("Error handling bundle event", e);
+        } finally {
+            Thread.currentThread().setContextClassLoader(cl);
         }
     }
 
