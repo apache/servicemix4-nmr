@@ -106,8 +106,10 @@ public class Deployer extends AbstractBundleWatcher {
                 installComponent(descriptor.getComponent(), bundle);
             } else if (descriptor.getServiceAssembly() != null) {
                 deployServiceAssembly(descriptor.getServiceAssembly(), bundle);
-            } else {
+            } else if (descriptor.getSharedLibrary() != null) {
                 installSharedLibrary(descriptor.getSharedLibrary(), bundle);
+            } else {
+                throw new IllegalStateException("Unrecognized JBI descriptor: " + url);
             }
         } catch (PendingException e) {
             pendingBundles.add(e.getBundle());

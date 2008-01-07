@@ -172,6 +172,16 @@
             <artifactId>wsdl-first-sa</artifactId>
             <version>${smx3.version}</version>
             <type>zip</type>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.servicemix.samples.wsdl-first</groupId>
+                    <artifactId>wsdl-first-jsr181-su</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.servicemix.samples.wsdl-first</groupId>
+                    <artifactId>wsdl-first-http-su</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
