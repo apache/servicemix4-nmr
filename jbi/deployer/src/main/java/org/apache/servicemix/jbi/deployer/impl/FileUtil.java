@@ -25,11 +25,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
-import java.util.Enumeration;
+import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.jar.JarInputStream;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
+
+import org.apache.servicemix.jbi.deployer.descriptor.Descriptor;
+import org.apache.servicemix.jbi.deployer.descriptor.DescriptorFactory;
 
 /**
  * File utilities
@@ -71,7 +77,6 @@ public final class FileUtil {
             out.write(buffer, 0, len);
             len = in.read(buffer);
         }
-        out.close();
     }
 
     /**
@@ -132,7 +137,9 @@ public final class FileUtil {
                 throw new IOException("Could not create directory: " + file.getParentFile());
             }
             if (!entry.isDirectory()) {
-                copyInputStream(zip, new BufferedOutputStream(new FileOutputStream(file)));
+            	BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file)); 
+                copyInputStream(zip, bos);
+                bos.close();
             } else {
                 if (!buildDirectory(file)) {
                     throw new IOException("Could not create directory: " + file);

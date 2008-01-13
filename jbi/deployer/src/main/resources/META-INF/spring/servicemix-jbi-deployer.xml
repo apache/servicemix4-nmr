@@ -34,7 +34,16 @@
     </bean>
 
     <!-- Deployment listener -->
-    <bean id="listener" class="org.apache.servicemix.jbi.deployer.impl.JBIDeploymentListener" />
+    <bean id="listener" class="org.apache.servicemix.jbi.deployer.handler.JBIDeploymentListener" />
+    
+    <!-- JBI Handler -->
+    <bean id="jbiHandler" class="org.apache.servicemix.jbi.deployer.handler.URLHandler" />
+
+    <osgi:service ref="jbiHandler" interface="org.osgi.service.url.URLStreamHandlerService">
+    	<osgi:service-properties>
+            <entry key="url.handler.protocol" value="jbi"/>
+        </osgi:service-properties>
+    </osgi:service>
 
     <osgi:service ref="listener" interface="org.apache.servicemix.runtime.filemonitor.DeploymentListener" />
 
