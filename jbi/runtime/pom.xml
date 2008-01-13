@@ -63,6 +63,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>${commons.logging.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.apache.servicemix</groupId>
             <artifactId>servicemix-common</artifactId>
 		    <version>${smx3.version}</version>

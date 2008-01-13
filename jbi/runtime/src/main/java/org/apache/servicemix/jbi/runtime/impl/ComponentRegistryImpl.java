@@ -31,11 +31,7 @@ import org.apache.servicemix.nmr.api.ServiceMixException;
 import org.apache.servicemix.nmr.core.ServiceRegistryImpl;
 
 /**
- * Created by IntelliJ IDEA.
- * User: gnodet
- * Date: Oct 4, 2007
- * Time: 10:30:30 PM
- * To change this template use File | Settings | File Templates.
+ * Registry of JBI components objects
  */
 public class ComponentRegistryImpl extends ServiceRegistryImpl<Component>  implements ComponentRegistry {
 
@@ -81,7 +77,7 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<Component>  imple
                 properties = new HashMap<String, Object>();
             }
             String name = (String) properties.get(NAME);
-            ComponentContext context = new ComponentContextImpl(nmr, documentRepository, component, properties);
+            ComponentContext context = new ComponentContextImpl(nmr, this, documentRepository, component, properties);
             component.getLifeCycle().init(context);
             if (name != null) {
                 components.put(name, component);
@@ -101,14 +97,10 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<Component>  imple
      * @param component the component to unregister
      */
     public void unregister(Component component, Map<String, ?> properties) {
-        //try {
-            String name = properties != null ? (String) properties.get(NAME) : null;
-            if (name != null) {
-                components.remove(name);
-            }
-        //} catch (JBIException e) {
-        //    throw new ServiceMixException(e);
-        //}
+        String name = properties != null ? (String) properties.get(NAME) : null;
+        if (name != null) {
+            components.remove(name);
+        }
     }
 
     public Component getComponent(String name) {

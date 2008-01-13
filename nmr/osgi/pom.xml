@@ -83,7 +83,7 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Import-Package>org.apache.servicemix.nmr.api,org.apache.servicemix.nmr.core</Import-Package>
-                        <Spring-Context>*;publish-context:=false;create-asynchronously:=false</Spring-Context>
+                        <Spring-Context>*;publish-context:=false;create-asynchronously:=true</Spring-Context>
                     </instructions>
                 </configuration>
             </plugin>

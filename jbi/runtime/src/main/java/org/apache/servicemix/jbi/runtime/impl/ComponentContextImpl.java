@@ -38,29 +38,36 @@ import javax.jbi.servicedesc.ServiceEndpoint;
 import javax.management.MBeanServer;
 import javax.naming.InitialContext;
 import javax.xml.namespace.QName;
-import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.runtime.ComponentRegistry;
 import org.apache.servicemix.jbi.runtime.DocumentRepository;
+import org.apache.servicemix.jbi.runtime.impl.utils.DOMUtil;
+import org.apache.servicemix.jbi.runtime.impl.utils.URIResolver;
+import org.apache.servicemix.jbi.runtime.impl.utils.WSAddressingConstants;
 import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.NMR;
 
 /**
- * Created by IntelliJ IDEA.
- * User: gnodet
- * Date: Oct 4, 2007
- * Time: 10:36:40 PM
- * To change this template use File | Settings | File Templates.
+ * The ComponentContext implementation
  */
 public class ComponentContextImpl implements ComponentContext {
 
     public int DEFAULT_QUEUE_CAPACITY = 100;
 
+    private static final Log LOG = LogFactory.getLog(ComponentContextImpl.class);
+
     private NMR nmr;
+    private ComponentRegistry componentRegistry;
     private DocumentRepository documentRepository;
     private Component component;
     private Map<String,?> properties;
@@ -70,8 +77,9 @@ public class ComponentContextImpl implements ComponentContext {
     private EndpointImpl componentEndpoint;
     private String name;
 
-    public ComponentContextImpl(NMR nmr, DocumentRepository documentRepository, Component component, Map<String,?> properties) {
+    public ComponentContextImpl(NMR nmr, ComponentRegistry componentRegistry, DocumentRepository documentRepository, Component component, Map<String,?> properties) {
         this.nmr = nmr;
+        this.componentRegistry = componentRegistry;
         this.documentRepository = documentRepository;
         this.component = component;
         this.properties = properties;
@@ -89,22 +97,26 @@ public class ComponentContextImpl implements ComponentContext {
     }
 
     public synchronized ServiceEndpoint activateEndpoint(QName serviceName, String endpointName) throws JBIException {
-        EndpointImpl endpoint = new EndpointImpl();
-        endpoint.setQueue(queue);
-        endpoint.setServiceName(serviceName);
-        endpoint.setEndpointName(endpointName);
-        Map<String, Object> props = new HashMap<String, Object>();
-        props.put(Endpoint.NAME, serviceName.toString() + ":" + endpointName);
-        props.put(Endpoint.SERVICE_NAME, serviceName);
-        props.put(Endpoint.ENDPOINT_NAME, endpointName);
-        Document doc = component.getServiceDescription(endpoint);
-        if (doc != null) {
-            String data = XmlUtils.toString(doc);
-            String url = documentRepository.register(data.getBytes());
-            props.put(Endpoint.WSDL_URL, url);
+        try {
+            EndpointImpl endpoint = new EndpointImpl();
+            endpoint.setQueue(queue);
+            endpoint.setServiceName(serviceName);
+            endpoint.setEndpointName(endpointName);
+            Map<String, Object> props = new HashMap<String, Object>();
+            props.put(Endpoint.NAME, serviceName.toString() + ":" + endpointName);
+            props.put(Endpoint.SERVICE_NAME, serviceName);
+            props.put(Endpoint.ENDPOINT_NAME, endpointName);
+            Document doc = component.getServiceDescription(endpoint);
+            if (doc != null) {
+                String data = DOMUtil.asXML(doc);
+                String url = documentRepository.register(data.getBytes());
+                props.put(Endpoint.WSDL_URL, url);
+            }
+            nmr.getEndpointRegistry().register(endpoint,  props);
+            return new SimpleServiceEndpoint(props, endpoint);
+        } catch (TransformerException e) {
+            throw new JBIException(e);
         }
-        nmr.getEndpointRegistry().register(endpoint,  props);
-        return new SimpleServiceEndpoint(props, endpoint);
     }
 
     public synchronized void deactivateEndpoint(ServiceEndpoint endpoint) throws JBIException {
@@ -122,7 +134,17 @@ public class ComponentContextImpl implements ComponentContext {
     }
 
     public ServiceEndpoint resolveEndpointReference(DocumentFragment epr) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        for (Component component : componentRegistry.getServices()) {
+            ServiceEndpoint se = component.resolveEndpointReference(epr);
+            if (se != null) {
+                return se;
+            }
+        }
+        ServiceEndpoint se = resolveInternalEPR(epr);
+        if (se != null) {
+            return se;
+        }
+        return resolveStandardEPR(epr);
     }
 
     public String getComponentName() {
@@ -153,7 +175,7 @@ public class ComponentContextImpl implements ComponentContext {
                 InputStream is = null;
                 try {
                     is = new URL(url).openStream();
-                    return XmlUtils.parseDocument(is);
+                    return DOMUtil.parseDocument(is);
                 } catch (Exception e) {
                     if (is != null) {
                         try {
@@ -229,6 +251,136 @@ public class ComponentContextImpl implements ComponentContext {
     public String getWorkspaceRoot() {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    /**
+     * <p>
+     * Resolve an internal JBI EPR conforming to the format defined in the JBI specification.
+     * </p>
+     *
+     * <p>The EPR would look like:
+     * <pre>
+     * <jbi:end-point-reference xmlns:jbi="http://java.sun.com/xml/ns/jbi/end-point-reference"
+     *      jbi:end-point-name="endpointName"
+     *      jbi:service-name="foo:serviceName"
+     *      xmlns:foo="urn:FooNamespace"/>
+     * </pre>
+     * </p>
+     *
+     * @author Maciej Szefler m s z e f l e r @ g m a i l . c o m
+     * @param epr EPR fragment
+     * @return internal service endpoint corresponding to the EPR, or <code>null</code>
+     *         if the EPR is not an internal EPR or if the EPR cannot be resolved
+     */
+    public ServiceEndpoint resolveInternalEPR(DocumentFragment epr) {
+        if (epr == null) {
+            throw new NullPointerException("resolveInternalEPR(epr) called with null epr.");
+        }
+        NodeList nl = epr.getChildNodes();
+        for (int i = 0; i < nl.getLength(); ++i) {
+            Node n = nl.item(i);
+            if (n.getNodeType() != Node.ELEMENT_NODE) {
+                continue;
+            }
+            Element el = (Element) n;
+            // Namespace should be "http://java.sun.com/jbi/end-point-reference"
+            if (el.getNamespaceURI() == null || !el.getNamespaceURI().equals("http://java.sun.com/jbi/end-point-reference")) {
+                continue;
+            }
+            if (el.getLocalName() == null || !el.getLocalName().equals("end-point-reference")) {
+                continue;
+            }
+            String serviceName = el.getAttributeNS(el.getNamespaceURI(), "service-name");
+            // Now the DOM pain-in-the-you-know-what: we need to come up with QName for this;
+            // fortunately, there is only one place where the xmlns:xxx attribute could be, on
+            // the end-point-reference element!
+            QName serviceQName = DOMUtil.createQName(el, serviceName);
+            String endpointName = el.getAttributeNS(el.getNamespaceURI(), "end-point-name");
+            return getEndpoint(serviceQName, endpointName);
+        }
+        return null;
+    }
+
+    /**
+     * Resolve a standard EPR understood by ServiceMix container.
+     * Currently, the supported syntax is the WSA one, the address uri
+     * being parsed with the following possiblities:
+     *    jbi:endpoint:service-namespace/service-name/endpoint
+     *    jbi:endpoint:service-namespace:service-name:endpoint
+     *
+     * The full EPR will look like:
+     *   <epr xmlns:wsa="http://www.w3.org/2005/08/addressing">
+     *     <wsa:Address>jbi:endpoint:http://foo.bar.com/service/endpoint</wsa:Address>
+     *   </epr>
+     *
+     * BCs should also be able to resolve such EPR but using their own URI parsing,
+     * for example:
+     *   <epr xmlns:wsa="http://www.w3.org/2005/08/addressing">
+     *     <wsa:Address>http://foo.bar.com/myService?http.soap=true</wsa:Address>
+     *   </epr>
+     *
+     * or
+     *   <epr xmlns:wsa="http://www.w3.org/2005/08/addressing">
+     *     <wsa:Address>jms://activemq/queue/FOO.BAR?persistent=true</wsa:Address>
+     *   </epr>
+     *
+     * Note that the separator should be same as the one used in the namespace
+     * depending on the namespace:
+     *     http://foo.bar.com  => '/'
+     *     urn:foo:bar         => ':'
+     *
+     * The syntax is the same as the one that can be used to specifiy a target
+     * for a JBI exchange with the restriction that it only allows the
+     * endpoint subprotocol to be used.
+     *
+     * @param epr the xml fragment to resolve
+     * @return the resolved endpoint or <code>null</code>
+     */
+    public ServiceEndpoint resolveStandardEPR(DocumentFragment epr) {
+        try {
+            NodeList children = epr.getChildNodes();
+            for (int i = 0; i < children.getLength(); ++i) {
+                Node n = children.item(i);
+                if (n.getNodeType() != Node.ELEMENT_NODE) {
+                    continue;
+                }
+                Element elem = (Element) n;
+                String[] namespaces = new String[] { WSAddressingConstants.WSA_NAMESPACE_200508,
+                                                     WSAddressingConstants.WSA_NAMESPACE_200408,
+                                                     WSAddressingConstants.WSA_NAMESPACE_200403,
+                                                     WSAddressingConstants.WSA_NAMESPACE_200303 };
+                NodeList nl = null;
+                for (String ns : namespaces) {
+                    NodeList tnl = elem.getElementsByTagNameNS(ns, WSAddressingConstants.EL_ADDRESS);
+                    if (tnl.getLength() == 1) {
+                        nl = tnl;
+                        break;
+                    }
+                }
+                if (nl != null) {
+                    Element address = (Element) nl.item(0);
+                    String uri = DOMUtil.getElementText(address);
+                    if (uri != null) {
+                        uri = uri.trim();
+                        if (uri.startsWith("endpoint:")) {
+                            uri = uri.substring("endpoint:".length());
+                            String[] parts = URIResolver.split3(uri);
+                            return getEndpoint(new QName(parts[0], parts[1]), parts[2]);
+                        } else if (uri.startsWith("service:")) {
+                            uri = uri.substring("service:".length());
+                            String[] parts = URIResolver.split2(uri);
+                            return getEndpoint(new QName(parts[0], parts[1]), parts[1]);
+                        }
+                    }
+                    // TODO should we support interface: and operation: here?
+                }
+            }
+        } catch (Exception e) {
+            LOG.debug("Unable to resolve EPR: " + e);
+        }
+        return null;
+    }
+
+    
 
     protected static class SimpleServiceEndpoint implements ServiceEndpoint {
 

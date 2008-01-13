@@ -55,7 +55,7 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Import-Package>org.apache.servicemix.jbi.runtime,org.apache.servicemix.jbi.runtime.impl</Import-Package>
-                        <Spring-Context>*;publish-context:=false;create-asynchronously:=false</Spring-Context>
+                        <Spring-Context>*;publish-context:=false;create-asynchronously:=true</Spring-Context>
                     </instructions>
                 </configuration>
             </plugin>
