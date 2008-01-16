@@ -36,6 +36,7 @@
 
   <modules>
     <module>bundles</module>
+    <module>preferences</module>
     <module>nmr</module>
     <module>jbi</module>
   </modules>
