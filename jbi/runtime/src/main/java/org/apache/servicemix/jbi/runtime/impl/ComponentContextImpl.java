@@ -126,11 +126,11 @@ public class ComponentContextImpl implements ComponentContext {
     }
 
     public void registerExternalEndpoint(ServiceEndpoint externalEndpoint) throws JBIException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        // TODO
     }
 
     public void deregisterExternalEndpoint(ServiceEndpoint externalEndpoint) throws JBIException {
-        //To change body of implemented methods use File | Settings | File Templates.
+        // TODO
     }
 
     public ServiceEndpoint resolveEndpointReference(DocumentFragment epr) {
@@ -187,7 +187,7 @@ public class ComponentContextImpl implements ComponentContext {
                 }
             }
         }
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     public ServiceEndpoint[] getEndpoints(QName interfaceName) {

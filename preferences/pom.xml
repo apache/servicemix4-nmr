@@ -63,9 +63,8 @@
                     <instructions>
                         <Bundle-Name>${pom.name}</Bundle-Name>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>
-                            ${pom.artifactId},${pom.artifactId}.service,${pom.artifactId}.event,${pom.artifactId}.internal
-                        </Export-Package>
+                        <Private-Package>org.apache.servicemix.preferences</Private-Package>
+                        <Bundle-Activator>org.apache.servicemix.preferences.Activator</Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>
