@@ -16,15 +16,25 @@
  */
 package org.apache.servicemix.jbi;
 
+import java.io.File;
 import java.util.Properties;
 
 import javax.jbi.component.Component;
 
-import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.runtime.testing.support.AbstractIntegrationTest;
 
 public class IntegrationTest extends AbstractIntegrationTest {
+
+    static {
+        File f = new File("target/smx4");
+        f.mkdirs();
+        System.setProperty("servicemix.home", f.getAbsolutePath());
+        System.setProperty("servicemix.base", f.getAbsolutePath());
+        System.setProperty("org.apache.servicemix.filemonitor.configDir", new File(f, "etc").getAbsolutePath());
+        System.setProperty("org.apache.servicemix.filemonitor.monitorDir", new File(f, "deploy").getAbsolutePath());
+        System.setProperty("org.apache.servicemix.filemonitor.generatedJarDir", new File(f, "data/generate-bundles").getAbsolutePath());
+    }
 
     private Properties dependencies;
 
