@@ -255,13 +255,13 @@ public abstract class AbstractPreferencesImpl implements Preferences {
         flush();
     }
 
-    private String internalGetValue(String key) throws BackingStoreException {
+    private String internalGetValue(String key) {
         check(key);
         checkStatus();
         return doGetValue(key);
     }
 
-    private void internalSetValue(String key, String value) throws BackingStoreException {
+    private void internalSetValue(String key, String value) {
         check(key);
         checkStatus();
         String v = doGetValue(key);
@@ -294,19 +294,19 @@ public abstract class AbstractPreferencesImpl implements Preferences {
         }
     }
 
-    abstract String doGetValue(String key) throws BackingStoreException;
+    abstract String doGetValue(String key);
 
-    abstract void doSetValue(String key, String value) throws BackingStoreException;
+    abstract void doSetValue(String key, String value);
 
-    abstract boolean doRemoveValue(String key) throws BackingStoreException;
+    abstract boolean doRemoveValue(String key);
 
     abstract boolean doClear() throws BackingStoreException;
 
     abstract List<String> doGetKeys() throws BackingStoreException;
 
-    abstract List<AbstractPreferencesImpl> doGetChildren() throws BackingStoreException;
+    abstract List<AbstractPreferencesImpl> doGetChildren();
 
-    abstract AbstractPreferencesImpl doCreateChild(String name) throws BackingStoreException;
+    abstract AbstractPreferencesImpl doCreateChild(String name);
 
     abstract void doRemoveNode(String node) throws BackingStoreException;
 

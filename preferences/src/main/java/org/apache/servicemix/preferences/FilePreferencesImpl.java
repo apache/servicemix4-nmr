@@ -2,10 +2,15 @@ package org.apache.servicemix.preferences;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
-
-import org.osgi.service.prefs.BackingStoreException;
 
 /**
  * Created by IntelliJ IDEA.
@@ -20,59 +25,164 @@ public class FilePreferencesImpl extends AbstractPreferencesImpl {
 
     private File root;
     private Properties props;
+    private Map<String, FilePreferencesImpl> children;
+    private List<FilePreferencesImpl> deleted;
 
     public FilePreferencesImpl(AbstractPreferencesImpl parent, String name, File path) {
         super(parent, name);
         this.root = path;
     }
 
-    String doGetValue(String key) throws BackingStoreException {
+    String doGetValue(String key) {
         ensureLoaded();
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return props.getProperty(key);
     }
 
     void doSetValue(String key, String value) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        ensureLoaded();
+        props.setProperty(key, value);
     }
 
     boolean doRemoveValue(String key) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        ensureLoaded();
+        return props.remove(key) != null;
     }
 
     boolean doClear() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        ensureLoaded();
+        if (props.isEmpty()) {
+            return false;
+        }
+        props.clear();
+        return true;
     }
 
     List<String> doGetKeys() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        ensureLoaded();
+        List<String> keys = new ArrayList<String>();
+        for (Object k : props.keySet()) {
+            keys.add((String) k);
+        }
+        return keys;
     }
 
     List<AbstractPreferencesImpl> doGetChildren() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        ensureLoaded();
+        return new ArrayList<AbstractPreferencesImpl>(children.values());
     }
 
     AbstractPreferencesImpl doCreateChild(String name) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        ensureLoaded();
+        File f = new File(root, name);
+        FilePreferencesImpl child = new FilePreferencesImpl(this, f.getName(), f);
+        children.put(child.name(), child);
+        return child;
     }
 
     void doRemoveNode(String node) {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    void doFlush() {
-        //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    private void ensureLoaded() throws BackingStoreException {
-        try {
-            if (props == null) {
-                Properties p = new Properties();
-                p.load(new FileInputStream(new File(root, PROPS_FILE)));
-                props = p;
-            }
-        } catch (Exception e) {
-            throw new BackingStoreException("Unable to load node", e);
+        ensureLoaded();
+        FilePreferencesImpl child = children.remove(node);
+        if (child != null) {
+            deleted.add(child);
         }
     }
 
+    void doFlush() {
+        ensureLoaded();
+        if (!root.exists()) {
+            root.mkdirs();
+        }
+        OutputStream os = null;
+        try {
+            os = new FileOutputStream(new File(root, PROPS_FILE));
+            props.store(os, "Preferences for node " + name());
+        } catch (IOException e) {
+            error("Unable to store nore " + name(), e);
+        } finally {
+            if (os != null) {
+                try {
+                    os.close();
+                } catch (IOException e) {
+                    // Ignore
+                }
+            }
+        }
+        for (FilePreferencesImpl c : deleted) {
+            deleteFile(c.root);
+        }
+        deleted.clear();
+        for (FilePreferencesImpl c : children.values()) {
+            c.doFlush();
+        }
+    }
+
+    private void ensureLoaded() {
+        if (props != null) {
+            return;
+        }
+        props = new Properties();
+        children = new HashMap<String, FilePreferencesImpl>();
+        deleted = new ArrayList<FilePreferencesImpl>();
+        if (root.exists()) {
+            InputStream is = null;
+            try {
+                is = new FileInputStream(new File(root, PROPS_FILE));
+                props.load(is);
+            } catch (IOException e) {
+                error("Unable to load node " + name(), e);
+            } finally {
+                if (is != null) {
+                    try {
+                        is.close();
+                    } catch (IOException e) {
+                        // Ignore
+                    }
+                }
+            }
+            for (File f : root.listFiles()) {
+                if (f.isDirectory()) {
+                    FilePreferencesImpl child = new FilePreferencesImpl(this, f.getName(), f);
+                    children.put(child.name(), child);
+                }
+            }
+        }
+    }
+
+    private void error(String s, IOException e) {
+        System.out.println(s);
+        e.printStackTrace();
+    }
+
+    /**
+     * Delete a file
+     *
+     * @param fileToDelete
+     * @return true if the File is deleted
+     */
+    public static boolean deleteFile(File fileToDelete) {
+        if (fileToDelete == null || !fileToDelete.exists()) {
+            return true;
+        }
+        boolean result = true;
+        if (fileToDelete.isDirectory()) {
+            File[] files = fileToDelete.listFiles();
+            if (files == null) {
+                result = false;
+            } else {
+                for (int i = 0; i < files.length; i++) {
+                    File file = files[i];
+                    if (file.getName().equals(".") || file.getName().equals("..")) {
+                        continue;
+                    }
+                    if (file.isDirectory()) {
+                        result &= deleteFile(file);
+                    } else {
+                        result &= file.delete();
+                    }
+                }
+            }
+        }
+        result &= fileToDelete.delete();
+        return result;
+    }
 }
