@@ -61,15 +61,18 @@ public class ComponentImpl implements Component {
     private State state = State.Unknown;
     private Preferences prefs;
     private State runningState;
+    private Deployer deployer;
 
     public ComponentImpl(ComponentDesc componentDesc,
                          javax.jbi.component.Component component,
                          Preferences prefs,
-                         boolean autoStart) {
+                         boolean autoStart,
+                         Deployer deployer) {
         this.componentDesc = componentDesc;
         this.component = new ComponentWrapper(component);
         this.prefs = prefs;
         this.runningState = State.valueOf(this.prefs.get(STATE, (autoStart ? State.Started : State.Initialized).name()));
+        this.deployer = deployer;
     }
 
     public String getName() {
@@ -95,6 +98,7 @@ public class ComponentImpl implements Component {
     }
 
     public void stop() throws JBIException {
+        // TODO: stop deployed SAs
         if (state == State.Started) {
             component.getLifeCycle().stop();
             state = State.Stopped;
@@ -103,6 +107,7 @@ public class ComponentImpl implements Component {
     }
 
     public void shutDown() throws JBIException {
+        // TODO: shutdown deployed SAs
         if (state == State.Started) {
             stop();
         }
@@ -193,6 +198,7 @@ public class ComponentImpl implements Component {
                     shutDown();
                     state = State.Shutdown;
                 }
+                deployer.checkPendingBundles();
             } finally {
                 Thread.currentThread().setContextClassLoader(cl);
             }

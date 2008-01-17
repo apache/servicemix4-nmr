@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jbi.JBIException;
+import javax.jbi.management.LifeCycleMBean;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -116,7 +117,7 @@ public class Deployer extends AbstractBundleWatcher {
     }
 
     @Override
-    protected void register(Bundle bundle) {
+    protected synchronized void register(Bundle bundle) {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
@@ -174,7 +175,7 @@ public class Deployer extends AbstractBundleWatcher {
         Preferences prefs = preferencesService.getUserPreferences(componentDesc.getIdentification().getName());
         Class clazz = classLoader.loadClass(componentDesc.getComponentClassName());
         javax.jbi.component.Component innerComponent = (javax.jbi.component.Component) clazz.newInstance();
-        ComponentImpl component = new ComponentImpl(componentDesc, innerComponent, prefs, autoStart);
+        ComponentImpl component = new ComponentImpl(componentDesc, innerComponent, prefs, autoStart, this);
         // populate props from the component meta-data
         Dictionary<String, String> props = new Hashtable<String, String>();
         props.put(NAME, componentDesc.getIdentification().getName());
@@ -183,8 +184,6 @@ public class Deployer extends AbstractBundleWatcher {
         LOGGER.debug("Registering JBI component");
         registerService(bundle, Component.class.getName(), component, props);
         registerService(bundle, javax.jbi.component.Component.class.getName(), component.getComponent(), props);
-        // Check pending bundles
-        checkPendingBundles();
     }
 
     protected void deployServiceAssembly(ServiceAssemblyDesc serviceAssembyDesc, Bundle bundle) throws Exception {
@@ -195,6 +194,9 @@ public class Deployer extends AbstractBundleWatcher {
             Component component = getComponent(componentName);
             if (component == null) {
                 throw new PendingException(bundle, "Component not installed: " + componentName);
+            }
+            if (LifeCycleMBean.UNKNOWN.equals(component.getCurrentState())) {
+                throw new PendingException(bundle, "Component is in an unknown state: " + componentName);
             }
         }
         // Create the SA directory
@@ -245,11 +247,19 @@ public class Deployer extends AbstractBundleWatcher {
         checkPendingBundles();
     }
 
-    protected void checkPendingBundles() {
-        List<Bundle> pending = pendingBundles;
-        pendingBundles = new ArrayList<Bundle>();
-        for (Bundle bundle : pending) {
-            register(bundle);
+    protected synchronized void checkPendingBundles() {
+        if (!pendingBundles.isEmpty()) {
+            final List<Bundle> pending = pendingBundles;
+            pendingBundles = new ArrayList<Bundle>();
+            Thread th = new Thread() {
+                public void run() {
+                    for (Bundle bundle : pending) {
+                        register(bundle);
+                    }
+                }
+            };
+            th.setDaemon(true);
+            th.start();
         }
     }
 
