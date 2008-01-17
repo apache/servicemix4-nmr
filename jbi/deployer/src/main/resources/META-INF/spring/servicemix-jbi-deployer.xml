@@ -31,6 +31,8 @@
 
     <!-- JBI Deployer -->
     <bean id="deployer" class="org.apache.servicemix.jbi.deployer.impl.Deployer">
+        <property name="preferencesService" ref="preferencesService" />
+        <property name="autoStart" value="true" />
     </bean>
 
     <!-- Deployment listener -->
@@ -38,6 +40,10 @@
     
     <!-- JBI Handler -->
     <bean id="jbiHandler" class="org.apache.servicemix.jbi.deployer.handler.URLHandler" />
+
+    <!-- Preferences Service -->
+    <osgi:reference id="preferencesService"
+                    interface="org.osgi.service.prefs.PreferencesService" />
 
     <osgi:service ref="jbiHandler" interface="org.osgi.service.url.URLStreamHandlerService">
     	<osgi:service-properties>

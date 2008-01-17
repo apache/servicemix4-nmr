@@ -17,12 +17,12 @@
 package org.apache.servicemix.jbi.deployer.impl;
 
 import javax.jbi.JBIException;
-import javax.jbi.messaging.MessageExchange;
-import javax.jbi.servicedesc.ServiceEndpoint;
+import javax.jbi.component.ComponentContext;
 import javax.jbi.component.ComponentLifeCycle;
 import javax.jbi.component.ServiceUnitManager;
-import javax.jbi.component.ComponentContext;
 import javax.jbi.management.LifeCycleMBean;
+import javax.jbi.messaging.MessageExchange;
+import javax.jbi.servicedesc.ServiceEndpoint;
 import javax.management.ObjectName;
 
 import org.w3c.dom.Document;
@@ -30,6 +30,10 @@ import org.w3c.dom.DocumentFragment;
 
 import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.descriptor.ComponentDesc;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.Preferences;
 
 /**
  * Created by IntelliJ IDEA.
@@ -39,6 +43,10 @@ import org.apache.servicemix.jbi.deployer.descriptor.ComponentDesc;
  * To change this template use File | Settings | File Templates.
  */
 public class ComponentImpl implements Component {
+
+    private static final Log LOGGER = LogFactory.getLog(ComponentImpl.class);
+
+    private static final String STATE = "state";
 
     protected enum State {
         Unknown,
@@ -50,12 +58,18 @@ public class ComponentImpl implements Component {
 
     private ComponentDesc componentDesc;
     private javax.jbi.component.Component component;
-
     private State state = State.Unknown;
+    private Preferences prefs;
+    private State runningState;
 
-    public ComponentImpl(ComponentDesc componentDesc, javax.jbi.component.Component component) {
+    public ComponentImpl(ComponentDesc componentDesc,
+                         javax.jbi.component.Component component,
+                         Preferences prefs,
+                         boolean autoStart) {
         this.componentDesc = componentDesc;
         this.component = new ComponentWrapper(component);
+        this.prefs = prefs;
+        this.runningState = State.valueOf(this.prefs.get(STATE, (autoStart ? State.Started : State.Initialized).name()));
     }
 
     public String getName() {
@@ -77,12 +91,14 @@ public class ComponentImpl implements Component {
     public void start() throws JBIException {
         component.getLifeCycle().start();
         state = State.Started;
+        saveState();
     }
 
     public void stop() throws JBIException {
         if (state == State.Started) {
             component.getLifeCycle().stop();
             state = State.Stopped;
+            saveState();
         }
     }
 
@@ -93,6 +109,16 @@ public class ComponentImpl implements Component {
         if (state == State.Stopped) {
             component.getLifeCycle().shutDown();
             state = State.Shutdown;
+            saveState();
+        }
+    }
+
+    private void saveState() {
+        this.prefs.put(STATE, state.name());
+        try {
+            this.prefs.flush();
+        } catch (BackingStoreException e) {
+            LOGGER.warn("Unable to persist state", e);
         }
     }
 
@@ -155,6 +181,18 @@ public class ComponentImpl implements Component {
                 Thread.currentThread().setContextClassLoader(lifeCycle.getClass().getClassLoader());
                 lifeCycle.init(context);
                 state = State.Initialized;
+                if (runningState == State.Started) {
+                    start();
+                    state = State.Started;
+                } else if (runningState == State.Stopped) {
+                    start();
+                    state = State.Started;
+                    stop();
+                    state = State.Stopped;
+                } else if (runningState == State.Shutdown) {
+                    shutDown();
+                    state = State.Shutdown;
+                }
             } finally {
                 Thread.currentThread().setContextClassLoader(cl);
             }

@@ -66,7 +66,7 @@ public class PreferencesServiceFactoryImpl implements ServiceFactory, BundleList
 
     public synchronized Object getService(Bundle bundle, ServiceRegistration serviceRegistration) {
         checkInit();
-        return preferences.node("/" + bundle.getBundleId());
+        return new PreferencesServiceImpl((AbstractPreferencesImpl) preferences.node("/" + bundle.getBundleId()));
     }
 
     public synchronized void ungetService(Bundle bundle, ServiceRegistration serviceRegistration, Object o) {

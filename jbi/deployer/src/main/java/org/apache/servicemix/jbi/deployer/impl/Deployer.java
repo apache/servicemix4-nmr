@@ -19,7 +19,6 @@ package org.apache.servicemix.jbi.deployer.impl;
 import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
@@ -45,6 +44,8 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.prefs.Preferences;
+import org.osgi.service.prefs.PreferencesService;
 import org.springframework.osgi.util.BundleDelegatingClassLoader;
 import org.springframework.osgi.util.OsgiServiceReferenceUtils;
 import org.springframework.osgi.util.OsgiServiceUtils;
@@ -73,6 +74,10 @@ public class Deployer extends AbstractBundleWatcher {
 
     private File jbiRootDir;
 
+    private PreferencesService preferencesService;
+
+    private boolean autoStart = true;
+
     public Deployer() throws JBIException{
         sharedLibraries = new ConcurrentHashMap<String, SharedLibraryImpl>();
         serviceAssemblies = new ConcurrentHashMap<String, ServiceAssemblyImpl>();
@@ -81,6 +86,22 @@ public class Deployer extends AbstractBundleWatcher {
         // TODO: control that using properties
         jbiRootDir = new File(System.getProperty("servicemix.base"), "data/jbi");
         jbiRootDir.mkdirs();
+    }
+
+    public PreferencesService getPreferencesService() {
+        return preferencesService;
+    }
+
+    public void setPreferencesService(PreferencesService preferencesService) {
+        this.preferencesService = preferencesService;
+    }
+
+    public boolean isAutoStart() {
+        return autoStart;
+    }
+
+    public void setAutoStart(boolean autoStart) {
+        this.autoStart = autoStart;
     }
 
     @Override
@@ -150,9 +171,10 @@ public class Deployer extends AbstractBundleWatcher {
         ClassLoader classLoader = createComponentClassLoader(componentDesc, bundle);
         Thread.currentThread().setContextClassLoader(classLoader);
         // Instanciate component
+        Preferences prefs = preferencesService.getUserPreferences(componentDesc.getIdentification().getName());
         Class clazz = classLoader.loadClass(componentDesc.getComponentClassName());
         javax.jbi.component.Component innerComponent = (javax.jbi.component.Component) clazz.newInstance();
-        ComponentImpl component = new ComponentImpl(componentDesc, innerComponent);
+        ComponentImpl component = new ComponentImpl(componentDesc, innerComponent, prefs, autoStart);
         // populate props from the component meta-data
         Dictionary<String, String> props = new Hashtable<String, String>();
         props.put(NAME, componentDesc.getIdentification().getName());
@@ -199,7 +221,8 @@ public class Deployer extends AbstractBundleWatcher {
             sus.add(su);
         }
         // Now create the SA and initialize it
-        ServiceAssemblyImpl sa = new ServiceAssemblyImpl(serviceAssembyDesc, sus);
+        Preferences prefs = preferencesService.getUserPreferences(serviceAssembyDesc.getIdentification().getName());
+        ServiceAssemblyImpl sa = new ServiceAssemblyImpl(serviceAssembyDesc, sus, prefs, autoStart);
         sa.init();
         // populate props from the component meta-data
         Dictionary<String, String> props = new Hashtable<String, String>();
