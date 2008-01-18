@@ -51,6 +51,6 @@
         </osgi:service-properties>
     </osgi:service>
 
-    <osgi:service ref="listener" interface="org.apache.servicemix.runtime.filemonitor.DeploymentListener" />
+    <osgi:service ref="listener" interface="org.apache.servicemix.kernel.filemonitor.DeploymentListener" />
 
 </beans>

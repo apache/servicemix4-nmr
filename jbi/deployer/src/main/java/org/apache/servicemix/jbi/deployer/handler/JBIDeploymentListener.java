@@ -25,7 +25,7 @@ import java.util.jar.Manifest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.deployer.impl.FileUtil;
-import org.apache.servicemix.runtime.filemonitor.DeploymentListener;
+import org.apache.servicemix.kernel.filemonitor.DeploymentListener;
 
 
 public class JBIDeploymentListener implements DeploymentListener {

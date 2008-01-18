@@ -40,9 +40,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.servicemix.runtime.gshell</groupId>
-            <artifactId>org.apache.servicemix.runtime.gshell.core</artifactId>
-            <version>${smx.runtime.version}</version>
+            <groupId>org.apache.servicemix.kernel.gshell</groupId>
+            <artifactId>org.apache.servicemix.kernel.gshell.core</artifactId>
+            <version>${smx.kernel.version}</version>
         </dependency>
     </dependencies>
 

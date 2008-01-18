@@ -22,7 +22,7 @@ import java.util.Properties;
 import javax.jbi.component.Component;
 
 import org.apache.servicemix.nmr.api.NMR;
-import org.apache.servicemix.runtime.testing.support.AbstractIntegrationTest;
+import org.apache.servicemix.kernel.testing.support.AbstractIntegrationTest;
 
 public class IntegrationTest extends AbstractIntegrationTest {
 
@@ -68,6 +68,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
         return new String[] {
             getBundle("org.apache.geronimo.specs", "geronimo-stax-api_1.0_spec"),
             getBundle("org.apache.geronimo.specs", "geronimo-activation_1.1_spec"),
+            getBundle("org.apache.servicemix.nmr", "org.apache.servicemix.preferences"),
             getBundle("org.apache.servicemix.nmr", "org.apache.servicemix.nmr.api"),
             getBundle("org.apache.servicemix.nmr", "org.apache.servicemix.nmr.core"),
 			getBundle("org.apache.servicemix.nmr", "org.apache.servicemix.nmr.spring"),
@@ -77,7 +78,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
             getBundle("org.apache.servicemix.jbi", "org.apache.servicemix.jbi.deployer"),
             getBundle("org.apache.servicemix.jbi", "org.apache.servicemix.jbi.offline"),
             getBundle("org.apache.servicemix.jbi", "org.apache.servicemix.jbi.osgi"),
-            getBundle("org.apache.servicemix.runtime", "org.apache.servicemix.runtime.filemonitor"),
+            getBundle("org.apache.servicemix.kernel", "org.apache.servicemix.kernel.filemonitor"),
             getBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.ant-1.7.0"),
 		};
 	}

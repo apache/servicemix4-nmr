@@ -39,9 +39,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.servicemix.runtime</groupId>
-            <artifactId>org.apache.servicemix.runtime.main</artifactId>
-            <version>${smx.runtime.version}</version>
+            <groupId>org.apache.servicemix.kernel</groupId>
+            <artifactId>org.apache.servicemix.kernel.main</artifactId>
+            <version>${smx.kernel.version}</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -51,9 +51,9 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.apache.servicemix.runtime.testing</groupId>
-            <artifactId>org.apache.servicemix.runtime.testing.support</artifactId>
-		    <version>${smx.runtime.version}</version>
+            <groupId>org.apache.servicemix.kernel.testing</groupId>
+            <artifactId>org.apache.servicemix.kernel.testing.support</artifactId>
+		    <version>${smx.kernel.version}</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -63,9 +63,9 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.apache.servicemix.runtime</groupId>
-            <artifactId>org.apache.servicemix.runtime.filemonitor</artifactId>
-            <version>${smx.runtime.version}</version>
+            <groupId>org.apache.servicemix.kernel</groupId>
+            <artifactId>org.apache.servicemix.kernel.filemonitor</artifactId>
+            <version>${smx.kernel.version}</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -77,7 +77,13 @@
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.ant-${ant.version}</artifactId>
-            <version>${smx.runtime.version}</version>
+            <version>${smx.kernel.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.nmr</groupId>
+            <artifactId>org.apache.servicemix.preferences</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>
@@ -189,9 +195,9 @@
         <plugins>
             <!-- generate dependencies versions -->
             <plugin>
-                <groupId>org.apache.servicemix.runtime.testing</groupId>
+                <groupId>org.apache.servicemix.kernel.testing</groupId>
                 <artifactId>depends-maven-plugin</artifactId>
-                <version>${smx.runtime.version}</version>
+                <version>${smx.kernel.version}</version>
                 <executions>
                     <execution>
                         <id>generate-depends-file</id>

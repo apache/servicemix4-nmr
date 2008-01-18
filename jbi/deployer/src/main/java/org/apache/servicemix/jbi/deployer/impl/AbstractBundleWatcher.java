@@ -19,7 +19,6 @@ package org.apache.servicemix.jbi.deployer.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicemix.runtime.filemonitor.DeploymentListener;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
