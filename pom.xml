@@ -81,7 +81,7 @@
       <pax.logging.version>1.0-RC2</pax.logging.version>
       <smx3.version>3.2.1</smx3.version>
       <smx.kernel.version>1.0-m1-SNAPSHOT</smx.kernel.version>
-      <spring.osgi.version>1.0-rc1</spring.osgi.version>
+      <spring.osgi.version>1.0-rc2</spring.osgi.version>
       <spring.version>2.5</spring.version>
       <woodstox.version>3.2.3</woodstox.version>
       <xbean.version>3.3-SNAPSHOT</xbean.version>
@@ -112,6 +112,12 @@
            <snapshots>
                <enabled>true</enabled>
            </snapshots>
+       </repository>
+       <!-- Spring Milestone repo -->
+       <repository>
+           <id>spring-milestone</id>
+           <name>Spring Milestone Repository</name>
+           <url>http://s3.amazonaws.com/maven.springframework.org/milestone</url>
        </repository>
    </repositories>
 
