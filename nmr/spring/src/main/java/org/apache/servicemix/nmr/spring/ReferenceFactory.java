@@ -129,7 +129,7 @@ public class ReferenceFactory implements FactoryBean, InitializingBean, BundleCo
                 throw new IllegalArgumentException("nmr not set while bundleContext is null");
             }
             OsgiServiceProxyFactoryBean factory = new OsgiServiceProxyFactoryBean();
-            factory.setInterface(new Class[] { NMR.class });
+            factory.setInterfaces(new Class[] { NMR.class });
             factory.setBundleContext(getBundleContext());
             nmr = (NMR) factory.getObject();
         }
