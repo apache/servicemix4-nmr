@@ -36,6 +36,7 @@ import javax.jbi.messaging.DeliveryChannel;
 import javax.jbi.messaging.MessagingException;
 import javax.jbi.servicedesc.ServiceEndpoint;
 import javax.management.MBeanServer;
+import javax.management.ObjectName;
 import javax.naming.InitialContext;
 import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
@@ -60,14 +61,20 @@ import org.apache.servicemix.nmr.api.NMR;
 /**
  * The ComponentContext implementation
  */
-public class ComponentContextImpl implements ComponentContext {
+public class ComponentContextImpl implements ComponentContext, MBeanNames {
 
-    public int DEFAULT_QUEUE_CAPACITY = 100;
+    public static final String JBI_NAMESPACE = "http://java.sun.com/jbi/end-point-reference";
+    public static final String JBI_PREFIX = "jbi:";
+    public static final String JBI_ENDPOINT_REFERENCE = "end-point-reference";
+    public static final String JBI_SERVICE_NAME = "service-name";
+    public static final String JBI_ENDPOINT_NAME = "end-point-name";
+    public static final String XMLNS_NAMESPACE = "http://www.w3.org/2000/xmlns/";
+    public static final int DEFAULT_QUEUE_CAPACITY = 100;
 
     private static final Log LOG = LogFactory.getLog(ComponentContextImpl.class);
 
     private NMR nmr;
-    private ComponentRegistry componentRegistry;
+    private ComponentRegistryImpl componentRegistry;
     private DocumentRepository documentRepository;
     private Component component;
     private Map<String,?> properties;
@@ -77,10 +84,10 @@ public class ComponentContextImpl implements ComponentContext {
     private EndpointImpl componentEndpoint;
     private String name;
 
-    public ComponentContextImpl(NMR nmr, ComponentRegistry componentRegistry, DocumentRepository documentRepository, Component component, Map<String,?> properties) {
-        this.nmr = nmr;
+    public ComponentContextImpl(ComponentRegistryImpl componentRegistry, Component component, Map<String,?> properties) {
         this.componentRegistry = componentRegistry;
-        this.documentRepository = documentRepository;
+        this.nmr = componentRegistry.getNmr();
+        this.documentRepository = componentRegistry.getDocumentRepository();
         this.component = component;
         this.properties = properties;
         this.endpoints = new ArrayList<EndpointImpl>();
@@ -217,39 +224,61 @@ public class ComponentContextImpl implements ComponentContext {
     }
 
     public ServiceEndpoint[] getExternalEndpoints(QName interfaceName) {
-        return new ServiceEndpoint[0];  //To change body of implemented methods use File | Settings | File Templates.
+        return new ServiceEndpoint[0];  // TODO
     }
 
     public ServiceEndpoint[] getExternalEndpointsForService(QName serviceName) {
-        return new ServiceEndpoint[0];  //To change body of implemented methods use File | Settings | File Templates.
+        return new ServiceEndpoint[0];  // TODO
     }
 
     public String getInstallRoot() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;  // TODO
     }
 
     public Logger getLogger(String suffix, String resourceBundleName) throws MissingResourceException, JBIException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        try {
+            String name = suffix != null ? this.name + suffix : this.name;
+            return Logger.getLogger(name, resourceBundleName);
+        } catch (IllegalArgumentException e) {
+            throw new JBIException("A logger can not be created using resource bundle " + resourceBundleName);
+        }
     }
 
     public MBeanNames getMBeanNames() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return this;
     }
 
     public MBeanServer getMBeanServer() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        if (this.componentRegistry.getManagementContext() != null) {
+            return this.componentRegistry.getManagementContext().getMbeanServer();
+        }
+        return null;
     }
 
     public InitialContext getNamingContext() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return this.componentRegistry.getNamingContext();
     }
 
     public Object getTransactionManager() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return this.componentRegistry.getTransactionManager();
     }
 
     public String getWorkspaceRoot() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;  // TODO
+    }
+
+    public ObjectName createCustomComponentMBeanName(String customName) {
+        if (this.componentRegistry.getManagementContext() != null) {
+            return componentRegistry.getManagementContext().createCustomComponentMBeanName(customName, this.name);
+        }
+        return null;
+    }
+
+    public String getJmxDomainName() {
+        if (this.componentRegistry.getManagementContext() != null) {
+            return componentRegistry.getManagementContext().getJmxDomainName();
+        }
+        return null;
     }
 
     /**
@@ -283,18 +312,18 @@ public class ComponentContextImpl implements ComponentContext {
             }
             Element el = (Element) n;
             // Namespace should be "http://java.sun.com/jbi/end-point-reference"
-            if (el.getNamespaceURI() == null || !el.getNamespaceURI().equals("http://java.sun.com/jbi/end-point-reference")) {
+            if (el.getNamespaceURI() == null || !el.getNamespaceURI().equals(JBI_NAMESPACE)) {
                 continue;
             }
-            if (el.getLocalName() == null || !el.getLocalName().equals("end-point-reference")) {
+            if (el.getLocalName() == null || !el.getLocalName().equals(JBI_ENDPOINT_REFERENCE)) {
                 continue;
             }
-            String serviceName = el.getAttributeNS(el.getNamespaceURI(), "service-name");
+            String serviceName = el.getAttributeNS(el.getNamespaceURI(), JBI_SERVICE_NAME);
             // Now the DOM pain-in-the-you-know-what: we need to come up with QName for this;
             // fortunately, there is only one place where the xmlns:xxx attribute could be, on
             // the end-point-reference element!
             QName serviceQName = DOMUtil.createQName(el, serviceName);
-            String endpointName = el.getAttributeNS(el.getNamespaceURI(), "end-point-name");
+            String endpointName = el.getAttributeNS(el.getNamespaceURI(), JBI_ENDPOINT_NAME);
             return getEndpoint(serviceQName, endpointName);
         }
         return null;
@@ -405,7 +434,19 @@ public class ComponentContextImpl implements ComponentContext {
         }
 
         public DocumentFragment getAsReference(QName operationName) {
-            return null;  //To change body of implemented methods use File | Settings | File Templates.
+            try {
+                Document doc = DOMUtil.newDocument();
+                DocumentFragment fragment = doc.createDocumentFragment();
+                Element epr = doc.createElementNS(JBI_NAMESPACE, JBI_PREFIX + JBI_ENDPOINT_REFERENCE);
+                epr.setAttributeNS(XMLNS_NAMESPACE, "xmlns:sns", endpoint.getServiceName().getNamespaceURI());
+                epr.setAttributeNS(JBI_NAMESPACE, JBI_PREFIX + JBI_SERVICE_NAME, "sns:" + endpoint.getServiceName().getLocalPart());
+                epr.setAttributeNS(JBI_NAMESPACE, JBI_PREFIX + JBI_ENDPOINT_NAME, endpoint.getEndpointName());
+                fragment.appendChild(epr);
+                return fragment;
+            } catch (Exception e) {
+                LOG.warn("Unable to create reference for ServiceEndpoint " + endpoint, e);
+                return null;
+            }
         }
 
         public String getEndpointName() {
@@ -413,7 +454,8 @@ public class ComponentContextImpl implements ComponentContext {
         }
 
         public QName[] getInterfaces() {
-            return new QName[0];  //To change body of implemented methods use File | Settings | File Templates.
+            QName itf = (QName) properties.get(Endpoint.INTERFACE_NAME);
+            return itf != null ? new QName[] { itf } : new QName[0];
         }
 
         public QName getServiceName() {

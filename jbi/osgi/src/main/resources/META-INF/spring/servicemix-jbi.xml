@@ -33,10 +33,18 @@
     <bean id="componentRegistry" class="org.apache.servicemix.jbi.runtime.impl.ComponentRegistryImpl">
         <property name="nmr" ref="nmr" />
         <property name="documentRepository" ref="documentRepository" />
+        <property name="transactionManager" ref="transactionManager" />
+        <property name="managementContext" ref="managementContext" />
     </bean>
 
     <!-- URL handler for in memory documents -->
     <bean id="documentRepository" class="org.apache.servicemix.jbi.runtime.impl.DocumentRepositoryImpl">
+    </bean>
+
+    <!-- Management context -->
+    <bean id="managementContext" class="org.apache.servicemix.jbi.runtime.impl.ManagementContext">
+        <property name="jmxDomainName" value="org.apache.servicemix" />
+        <property name="mbeanServers" ref="mbeanServers" />
     </bean>
 
     <!-- Service tracker for JBI components -->
@@ -49,6 +57,16 @@
     <!-- Reference to the ServiceMix NMR -->
     <osgi:reference id="nmr"
                     interface="org.apache.servicemix.nmr.api.NMR" />
+
+    <!-- Reference to the Transaction Manager -->
+    <osgi:list id="transactionManager"
+               interface="javax.transaction.TransactionManager"
+               cardinality="0..N" />
+
+    <!-- Reference to the JMX server -->
+    <osgi:list id="mbeanServers"
+               interface="javax.management.MBeanServer"
+               cardinality="0..N" />
 
     <!-- Expose the JBI components registry in OSGi -->
     <osgi:service ref="componentRegistry">

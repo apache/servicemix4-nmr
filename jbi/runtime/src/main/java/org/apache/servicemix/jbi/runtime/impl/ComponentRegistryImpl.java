@@ -17,13 +17,17 @@
 package org.apache.servicemix.jbi.runtime.impl;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jbi.JBIException;
 import javax.jbi.component.Component;
 import javax.jbi.component.ComponentContext;
+import javax.naming.InitialContext;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.runtime.ComponentRegistry;
 import org.apache.servicemix.jbi.runtime.DocumentRepository;
 import org.apache.servicemix.nmr.api.NMR;
@@ -35,9 +39,15 @@ import org.apache.servicemix.nmr.core.ServiceRegistryImpl;
  */
 public class ComponentRegistryImpl extends ServiceRegistryImpl<Component>  implements ComponentRegistry {
 
+    private static final Log LOGGER = LogFactory.getLog(ComponentRegistryImpl.class);
+
     private NMR nmr;
     private DocumentRepository documentRepository;
     private Map<String, Component> components;
+    private Object transactionManager;
+    private List transactionManagers;
+    private InitialContext namingContext;
+    private ManagementContext managementContext;
 
     public ComponentRegistryImpl() {
         components = new ConcurrentHashMap<String, Component>();
@@ -59,6 +69,44 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<Component>  imple
         this.documentRepository = documentRepository;
     }
 
+    public ManagementContext getManagementContext() {
+        return managementContext;
+    }
+
+    public void setManagementContext(ManagementContext managementContext) {
+        this.managementContext = managementContext;
+    }
+
+    public Object getTransactionManager() {
+        if (transactionManager != null) {
+            return transactionManager;
+        }
+        if (transactionManagers != null && !transactionManagers.isEmpty()) {
+            return transactionManagers.get(0);
+        }
+        return null;
+    }
+
+    public void setTransactionManager(Object transactionManager) {
+        this.transactionManager = transactionManager;
+    }
+
+    public List getTransactionManagers() {
+        return transactionManagers;
+    }
+
+    public void setTransactionManagers(List transactionManagers) {
+        this.transactionManagers = transactionManagers;
+    }
+
+    public InitialContext getNamingContext() {
+        return namingContext;
+    }
+
+    public void setNamingContext(InitialContext namingContext) {
+        this.namingContext = namingContext;
+    }
+
     /**
      * Register a service with the given metadata.
      *
@@ -77,12 +125,12 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<Component>  imple
                 properties = new HashMap<String, Object>();
             }
             String name = (String) properties.get(NAME);
-            ComponentContext context = new ComponentContextImpl(nmr, this, documentRepository, component, properties);
+            ComponentContext context = new ComponentContextImpl(this, component, properties);
             component.getLifeCycle().init(context);
             if (name != null) {
                 components.put(name, component);
             } else {
-                // TODO: log a warning
+                LOGGER.warn("Component has no name!");
             }
         } catch (JBIException e) {
             throw new ServiceMixException(e);
@@ -106,4 +154,5 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<Component>  imple
     public Component getComponent(String name) {
         return components.get(name);
     }
+
 }

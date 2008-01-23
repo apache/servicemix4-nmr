@@ -18,9 +18,16 @@ package org.apache.servicemix.jbi.runtime;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.xml.namespace.QName;
 
+import org.apache.servicemix.eip.EIPComponent;
+import org.apache.servicemix.eip.EIPEndpoint;
+import org.apache.servicemix.eip.patterns.WireTap;
+import org.apache.servicemix.eip.support.ExchangeTarget;
+import org.apache.servicemix.jbi.runtime.impl.ComponentContextImpl;
+import org.apache.servicemix.jbi.runtime.impl.ComponentRegistryImpl;
 import org.apache.servicemix.nmr.api.Channel;
 import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.Exchange;
@@ -28,11 +35,6 @@ import org.apache.servicemix.nmr.api.Pattern;
 import org.apache.servicemix.nmr.api.Status;
 import org.apache.servicemix.nmr.api.service.ServiceHelper;
 import org.apache.servicemix.nmr.core.ServiceMix;
-import org.apache.servicemix.eip.EIPComponent;
-import org.apache.servicemix.eip.EIPEndpoint;
-import org.apache.servicemix.eip.patterns.WireTap;
-import org.apache.servicemix.eip.support.ExchangeTarget;
-import org.apache.servicemix.jbi.runtime.impl.ComponentRegistryImpl;
 import org.junit.Test;
 
 /**
@@ -75,7 +77,7 @@ public class IntegrationTest {
         ep.setTarget(new ExchangeTarget());
         ep.getTarget().setService(new QName("target"));
         eip.setEndpoints(new EIPEndpoint[] { ep });
-        reg.register(eip, null);
+        eip.init(new ComponentContextImpl(reg, eip, new HashMap()));
         eip.getLifeCycle().start();
 
         Channel channel = smx.createChannel();

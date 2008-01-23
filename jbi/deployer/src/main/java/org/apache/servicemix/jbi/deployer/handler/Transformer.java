@@ -54,8 +54,8 @@ public class Transformer {
         	name = desc.getServiceAssembly().getIdentification().getName();
         }
 
-        m.getMainAttributes().put(new Attributes.Name("Bundle-SymbolicName"), name);
-        m.getMainAttributes().put(new Attributes.Name("Bundle-Version"), version);
+        m.getMainAttributes().putValue("Bundle-SymbolicName", name);
+        m.getMainAttributes().putValue("Bundle-Version", version);
 
 		JarInputStream jis = new JarInputStream(new FileInputStream(jbiArtifact));
 		JarOutputStream jos = new JarOutputStream(new FileOutputStream(jbiBundle), m);
