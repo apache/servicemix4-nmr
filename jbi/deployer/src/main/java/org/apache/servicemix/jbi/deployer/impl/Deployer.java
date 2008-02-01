@@ -49,7 +49,6 @@ import org.osgi.service.prefs.Preferences;
 import org.osgi.service.prefs.PreferencesService;
 import org.springframework.osgi.util.BundleDelegatingClassLoader;
 import org.springframework.osgi.util.OsgiServiceReferenceUtils;
-import org.springframework.osgi.util.OsgiServiceUtils;
 import org.springframework.osgi.util.OsgiStringUtils;
 
 /**
@@ -278,7 +277,7 @@ public class Deployer extends AbstractBundleWatcher {
         String filter = "(" + NAME + "=" + name + ")";
         BundleContext context = getBundleContext();
         ServiceReference reference = OsgiServiceReferenceUtils.getServiceReference(context, Component.class.getName(), filter);
-        return (Component) OsgiServiceUtils.getService(context, reference);
+        return (Component) context.getService(reference);
     }
 
     protected ClassLoader createComponentClassLoader(ComponentDesc component, Bundle bundle) {
