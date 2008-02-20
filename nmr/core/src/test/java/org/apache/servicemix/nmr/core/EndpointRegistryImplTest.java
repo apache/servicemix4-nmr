@@ -16,46 +16,101 @@
  */
 package org.apache.servicemix.nmr.core;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.servicemix.nmr.api.Channel;
 import org.apache.servicemix.nmr.api.Endpoint;
+import org.apache.servicemix.nmr.api.EndpointRegistry;
 import org.apache.servicemix.nmr.api.Exchange;
+import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.nmr.api.Reference;
-import org.apache.servicemix.nmr.api.ServiceMixException;
-import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
+import org.apache.servicemix.nmr.api.event.EndpointListener;
 import org.apache.servicemix.nmr.api.service.ServiceHelper;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
 public class EndpointRegistryImplTest {
 
-    private EndpointRegistryImpl registry;
+    private NMR nmr;
+    private EndpointRegistry registry;
 
     @Before
     public void setUp() {
-        registry = new EndpointRegistryImpl();
+        ServiceMix smx = new ServiceMix();
+        smx.init();
+        nmr = smx;
+        registry = smx.getEndpointRegistry();
+        assertTrue(registry instanceof EndpointRegistryImpl);
+        assertSame(nmr, ((EndpointRegistryImpl) registry).getNmr());
     }
 
     @Test
-    public void testUnregister() {
+    public void testRegistryConstructor() {
+        EndpointRegistryImpl reg = new EndpointRegistryImpl();
+        try {
+            reg.init();
+            fail();
+        } catch (NullPointerException e) {
+        }
+        reg.setNmr(new ServiceMix());
+        assertNotNull(reg.getNmr());
+        reg.init();
+    }
+
+    @Test
+    public void testRegisterUnregister() throws Exception {
         Endpoint endpoint = new DummyEndpoint();
-        registry.register(endpoint, ServiceHelper.createMap(Endpoint.NAME, "id"));
         Reference ref = registry.lookup(ServiceHelper.createMap(Endpoint.NAME, "id"));
         assertNotNull(ref);
-        assertTrue(ref instanceof ReferenceImpl);
-        List<InternalEndpoint> endpoints = ((ReferenceImpl) ref).getEndpoints();
-        assertNotNull(endpoints);
-        assertEquals(1, endpoints.size());
+        assertTrue(ref instanceof DynamicReferenceImpl);
+        DynamicReferenceImpl r = (DynamicReferenceImpl) ref;
+        assertNotNull(r.choose());
+        assertFalse(r.choose().iterator().hasNext());
+        registry.register(endpoint, ServiceHelper.createMap(Endpoint.NAME, "id"));
+        assertNotNull(r.choose());
+        assertTrue(r.choose().iterator().hasNext());
         registry.unregister(endpoint, null);
-        try {
-            registry.lookup(ServiceHelper.createMap(Endpoint.NAME, "id"));
-        } catch (ServiceMixException e) {
-            // ok
-        }
+        assertNotNull(r.choose());
+        assertFalse(r.choose().iterator().hasNext());
+    }
+
+    @Test
+    public void testLdapFilter() throws Exception {
+        Endpoint endpoint = new DummyEndpoint();
+        Reference ref = registry.lookup("(NAME=id)");
+        assertNotNull(ref);
+        assertTrue(ref instanceof DynamicReferenceImpl);
+        DynamicReferenceImpl r = (DynamicReferenceImpl) ref;
+        assertNotNull(r.choose());
+        assertFalse(r.choose().iterator().hasNext());
+        registry.register(endpoint, ServiceHelper.createMap(Endpoint.NAME, "id"));
+        assertNotNull(r.choose());
+        assertTrue(r.choose().iterator().hasNext());
+        registry.unregister(endpoint, null);
+        assertNotNull(r.choose());
+        assertFalse(r.choose().iterator().hasNext());
+    }
+
+    @Test
+    public void testEndpointListener() throws Exception {
+        final CountDownLatch regLatch = new CountDownLatch(1);
+        final CountDownLatch unregLatch = new CountDownLatch(1);
+        Endpoint endpoint = new DummyEndpoint();
+        nmr.getListenerRegistry().register(new EndpointListener() {
+            public void endpointRegistered(Endpoint endpoint) {
+                regLatch.countDown();
+            }
+            public void endpointUnregistered(Endpoint endpoint) {
+                unregLatch.countDown();
+            }
+        }, new HashMap<String,Object>());
+        registry.register(endpoint, ServiceHelper.createMap(Endpoint.NAME, "id"));
+        assertTrue(regLatch.await(1, TimeUnit.SECONDS));
+        registry.unregister(endpoint, null);
+        assertTrue(unregLatch.await(1, TimeUnit.SECONDS));
     }
 
     protected static class DummyEndpoint implements Endpoint {

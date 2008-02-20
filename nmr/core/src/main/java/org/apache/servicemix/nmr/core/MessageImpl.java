@@ -16,24 +16,26 @@
  */
 package org.apache.servicemix.nmr.core;
 
-import org.apache.servicemix.nmr.api.Message;
-
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.servicemix.nmr.api.Message;
+
 /**
+ * The default {@link Message} implementation.
+ *
  * @version $Revision: $
  * @since 4.0
  */
 public class MessageImpl implements Message {
 
     /**
-	 * Generated serial version UID 
-	 */
-	private static final long serialVersionUID = -8621182821298293687L;
+     * Generated serial version UID
+     */
+    private static final long serialVersionUID = -8621182821298293687L;
 
-	private Object body;
+    private Object body;
     private String contentType;
     private String contentEncoding;
     private Map<String, Object> headers;
@@ -139,8 +141,8 @@ public class MessageImpl implements Message {
      * @param name the name of the header
      * @param type the desired type
      * @return the converted header or <code>null</code> if
-     *          no header has been set or if it can not be transformed
-     *          to the desired type
+     *         no header has been set or if it can not be transformed
+     *         to the desired type
      */
     public <T> T getHeader(String name, Class<T> type) {
         if (headers == null) {
@@ -152,7 +154,7 @@ public class MessageImpl implements Message {
     /**
      * Get a typed header.
      * This is equivalent to:
-     *   <code>exchange.getHeader(type.getName())</code>
+     * <code>exchange.getHeader(type.getName())</code>
      *
      * @param type the type of the header
      * @return the header
@@ -166,7 +168,8 @@ public class MessageImpl implements Message {
 
     /**
      * Set a header for this message
-     * @param name the name of the header
+     *
+     * @param name  the name of the header
      * @param value the value of the header
      */
     public void setHeader(String name, Object value) {
@@ -179,10 +182,9 @@ public class MessageImpl implements Message {
     /**
      * Set a typed header for this message.
      * This is equivalent to:
-     *   <code>exchange.setHeader(type.getName(), value)</code>
+     * <code>exchange.setHeader(type.getName(), value)</code>
      *
-     *
-     * @param type the type of the header
+     * @param type  the type of the header
      * @param value the value of the header
      */
     public <T> void setHeader(Class<T> type, T value) {
@@ -242,7 +244,7 @@ public class MessageImpl implements Message {
     /**
      * Add an attachment to this message
      *
-     * @param id the id of the attachment
+     * @param id    the id of the attachment
      * @param value the attachment to add
      */
     public void addAttachment(String id, Object value) {
@@ -280,7 +282,7 @@ public class MessageImpl implements Message {
      * attachments are transformed to re-readable sources.
      * This method will be called by the framework when persisting
      * the message or when displaying it.
-     *
+     * <p/>
      * TODO: do we really need this method
      */
     public void ensureReReadable() {
@@ -324,19 +326,19 @@ public class MessageImpl implements Message {
         return copy;
     }
 
-	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-		ensureReReadable();
-		out.defaultWriteObject();
-	}
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+        ensureReReadable();
+        out.defaultWriteObject();
+    }
 
-	public String display(boolean displayContent) {
-		if (displayContent) {
-			ensureReReadable();
-		}
-		return "Message []";
-	}
+    public String display(boolean displayContent) {
+        if (displayContent) {
+            ensureReReadable();
+        }
+        return "Message []";
+    }
 
-	public String toString() {
-		return display(true);
-	}
+    public String toString() {
+        return display(true);
+    }
 }

@@ -16,18 +16,15 @@
  */
 package org.apache.servicemix.nmr.core;
 
-import org.apache.servicemix.nmr.api.service.ServiceRegistry;
-
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.servicemix.nmr.api.service.ServiceRegistry;
+
 /**
- * Created by IntelliJ IDEA.
- * User: gnodet
- * Date: Aug 27, 2007
- * Time: 12:43:36 PM
- * To change this template use File | Settings | File Templates.
+ * A very basic implementation of a ServiceRegistry that can be
+ * inherited to add more specific methods if needed.
  */
 public class ServiceRegistryImpl<T> implements ServiceRegistry<T> {
 
@@ -36,7 +33,7 @@ public class ServiceRegistryImpl<T> implements ServiceRegistry<T> {
     public void register(T service, Map<String, ?> properties) {
         assert service != null : "service should not be null";
         registry.put(service, properties);
-    }                                                                                                                                   
+    }
 
     public void unregister(T service, Map<String, ?> properties) {
         assert service != null : "service should not be null";

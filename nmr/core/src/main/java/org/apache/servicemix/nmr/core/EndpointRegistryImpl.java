@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Collection;
+import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -32,10 +32,16 @@ import org.apache.servicemix.nmr.api.EndpointRegistry;
 import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.nmr.api.Reference;
 import org.apache.servicemix.nmr.api.ServiceMixException;
+import org.apache.servicemix.nmr.api.event.EndpointListener;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
 import org.apache.servicemix.nmr.api.service.ServiceRegistry;
+import org.apache.servicemix.nmr.core.util.Filter;
+import org.apache.servicemix.nmr.core.util.MapToDictionary;
 
 /**
+ * Implementation of {@link EndpointRegistry} interface that defines
+ * methods to register, undergister and query endpoints.
+ *
  * @version $Revision: $
  * @since 4.0
  */
@@ -45,6 +51,7 @@ public class EndpointRegistryImpl implements EndpointRegistry {
     private Map<Endpoint, InternalEndpoint> endpoints = new ConcurrentHashMap<Endpoint, InternalEndpoint>();
     private Map<InternalEndpoint, Endpoint> wrappers = new ConcurrentHashMap<InternalEndpoint, Endpoint>();
     private ServiceRegistry<InternalEndpoint> registry = new ServiceRegistryImpl<InternalEndpoint>();
+    private Map<DynamicReferenceImpl, Boolean> references = new WeakHashMap<DynamicReferenceImpl, Boolean>();
 
     public EndpointRegistryImpl() {
     }
@@ -62,7 +69,9 @@ public class EndpointRegistryImpl implements EndpointRegistry {
     }
 
     public void init() {
-        // TODO: check nmr
+        if (nmr == null) {
+            throw new NullPointerException("nmr must be not null");
+        }
     }
 
     /**
@@ -83,6 +92,12 @@ public class EndpointRegistryImpl implements EndpointRegistry {
         endpoints.put(endpoint, wrapper);
         wrappers.put(wrapper, endpoint);
         registry.register(wrapper, properties);
+        for (EndpointListener listener : nmr.getListenerRegistry().getListeners(EndpointListener.class)) {
+            listener.endpointRegistered(endpoint);
+        }
+        for (DynamicReferenceImpl ref : references.keySet()) {
+            ref.setDirty();
+        }
     }
 
     /**
@@ -102,6 +117,12 @@ public class EndpointRegistryImpl implements EndpointRegistry {
             wrappers.remove(wrapper);
         }
         registry.unregister(wrapper, properties);
+        for (EndpointListener listener : nmr.getListenerRegistry().getListeners(EndpointListener.class)) {
+            listener.endpointUnregistered(endpoint);
+        }
+        for (DynamicReferenceImpl ref : references.keySet()) {
+            ref.setDirty();
+        }
     }
 
     /**
@@ -149,12 +170,20 @@ public class EndpointRegistryImpl implements EndpointRegistry {
      * <p/>
      * This could return actual endpoints, or a dynamic proxy to a number of endpoints
      */
-    public Reference lookup(Map<String, ?> properties) {
-        List<InternalEndpoint> endpoints = internalQuery(properties);
-        if (endpoints.isEmpty()) {
-            throw new ServiceMixException("No matching endpoints");
-        }
-        return new ReferenceImpl(endpoints);
+    public Reference lookup(final Map<String, ?> properties) {
+        DynamicReferenceImpl ref = new DynamicReferenceImpl(this, new Filter<InternalEndpoint>() {
+            public boolean match(InternalEndpoint endpoint) {
+                Map<String, ?> epProps = registry.getProperties(endpoint);
+                for (Map.Entry<String, ?> name : properties.entrySet()) {
+                    if (!name.getValue().equals(epProps.get(name.getKey()))) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        });
+        this.references.put(ref, true);
+        return ref;
     }
 
     /**
@@ -169,18 +198,49 @@ public class EndpointRegistryImpl implements EndpointRegistry {
         return null;
     }
 
+    /**
+     * Creates a Reference that select endpoints that match the
+     * given LDAP filter.
+     *
+     * @param filter a LDAP filter used to find matching endpoints
+     * @return a new Reference that uses the given filter
+     */
+    public Reference lookup(String filter) {
+        try {
+            try {
+                final org.osgi.framework.Filter flt = org.osgi.framework.FrameworkUtil.createFilter(filter);
+                DynamicReferenceImpl ref = new DynamicReferenceImpl(this, new Filter<InternalEndpoint>() {
+                    public boolean match(InternalEndpoint endpoint) {
+                        Map<String, ?> props = EndpointRegistryImpl.this.getProperties(endpoint);
+                        return flt.match(new MapToDictionary(props));
+                    }
+                });
+                this.references.put(ref, true);
+                return ref;
+            } catch (org.osgi.framework.InvalidSyntaxException e) {
+                throw new ServiceMixException("Invalid filter syntax: " + e.getMessage());
+            }
+        } catch (NoClassDefFoundError e) {
+            throw new UnsupportedOperationException(e);
+        }
+    }
+
     protected List<InternalEndpoint> internalQuery(Map<String, ?> properties) {
         List<InternalEndpoint> endpoints = new ArrayList<InternalEndpoint>();
-        for (InternalEndpoint e : registry.getServices()) {
-            boolean match = true;
-            for (String name : properties.keySet()) {
-                if (!properties.get(name).equals(registry.getProperties(e).get(name))) {
-                    match = false;
-                    break;
+        if (properties == null) {
+            endpoints.addAll(registry.getServices());
+        } else {
+            for (InternalEndpoint e : registry.getServices()) {
+                boolean match = true;
+                for (String name : properties.keySet()) {
+                    if (!properties.get(name).equals(registry.getProperties(e).get(name))) {
+                        match = false;
+                        break;
+                    }
                 }
-            }
-            if (match) {
-                endpoints.add(e);
+                if (match) {
+                    endpoints.add(e);
+                }
             }
         }
         return endpoints;

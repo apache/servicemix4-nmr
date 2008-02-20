@@ -45,6 +45,21 @@
             <scope>test</scope>
             <version>${junit.version}</version>
         </dependency>
+        <!-- Put this dependency before the following one to avoid a classloader problem
+             when running junit tests -->
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.framework</artifactId>
+            <version>${felix.framework.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>${felix.osgi.version}</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <build>
@@ -55,7 +70,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>${pom.artifactId}</Export-Package>
+                        <Export-Package>${pom.artifactId}*</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>

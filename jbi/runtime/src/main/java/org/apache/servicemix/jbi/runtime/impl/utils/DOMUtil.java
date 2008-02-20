@@ -215,6 +215,8 @@ public final class DOMUtil {
     public static QName getQName(Element el) {
         if (el == null) {
             return null;
+        } else if (el.getNamespaceURI() == null) {
+            return new QName(el.getNodeName());
         } else if (el.getPrefix() != null) {
             return new QName(el.getNamespaceURI(), el.getLocalName(), el.getPrefix());
         } else {

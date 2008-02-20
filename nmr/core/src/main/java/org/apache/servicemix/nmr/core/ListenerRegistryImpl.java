@@ -16,11 +16,12 @@
  */
 package org.apache.servicemix.nmr.core;
 
+import java.util.Iterator;
+
 import org.apache.servicemix.nmr.api.event.Listener;
 import org.apache.servicemix.nmr.api.event.ListenerRegistry;
-
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import org.apache.servicemix.nmr.core.util.Filter;
+import org.apache.servicemix.nmr.core.util.FilterIterator;
 
 /**
  *
@@ -36,53 +37,13 @@ public class ListenerRegistryImpl extends ServiceRegistryImpl<Listener> implemen
     public <T extends Listener> Iterable<T> getListeners(final Class<T> type) {
         return new Iterable<T>() {
             public Iterator<T> iterator() {
-                return new FilterIterator(type, getServices().iterator());
+                return new FilterIterator(getServices().iterator(), new Filter() {
+                    public boolean match(Object endpoint) {
+                        return type.isInstance(endpoint);
+                    }
+                });
             }
         };
-    }
-
-    /**
-     * A filtered iterator that will only return elements of a certain type
-     */
-    private static class FilterIterator<U, T extends U> implements Iterator<T> {
-
-        private Iterator<U> iter;
-        private Class<T> type;
-        private T next;
-
-        public FilterIterator(Class<T> type, Iterator<U> iter) {
-            this.iter = iter;
-            this.type = type;
-            advance();
-        }
-
-        private void advance() {
-            while (iter.hasNext()) {
-                U elt = iter.next();
-                if (type.isInstance(elt)) {
-                    next = (T) elt;
-                    return;
-                }
-            }
-            next = null;
-        }
-
-        public boolean hasNext() {
-            return next != null;
-        }
-
-        public T next() {
-            if (next == null) {
-                throw new NoSuchElementException();
-            }
-            T o = next;
-            advance();
-            return o;
-        }
-
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
     }
 
 }

@@ -16,10 +16,10 @@
  */
 package org.apache.servicemix.nmr.core;
 
+import org.apache.servicemix.nmr.api.Role;
 import org.apache.servicemix.nmr.api.internal.Flow;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
 import org.apache.servicemix.nmr.api.internal.InternalExchange;
-import org.apache.servicemix.nmr.api.Role;
 
 
 /**
@@ -51,7 +51,7 @@ public class StraightThroughFlow implements Flow {
      */
     public void dispatch(InternalExchange exchange) {
         InternalEndpoint endpoint = exchange.getRole() == Role.Consumer ? exchange.getDestination()
-                                                                        : exchange.getSource();
+                : exchange.getSource();
         endpoint.getChannel().deliver(exchange);
     }
 }

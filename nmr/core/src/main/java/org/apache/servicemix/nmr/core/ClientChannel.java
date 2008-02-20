@@ -16,18 +16,19 @@
  */
 package org.apache.servicemix.nmr.core;
 
+import java.util.concurrent.Executors;
+
 import org.apache.servicemix.nmr.api.Channel;
 import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.nmr.api.internal.InternalChannel;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
 
-import java.util.concurrent.Executors;
-
 /**
- *
+ * A {@link Channel} to be used as a client.
+ * Only sendSync should be used, else an exception will occur
  */
-public class ClientChannel extends ChannelImpl implements Channel {
+public class ClientChannel extends ChannelImpl {
 
     public ClientChannel(NMR nmr) {
         super(new ClientEndpoint(), Executors.newCachedThreadPool(), nmr);

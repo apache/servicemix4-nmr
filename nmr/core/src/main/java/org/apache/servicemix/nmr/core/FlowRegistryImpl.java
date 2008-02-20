@@ -16,13 +16,17 @@
  */
 package org.apache.servicemix.nmr.core;
 
-import org.apache.servicemix.nmr.api.ServiceMixException;
 import org.apache.servicemix.nmr.api.Role;
-import org.apache.servicemix.nmr.api.internal.*;
+import org.apache.servicemix.nmr.api.ServiceMixException;
+import org.apache.servicemix.nmr.api.internal.Flow;
+import org.apache.servicemix.nmr.api.internal.FlowRegistry;
+import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
+import org.apache.servicemix.nmr.api.internal.InternalExchange;
+import org.apache.servicemix.nmr.api.internal.InternalReference;
 
 /**
- * The default implementation of FlowRegistry.
- * 
+ * The default implementation of {@link FlowRegistry}.
+ *
  * @version $Revision: $
  * @since 4.0
  */

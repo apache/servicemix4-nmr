@@ -16,21 +16,25 @@
  */
 package org.apache.servicemix.nmr.core;
 
-import org.apache.servicemix.nmr.api.*;
-import org.apache.servicemix.nmr.api.event.ExchangeListener;
-import org.apache.servicemix.nmr.api.internal.InternalChannel;
-import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
-import org.apache.servicemix.nmr.api.internal.InternalExchange;
-
 import java.util.concurrent.Executor;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.servicemix.nmr.api.Exchange;
+import org.apache.servicemix.nmr.api.NMR;
+import org.apache.servicemix.nmr.api.Pattern;
+import org.apache.servicemix.nmr.api.Role;
+import org.apache.servicemix.nmr.api.Status;
+import org.apache.servicemix.nmr.api.event.ExchangeListener;
+import org.apache.servicemix.nmr.api.internal.InternalChannel;
+import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
+import org.apache.servicemix.nmr.api.internal.InternalExchange;
+
 /**
- * The Channel implementation.
+ * The {@link org.apache.servicemix.nmr.api.Channel} implementation.
  * The channel uses an Executor (usually a thread pool)
- * to delegate  
+ * to delegate
  *
  * @version $Revision: $
  * @since 4.0
@@ -105,7 +109,7 @@ public class ChannelImpl implements InternalChannel {
     public boolean sendSync(Exchange exchange, long timeout) {
         InternalExchange e = (InternalExchange) exchange;
         Semaphore lock = e.getRole() == Role.Consumer ? e.getConsumerLock(true)
-                                                      : e.getProviderLock(true);
+                : e.getProviderLock(true);
         try {
             dispatch(e);
             if (timeout > 0) {
@@ -144,7 +148,7 @@ public class ChannelImpl implements InternalChannel {
     public void deliver(final InternalExchange exchange) {
         // Handle case where the exchange has been sent synchronously
         Semaphore lock = exchange.getRole() == Role.Provider ? exchange.getConsumerLock(false)
-                                                             : exchange.getProviderLock(false);
+                : exchange.getProviderLock(false);
         if (lock != null) {
             lock.release();
             return;

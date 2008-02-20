@@ -59,7 +59,6 @@ public class IntegrationTest {
                 this.channel = channel;
             }
             public void process(Exchange exchange) {
-                System.out.println("Received exchange: " + exchange);
                 if (exchange.getStatus() == Status.Active) {
                     exchange.setStatus(Status.Done);
                     channel.send(exchange);

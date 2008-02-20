@@ -16,30 +16,39 @@
  */
 package org.apache.servicemix.nmr.core;
 
-import org.apache.servicemix.nmr.api.*;
-import org.apache.servicemix.nmr.api.internal.InternalExchange;
-import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
-
-import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Semaphore;
 
+import javax.xml.namespace.QName;
+
+import org.apache.servicemix.nmr.api.Exchange;
+import org.apache.servicemix.nmr.api.Message;
+import org.apache.servicemix.nmr.api.Pattern;
+import org.apache.servicemix.nmr.api.Reference;
+import org.apache.servicemix.nmr.api.Role;
+import org.apache.servicemix.nmr.api.Status;
+import org.apache.servicemix.nmr.api.Type;
+import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
+import org.apache.servicemix.nmr.api.internal.InternalExchange;
+
 /**
+ * The default {@link Exchange} implementation.
+ *
  * @version $Revision: $
  * @since 4.0
  */
 public class ExchangeImpl implements InternalExchange {
 
-	/**
-	 * Generated serial version UID 
-	 */
-	private static final long serialVersionUID = 5453128544624717320L;
-	
-	private String id;
-	private Status status;
+    /**
+     * Generated serial version UID
+     */
+    private static final long serialVersionUID = 5453128544624717320L;
+
+    private String id;
+    private Status status;
     private Role role;
     private Pattern pattern;
     private Reference target;
@@ -56,6 +65,7 @@ public class ExchangeImpl implements InternalExchange {
 
     /**
      * Creates and exchange of the given pattern
+     *
      * @param pattern the pattern of this exchange
      */
     public ExchangeImpl(Pattern pattern) {
@@ -64,7 +74,7 @@ public class ExchangeImpl implements InternalExchange {
         this.role = Role.Consumer;
         this.pattern = pattern;
     }
-    
+
     private ExchangeImpl() {
     }
 
@@ -74,7 +84,7 @@ public class ExchangeImpl implements InternalExchange {
      * @return the unique id
      */
     public String getId() {
-    	return id;
+        return id;
     }
 
     /**
@@ -89,14 +99,14 @@ public class ExchangeImpl implements InternalExchange {
     public void setRole(Role role) {
         this.role = role;
     }
-    
+
     /**
      * The status of the exchange
-     * 
+     *
      * @return the status
      */
     public Status getStatus() {
-    	return status;
+        return status;
     }
 
     public void setStatus(Status status) {
@@ -114,21 +124,21 @@ public class ExchangeImpl implements InternalExchange {
 
     /**
      * The target reference
-     * 
+     *
      * @return the target
      */
-	public Reference getTarget() {
-		return target;
-	}
+    public Reference getTarget() {
+        return target;
+    }
 
-	/**
-	 * Set the target reference
-	 * 
-	 * @param target the new target
-	 */
-	public void setTarget(Reference target) {
-		this.target = target;
-	}
+    /**
+     * Set the target reference
+     *
+     * @param target the new target
+     */
+    public void setTarget(Reference target) {
+        this.target = target;
+    }
 
     /**
      * The operation
@@ -155,9 +165,9 @@ public class ExchangeImpl implements InternalExchange {
      * @return the value of the property or <code>null</code> if none has been set
      */
     public Object getProperty(String name) {
-    	if (properties == null) {
-    		return null;
-    	}
+        if (properties == null) {
+            return null;
+        }
         return properties.get(name);
     }
 
@@ -168,9 +178,9 @@ public class ExchangeImpl implements InternalExchange {
      * @return the value of the property or <code>null</code> if none has been set
      */
     public <T> T getProperty(String name, Class<T> type) {
-    	if (properties == null) {
-    		return null;
-    	}
+        if (properties == null) {
+            return null;
+        }
         // TODO: use converters
         return (T) properties.get(name);
     }
@@ -196,9 +206,9 @@ public class ExchangeImpl implements InternalExchange {
      * @param value the value for this property or <code>null</code>
      */
     public void setProperty(String name, Object value) {
-    	if (properties == null) {
-    		properties = new HashMap<String, Object>();
-    	}
+        if (properties == null) {
+            properties = new HashMap<String, Object>();
+        }
         properties.put(name, value);
     }
 
@@ -229,7 +239,7 @@ public class ExchangeImpl implements InternalExchange {
     public Message getIn() {
         return getIn(true);
     }
-    
+
     public Message getIn(boolean lazyCreate) {
         if (this.in == null && lazyCreate) {
             this.in = createMessage();
@@ -295,27 +305,35 @@ public class ExchangeImpl implements InternalExchange {
     public Message getMessage(Type type) {
         return getMessage(type, true);
     }
-    
+
     public Message getMessage(Type type, boolean lazyCreate) {
         switch (type) {
-            case In: return getIn(lazyCreate);
-            case Out: return getOut(lazyCreate);
-            case Fault: return getFault(lazyCreate);
-            default: throw new IllegalArgumentException();
+            case In:
+                return getIn(lazyCreate);
+            case Out:
+                return getOut(lazyCreate);
+            case Fault:
+                return getFault(lazyCreate);
+            default:
+                throw new IllegalArgumentException();
         }
     }
 
     public void setMessage(Type type, Message message) {
         switch (type) {
-            case In: setIn(message);
-            case Out: setOut(message);
-            case Fault: setFault(message);
-            default: throw new IllegalArgumentException();
+            case In:
+                setIn(message);
+            case Out:
+                setOut(message);
+            case Fault:
+                setFault(message);
+            default:
+                throw new IllegalArgumentException();
         }
     }
-    
+
     protected Message createMessage() {
-    	return new MessageImpl();
+        return new MessageImpl();
     }
 
     /**
@@ -326,64 +344,64 @@ public class ExchangeImpl implements InternalExchange {
     public Exception getError() {
         return error;
     }
-    
+
     public void setError(Exception error) {
-    	this.error = error;
+        this.error = error;
     }
 
-	public void ensureReReadable() {
-		if (in != null) {
-			in.ensureReReadable();
-		}
-		if (out != null) {
-			out.ensureReReadable();
-		}
-		if (fault != null) {
-			fault.ensureReReadable();
-		}
-	}
+    public void ensureReReadable() {
+        if (in != null) {
+            in.ensureReReadable();
+        }
+        if (out != null) {
+            out.ensureReReadable();
+        }
+        if (fault != null) {
+            fault.ensureReReadable();
+        }
+    }
 
     /**
      * Copy this exchange
      */
-	public void copyFrom(Exchange exchange) {
-		this.error = exchange.getError();
-		if (exchange.getFault() != null) {
-			this.fault = exchange.getFault().copy();
-		}
-		if (exchange.getIn() != null) {
-			this.in = exchange.getIn().copy();
-		}
-		if (exchange.getOut() != null) {
-			this.out = exchange.getOut().copy();
-		}
-		this.pattern = exchange.getPattern();
+    public void copyFrom(Exchange exchange) {
+        this.error = exchange.getError();
+        if (exchange.getFault() != null) {
+            this.fault = exchange.getFault().copy();
+        }
+        if (exchange.getIn() != null) {
+            this.in = exchange.getIn().copy();
+        }
+        if (exchange.getOut() != null) {
+            this.out = exchange.getOut().copy();
+        }
+        this.pattern = exchange.getPattern();
         this.properties = new HashMap<String, Object>(exchange.getProperties());
-		this.role = exchange.getRole();
-		this.target = exchange.getTarget();
-	}
-	
+        this.role = exchange.getRole();
+        this.target = exchange.getTarget();
+    }
+
     public Exchange copy() {
-    	ExchangeImpl copy = new ExchangeImpl();
+        ExchangeImpl copy = new ExchangeImpl();
         copy.copyFrom(this);
         return copy;
     }
 
-	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-		ensureReReadable();
-		out.defaultWriteObject();
-	}
-	
-	public String display(boolean displayContent) {
-		if (displayContent) {
-			ensureReReadable();
-		}
-		return "Exchange []";
-	}
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+        ensureReReadable();
+        out.defaultWriteObject();
+    }
 
-	public String toString() {
-		return display(true);
-	}
+    public String display(boolean displayContent) {
+        if (displayContent) {
+            ensureReReadable();
+        }
+        return "Exchange []";
+    }
+
+    public String toString() {
+        return display(true);
+    }
 
     public InternalEndpoint getSource() {
         return source;

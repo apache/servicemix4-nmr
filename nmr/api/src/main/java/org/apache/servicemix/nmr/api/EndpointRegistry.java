@@ -80,5 +80,14 @@ public interface EndpointRegistry extends ServiceRegistry<Endpoint> {
      */
     Reference lookup(Document xml);
 
+    /**
+     * Creates a Reference that select endpoints that match the
+     * given LDAP filter.
+     *
+     * @param filter a LDAP filter used to find matching endpoints
+     * @return a new Reference that uses the given filter
+     */
+    Reference lookup(String filter);
+
 }
 

@@ -27,6 +27,10 @@ import org.apache.commons.logging.LogFactory;
 import org.osgi.service.url.AbstractURLStreamHandlerService;
 
 
+/**
+ * A URL handler that will transform a JBI artifact to an OSGi bundle
+ * on the fly.
+ */
 public class URLHandler extends AbstractURLStreamHandlerService {
 	
 	private static Log logger = LogFactory.getLog(URLHandler.class);

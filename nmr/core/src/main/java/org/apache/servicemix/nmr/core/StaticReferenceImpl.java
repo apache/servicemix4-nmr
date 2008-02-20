@@ -16,21 +16,22 @@
  */
 package org.apache.servicemix.nmr.core;
 
-import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
-import org.apache.servicemix.nmr.api.internal.InternalReference;
+import java.util.List;
+
 import org.w3c.dom.Document;
 
-import java.util.List;
+import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
+import org.apache.servicemix.nmr.api.internal.InternalReference;
 
 /**
  * @version $Revision: $
  * @since 4.0
  */
-public class ReferenceImpl implements InternalReference {
+public class StaticReferenceImpl implements InternalReference {
 
     private final List<InternalEndpoint> endpoints;
 
-    public ReferenceImpl(List<InternalEndpoint> endpoints) {
+    public StaticReferenceImpl(List<InternalEndpoint> endpoints) {
         this.endpoints = endpoints;
     }
 
@@ -61,5 +62,5 @@ public class ReferenceImpl implements InternalReference {
     public Iterable<InternalEndpoint> choose() {
         return endpoints;
     }
-    
+
 }
