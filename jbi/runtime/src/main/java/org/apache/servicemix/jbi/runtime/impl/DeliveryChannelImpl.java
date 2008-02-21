@@ -29,6 +29,7 @@ import javax.jbi.messaging.MessagingException;
 import javax.jbi.servicedesc.ServiceEndpoint;
 import javax.xml.namespace.QName;
 
+import org.apache.servicemix.nmr.api.AbortedException;
 import org.apache.servicemix.nmr.api.Channel;
 import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.Exchange;
@@ -41,6 +42,8 @@ import org.apache.servicemix.nmr.api.internal.InternalExchange;
  *
  */
 public class DeliveryChannelImpl implements DeliveryChannel {
+
+    public static final java.lang.String SEND_SYNC = "javax.jbi.messaging.sendSync";
 
     /** Mutable boolean indicating if the channe has been closed */
     private final AtomicBoolean closed;
@@ -98,7 +101,9 @@ public class DeliveryChannelImpl implements DeliveryChannel {
             if (exchange == null) {
                 return null;
             }
-            return getMessageExchange(exchange);
+            MessageExchange me = getMessageExchange(exchange);
+            ((MessageExchangeImpl) me).beforeReceived();
+            return me;
         } catch (InterruptedException e) {
             throw new MessagingException(e);
         }
@@ -106,31 +111,42 @@ public class DeliveryChannelImpl implements DeliveryChannel {
 
     public MessageExchange accept(long timeout) throws MessagingException {
         try {
-            Exchange exchange = queue.poll(timeout, TimeUnit.MILLISECONDS);
-            if (exchange == null) {
-                return null;
+            long t0  = System.currentTimeMillis();
+            long cur = t0;
+            while (cur - t0 < timeout) {
+                Exchange exchange = queue.poll(t0 + timeout - cur, TimeUnit.MILLISECONDS);
+                if (exchange == null || exchange.getError() instanceof AbortedException) {
+                    cur = System.currentTimeMillis();
+                    continue;
+                }
+                MessageExchange me = getMessageExchange(exchange);
+                ((MessageExchangeImpl) me).beforeReceived();
+                return me;
             }
-            return getMessageExchange(exchange);
+            return null;
         } catch (InterruptedException e) {
             throw new MessagingException(e);
         }
     }
 
     protected MessageExchange getMessageExchange(Exchange exchange) {
-        MessageExchange me = exchange.getProperty(MessageExchange.class);
-        if (me == null) {
-            if (exchange.getPattern() == Pattern.InOnly) {
-                me = new InOnlyImpl(exchange);
-            } else if (exchange.getPattern() == Pattern.InOptionalOut) {
-                me = new InOptionalOutImpl(exchange);
-            } else if (exchange.getPattern() == Pattern.InOut) {
-                me = new InOutImpl(exchange);
-            } else if (exchange.getPattern() == Pattern.RobustInOnly) {
-                me = new RobustInOnlyImpl(exchange);
-            } else {
-                throw new IllegalStateException("Unkown pattern: " + exchange.getPattern());
+        MessageExchange me;
+        synchronized (exchange) {
+            me = exchange.getProperty(MessageExchange.class);
+            if (me == null) {
+                if (exchange.getPattern() == Pattern.InOnly) {
+                    me = new InOnlyImpl(exchange);
+                } else if (exchange.getPattern() == Pattern.InOptionalOut) {
+                    me = new InOptionalOutImpl(exchange);
+                } else if (exchange.getPattern() == Pattern.InOut) {
+                    me = new InOutImpl(exchange);
+                } else if (exchange.getPattern() == Pattern.RobustInOnly) {
+                    me = new RobustInOnlyImpl(exchange);
+                } else {
+                    throw new IllegalStateException("Unkown pattern: " + exchange.getPattern());
+                }
+                exchange.setProperty(MessageExchange.class, me);
             }
-            exchange.setProperty(MessageExchange.class, me);
         }
         // Translate the destination endpoint
         if (((InternalExchange) exchange).getDestination() != null && me.getEndpoint() == null) {
@@ -157,18 +173,24 @@ public class DeliveryChannelImpl implements DeliveryChannel {
     public void send(MessageExchange exchange) throws MessagingException {
         assert exchange != null;
         createTarget(exchange);
+        exchange.setProperty(SEND_SYNC, null);
+        ((MessageExchangeImpl) exchange).afterSend();
         channel.send(((MessageExchangeImpl) exchange).getInternalExchange());
     }
 
     public boolean sendSync(MessageExchange exchange) throws MessagingException {
         assert exchange != null;
         createTarget(exchange);
+        exchange.setProperty(SEND_SYNC, Boolean.TRUE);
+        ((MessageExchangeImpl) exchange).afterSend();
         return channel.sendSync(((MessageExchangeImpl) exchange).getInternalExchange());
     }
 
     public boolean sendSync(MessageExchange exchange, long timeout) throws MessagingException {
         assert exchange != null;
         createTarget(exchange);
+        exchange.setProperty(SEND_SYNC, Boolean.TRUE);
+        ((MessageExchangeImpl) exchange).afterSend();
         return channel.sendSync(((MessageExchangeImpl) exchange).getInternalExchange(), timeout);
     }
 

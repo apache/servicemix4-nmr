@@ -54,8 +54,8 @@ public class FlowRegistryImpl extends ServiceRegistryImpl<Flow> implements FlowR
                             return;
                         }
                     }
-                    throw new ServiceMixException("Could not dispatch exchange. No flow can handle it.");
                 }
+                throw new ServiceMixException("Could not dispatch exchange. No flow can handle it.");
             } else {
                 for (Flow flow : getServices()) {
                     if (flow.canDispatch(exchange, exchange.getDestination())) {

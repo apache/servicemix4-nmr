@@ -14,30 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicemix.jbi.runtime.impl;
-
-import org.apache.servicemix.nmr.api.Exchange;
-
-import javax.jbi.messaging.RobustInOnly;
-import javax.jbi.messaging.NormalizedMessage;
-import javax.jbi.messaging.MessagingException;
-import javax.jbi.messaging.Fault;
+package org.apache.servicemix.nmr.api;
 
 /**
- * Created by IntelliJ IDEA.
- * User: gnodet
- * Date: Oct 5, 2007
- * Time: 5:33:16 PM
- * To change this template use File | Settings | File Templates.
+ * Specifies that the exchange has been aborted due to a timeout when using sendSync.
  */
-public class RobustInOnlyImpl extends MessageExchangeImpl implements RobustInOnly {
+public class AbortedException extends ServiceMixException {
 
-    public RobustInOnlyImpl(Exchange exchange) {
-        super(exchange);
-    }
-    
-    public void setOutMessage(NormalizedMessage message) throws MessagingException {
-        throw new MessagingException("Out message not supported");
+    public AbortedException() {
     }
 
+    public AbortedException(String message) {
+        super(message);
+    }
+
+    public AbortedException(Throwable cause) {
+        super(cause);
+    }
+
+    public AbortedException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

@@ -17,19 +17,19 @@
 package org.apache.servicemix.jbi.runtime.impl;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jbi.JBIException;
 import javax.jbi.component.Component;
 import javax.jbi.component.ComponentContext;
-import javax.naming.InitialContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.runtime.ComponentRegistry;
 import org.apache.servicemix.jbi.runtime.DocumentRepository;
+import org.apache.servicemix.jbi.runtime.Environment;
+import org.apache.servicemix.jbi.runtime.impl.ManagementContext;
 import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.nmr.api.ServiceMixException;
 import org.apache.servicemix.nmr.core.ServiceRegistryImpl;
@@ -44,9 +44,7 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<Component>  imple
     private NMR nmr;
     private DocumentRepository documentRepository;
     private Map<String, Component> components;
-    private Object transactionManager;
-    private List transactionManagers;
-    private InitialContext namingContext;
+    private Environment environment;
     private ManagementContext managementContext;
 
     public ComponentRegistryImpl() {
@@ -61,12 +59,12 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<Component>  imple
         this.nmr = nmr;
     }
 
-    public DocumentRepository getDocumentRepository() {
-        return documentRepository;
+    public Environment getEnvironment() {
+        return environment;
     }
 
-    public void setDocumentRepository(DocumentRepository documentRepository) {
-        this.documentRepository = documentRepository;
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
     }
 
     public ManagementContext getManagementContext() {
@@ -77,34 +75,12 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<Component>  imple
         this.managementContext = managementContext;
     }
 
-    public Object getTransactionManager() {
-        if (transactionManager != null) {
-            return transactionManager;
-        }
-        if (transactionManagers != null && !transactionManagers.isEmpty()) {
-            return transactionManagers.get(0);
-        }
-        return null;
+    public DocumentRepository getDocumentRepository() {
+        return documentRepository;
     }
 
-    public void setTransactionManager(Object transactionManager) {
-        this.transactionManager = transactionManager;
-    }
-
-    public List getTransactionManagers() {
-        return transactionManagers;
-    }
-
-    public void setTransactionManagers(List transactionManagers) {
-        this.transactionManagers = transactionManagers;
-    }
-
-    public InitialContext getNamingContext() {
-        return namingContext;
-    }
-
-    public void setNamingContext(InitialContext namingContext) {
-        this.namingContext = namingContext;
+    public void setDocumentRepository(DocumentRepository documentRepository) {
+        this.documentRepository = documentRepository;
     }
 
     /**
@@ -125,7 +101,7 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<Component>  imple
                 properties = new HashMap<String, Object>();
             }
             String name = (String) properties.get(NAME);
-            ComponentContext context = new ComponentContextImpl(this, component, properties);
+            ComponentContext context = new ComponentContextImpl(this, environment, managementContext, component, properties);
             component.getLifeCycle().init(context);
             if (name != null) {
                 components.put(name, component);

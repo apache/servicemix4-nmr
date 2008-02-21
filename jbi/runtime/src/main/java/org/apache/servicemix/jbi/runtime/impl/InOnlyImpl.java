@@ -19,6 +19,9 @@ package org.apache.servicemix.jbi.runtime.impl;
 import org.apache.servicemix.nmr.api.Exchange;
 
 import javax.jbi.messaging.InOnly;
+import javax.jbi.messaging.NormalizedMessage;
+import javax.jbi.messaging.MessagingException;
+import javax.jbi.messaging.Fault;
 
 /**
  * Created by IntelliJ IDEA.
@@ -31,6 +34,14 @@ public class InOnlyImpl extends MessageExchangeImpl implements InOnly {
 
     public InOnlyImpl(Exchange exchange) {
         super(exchange);
+    }
+
+    public void setOutMessage(NormalizedMessage message) throws MessagingException {
+        throw new MessagingException("Out message not supported");
+    }
+
+    public void setFault(Fault message) throws MessagingException {
+        throw new MessagingException("Fault message not supported");
     }
 
 }

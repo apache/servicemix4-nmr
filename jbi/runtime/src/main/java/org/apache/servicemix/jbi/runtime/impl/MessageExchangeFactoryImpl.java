@@ -230,6 +230,7 @@ public class MessageExchangeFactoryImpl implements MessageExchangeFactory {
     }
 
     protected void setDefaults(MessageExchangeImpl exchange) {
+        exchange.getInternalExchange().setProperty(MessageExchange.class, exchange);
         exchange.setOperation(getOperationName());
         if (endpoint != null) {
             exchange.setEndpoint(getEndpoint());

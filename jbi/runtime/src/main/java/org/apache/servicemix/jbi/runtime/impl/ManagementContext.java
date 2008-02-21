@@ -1,53 +1,40 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.apache.servicemix.jbi.runtime.impl;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
-import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.servicemix.jbi.runtime.Environment;
 
 /**
- * Created by IntelliJ IDEA.
- * User: gnodet
- * Date: Jan 22, 2008
- * Time: 10:15:56 AM
- * To change this template use File | Settings | File Templates.
  */
 public class ManagementContext {
 
     private static final Log LOGGER = LogFactory.getLog(ComponentRegistryImpl.class);
     
     private String jmxDomainName;
-    private MBeanServer mbeanServer;
-    private List<MBeanServer> mbeanServers;
-
-    public MBeanServer getMbeanServer() {
-        if (mbeanServer != null) {
-            return mbeanServer;
-        }
-        if (mbeanServers != null && !mbeanServers.isEmpty()) {
-            return mbeanServers.get(0);
-        }
-        return null;
-    }
-
-    public void setMbeanServer(MBeanServer mbeanServer) {
-        this.mbeanServer = mbeanServer;
-    }
-
-    public List<MBeanServer> getMbeanServers() {
-        return mbeanServers;
-    }
-
-    public void setMbeanServers(List<MBeanServer> mbeanServers) {
-        this.mbeanServers = mbeanServers;
-    }
+    private Environment environment;
 
     public String getJmxDomainName() {
         return jmxDomainName;
@@ -55,6 +42,14 @@ public class ManagementContext {
 
     public void setJmxDomainName(String jmxDomainName) {
         this.jmxDomainName = jmxDomainName;
+    }
+
+    public Environment getEnvironment() {
+        return environment;
+    }
+
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
     }
 
     public ObjectName createCustomComponentMBeanName(String type, String name) {
@@ -124,4 +119,11 @@ public class ManagementContext {
         return result;
     }
 
+    public void registerMBean(ObjectName objectName, Object object, Class interfaceMBean, String description) {
+        // TODO
+    }
+
+    public void unregisterMBean(Object object) {
+        //To change body of created methods use File | Settings | File Templates.
+    }
 }

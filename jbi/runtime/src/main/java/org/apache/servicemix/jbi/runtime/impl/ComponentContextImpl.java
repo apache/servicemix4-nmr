@@ -51,6 +51,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.runtime.ComponentRegistry;
 import org.apache.servicemix.jbi.runtime.DocumentRepository;
+import org.apache.servicemix.jbi.runtime.Environment;
 import org.apache.servicemix.jbi.runtime.impl.utils.DOMUtil;
 import org.apache.servicemix.jbi.runtime.impl.utils.URIResolver;
 import org.apache.servicemix.jbi.runtime.impl.utils.WSAddressingConstants;
@@ -83,9 +84,17 @@ public class ComponentContextImpl implements ComponentContext, MBeanNames {
     private List<EndpointImpl> endpoints;
     private EndpointImpl componentEndpoint;
     private String name;
+    private Environment environment;
+    private ManagementContext managementContext;
 
-    public ComponentContextImpl(ComponentRegistryImpl componentRegistry, Component component, Map<String,?> properties) {
+    public ComponentContextImpl(ComponentRegistryImpl componentRegistry,
+                                Environment environment,
+                                ManagementContext managementContext,
+                                Component component,
+                                Map<String,?> properties) {
         this.componentRegistry = componentRegistry;
+        this.environment = environment;
+        this.managementContext = managementContext;
         this.nmr = componentRegistry.getNmr();
         this.documentRepository = componentRegistry.getDocumentRepository();
         this.component = component;
@@ -249,18 +258,24 @@ public class ComponentContextImpl implements ComponentContext, MBeanNames {
     }
 
     public MBeanServer getMBeanServer() {
-        if (this.componentRegistry.getManagementContext() != null) {
-            return this.componentRegistry.getManagementContext().getMbeanServer();
+        if (this.environment != null) {
+            return environment.getMBeanServer();
         }
         return null;
     }
 
     public InitialContext getNamingContext() {
-        return this.componentRegistry.getNamingContext();
+        if (this.environment != null) {
+            return environment.getNamingContext();
+        }
+        return null;
     }
 
     public Object getTransactionManager() {
-        return this.componentRegistry.getTransactionManager();
+        if (this.environment != null) {
+            return this.environment.getTransactionManager();
+        }
+        return null;
     }
 
     public String getWorkspaceRoot() {
@@ -268,15 +283,15 @@ public class ComponentContextImpl implements ComponentContext, MBeanNames {
     }
 
     public ObjectName createCustomComponentMBeanName(String customName) {
-        if (this.componentRegistry.getManagementContext() != null) {
-            return componentRegistry.getManagementContext().createCustomComponentMBeanName(customName, this.name);
+        if (this.managementContext != null) {
+            return managementContext.createCustomComponentMBeanName(customName, this.name);
         }
         return null;
     }
 
     public String getJmxDomainName() {
-        if (this.componentRegistry.getManagementContext() != null) {
-            return componentRegistry.getManagementContext().getJmxDomainName();
+        if (this.managementContext != null) {
+            return managementContext.getJmxDomainName();
         }
         return null;
     }

@@ -14,30 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicemix.jbi.runtime.impl;
+package org.apache.servicemix.jbi.runtime;
 
-import org.apache.servicemix.nmr.api.Exchange;
-
-import javax.jbi.messaging.RobustInOnly;
-import javax.jbi.messaging.NormalizedMessage;
-import javax.jbi.messaging.MessagingException;
-import javax.jbi.messaging.Fault;
+import javax.management.MBeanServer;
+import javax.naming.InitialContext;
 
 /**
- * Created by IntelliJ IDEA.
- * User: gnodet
- * Date: Oct 5, 2007
- * Time: 5:33:16 PM
- * To change this template use File | Settings | File Templates.
  */
-public class RobustInOnlyImpl extends MessageExchangeImpl implements RobustInOnly {
+public interface Environment {
 
-    public RobustInOnlyImpl(Exchange exchange) {
-        super(exchange);
-    }
-    
-    public void setOutMessage(NormalizedMessage message) throws MessagingException {
-        throw new MessagingException("Out message not supported");
-    }
+    MBeanServer getMBeanServer();
+
+    Object getTransactionManager();
+
+    InitialContext getNamingContext();
 
 }

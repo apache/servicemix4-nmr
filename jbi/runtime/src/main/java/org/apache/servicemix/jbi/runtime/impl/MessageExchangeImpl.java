@@ -48,6 +48,7 @@ public class MessageExchangeImpl implements MessageExchange  {
     public static final String FAULT = "fault";
 
     private final Exchange exchange;
+    private ExchangeStatus previousStatus;
 
     public MessageExchangeImpl(Exchange exchange) {
         this.exchange = exchange;
@@ -152,6 +153,9 @@ public class MessageExchangeImpl implements MessageExchange  {
     }
 
     public void setInMessage(NormalizedMessage message) throws MessagingException {
+        if (exchange.getIn(false) != null) {
+            throw new MessagingException("In message already set");
+        }
         NormalizedMessageImpl msg = (NormalizedMessageImpl) message;
         exchange.setIn(msg.getInternalMessage());
     }
@@ -166,6 +170,9 @@ public class MessageExchangeImpl implements MessageExchange  {
     }
 
     public void setOutMessage(NormalizedMessage message) throws MessagingException {
+        if (exchange.getOut(false) != null) {
+            throw new MessagingException("Out message already set");
+        }
         NormalizedMessageImpl msg = (NormalizedMessageImpl) message;
         exchange.setOut(msg.getInternalMessage());
     }
@@ -184,6 +191,9 @@ public class MessageExchangeImpl implements MessageExchange  {
     }
 
     public void setFault(Fault message) throws MessagingException {
+        if (exchange.getFault(false) != null) {
+            throw new MessagingException("Fault message already set");
+        }
         FaultImpl msg = (FaultImpl) message;
         exchange.setFault(msg.getInternalMessage());
     }
@@ -221,6 +231,16 @@ public class MessageExchangeImpl implements MessageExchange  {
     }
 
     public boolean isTransacted() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return exchange.getProperty(JTA_TRANSACTION_PROPERTY_NAME) != null;
+    }
+
+    void beforeReceived() throws MessagingException {
+        previousStatus = getStatus();
+    }
+
+    void afterSend() throws MessagingException {
+        if (previousStatus == ExchangeStatus.DONE || previousStatus == ExchangeStatus.ERROR) {
+            throw new MessagingException("Can not send a terminated exchange");
+        }
     }
 }

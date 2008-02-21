@@ -347,6 +347,7 @@ public class ExchangeImpl implements InternalExchange {
 
     public void setError(Exception error) {
         this.error = error;
+        this.status = Status.Error;
     }
 
     public void ensureReReadable() {
@@ -396,7 +397,11 @@ public class ExchangeImpl implements InternalExchange {
         if (displayContent) {
             ensureReReadable();
         }
-        return "Exchange []";
+        StringBuilder sb = new StringBuilder();
+        sb.append("Exchange [");
+        sb.append("id=").append(id);
+        sb.append("]");
+        return sb.toString();
     }
 
     public String toString() {

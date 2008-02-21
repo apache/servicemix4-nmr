@@ -16,11 +16,16 @@
  */
 package org.apache.servicemix.nmr.core;
 
+import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.servicemix.nmr.api.AbortedException;
+import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.nmr.api.Pattern;
@@ -41,14 +46,24 @@ import org.apache.servicemix.nmr.api.internal.InternalExchange;
  */
 public class ChannelImpl implements InternalChannel {
 
+    private static final Log LOG = LogFactory.getLog(ChannelImpl.class);
+
     private final InternalEndpoint endpoint;
     private final Executor executor;
     private final NMR nmr;
+    private String name;
 
     public ChannelImpl(InternalEndpoint endpoint, Executor executor, NMR nmr) {
         this.endpoint = endpoint;
         this.executor = executor;
         this.nmr = nmr;
+        Map<String,?> props = nmr.getEndpointRegistry().getProperties(endpoint);
+        if (props != null) {
+            this.name = (String) props.get(Endpoint.NAME);
+        }
+        if (this.name == null) {
+            this.name = toString();
+        }
     }
 
     /**
@@ -119,12 +134,13 @@ public class ChannelImpl implements InternalChannel {
             } else {
                 lock.acquire();
             }
+            e.setRole(e.getRole() == Role.Consumer ? Role.Provider : Role.Consumer);
         } catch (InterruptedException ex) {
             exchange.setError(ex);
             exchange.setStatus(Status.Error);
             return false;
         } catch (TimeoutException ex) {
-            exchange.setError(ex);
+            exchange.setError(new AbortedException(ex));
             exchange.setStatus(Status.Error);
             return false;
         }
@@ -167,6 +183,10 @@ public class ChannelImpl implements InternalChannel {
      * @param exchange the exchange to process
      */
     protected void process(InternalExchange exchange) {
+        // Check for aborted exchanges
+        if (exchange.getError() instanceof AbortedException) {
+            return;
+        }
         // Set destination endpoint
         if (exchange.getDestination() == null) {
             exchange.setDestination(endpoint);
@@ -182,7 +202,7 @@ public class ChannelImpl implements InternalChannel {
         // TODO:
         // Process exchange
         endpoint.process(exchange);
-    }
+    }                             
 
     /**
      * Dispatch the exchange to the NMR
@@ -190,6 +210,9 @@ public class ChannelImpl implements InternalChannel {
      * @param exchange the exchange to dispatch
      */
     protected void dispatch(InternalExchange exchange) {
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Channel " + name + " dispatching exchange " + exchange);
+        }
         // Set source endpoint
         if (exchange.getSource() == null) {
             exchange.setSource(endpoint);
