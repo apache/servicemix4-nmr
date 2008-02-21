@@ -65,6 +65,12 @@
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-core</artifactId>
+            <version>${camel.version}</version>
+            <optional>true</optional>
+        </dependency>
     </dependencies>
 
     <build>
@@ -76,6 +82,7 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Export-Package>${pom.artifactId}*</Export-Package>
+                        <Import-Package>org.apache.camel.*;resolution:=optional,*</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

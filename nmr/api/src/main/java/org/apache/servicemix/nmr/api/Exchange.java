@@ -145,6 +145,29 @@ public interface Exchange extends Serializable {
     <T> void setProperty(Class<T> type, T value);
 
     /**
+     * Remove the given property and returns its value.
+     *
+     * @param name the name of the property
+     * @return the previous value
+     */
+    Object removeProperty(String name);
+
+    /**
+     * Remove the property of the specified type
+     *
+     * @param type the type of the property
+     * @return the previous value
+     */
+    <T> T removeProperty(Class<T> type);
+
+    /**
+     * Set all the properties
+     *
+     * @param properties the new properties
+     */
+    void setProperties(Map<String, Object> properties);
+
+    /**
      * Obtains the input message, lazily creating one if none
      * has been associated with this exchange. If you want to inspect this property
      * but not force lazy creation then invoke the {@link #getIn(boolean)}

@@ -40,6 +40,7 @@ public class MessageImpl implements Message {
     private String contentEncoding;
     private Map<String, Object> headers;
     private Map<String, Object> attachments;
+    private transient Converter converter;
 
     public MessageImpl() {
     }
@@ -60,11 +61,7 @@ public class MessageImpl implements Message {
      * @return the transformed body
      */
     public <T> T getBody(Class<T> type) {
-        // TODO: use converters
-        if (type.isInstance(body)) {
-            return (T) body;
-        }
-        return null;
+        return convert(body, type);
     }
 
     /**
@@ -82,8 +79,8 @@ public class MessageImpl implements Message {
      * @param content the body of the message
      */
     public <T> void setBody(Object content, Class<T> type) {
-        // TODO: use converters
-        this.body = content;
+        T t = convert(content, type);
+        this.body = t != null ? t : content;
     }
 
     /**
@@ -148,7 +145,7 @@ public class MessageImpl implements Message {
         if (headers == null) {
             return null;
         }
-        return (T) headers.get(name);
+        return convert(headers.get(name), type);
     }
 
     /**
@@ -163,7 +160,7 @@ public class MessageImpl implements Message {
         if (headers == null) {
             return null;
         }
-        return (T) headers.get(type.getName());
+        return convert(headers.get(type.getName()), type);
     }
 
     /**
@@ -191,7 +188,7 @@ public class MessageImpl implements Message {
         if (headers == null) {
             headers = new HashMap<String, Object>();
         }
-        headers.put(type.getName(), value);
+        headers.put(type.getName(), convert(value, type));
     }
 
     /**
@@ -205,6 +202,16 @@ public class MessageImpl implements Message {
             return null;
         }
         return headers.remove(name);
+    }
+
+    /**
+     * Remove the header of the specified type
+     *
+     * @param type the type of the header
+     * @return the previous value
+     */
+    public <T> T removeHeader(Class<T> type) {
+        return convert(removeHeader(type.getName()), type);
     }
 
     /**
@@ -235,7 +242,7 @@ public class MessageImpl implements Message {
      * @return the attachement or <code>null</code> if none exists
      */
     public Object getAttachment(String id) {
-        if (attachments != null) {
+        if (attachments == null) {
             return null;
         }
         return attachments.get(id);
@@ -248,7 +255,7 @@ public class MessageImpl implements Message {
      * @param value the attachment to add
      */
     public void addAttachment(String id, Object value) {
-        if (attachments != null) {
+        if (attachments == null) {
             attachments = new HashMap<String, Object>();
         }
         attachments.put(id, value);
@@ -326,12 +333,30 @@ public class MessageImpl implements Message {
         return copy;
     }
 
+    private void readObject(java.io.ObjectInputStream stream) throws IOException, ClassNotFoundException {
+        stream.defaultReadObject();
+    }
+
     private void writeObject(java.io.ObjectOutputStream out) throws IOException {
         ensureReReadable();
         out.defaultWriteObject();
     }
 
-    public String display(boolean displayContent) {
+    private <T> T convert(Object body, Class<T> type) {
+        if (type.isInstance(body)) {
+            return type.cast(body);
+        }
+        if (converter == null) {
+            try {
+                converter = new CamelConverter();
+            } catch (Throwable t) {
+                converter = new DummyConverter();
+            }
+        }
+        return converter.convert(body, type);
+    }
+
+   public String display(boolean displayContent) {
         if (displayContent) {
             ensureReReadable();
         }

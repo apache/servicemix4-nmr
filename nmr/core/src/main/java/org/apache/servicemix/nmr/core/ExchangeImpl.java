@@ -62,6 +62,7 @@ public class ExchangeImpl implements InternalExchange {
     private InternalEndpoint destination;
     private Semaphore consumerLock;
     private Semaphore providerLock;
+    private transient Converter converter;
 
     /**
      * Creates and exchange of the given pattern
@@ -181,8 +182,7 @@ public class ExchangeImpl implements InternalExchange {
         if (properties == null) {
             return null;
         }
-        // TODO: use converters
-        return (T) properties.get(name);
+        return convert(properties.get(name), type);
     }
 
     /**
@@ -195,7 +195,7 @@ public class ExchangeImpl implements InternalExchange {
         if (properties == null) {
             return null;
         }
-        return (T) properties.get(type.getName());
+        return convert(properties.get(type.getName()), type);
     }
 
     /**
@@ -216,7 +216,30 @@ public class ExchangeImpl implements InternalExchange {
         if (properties == null) {
             properties = new HashMap<String, Object>();
         }
-        properties.put(type.getName(), value);
+        properties.put(type.getName(), convert(value, type));
+    }
+
+    /**
+     * Remove the given property and returns its value.
+     *
+     * @param name the name of the property
+     * @return the previous value
+     */
+    public Object removeProperty(String name) {
+        if (properties == null) {
+            return null;
+        }
+        return properties.remove(name);
+    }
+
+    /**
+     * Remove the property of the specified type
+     *
+     * @param type the type of the property
+     * @return the previous value
+     */
+    public <T> T removeProperty(Class<T> type) {
+        return convert(removeProperty(type.getName()), type);
     }
 
     public Map<String, Object> getProperties() {
@@ -323,12 +346,13 @@ public class ExchangeImpl implements InternalExchange {
         switch (type) {
             case In:
                 setIn(message);
+                break;
             case Out:
                 setOut(message);
+                break;
             case Fault:
                 setFault(message);
-            default:
-                throw new IllegalArgumentException();
+                break;
         }
     }
 
@@ -367,14 +391,14 @@ public class ExchangeImpl implements InternalExchange {
      */
     public void copyFrom(Exchange exchange) {
         this.error = exchange.getError();
-        if (exchange.getFault() != null) {
-            this.fault = exchange.getFault().copy();
-        }
-        if (exchange.getIn() != null) {
+        if (exchange.getIn(false) != null) {
             this.in = exchange.getIn().copy();
         }
-        if (exchange.getOut() != null) {
+        if (exchange.getOut(false) != null) {
             this.out = exchange.getOut().copy();
+        }
+        if (exchange.getFault(false) != null) {
+            this.fault = exchange.getFault().copy();
         }
         this.pattern = exchange.getPattern();
         this.properties = new HashMap<String, Object>(exchange.getProperties());
@@ -386,6 +410,10 @@ public class ExchangeImpl implements InternalExchange {
         ExchangeImpl copy = new ExchangeImpl();
         copy.copyFrom(this);
         return copy;
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
     }
 
     private void writeObject(java.io.ObjectOutputStream out) throws IOException {
@@ -436,6 +464,20 @@ public class ExchangeImpl implements InternalExchange {
             providerLock = new Semaphore(0);
         }
         return providerLock;
+    }
+
+    private <T> T convert(Object body, Class<T> type) {
+        if (type.isInstance(body)) {
+            return type.cast(body);
+        }
+        if (converter == null) {
+            try {
+                converter = new CamelConverter();
+            } catch (Throwable t) {
+                converter = new DummyConverter();
+            }
+        }
+        return converter.convert(body, type);
     }
 
 }

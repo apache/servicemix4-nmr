@@ -91,6 +91,14 @@ public interface Message extends Serializable {
     Object removeHeader(String name);
 
     /**
+     * Remove the header of the specified type
+     *  
+     * @param type the type of the header
+     * @return the previous value
+     */
+    <T> T removeHeader(Class<T> type);
+
+    /**
      * Get a map of all the headers for this message
      *
      * @return a map of headers
