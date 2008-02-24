@@ -16,6 +16,7 @@
  */
 package org.apache.servicemix.jbi.runtime.impl;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -81,11 +82,12 @@ public class ComponentContextImpl implements ComponentContext, MBeanNames {
     private Map<String,?> properties;
     private BlockingQueue<Exchange> queue;
     private DeliveryChannel dc;
-    private List<EndpointImpl> endpoints;
     private EndpointImpl componentEndpoint;
     private String name;
     private Environment environment;
     private ManagementContext managementContext;
+    private File workspaceRoot;
+    private File installRoot;
 
     public ComponentContextImpl(ComponentRegistryImpl componentRegistry,
                                 Environment environment,
@@ -99,13 +101,16 @@ public class ComponentContextImpl implements ComponentContext, MBeanNames {
         this.documentRepository = componentRegistry.getDocumentRepository();
         this.component = component;
         this.properties = properties;
-        this.endpoints = new ArrayList<EndpointImpl>();
         this.queue = new ArrayBlockingQueue<Exchange>(DEFAULT_QUEUE_CAPACITY);
         this.componentEndpoint = new EndpointImpl();
         this.componentEndpoint.setQueue(queue);
         this.nmr.getEndpointRegistry().register(componentEndpoint, properties);
         this.dc = new DeliveryChannelImpl(this, componentEndpoint.getChannel(), queue);
         this.name = (String) properties.get(ComponentRegistry.NAME);
+        this.workspaceRoot = new File(System.getProperty("servicemix.base"), "data/jbi/" + name + "/workspace");
+        this.workspaceRoot.mkdirs();
+        this.installRoot = new File(System.getProperty("servicemix.base"), "data/jbi/" + name + "/install");
+        this.installRoot.mkdirs();
     }
 
     public NMR getNmr() {
@@ -136,9 +141,15 @@ public class ComponentContextImpl implements ComponentContext, MBeanNames {
     }
 
     public synchronized void deactivateEndpoint(ServiceEndpoint endpoint) throws JBIException {
-        EndpointImpl ep = (EndpointImpl) endpoint;
+        EndpointImpl ep;
+        if (endpoint instanceof EndpointImpl) {
+            ep = (EndpointImpl) endpoint;
+        } else if (endpoint instanceof SimpleServiceEndpoint) {
+            ep = ((SimpleServiceEndpoint) endpoint).getEndpoint();
+        } else {
+            throw new IllegalArgumentException("Unrecognized endpoint");
+        }
         nmr.getEndpointRegistry().unregister(ep, null);
-        endpoints.remove(ep);
     }
 
     public void registerExternalEndpoint(ServiceEndpoint externalEndpoint) throws JBIException {
@@ -241,7 +252,7 @@ public class ComponentContextImpl implements ComponentContext, MBeanNames {
     }
 
     public String getInstallRoot() {
-        return null;  // TODO
+        return installRoot.getAbsolutePath();
     }
 
     public Logger getLogger(String suffix, String resourceBundleName) throws MissingResourceException, JBIException {
@@ -279,7 +290,7 @@ public class ComponentContextImpl implements ComponentContext, MBeanNames {
     }
 
     public String getWorkspaceRoot() {
-        return null;  // TODO
+        return workspaceRoot.getAbsolutePath();
     }
 
     public ObjectName createCustomComponentMBeanName(String customName) {

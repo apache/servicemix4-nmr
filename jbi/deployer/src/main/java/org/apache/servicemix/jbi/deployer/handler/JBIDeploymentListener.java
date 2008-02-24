@@ -46,7 +46,8 @@ public class JBIDeploymentListener implements DeploymentListener {
 			}
             // Only handle non OSGi bundles
             Manifest m = jar.getManifest();
-            if (m.getMainAttributes().getValue(new Attributes.Name("Bundle-SymbolicName")) != null &&
+            if (m != null &&
+                m.getMainAttributes().getValue(new Attributes.Name("Bundle-SymbolicName")) != null &&
                 m.getMainAttributes().getValue(new Attributes.Name("Bundle-Version")) != null) {
                 return false;
             }

@@ -17,9 +17,14 @@
 package org.apache.servicemix.jbi.deployer.impl;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +37,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
+import org.apache.servicemix.jbi.deployer.ServiceUnit;
 import org.apache.servicemix.jbi.deployer.SharedLibrary;
 import org.apache.servicemix.jbi.deployer.descriptor.ComponentDesc;
 import org.apache.servicemix.jbi.deployer.descriptor.Descriptor;
@@ -136,7 +142,7 @@ public class Deployer extends AbstractBundleWatcher {
             pendingBundles.add(e.getBundle());
             LOGGER.warn("JBI artifact requirements not met. Installation pending.");
         } catch (Exception e) {
-            LOGGER.error("Error handling bundle event", e);
+            LOGGER.error("Error handling bundle start event", e);
         } finally {
             Thread.currentThread().setContextClassLoader(cl);
         }
@@ -155,6 +161,19 @@ public class Deployer extends AbstractBundleWatcher {
                 }
             }
         }
+        try {
+            URL url = bundle.getResource(JBI_DESCRIPTOR);
+            Descriptor descriptor = DescriptorFactory.buildDescriptor(url);
+            if (descriptor.getComponent() != null) {
+                uninstallComponent(descriptor.getComponent(), bundle);
+            } else if (descriptor.getServiceAssembly() != null) {
+                undeployServiceAssembly(descriptor.getServiceAssembly(), bundle);
+            } else if (descriptor.getSharedLibrary() != null) {
+                uninstallSharedLibrary(descriptor.getSharedLibrary(), bundle);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error handling bundle stop event", e);
+        }
     }
 
     protected void installComponent(ComponentDesc componentDesc, Bundle bundle) throws Exception {
@@ -167,22 +186,48 @@ public class Deployer extends AbstractBundleWatcher {
                 }
             }
         }
+        String name = componentDesc.getIdentification().getName();
         // Create component class loader
         ClassLoader classLoader = createComponentClassLoader(componentDesc, bundle);
         Thread.currentThread().setContextClassLoader(classLoader);
+        // Extract component (needed to feed the installRoot)
+        // Few components actually use this, but Ode is one of them
+        File installRoot = new File(System.getProperty("servicemix.base"), "data/jbi/" + name + "/install");
+        installRoot.mkdirs();
+        extractBundle(installRoot, bundle, "/");
         // Instanciate component
-        Preferences prefs = preferencesService.getUserPreferences(componentDesc.getIdentification().getName());
+        Preferences prefs = preferencesService.getUserPreferences(name);
         Class clazz = classLoader.loadClass(componentDesc.getComponentClassName());
         javax.jbi.component.Component innerComponent = (javax.jbi.component.Component) clazz.newInstance();
         ComponentImpl component = new ComponentImpl(componentDesc, innerComponent, prefs, autoStart, this);
         // populate props from the component meta-data
         Dictionary<String, String> props = new Hashtable<String, String>();
-        props.put(NAME, componentDesc.getIdentification().getName());
+        props.put(NAME, name);
         props.put(TYPE, componentDesc.getType());
         // register the component in the OSGi registry
         LOGGER.debug("Registering JBI component");
         registerService(bundle, Component.class.getName(), component, props);
         registerService(bundle, javax.jbi.component.Component.class.getName(), component.getComponent(), props);
+    }
+
+    private void extractBundle(File installRoot, Bundle bundle, String path) throws IOException {
+        for (Enumeration e = bundle.getEntryPaths(path); e.hasMoreElements(); ) {
+            String entry = (String) e.nextElement();
+            File fout = new File(installRoot, entry);
+            if (entry.endsWith("/")) {
+                fout.mkdirs();
+                extractBundle(installRoot, bundle, entry);
+            } else {
+                InputStream in = bundle.getEntry(entry).openStream();
+                OutputStream out = new FileOutputStream(fout);
+                try {
+                    FileUtil.copyInputStream(in, out);
+                } finally {
+                    in.close();
+                    out.close();
+                }
+            }
+        }
     }
 
     protected void deployServiceAssembly(ServiceAssemblyDesc serviceAssembyDesc, Bundle bundle) throws Exception {
@@ -204,6 +249,7 @@ public class Deployer extends AbstractBundleWatcher {
         FileUtil.buildDirectory(saDir);
         // Iterate each SU and deploy it
         List<ServiceUnitImpl> sus = new ArrayList<ServiceUnitImpl>();
+        boolean failure = false;
         for (ServiceUnitDesc sud : serviceAssembyDesc.getServiceUnits()) {
             // Create directory for this SU
             File suRootDir = new File(saDir, sud.getIdentification().getName());
@@ -217,14 +263,34 @@ public class Deployer extends AbstractBundleWatcher {
             Component component = getComponent(componentName);
             // Create service unit object
             ServiceUnitImpl su = new ServiceUnitImpl(sud, suRootDir, component);
-            su.deploy();
-            // Add it to the list
-            sus.add(su);
+            try {
+                LOGGER.debug("Deploying SU " + su.getName());
+                su.deploy();
+                // Add it to the list
+                sus.add(su);
+            } catch (Exception e) {
+                LOGGER.error("Error deploying SU " + su.getName(), e);
+                failure = true;
+                break;
+            }
+        }
+        // If failure, undeploy SU and exit
+        if (failure) {
+            for (ServiceUnitImpl su : sus) {
+                try {
+                    LOGGER.debug("Undeploying SU " + su.getName());
+                    su.undeploy();
+                } catch (Exception e) {
+                    LOGGER.warn("Error undeploying SU " + su.getName(), e);
+                }
+            }
+            return;
         }
         // Now create the SA and initialize it
         Preferences prefs = preferencesService.getUserPreferences(serviceAssembyDesc.getIdentification().getName());
         ServiceAssemblyImpl sa = new ServiceAssemblyImpl(serviceAssembyDesc, sus, prefs, autoStart);
         sa.init();
+        serviceAssemblies.put(sa.getName(), sa);
         // populate props from the component meta-data
         Dictionary<String, String> props = new Hashtable<String, String>();
         props.put(NAME, serviceAssembyDesc.getIdentification().getName());
@@ -244,6 +310,28 @@ public class Deployer extends AbstractBundleWatcher {
         registerService(bundle, SharedLibrary.class.getName(), sl, props);
         // Check pending bundles
         checkPendingBundles();
+    }
+
+    protected void uninstallComponent(ComponentDesc componentDesc, Bundle bundle) throws Exception {
+        String name = componentDesc.getIdentification().getName();
+        File file = new File(System.getProperty("servicemix.base"), "data/jbi/" + name);
+        FileUtil.deleteFile(file);
+    }
+    protected void undeployServiceAssembly(ServiceAssemblyDesc serviceAssembyDesc, Bundle bundle) throws Exception {
+        ServiceAssemblyImpl sa = serviceAssemblies.remove(serviceAssembyDesc.getIdentification().getName());
+        if (sa != null) {
+            if (sa.getState() == ServiceAssemblyImpl.State.Started) {
+                sa.stop();
+            }
+            if (sa.getState() == ServiceAssemblyImpl.State.Stopped) {
+                sa.shutDown();
+            }
+            for (ServiceUnit su : sa.getServiceUnits()) {
+                ((ServiceUnitImpl) su).undeploy();
+            }
+        }
+    }
+    protected void uninstallSharedLibrary(SharedLibraryDesc sharedLibraryDesc, Bundle bundle) throws JBIException {
     }
 
     protected synchronized void checkPendingBundles() {
@@ -277,7 +365,10 @@ public class Deployer extends AbstractBundleWatcher {
         String filter = "(" + NAME + "=" + name + ")";
         BundleContext context = getBundleContext();
         ServiceReference reference = OsgiServiceReferenceUtils.getServiceReference(context, Component.class.getName(), filter);
-        return (Component) context.getService(reference);
+        if (reference != null) {
+            return (Component) context.getService(reference);
+        }
+        return null;
     }
 
     protected ClassLoader createComponentClassLoader(ComponentDesc component, Bundle bundle) {

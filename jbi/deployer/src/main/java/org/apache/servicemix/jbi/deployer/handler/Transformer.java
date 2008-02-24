@@ -38,6 +38,10 @@ public class Transformer {
     public static void transformToOSGiBundle(File jbiArtifact, File jbiBundle) throws Exception {
     	JarFile jar = new JarFile(jbiArtifact);
         Manifest m = jar.getManifest();
+        if (m == null) {
+            m = new Manifest();
+            m.getMainAttributes().putValue("Manifest-Version", "1.0");
+        }
         JarEntry jarEntry = jar.getJarEntry("META-INF/jbi.xml");
         InputStream is = jar.getInputStream(jarEntry);
         Descriptor desc = DescriptorFactory.buildDescriptor(is);
@@ -55,6 +59,7 @@ public class Transformer {
 
         m.getMainAttributes().putValue("Bundle-SymbolicName", name);
         m.getMainAttributes().putValue("Bundle-Version", version);
+        m.getMainAttributes().putValue("DynamicImport-Package", "javax.*,org.xml.*,org.w3c.*");
 
 		JarInputStream jis = new JarInputStream(new FileInputStream(jbiArtifact));
 		JarOutputStream jos = new JarOutputStream(new FileOutputStream(jbiBundle), m);

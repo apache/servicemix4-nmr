@@ -79,6 +79,10 @@ public class ServiceAssemblyImpl implements ServiceAssembly {
 		return serviceUnits.toArray(new ServiceUnit[serviceUnits.size()]);
 	}
 
+    public State getState() {
+        return state;
+    }
+
     public String getCurrentState() {
         switch (state) {
             case Started:
