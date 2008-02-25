@@ -44,6 +44,6 @@ public interface SharedLibrary {
      * Create a classloader for this shared library
      * @return a new classloader
      */
-    //ClassLoader createClassLoader();
+    ClassLoader getClassLoader();
     
 }

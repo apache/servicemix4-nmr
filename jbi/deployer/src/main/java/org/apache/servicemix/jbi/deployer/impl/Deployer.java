@@ -122,7 +122,7 @@ public class Deployer extends AbstractBundleWatcher {
     }
 
     @Override
-    protected synchronized void register(Bundle bundle) {
+    protected void register(Bundle bundle) {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
@@ -334,19 +334,15 @@ public class Deployer extends AbstractBundleWatcher {
     protected void uninstallSharedLibrary(SharedLibraryDesc sharedLibraryDesc, Bundle bundle) throws JBIException {
     }
 
-    protected synchronized void checkPendingBundles() {
+    protected void checkPendingBundles() {
         if (!pendingBundles.isEmpty()) {
             final List<Bundle> pending = pendingBundles;
             pendingBundles = new ArrayList<Bundle>();
-            Thread th = new Thread() {
-                public void run() {
-                    for (Bundle bundle : pending) {
-                        register(bundle);
-                    }
-                }
-            };
-            th.setDaemon(true);
-            th.start();
+            // Synchronous call because if using a separate thread
+            // we run into deadlocks
+            for (Bundle bundle : pending) {
+                register(bundle);
+            }
         }
     }
 
@@ -407,7 +403,7 @@ public class Deployer extends AbstractBundleWatcher {
     protected ClassLoader getSharedLibraryClassLoader(SharedLibraryList sharedLibraryList) {
         SharedLibraryImpl sl = sharedLibraries.get(sharedLibraryList.getName());
         if (sl != null) {
-            return sl.createClassLoader();
+            return sl.getClassLoader();
         } else {
             throw new IllegalStateException("SharedLibrary not installed: " + sharedLibraryList.getName());
         }

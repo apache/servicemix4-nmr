@@ -18,6 +18,8 @@ package org.apache.servicemix.jbi.deployer.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
@@ -59,7 +61,9 @@ public abstract class AbstractBundleWatcher implements BundleContextAware, Initi
         Bundle[] bundles = bundleContext.getBundles();
         if (bundles != null) {
             for (Bundle bundle : bundles) {
-                onBundleStarted(bundle);
+                if (bundle.getState() == Bundle.ACTIVE) {
+                    onBundleStarted(bundle);
+                }
             }
         }
     }
@@ -67,9 +71,7 @@ public abstract class AbstractBundleWatcher implements BundleContextAware, Initi
     public void destroy() throws Exception {
         bundleContext.removeBundleListener(bundleListener);
         for (Bundle bundle : bundles.toArray(new Bundle[bundles.size()])) {
-            if (bundle.getState() == Bundle.ACTIVE) {
-                onBundleStopped(bundle);
-            }
+            onBundleStopped(bundle);
         }
     }
 

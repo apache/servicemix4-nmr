@@ -32,6 +32,7 @@ public class SharedLibraryImpl implements SharedLibrary {
 
     private SharedLibraryDesc library;
     private Bundle bundle;
+    private ClassLoader classLoader;
 
     public SharedLibraryImpl(SharedLibraryDesc library, Bundle bundle) {
         this.library = library;
@@ -50,25 +51,28 @@ public class SharedLibraryImpl implements SharedLibrary {
         return library.getVersion();
     }
 
-    public ClassLoader createClassLoader() {
-        // Make the current ClassLoader the parent
-        ClassLoader parent = BundleDelegatingClassLoader.createBundleClassLoaderFor(bundle, getClass().getClassLoader());
-        boolean parentFirst = library.isParentFirstClassLoaderDelegation();
-        ClassPath cp = library.getSharedLibraryClassPath();
-        String[] classPathNames = cp.getPathElements();
-        URL[] urls = new URL[classPathNames.length];
-        for (int i = 0; i < classPathNames.length; i++) {
-            urls[i] = bundle.getResource(classPathNames[i]);
-            if (urls[i] == null) {
-                throw new IllegalArgumentException("SharedLibrary classpath entry not found: '" +  classPathNames[i] + "'");
+    public ClassLoader getClassLoader() {
+        if (classLoader == null) {
+            // Make the current ClassLoader the parent
+            ClassLoader parent = BundleDelegatingClassLoader.createBundleClassLoaderFor(bundle, getClass().getClassLoader());
+            boolean parentFirst = library.isParentFirstClassLoaderDelegation();
+            ClassPath cp = library.getSharedLibraryClassPath();
+            String[] classPathNames = cp.getPathElements();
+            URL[] urls = new URL[classPathNames.length];
+            for (int i = 0; i < classPathNames.length; i++) {
+                urls[i] = bundle.getResource(classPathNames[i]);
+                if (urls[i] == null) {
+                    throw new IllegalArgumentException("SharedLibrary classpath entry not found: '" +  classPathNames[i] + "'");
+                }
             }
+            classLoader = new MultiParentClassLoader(
+                            library.getIdentification().getName(),
+                            urls,
+                            parent,
+                            !parentFirst,
+                            new String[0],
+                            new String[] {"java.", "javax." });
         }
-        return new MultiParentClassLoader(
-                        library.getIdentification().getName(),
-                        urls,
-                        parent,
-                        !parentFirst,
-                        new String[0],
-                        new String[] {"java.", "javax." });
+        return classLoader;
     }
 }
