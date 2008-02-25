@@ -140,7 +140,7 @@ public class Deployer extends AbstractBundleWatcher {
             }
         } catch (PendingException e) {
             pendingBundles.add(e.getBundle());
-            LOGGER.warn("JBI artifact requirements not met. Installation pending.");
+            LOGGER.warn("Requirements not met for JBI artifact in bundle " + OsgiStringUtils.nullSafeNameAndSymName(bundle) + ". Installation pending.");
         } catch (Exception e) {
             LOGGER.error("Error handling bundle start event", e);
         } finally {
@@ -177,7 +177,7 @@ public class Deployer extends AbstractBundleWatcher {
     }
 
     protected void installComponent(ComponentDesc componentDesc, Bundle bundle) throws Exception {
-        LOGGER.debug("Bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' is a JBI component");
+        LOGGER.info("Deploying bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' as a JBI component");
         // Check requirements
         if (componentDesc.getSharedLibraries() != null) {
             for (SharedLibraryList sl : componentDesc.getSharedLibraries()) {
@@ -231,7 +231,7 @@ public class Deployer extends AbstractBundleWatcher {
     }
 
     protected void deployServiceAssembly(ServiceAssemblyDesc serviceAssembyDesc, Bundle bundle) throws Exception {
-        LOGGER.debug("Bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' is a JBI service assembly");
+        LOGGER.info("Deploying bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' as a JBI service assembly");
         // Check requirements
         for (ServiceUnitDesc sud : serviceAssembyDesc.getServiceUnits()) {
             String componentName = sud.getTarget().getComponentName();
@@ -300,7 +300,7 @@ public class Deployer extends AbstractBundleWatcher {
     }
 
     protected void installSharedLibrary(SharedLibraryDesc sharedLibraryDesc, Bundle bundle) {
-        LOGGER.debug("Bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' is a JBI shared library");
+        LOGGER.info("Deploying bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' as a JBI shared library");
         SharedLibraryImpl sl = new SharedLibraryImpl(sharedLibraryDesc, bundle);
         sharedLibraries.put(sl.getName(), sl);
         Dictionary<String, String> props = new Hashtable<String, String>();
@@ -321,10 +321,10 @@ public class Deployer extends AbstractBundleWatcher {
         ServiceAssemblyImpl sa = serviceAssemblies.remove(serviceAssembyDesc.getIdentification().getName());
         if (sa != null) {
             if (sa.getState() == ServiceAssemblyImpl.State.Started) {
-                sa.stop();
+                sa.stop(false);
             }
             if (sa.getState() == ServiceAssemblyImpl.State.Stopped) {
-                sa.shutDown();
+                sa.shutDown(false);
             }
             for (ServiceUnit su : sa.getServiceUnits()) {
                 ((ServiceUnitImpl) su).undeploy();

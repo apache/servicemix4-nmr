@@ -39,6 +39,8 @@ public class ServiceAssemblyImpl implements ServiceAssembly {
 
     private static final String STATE = "state";
 
+
+
     protected enum State {
         Unknown,
         Initialized,
@@ -110,18 +112,36 @@ public class ServiceAssemblyImpl implements ServiceAssembly {
     }
 
 	public void start() throws JBIException {
+        start(true);
+    }
+
+    public void start(boolean persist) throws JBIException {
         transition(State.Started);
-        saveState();
+        if (persist) {
+            saveState();
+        }
+    }
+
+    public void stop() throws JBIException {
+        stop(true);
 	}
 
-	public void stop() throws JBIException {
+    public void stop(boolean persist) throws JBIException {
         transition(State.Stopped);
-        saveState();
-	}
+        if (persist) {
+            saveState();
+        }
+    }
 
     public void shutDown() throws JBIException {
+        shutDown(true);
+    }
+
+    public void shutDown(boolean persist) throws JBIException {
         transition(State.Shutdown);
-        saveState();
+        if (persist) {
+            saveState();
+        }
     }
 
     private void saveState() {
@@ -136,6 +156,7 @@ public class ServiceAssemblyImpl implements ServiceAssembly {
     protected void transition(State to) throws JBIException {
         // TODO: reject invalid transitions, for example Started -> Shutdown
         // we need to either automatically follow the intermediate steps, or just throw an exception
+        LOGGER.info("Changing SA state to " + to);
         State from = state;
         List<ServiceUnitImpl> success = new ArrayList<ServiceUnitImpl>();
         for (ServiceUnitImpl su : serviceUnits) {
