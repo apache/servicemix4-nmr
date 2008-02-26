@@ -211,7 +211,8 @@ public class Deployer extends AbstractBundleWatcher {
     }
 
     private void extractBundle(File installRoot, Bundle bundle, String path) throws IOException {
-        for (Enumeration e = bundle.getEntryPaths(path); e.hasMoreElements(); ) {
+        Enumeration e = bundle.getEntryPaths(path);
+        while (e != null && e.hasMoreElements()) {
             String entry = (String) e.nextElement();
             File fout = new File(installRoot, entry);
             if (entry.endsWith("/")) {

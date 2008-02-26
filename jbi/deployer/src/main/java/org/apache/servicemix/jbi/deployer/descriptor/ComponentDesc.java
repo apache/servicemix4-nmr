@@ -152,7 +152,7 @@ public class ComponentDesc {
     // Implementation methods
     //-------------------------------------------------------------------------
     protected boolean isParentFirst(String text) {
-        return text != null && text.equalsIgnoreCase("parent-first");
+        return text == null || text.equalsIgnoreCase("parent-first");
     }
 
     protected boolean isSelfFirst(String text) {
