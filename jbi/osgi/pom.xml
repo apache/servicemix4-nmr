@@ -44,6 +44,11 @@
             <artifactId>org.apache.servicemix.jbi.deployer</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>${felix.osgi.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -54,7 +59,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Import-Package>org.apache.servicemix.jbi.runtime,org.apache.servicemix.jbi.runtime.impl</Import-Package>
+                        <Import-Package>*</Import-Package>
                         <Spring-Context>*;publish-context:=false;create-asynchronously:=true</Spring-Context>
                     </instructions>
                 </configuration>

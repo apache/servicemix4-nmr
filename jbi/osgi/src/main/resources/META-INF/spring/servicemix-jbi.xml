@@ -31,7 +31,7 @@
 
     <!-- JBI Component Registry -->
     <bean id="componentRegistry" class="org.apache.servicemix.jbi.runtime.impl.ComponentRegistryImpl">
-        <property name="nmr" ref="nmr" />
+        <property name="nmr" ref="nmrWrapper" />
         <property name="documentRepository" ref="documentRepository" />
         <property name="managementContext" ref="managementContext" />
         <property name="environment" ref="environment" />
@@ -52,6 +52,10 @@
         <property name="transactionManagers" ref="transactionManagers" />
         <property name="mbeanServers" ref="mbeanServers" />
         <property name="namingContexts" ref="namingContexts" />
+    </bean>
+
+    <bean id="nmrWrapper" class="org.apache.servicemix.jbi.osgi.NMRWrapper">
+        <property name="nmr" ref="nmr" />
     </bean>
 
     <!-- Service tracker for JBI components -->
