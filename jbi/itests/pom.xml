@@ -134,12 +134,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.servicemix.jbi</groupId>
-            <artifactId>org.apache.servicemix.jbi.offline</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.apache.servicemix</groupId>
             <artifactId>servicemix-shared-compat</artifactId>
             <version>${smx3.version}</version>
