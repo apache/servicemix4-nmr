@@ -80,7 +80,7 @@
       <mina.version>1.1.6</mina.version>
       <pax.logging.version>1.0</pax.logging.version>
       <smx3.version>3.2.1</smx3.version>
-      <smx.kernel.version>1.0-m2-SNAPSHOT</smx.kernel.version>
+      <smx.kernel.version>1.0-m2</smx.kernel.version>
       <spring.osgi.version>1.0</spring.osgi.version>
       <spring.version>2.5.1</spring.version>
       <woodstox.version>3.2.3</woodstox.version>
@@ -112,6 +112,12 @@
            <snapshots>
                <enabled>true</enabled>
            </snapshots>
+       </repository>
+       <!-- Staging repo -->
+       <repository>
+           <id>kernel-staging</id>
+           <name>Kernel Staging Repository</name>
+           <url>http://people.apache.org/~gnodet/staging/servicemix-kernel-1.0-m2</url>
        </repository>
    </repositories>
 
