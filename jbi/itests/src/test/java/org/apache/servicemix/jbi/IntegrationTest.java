@@ -71,7 +71,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
         return new String[] {
             getBundle("org.apache.geronimo.specs", "geronimo-stax-api_1.0_spec"),
             getBundle("org.apache.geronimo.specs", "geronimo-activation_1.1_spec"),
-            getBundle("org.apache.servicemix.nmr", "org.apache.servicemix.preferences"),
+            getBundle("org.apache.felix", "org.apache.felix.prefs"),
             getBundle("org.apache.servicemix.nmr", "org.apache.servicemix.nmr.api"),
             getBundle("org.apache.servicemix.nmr", "org.apache.servicemix.nmr.core"),
             getBundle("org.apache.servicemix.nmr", "org.apache.servicemix.nmr.spring"),

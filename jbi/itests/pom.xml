@@ -81,12 +81,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>
-            <artifactId>org.apache.servicemix.preferences</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.nmr</groupId>
             <artifactId>org.apache.servicemix.nmr.api</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
@@ -131,6 +125,12 @@
             <groupId>org.apache.servicemix.jbi</groupId>
             <artifactId>org.apache.servicemix.jbi.deployer</artifactId>
             <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.prefs</artifactId>
+            <version>${felix.prefs.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

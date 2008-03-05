@@ -70,6 +70,7 @@
       <felix.osgi.version>1.0.0</felix.osgi.version>
       <felix.compendium.version>1.0.0</felix.compendium.version>
       <felix.bundlerepository.version>1.0.2</felix.bundlerepository.version>
+      <felix.prefs.version>1.0.2</felix.prefs.version>
       <geronimo.activation.version>1.0.2</geronimo.activation.version>
       <geronimo.servlet.version>1.1.2</geronimo.servlet.version>
       <geronimo.stax.version>1.0.1</geronimo.stax.version>
@@ -112,12 +113,6 @@
            <snapshots>
                <enabled>true</enabled>
            </snapshots>
-       </repository>
-       <!-- Staging repo -->
-       <repository>
-           <id>kernel-staging</id>
-           <name>Kernel Staging Repository</name>
-           <url>http://people.apache.org/~gnodet/staging/servicemix-kernel-1.0-m2</url>
        </repository>
    </repositories>
 
