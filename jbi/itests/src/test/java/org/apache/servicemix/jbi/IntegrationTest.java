@@ -36,6 +36,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
         System.setProperty("org.apache.servicemix.filemonitor.generatedJarDir", new File(f, "data/generate-bundles").getAbsolutePath());
         System.setProperty("javax.xml.parsers.DocumentBuilderFactory", "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
         System.setProperty("javax.xml.parsers.SAXParserFactory", "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl");
+        System.setProperty("org.osgi.vendor.framework", "org.apache.servicemix.jbi");
     }
 
     private Properties dependencies;

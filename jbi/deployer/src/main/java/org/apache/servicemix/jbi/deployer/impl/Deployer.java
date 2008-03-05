@@ -74,6 +74,8 @@ public class Deployer extends AbstractBundleWatcher {
 
     private Map<String, ServiceAssemblyImpl> serviceAssemblies;
 
+    private Map<String, ComponentImpl> components;
+
     private Map<Bundle, List<ServiceRegistration>> services;
 
     private List<Bundle> pendingBundles;
@@ -87,6 +89,7 @@ public class Deployer extends AbstractBundleWatcher {
     public Deployer() throws JBIException{
         sharedLibraries = new ConcurrentHashMap<String, SharedLibraryImpl>();
         serviceAssemblies = new ConcurrentHashMap<String, ServiceAssemblyImpl>();
+        components = new ConcurrentHashMap<String, ComponentImpl>();
         services = new ConcurrentHashMap<Bundle, List<ServiceRegistration>>();
         pendingBundles = new ArrayList<Bundle>();
         // TODO: control that using properties
@@ -200,6 +203,7 @@ public class Deployer extends AbstractBundleWatcher {
         Class clazz = classLoader.loadClass(componentDesc.getComponentClassName());
         javax.jbi.component.Component innerComponent = (javax.jbi.component.Component) clazz.newInstance();
         ComponentImpl component = new ComponentImpl(componentDesc, innerComponent, prefs, autoStart, this);
+        components.put(name, component);
         // populate props from the component meta-data
         Dictionary<String, String> props = new Hashtable<String, String>();
         props.put(NAME, name);
@@ -315,11 +319,21 @@ public class Deployer extends AbstractBundleWatcher {
 
     protected void uninstallComponent(ComponentDesc componentDesc, Bundle bundle) throws Exception {
         String name = componentDesc.getIdentification().getName();
-        File file = new File(System.getProperty("servicemix.base"), "data/jbi/" + name);
-        FileUtil.deleteFile(file);
+        ComponentImpl component = components.remove(name);
+        if (component != null) {
+            if (component.getState() == ComponentImpl.State.Started) {
+                component.stop(false);
+            }
+            if (component.getState() == ComponentImpl.State.Stopped) {
+                component.shutDown(false);
+            }
+            File file = new File(System.getProperty("servicemix.base"), "data/jbi/" + name);
+            FileUtil.deleteFile(file);
+        }
     }
     protected void undeployServiceAssembly(ServiceAssemblyDesc serviceAssembyDesc, Bundle bundle) throws Exception {
-        ServiceAssemblyImpl sa = serviceAssemblies.remove(serviceAssembyDesc.getIdentification().getName());
+        String name = serviceAssembyDesc.getIdentification().getName();
+        ServiceAssemblyImpl sa = serviceAssemblies.remove(name);
         if (sa != null) {
             if (sa.getState() == ServiceAssemblyImpl.State.Started) {
                 sa.stop(false);

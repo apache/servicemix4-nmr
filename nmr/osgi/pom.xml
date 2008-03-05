@@ -82,7 +82,14 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Import-Package>org.apache.servicemix.nmr.api,org.apache.servicemix.nmr.core</Import-Package>
+                        <Import-Package>
+                            org.apache.servicemix.nmr.api,
+                            org.apache.servicemix.nmr.api.event,
+                            org.apache.servicemix.nmr.api.internal,
+                            org.apache.servicemix.nmr.core,
+                            org.apache.servicemix.nmr.osgi,
+                            *
+                        </Import-Package>
                         <Spring-Context>*;publish-context:=false;create-asynchronously:=true</Spring-Context>
                     </instructions>
                 </configuration>

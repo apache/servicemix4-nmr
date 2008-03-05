@@ -153,7 +153,8 @@ public class ChannelImpl implements InternalChannel {
      * the NMR.
      */
     public void close() {
-        // TODO
+        Map<String,?> props = nmr.getEndpointRegistry().getProperties(endpoint);
+        nmr.getEndpointRegistry().unregister(endpoint, props);
     }
 
     /**
@@ -191,12 +192,12 @@ public class ChannelImpl implements InternalChannel {
         if (exchange.getDestination() == null) {
             exchange.setDestination(endpoint);
         }
+        // Change role
+        exchange.setRole(exchange.getRole() == Role.Provider ? Role.Consumer : Role.Provider);
         // Call listeners
         for (ExchangeListener l : nmr.getListenerRegistry().getListeners(ExchangeListener.class)) {
             l.exchangeDelivered(exchange);
         }
-        // Change role
-        exchange.setRole(exchange.getRole() == Role.Provider ? Role.Consumer : Role.Provider);
         // Check if sendSync was used, in which case we need to unblock the other side
         // rather than delivering the exchange
         // TODO:

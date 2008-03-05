@@ -60,7 +60,9 @@
     <!-- Endpoint registry and service tracker -->
     <bean id="endpointRegistry" class="org.apache.servicemix.nmr.core.EndpointRegistryImpl">
         <property name="nmr" ref="servicemix" />
+        <property name="registry" ref="internalEndpointRegistry" />
     </bean>
+    <bean id="internalEndpointRegistry" class="org.apache.servicemix.nmr.osgi.InternalRegistryWrapper" />
     <osgi:list id="endpoints"
                interface="org.apache.servicemix.nmr.api.Endpoint"
                cardinality="0..N">

@@ -26,11 +26,6 @@ import javax.xml.namespace.QName;
 import java.util.Queue;
 
 /**
- * Created by IntelliJ IDEA.
- * User: gnodet
- * Date: Oct 5, 2007
- * Time: 11:08:00 AM
- * To change this template use File | Settings | File Templates.
  */
 public class EndpointImpl implements Endpoint, ServiceEndpoint {
 
@@ -50,11 +45,13 @@ public class EndpointImpl implements Endpoint, ServiceEndpoint {
     }
 
     public DocumentFragment getAsReference(QName operationName) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        // TODO
+        return null;
     }
 
     public QName[] getInterfaces() {
-        return new QName[0];  //To change body of implemented methods use File | Settings | File Templates.
+        // TODO
+        return new QName[0];
     }
 
     public Channel getChannel() {
@@ -87,5 +84,13 @@ public class EndpointImpl implements Endpoint, ServiceEndpoint {
 
     public void setEndpointName(String endpointName) {
         this.endpointName = endpointName;
+    }
+
+    public boolean equals(Object o) {
+        return this == o;
+    }
+
+    public int hashCode() {
+        return super.hashCode();
     }
 }

@@ -17,6 +17,7 @@
 package org.apache.servicemix.nmr.api.event;
 
 import org.apache.servicemix.nmr.api.Endpoint;
+import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
 
 
 /**
@@ -31,13 +32,13 @@ public interface EndpointListener extends Listener {
      *
      * @param endpoint the registered endpoint
      */
-    void endpointRegistered(Endpoint endpoint);
+    void endpointRegistered(InternalEndpoint endpoint);
 
     /**
      * An endpoint has been unregistered
      *
      * @param endpoint the unregistered endpoint
      */
-    void endpointUnregistered(Endpoint endpoint);
+    void endpointUnregistered(InternalEndpoint endpoint);
     
 }

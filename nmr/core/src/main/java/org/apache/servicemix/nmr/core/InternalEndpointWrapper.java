@@ -16,6 +16,8 @@
  */
 package org.apache.servicemix.nmr.core;
 
+import java.util.UUID;
+
 import org.apache.servicemix.nmr.api.Channel;
 import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.Exchange;
@@ -28,10 +30,12 @@ import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
 public class InternalEndpointWrapper implements InternalEndpoint {
 
     private final Endpoint endpoint;
+    private final String id;
     private InternalChannel channel;
 
     public InternalEndpointWrapper(Endpoint endpoint) {
         this.endpoint = endpoint;
+        this.id = UUID.randomUUID().toString();
     }
 
     public InternalChannel getChannel() {
@@ -40,6 +44,10 @@ public class InternalEndpointWrapper implements InternalEndpoint {
 
     public Endpoint getEndpoint() {
         return endpoint;
+    }
+
+    public String getId() {
+        return id;
     }
 
     /**
@@ -70,4 +78,15 @@ public class InternalEndpointWrapper implements InternalEndpoint {
         endpoint.process(exchange);
     }
 
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof InternalEndpointWrapper)) return false;
+        InternalEndpointWrapper that = (InternalEndpointWrapper) o;
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        return true;
+    }
+
+    public int hashCode() {
+        return (id != null ? id.hashCode() : 0);
+    }
 }

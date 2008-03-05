@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -48,10 +49,10 @@ import org.apache.servicemix.nmr.core.util.MapToDictionary;
 public class EndpointRegistryImpl implements EndpointRegistry {
 
     private NMR nmr;
-    private Map<Endpoint, InternalEndpoint> endpoints = new ConcurrentHashMap<Endpoint, InternalEndpoint>();
+    private ConcurrentMap<Endpoint, InternalEndpoint> endpoints = new ConcurrentHashMap<Endpoint, InternalEndpoint>();
     private Map<InternalEndpoint, Endpoint> wrappers = new ConcurrentHashMap<InternalEndpoint, Endpoint>();
-    private ServiceRegistry<InternalEndpoint> registry = new ServiceRegistryImpl<InternalEndpoint>();
     private Map<DynamicReferenceImpl, Boolean> references = new WeakHashMap<DynamicReferenceImpl, Boolean>();
+    private ServiceRegistry<InternalEndpoint> registry;
 
     public EndpointRegistryImpl() {
     }
@@ -68,9 +69,20 @@ public class EndpointRegistryImpl implements EndpointRegistry {
         this.nmr = nmr;
     }
 
+    public ServiceRegistry<InternalEndpoint> getRegistry() {
+        return registry;
+    }
+
+    public void setRegistry(ServiceRegistry<InternalEndpoint> registry) {
+        this.registry = registry;
+    }
+
     public void init() {
         if (nmr == null) {
             throw new NullPointerException("nmr must be not null");
+        }
+        if (registry == null) {
+            registry = new ServiceRegistryImpl<InternalEndpoint>();
         }
     }
 
@@ -85,18 +97,19 @@ public class EndpointRegistryImpl implements EndpointRegistry {
      * @see org.apache.servicemix.nmr.api.Endpoint
      */
     public void register(Endpoint endpoint, Map<String, ?> properties) {
-        Executor executor = Executors.newCachedThreadPool();
         InternalEndpointWrapper wrapper = new InternalEndpointWrapper(endpoint);
-        ChannelImpl channel = new ChannelImpl(wrapper, executor, nmr);
-        wrapper.setChannel(channel);
-        endpoints.put(endpoint, wrapper);
-        wrappers.put(wrapper, endpoint);
-        registry.register(wrapper, properties);
-        for (EndpointListener listener : nmr.getListenerRegistry().getListeners(EndpointListener.class)) {
-            listener.endpointRegistered(endpoint);
-        }
-        for (DynamicReferenceImpl ref : references.keySet()) {
-            ref.setDirty();
+        if (endpoints.putIfAbsent(endpoint, wrapper) == null) {
+            Executor executor = Executors.newCachedThreadPool();
+            ChannelImpl channel = new ChannelImpl(wrapper, executor, nmr);
+            wrapper.setChannel(channel);
+            wrappers.put(wrapper, endpoint);
+            registry.register(wrapper, properties);
+            for (EndpointListener listener : nmr.getListenerRegistry().getListeners(EndpointListener.class)) {
+                listener.endpointRegistered(wrapper);
+            }
+            for (DynamicReferenceImpl ref : references.keySet()) {
+                ref.setDirty();
+            }
         }
     }
 
@@ -118,7 +131,7 @@ public class EndpointRegistryImpl implements EndpointRegistry {
         }
         registry.unregister(wrapper, properties);
         for (EndpointListener listener : nmr.getListenerRegistry().getListeners(EndpointListener.class)) {
-            listener.endpointUnregistered(endpoint);
+            listener.endpointUnregistered(wrapper);
         }
         for (DynamicReferenceImpl ref : references.keySet()) {
             ref.setDirty();

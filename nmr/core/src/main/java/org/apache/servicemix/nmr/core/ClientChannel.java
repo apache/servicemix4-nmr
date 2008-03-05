@@ -16,9 +16,11 @@
  */
 package org.apache.servicemix.nmr.core;
 
+import java.util.UUID;
 import java.util.concurrent.Executors;
 
 import org.apache.servicemix.nmr.api.Channel;
+import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.nmr.api.internal.InternalChannel;
@@ -38,6 +40,15 @@ public class ClientChannel extends ChannelImpl {
     protected static class ClientEndpoint implements InternalEndpoint {
 
         private InternalChannel channel;
+        private String id = UUID.randomUUID().toString(); 
+
+        public String getId() {
+            return id;
+        }
+
+        public Endpoint getEndpoint() {
+            return this;
+        }
 
         public void setChannel(Channel channel) {
             this.channel = (InternalChannel) channel;

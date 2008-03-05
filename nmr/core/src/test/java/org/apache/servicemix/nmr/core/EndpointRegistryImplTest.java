@@ -26,11 +26,13 @@ import org.apache.servicemix.nmr.api.EndpointRegistry;
 import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.nmr.api.Reference;
+import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
 import org.apache.servicemix.nmr.api.event.EndpointListener;
 import org.apache.servicemix.nmr.api.service.ServiceHelper;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Ignore;
 
 public class EndpointRegistryImplTest {
 
@@ -79,6 +81,8 @@ public class EndpointRegistryImplTest {
 
     @Test
     public void testLdapFilter() throws Exception {
+        System.setProperty("org.osgi.vendor.framework", "org.apache.servicemix.nmr.core");
+
         Endpoint endpoint = new DummyEndpoint();
         Reference ref = registry.lookup("(NAME=id)");
         assertNotNull(ref);
@@ -100,10 +104,10 @@ public class EndpointRegistryImplTest {
         final CountDownLatch unregLatch = new CountDownLatch(1);
         Endpoint endpoint = new DummyEndpoint();
         nmr.getListenerRegistry().register(new EndpointListener() {
-            public void endpointRegistered(Endpoint endpoint) {
+            public void endpointRegistered(InternalEndpoint endpoint) {
                 regLatch.countDown();
             }
-            public void endpointUnregistered(Endpoint endpoint) {
+            public void endpointUnregistered(InternalEndpoint endpoint) {
                 unregLatch.countDown();
             }
         }, new HashMap<String,Object>());

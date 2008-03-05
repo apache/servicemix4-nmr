@@ -16,10 +16,15 @@
  */
 package org.apache.servicemix.nmr.core;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.servicemix.nmr.api.ServiceMixException;
 import org.apache.servicemix.nmr.api.service.ServiceRegistry;
 
 /**
@@ -28,16 +33,62 @@ import org.apache.servicemix.nmr.api.service.ServiceRegistry;
  */
 public class ServiceRegistryImpl<T> implements ServiceRegistry<T> {
 
-    private Map<T, Map<String, ?>> registry = new ConcurrentHashMap<T, Map<String, ?>>();
+    private ConcurrentMap<T, Map<String, ?>> registry = new ConcurrentHashMap<T, Map<String, ?>>();
+
+    private final Log logger = LogFactory.getLog(getClass());
 
     public void register(T service, Map<String, ?> properties) {
         assert service != null : "service should not be null";
-        registry.put(service, properties);
+        if (properties == null) {
+            properties = new HashMap<String, Object>();
+        }
+        if (registry.putIfAbsent(service, properties) == null) {
+            try {
+                doRegister(service, properties);
+            } catch (Exception e) {
+                logger.warn("Unable to register service " +
+                        service + " with properties " + properties + ". Reason: " + e, e);
+                registry.remove(service);
+                throw new ServiceMixException("Unable to register service " +
+                        service + " with properties " + properties + ". Reason: " + e, e);
+            }
+        }
+    }
+
+    /**
+     * Placeholder to perform any registry specific operation
+     * when a new service is registered.
+     *
+     * @param service
+     * @param properties
+     * @throws Exception
+     */
+    protected void doRegister(T service, Map<String, ?> properties) throws Exception {
     }
 
     public void unregister(T service, Map<String, ?> properties) {
         assert service != null : "service should not be null";
-        registry.remove(service);
+        if (registry.remove(service) != null) {
+            try {
+                doUnregister(service, properties);
+            } catch (Exception e) {
+                logger.warn("Unable to unregister service " +
+                        service + " with properties " + properties + ". Reason: " + e, e);
+                throw new ServiceMixException("Unable to unregister service " + 
+                        service + " with properties " + properties + ". Reason: " + e, e);
+            }
+        }
+    }
+
+    /**
+     * Placeholder to perform any registry specific operation
+     * when a service is unregistered.
+     *
+     * @param service
+     * @param properties
+     * @throws Exception
+     */
+    protected void doUnregister(T service, Map<String, ?> properties) throws Exception {
     }
 
     public Set<T> getServices() {

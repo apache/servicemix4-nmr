@@ -435,7 +435,10 @@ public class ComponentContextImpl implements ComponentContext, MBeanNames {
         return null;
     }
 
-    
+    public Component getComponent() {
+        return component;
+    }
+
 
     protected static class SimpleServiceEndpoint implements ServiceEndpoint {
 

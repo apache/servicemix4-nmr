@@ -29,9 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.runtime.ComponentRegistry;
 import org.apache.servicemix.jbi.runtime.DocumentRepository;
 import org.apache.servicemix.jbi.runtime.Environment;
-import org.apache.servicemix.jbi.runtime.impl.ManagementContext;
 import org.apache.servicemix.nmr.api.NMR;
-import org.apache.servicemix.nmr.api.ServiceMixException;
 import org.apache.servicemix.nmr.core.ServiceRegistryImpl;
 
 /**
@@ -43,12 +41,12 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<Component>  imple
 
     private NMR nmr;
     private DocumentRepository documentRepository;
-    private Map<String, Component> components;
+    private Map<String, ComponentContextImpl> contexts;
     private Environment environment;
     private ManagementContext managementContext;
 
     public ComponentRegistryImpl() {
-        components = new ConcurrentHashMap<String, Component>();
+        contexts = new ConcurrentHashMap<String, ComponentContextImpl>();
     }
 
     public NMR getNmr() {
@@ -89,27 +87,20 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<Component>  imple
      * @param component the component to register
      * @param properties the associated metadata
      */
-    public void register(Component component, Map<String, ?> properties) {
+    @Override
+    protected void doRegister(Component component, Map<String, ?> properties) throws JBIException {
+        LOGGER.info("JBI component registered with properties: " + properties);
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        Thread.currentThread().setContextClassLoader(component.getClass().getClassLoader());
         try {
-            Thread.currentThread().setContextClassLoader(component.getClass().getClassLoader());
-            if (components.containsValue(component)) {
-                // Component is already registered
-                return;
-            }
-            if (properties == null) {
-                properties = new HashMap<String, Object>();
-            }
             String name = (String) properties.get(NAME);
-            ComponentContext context = new ComponentContextImpl(this, environment, managementContext, component, properties);
+            ComponentContextImpl context = new ComponentContextImpl(this, environment, managementContext, component, properties);
             component.getLifeCycle().init(context);
             if (name != null) {
-                components.put(name, component);
+                contexts.put(name, context);
             } else {
                 LOGGER.warn("Component has no name!");
             }
-        } catch (JBIException e) {
-            throw new ServiceMixException(e);
         } finally {
             Thread.currentThread().setContextClassLoader(cl);
         }
@@ -120,15 +111,18 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<Component>  imple
      *
      * @param component the component to unregister
      */
-    public void unregister(Component component, Map<String, ?> properties) {
+    @Override
+    protected void doUnregister(Component component, Map<String, ?> properties)throws JBIException {
+        LOGGER.info("JBI component unregistered with properties: " + properties);
         String name = properties != null ? (String) properties.get(NAME) : null;
         if (name != null) {
-            components.remove(name);
+            ComponentContextImpl context = contexts.remove(name);
+            context.getDeliveryChannel().close();
         }
     }
 
     public Component getComponent(String name) {
-        return components.get(name);
+        return contexts.get(name).getComponent();
     }
 
 }

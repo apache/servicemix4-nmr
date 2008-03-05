@@ -92,29 +92,48 @@ public class ComponentImpl implements Component {
     }
 
     public void start() throws JBIException {
+        start(true);
+    }
+
+    public void start(boolean saveState) throws JBIException {
         component.getLifeCycle().start();
         state = State.Started;
-        saveState();
+        if (saveState) {
+            saveState();
+        }
     }
 
     public void stop() throws JBIException {
+        stop(true);
+
+    }
+
+    public void stop(boolean saveState) throws JBIException {
         // TODO: stop deployed SAs
         if (state == State.Started) {
             component.getLifeCycle().stop();
             state = State.Stopped;
-            saveState();
+            if (saveState) {
+                saveState();
+            }
         }
     }
 
     public void shutDown() throws JBIException {
+        shutDown(true);
+    }
+
+    public void shutDown(boolean saveState) throws JBIException {
         // TODO: shutdown deployed SAs
         if (state == State.Started) {
-            stop();
+            stop(saveState);
         }
         if (state == State.Stopped) {
             component.getLifeCycle().shutDown();
             state = State.Shutdown;
-            saveState();
+            if (saveState) {
+                saveState();
+            }
         }
     }
 
@@ -139,6 +158,10 @@ public class ComponentImpl implements Component {
             default:
                 return LifeCycleMBean.UNKNOWN;
         }
+    }
+
+    public State getState() {
+        return state;
     }
 
     protected class ComponentWrapper implements javax.jbi.component.Component, ComponentLifeCycle {

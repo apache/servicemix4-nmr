@@ -36,6 +36,11 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.servicemix.jbi</groupId>
+            <artifactId>org.apache.servicemix.jbi.api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.jbi</groupId>
             <artifactId>org.apache.servicemix.jbi.runtime</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -59,7 +64,18 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Import-Package>*</Import-Package>
+                        <Import-Package>
+                            javax.jbi.component,
+                            javax.management,
+                            javax.naming,
+                            javax.transaction,
+                            org.apache.servicemix.nmr.api,
+                            org.apache.servicemix.jbi.runtime,
+                            org.apache.servicemix.jbi.runtime.impl,
+                            org.apache.servicemix.jbi.osgi,
+                            org.osgi.service.url,
+                            *
+                        </Import-Package>
                         <Spring-Context>*;publish-context:=false;create-asynchronously:=true</Spring-Context>
                     </instructions>
                 </configuration>

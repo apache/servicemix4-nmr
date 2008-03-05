@@ -40,6 +40,7 @@ import org.osgi.framework.ServiceRegistration;
  *
  */
 public class RegistryWrapper implements EndpointRegistry {
+
     private EndpointRegistry registry;
     private BundleContext bundleContext;
     private Map<Endpoint, ServiceRegistration> registrations = new ConcurrentHashMap();
