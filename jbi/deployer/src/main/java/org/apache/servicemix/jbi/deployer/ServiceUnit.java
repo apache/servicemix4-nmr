@@ -35,4 +35,16 @@ public interface ServiceUnit {
      */
     String getDescription();
 
+    /**
+     * Get the ServiceAssembly to which this ServiceUnit belongs
+     * @return
+     */
+    ServiceAssembly getServiceAssembly();
+
+    /**
+     * Retrieve the Component onto which this ServiceUnit is deployed
+     * @return
+     */
+    Component getComponent();
+
 }

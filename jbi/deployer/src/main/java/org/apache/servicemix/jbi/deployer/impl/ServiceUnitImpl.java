@@ -25,7 +25,9 @@ import javax.jbi.management.DeploymentException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.deployer.Component;
+import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
+import org.apache.servicemix.jbi.deployer.SharedLibrary;
 import org.apache.servicemix.jbi.deployer.descriptor.ServiceUnitDesc;
 
 
@@ -37,9 +39,11 @@ public class ServiceUnitImpl implements ServiceUnit {
 	
 	private File rootDir;
 	
-	private Component component;
-	
-	public ServiceUnitImpl(ServiceUnitDesc serviceUnitDesc, File rootDir, Component component) {
+	private ComponentImpl component;
+
+    private ServiceAssemblyImpl serviceAssembly;
+
+    public ServiceUnitImpl(ServiceUnitDesc serviceUnitDesc, File rootDir, ComponentImpl component) {
 		this.serviceUnitDesc = serviceUnitDesc;
 		this.rootDir = rootDir;
         this.component = component;
@@ -61,12 +65,29 @@ public class ServiceUnitImpl implements ServiceUnit {
 		return serviceUnitDesc.getTarget().getComponentName();
 	}
 
-	public File getRootDir() {
+    public ServiceAssembly getServiceAssembly() {
+        return serviceAssembly;
+    }
+
+    protected ServiceAssemblyImpl getServiceAssemblyImpl() {
+        return serviceAssembly;
+    }
+
+    protected void setServiceAssemblyImpl(ServiceAssemblyImpl serviceAssembly) {
+        this.serviceAssembly = serviceAssembly;
+    }
+
+    public Component getComponent() {
+        return component;
+    }
+
+    public File getRootDir() {
 		return rootDir;
 	}
 
     public void deploy() throws JBIException {
         component.getComponent().getServiceUnitManager().deploy(getName(), getRootDir().getAbsolutePath());
+        component.addServiceUnit(this);
     }
 
 	public void init() throws JBIException {
@@ -90,6 +111,7 @@ public class ServiceUnitImpl implements ServiceUnit {
 
     public void undeploy() throws JBIException {
         component.getComponent().getServiceUnitManager().undeploy(getName(), getRootDir().getAbsolutePath());
+        component.removeServiceUnit(this);
     }
 
     protected void checkComponentStarted(String task) throws DeploymentException {

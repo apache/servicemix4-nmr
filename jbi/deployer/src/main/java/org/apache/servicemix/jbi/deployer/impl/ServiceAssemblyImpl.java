@@ -39,8 +39,6 @@ public class ServiceAssemblyImpl implements ServiceAssembly {
 
     private static final String STATE = "state";
 
-
-
     protected enum State {
         Unknown,
         Initialized,
@@ -67,7 +65,10 @@ public class ServiceAssemblyImpl implements ServiceAssembly {
         this.serviceUnits = serviceUnits;
         this.prefs = prefs;
         this.runningState = State.valueOf(this.prefs.get(STATE, (autoStart ? State.Started : State.Initialized).name()));
-	}
+        for (ServiceUnitImpl su : serviceUnits) {
+            su.setServiceAssemblyImpl(this);
+        }
+    }
 
 	public String getName() {
 		return serviceAssemblyDesc.getIdentification().getName();

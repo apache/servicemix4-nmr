@@ -49,12 +49,10 @@ import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryList;
 import org.apache.xbean.classloader.MultiParentClassLoader;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.prefs.Preferences;
 import org.osgi.service.prefs.PreferencesService;
 import org.springframework.osgi.util.BundleDelegatingClassLoader;
-import org.springframework.osgi.util.OsgiServiceReferenceUtils;
 import org.springframework.osgi.util.OsgiStringUtils;
 
 /**
@@ -240,7 +238,7 @@ public class Deployer extends AbstractBundleWatcher {
         // Check requirements
         for (ServiceUnitDesc sud : serviceAssembyDesc.getServiceUnits()) {
             String componentName = sud.getTarget().getComponentName();
-            Component component = getComponent(componentName);
+            ComponentImpl component = components.get(componentName);
             if (component == null) {
                 throw new PendingException(bundle, "Component not installed: " + componentName);
             }
@@ -265,7 +263,7 @@ public class Deployer extends AbstractBundleWatcher {
             FileUtil.unpackArchive(zipUrl, suRootDir);
             // Find component
             String componentName = sud.getTarget().getComponentName();
-            Component component = getComponent(componentName);
+            ComponentImpl component = components.get(componentName);
             // Create service unit object
             ServiceUnitImpl su = new ServiceUnitImpl(sud, suRootDir, component);
             try {
@@ -370,16 +368,6 @@ public class Deployer extends AbstractBundleWatcher {
             services.put(bundle, registrations);
         }
         registrations.add(reg);
-    }
-
-    protected Component getComponent(String name) {
-        String filter = "(" + NAME + "=" + name + ")";
-        BundleContext context = getBundleContext();
-        ServiceReference reference = OsgiServiceReferenceUtils.getServiceReference(context, Component.class.getName(), filter);
-        if (reference != null) {
-            return (Component) context.getService(reference);
-        }
-        return null;
     }
 
     protected ClassLoader createComponentClassLoader(ComponentDesc component, Bundle bundle) {

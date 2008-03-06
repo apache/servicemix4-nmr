@@ -16,6 +16,11 @@
  */
 package org.apache.servicemix.jbi.deployer.impl;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import javax.jbi.JBIException;
 import javax.jbi.component.ComponentContext;
 import javax.jbi.component.ComponentLifeCycle;
@@ -28,19 +33,15 @@ import javax.management.ObjectName;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 
-import org.apache.servicemix.jbi.deployer.Component;
-import org.apache.servicemix.jbi.deployer.descriptor.ComponentDesc;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.servicemix.jbi.deployer.Component;
+import org.apache.servicemix.jbi.deployer.ServiceUnit;
+import org.apache.servicemix.jbi.deployer.descriptor.ComponentDesc;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 /**
- * Created by IntelliJ IDEA.
- * User: gnodet
- * Date: Jan 3, 2008
- * Time: 5:15:57 PM
- * To change this template use File | Settings | File Templates.
  */
 public class ComponentImpl implements Component {
 
@@ -62,6 +63,7 @@ public class ComponentImpl implements Component {
     private Preferences prefs;
     private State runningState;
     private Deployer deployer;
+    private List<ServiceUnitImpl> serviceUnits;
 
     public ComponentImpl(ComponentDesc componentDesc,
                          javax.jbi.component.Component component,
@@ -73,6 +75,19 @@ public class ComponentImpl implements Component {
         this.prefs = prefs;
         this.runningState = State.valueOf(this.prefs.get(STATE, (autoStart ? State.Started : State.Initialized).name()));
         this.deployer = deployer;
+        this.serviceUnits = new ArrayList<ServiceUnitImpl>();
+    }
+
+    public void addServiceUnit(ServiceUnitImpl serviceUnit) {
+        serviceUnits.add(serviceUnit);
+    }
+
+    public void removeServiceUnit(ServiceUnitImpl serviceUnit) {
+        serviceUnits.remove(serviceUnit);
+    }
+
+    public ServiceUnit[] getServiceUnits() {
+        return serviceUnits.toArray(new ServiceUnit[serviceUnits.size()]);
     }
 
     public String getName() {
@@ -84,7 +99,7 @@ public class ComponentImpl implements Component {
     }
 
     public ObjectName getExtensionMBeanName() throws JBIException {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return component.getLifeCycle().getExtensionMBeanName();
     }
 
     public javax.jbi.component.Component getComponent() {
@@ -96,6 +111,7 @@ public class ComponentImpl implements Component {
     }
 
     public void start(boolean saveState) throws JBIException {
+        LOGGER.info("Starting component " + getName());
         component.getLifeCycle().start();
         state = State.Started;
         if (saveState) {
@@ -105,12 +121,24 @@ public class ComponentImpl implements Component {
 
     public void stop() throws JBIException {
         stop(true);
+    }
 
+    protected Set<ServiceAssemblyImpl> getServiceAssemblies() {
+        Set<ServiceAssemblyImpl> sas = new HashSet<ServiceAssemblyImpl>();
+        for (ServiceUnitImpl su : serviceUnits) {
+            sas.add(su.getServiceAssemblyImpl());
+        }
+        return sas;
     }
 
     public void stop(boolean saveState) throws JBIException {
-        // TODO: stop deployed SAs
+        LOGGER.info("Stopping component " + getName());
         if (state == State.Started) {
+            // Stop deployed SAs
+            for (ServiceAssemblyImpl sa : getServiceAssemblies()) {
+                sa.stop(false);
+            }
+            // Stop component
             component.getLifeCycle().stop();
             state = State.Stopped;
             if (saveState) {
@@ -124,11 +152,16 @@ public class ComponentImpl implements Component {
     }
 
     public void shutDown(boolean saveState) throws JBIException {
-        // TODO: shutdown deployed SAs
+        LOGGER.info("Shutting down component " + getName());
         if (state == State.Started) {
             stop(saveState);
         }
         if (state == State.Stopped) {
+            // Shutdown deployed SAs
+            for (ServiceAssemblyImpl sa : getServiceAssemblies()) {
+                sa.shutDown(false);
+            }
+            // Shutdown component
             component.getLifeCycle().shutDown();
             state = State.Shutdown;
             if (saveState) {

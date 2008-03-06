@@ -40,4 +40,9 @@ public interface Component extends ComponentLifeCycleMBean {
      * @return
      */
     javax.jbi.component.Component getComponent();
+
+    /**
+     * Retrieve the ServiceUnits deployed on this component 
+     */
+    ServiceUnit[] getServiceUnits();
 }
