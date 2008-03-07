@@ -25,7 +25,7 @@
     <parent>
         <groupId>org.apache.servicemix.jbi</groupId>
         <artifactId>jbi</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0-m1-SNAPSHOT</version>
     </parent>
 
     <groupId>org.apache.servicemix.jbi</groupId>
@@ -157,6 +157,10 @@
                 <exclusion>
                     <groupId>org.springframework</groupId>
                     <artifactId>spring</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>xfire</groupId>
+                    <artifactId>saaj-impl</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

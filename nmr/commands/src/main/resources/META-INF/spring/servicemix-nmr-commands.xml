@@ -29,5 +29,14 @@
   http://www.springframework.org/schema/osgi
   http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
+    <bean id="list" class="org.apache.servicemix.nmr.commands.ListCommand" />
+
+    <osgi:service ref="list" interface="org.apache.geronimo.gshell.command.Command">
+      <osgi:service-properties>
+        <entry key="shell" value="nmr"/>
+        <entry key="alias" value="ls"/>
+      </osgi:service-properties>
+    </osgi:service>
+
 
 </beans>                                                                                                                                                                                                   

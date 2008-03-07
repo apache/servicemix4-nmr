@@ -31,13 +31,14 @@
   <groupId>org.apache.servicemix.nmr</groupId>
   <artifactId>nmr-parent</artifactId>
   <packaging>pom</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0-m1-SNAPSHOT</version>
   <name>Apache ServiceMix NMR</name>
 
   <modules>
-    <module>bundles</module>
-    <module>nmr</module>
-    <module>jbi</module>
+      <module>bundles</module>
+      <module>nmr</module>
+      <module>jbi</module>
+      <module>assembly</module>
   </modules>
 
   <scm>
@@ -255,6 +256,28 @@
               </plugin>
           </plugins>
       </pluginManagement>
+      <plugins>
+          <plugin>
+              <artifactId>maven-remote-resources-plugin</artifactId>
+              <version>1.0-beta-2</version>
+              <executions>
+                  <execution>
+                      <goals>
+                          <goal>process</goal>
+                      </goals>
+                      <configuration>
+                          <resourceBundles>
+                              <resourceBundle>org.apache:apache-jar-resource-bundle:1.3</resourceBundle>
+                          </resourceBundles>
+                          <properties>
+                              <addLicense>true</addLicense>
+                              <projectName>Apache ServiceMix</projectName>
+                          </properties>
+                      </configuration>
+                  </execution>
+              </executions>
+          </plugin>
+      </plugins>
   </build>
 
   <reporting>
@@ -278,6 +301,12 @@
   </reporting>
 
   <profiles>
+      <profile>
+          <id>fastinstall</id>
+          <properties>
+              <maven.test.skip>true</maven.test.skip>
+          </properties>
+      </profile>
       <profile>
           <id>rat</id>
           <build>

@@ -16,18 +16,25 @@
  */
 package org.apache.servicemix.nmr.commands;
 
-import java.util.List;
-
-import org.apache.geronimo.gshell.support.OsgiCommandSupport;
 import org.apache.servicemix.nmr.api.Endpoint;
+import org.osgi.framework.ServiceReference;
 
 /**
- * Base class for NMR related commands
+ * Displays the name of existing NMR endpoints
  */
-public abstract class NmrCommandSupport extends OsgiCommandSupport {
+public class ListCommand extends NmrCommandSupport {
 
-    protected List<Endpoint> getEndpoints() throws Exception {
-        return getAllServices(Endpoint.class, null);
+    protected Object doExecute() throws Exception {
+        io.out.println("Shared Libraries");
+        io.out.println("----------------");
+        ServiceReference[] references = getBundleContext().getAllServiceReferences(Endpoint.class.getName(), null);
+        if (references != null) {
+            for (ServiceReference ref : references) {
+                String name = (String) ref.getProperty(Endpoint.NAME);
+                io.out.println(name);
+            }
+        }
+        io.out.println();
+        return null;
     }
-
 }
