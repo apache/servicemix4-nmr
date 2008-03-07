@@ -18,22 +18,55 @@ package javax.jbi.management;
 
 import javax.jbi.JBIException;
 
+/**
+ * LifeCycleMBean is a base interface that defines standard life cycle controls
+ * for JBI implementation services (which are implementation-specific), and JBI
+ * components (bindings and engines).
+ *
+ * @author JSR208 Expert Group
+ */
 public interface LifeCycleMBean {
 
+    /** Value returned by {@link #getCurrentState()} for a shutdown component. */
     String SHUTDOWN = "Shutdown";
 
+    /** Value returned by {@link #getCurrentState()} for a stopped component. */
     String STOPPED = "Stopped";
 
-    String STARTED = "Started";
+    /** Value returned by {@link #getCurrentState()} for a running component. */
+     String STARTED = "Started";
 
+    /** Value returned by {@link #getCurrentState()} for a component in an unknown state. */
     String UNKNOWN = "Unknown";
 
+    /**
+     * Start the item.
+     *
+     * @exception javax.jbi.JBIException if the item fails to start.
+     */
     void start() throws JBIException;
 
+    /**
+     * Stop the item. This suspends current messaging activities.
+     *
+     * @exception javax.jbi.JBIException if the item fails to stop.
+     */
     void stop() throws JBIException;
 
+    /**
+     * Shut down the item. This releases resources and returns the item
+     * to an uninitialized state.
+     *
+     * @exception javax.jbi.JBIException if the item fails to shut down.
+     */
     void shutDown() throws JBIException;
 
-    String getCurrentState();
+    /**
+     * Get the current state of this managed compononent.
+     *
+     * @return the current state of this managed component (must be one of the
+     *         string constants defined by this interface)
+     */
+     String getCurrentState();
 
 }

@@ -16,15 +16,32 @@
  */
 package javax.jbi;
 
+/**
+ * JBIException is the top-level exception thrown by all JBI system components.
+ */
 public class JBIException extends Exception {
+
+    /**
+     * Creates a new instance of JBIException with an exception message.
+     * @param aMessage String describing this exception.
+     */
     public JBIException(String aMessage) {
         super(aMessage);
     }
 
+    /**
+     * Creates a new instance of JBIException with the specified message and cause.
+     * @param aMessage String describing this exception.
+     * @param aCause Throwable which represents an underlying problem (or null).
+     */
     public JBIException(String aMessage, Throwable aCause) {
         super(aMessage, aCause);
     }
 
+    /**
+     * Creates a new instance of JBIException with the specified cause.
+     * @param aCause Throwable which represents an underlying problem (or null).
+     */
     public JBIException(Throwable aCause) {
         super(aCause);
     }

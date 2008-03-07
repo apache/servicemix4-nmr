@@ -16,15 +16,44 @@
  */
 package javax.jbi.management;
 
+/**
+ * DeploymentException is an exception thrown by the Deployment Service and
+ * the Service Unit Manager.
+ *
+ * @author JSR208 Expert Group
+ */
 public class DeploymentException extends javax.jbi.JBIException {
+
+    /**
+     * Creates a new instance of DeploymentException with an exception detail
+     * message.
+     *
+     * @param aMessage the detail message for this exception.
+     */
     public DeploymentException(String aMessage) {
         super(aMessage);
     }
 
+    /**
+     * Creates a new instance of DeploymentException with and exception detail
+     * message and a cause.
+     *
+     * @param aMessage the detail message for this exception.
+     * @param aCause <code>Error</code> or <code>Exception</code> which
+     *        represents the cause of the problem (<code>null</code> if none,
+     *        or if the cause is not known).
+     */
     public DeploymentException(String aMessage, Throwable aCause) {
         super(aMessage, aCause);
     }
 
+    /**
+     * Creates a new instance of DeploymentException with the specified cause.
+     *
+     * @param aCause <code>Error</code> or <code>Exception</code> which
+     *        represents the cause of the problem (<code>null</code> if none,
+     *        or if the cause is not known).
+     */
     public DeploymentException(Throwable aCause) {
         super(aCause);
     }

@@ -16,6 +16,11 @@
  */
 package javax.jbi.messaging;
 
+/**
+ * Models WSDL fault messages.
+ *
+ * @author JSR208 Expert Group
+ */
 public interface Fault extends NormalizedMessage {
 
 }
