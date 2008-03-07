@@ -19,9 +19,7 @@ package org.apache.servicemix.jbi.deployer.descriptor;
 import javax.xml.namespace.QName;
 
 /**
- * Specifies either an interface name or a service and endpoint name.
- *
- * @version $Revision: 426415 $
+ * The <code>&lt;jbi:consumes&gt;</code> element.
  */
 public class Consumes {
     private QName interfaceName;

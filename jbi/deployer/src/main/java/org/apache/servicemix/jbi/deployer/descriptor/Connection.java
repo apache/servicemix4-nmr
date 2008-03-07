@@ -17,7 +17,7 @@
 package org.apache.servicemix.jbi.deployer.descriptor;
 
 /**
- * @version $Revision: 426415 $
+ * The <code>&lt;jbi:connection&gt;</code> element.
  */
 public class Connection {
     private Consumer consumer;

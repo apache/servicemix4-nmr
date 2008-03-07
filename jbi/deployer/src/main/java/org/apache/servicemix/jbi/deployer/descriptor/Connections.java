@@ -19,11 +19,11 @@ package org.apache.servicemix.jbi.deployer.descriptor;
 import org.apache.servicemix.jbi.deployer.descriptor.Connection;
 
 /**
- * Inner class used to handle the grouping of connections
- * 
+ * The <code>&lt;jbi:connections&gt;</code> element.
  */
 public class Connections {
-	private Connection[] connections;
+
+    private Connection[] connections;
 
 	public Connection[] getConnections() {
 		return connections;

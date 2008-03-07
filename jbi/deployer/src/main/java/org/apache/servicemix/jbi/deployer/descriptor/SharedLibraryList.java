@@ -17,7 +17,7 @@
 package org.apache.servicemix.jbi.deployer.descriptor;
 
 /**
- * @version $Revision: 426415 $
+ * The <code>jbi:shared-library-list</code> complex type.
  */
 public class SharedLibraryList {
     private String version;

@@ -46,7 +46,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
 /**
- * @version $Revision: 359151 $
+ * Factory to read a JBI descriptor from a file, url or stream.
  */
 public class DescriptorFactory {
 
@@ -55,10 +55,13 @@ public class DescriptorFactory {
      */
     private static final String XSD_SCHEMA_LANGUAGE = "http://www.w3.org/2001/XMLSchema";
 
+    /**
+     * The location of the JBI descriptor in a JBI artifact.
+     */
     public static final String DESCRIPTOR_FILE = "META-INF/jbi.xml";
 
     /**
-     * Build a jbi descriptor from a file archive
+     * Build a jbi descriptor from a file archive.
      * 
      * @param descriptorFile
      *            path to the jbi descriptor, or to the root directory
@@ -113,9 +116,11 @@ public class DescriptorFactory {
     }
 
     /**
-     * Build a jbi descriptor from the specified binary data
+     * Build a jbi descriptor from the specified binary data.
+     * The descriptor is validated against the schema, but no
+     * semantic validation is performed.
      * 
-     * @param bytes
+     * @param bytes hold the content of the JBI descriptor xml document
      * @return the Descriptor object
      */
     public static Descriptor buildDescriptor(final byte[] bytes) {
@@ -338,7 +343,7 @@ public class DescriptorFactory {
     }
 
     /**
-     * Check validity of the JBI descriptor
+     * Check validity of the JBI descriptor.
      * 
      * @param descriptor
      *            the descriptor to check

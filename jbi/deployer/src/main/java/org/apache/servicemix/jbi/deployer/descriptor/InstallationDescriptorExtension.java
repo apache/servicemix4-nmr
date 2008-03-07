@@ -20,8 +20,6 @@ import org.w3c.dom.DocumentFragment;
 
 /**
  * A POJO used to hold the descriptor extension.
- *
- * @version $Revision: 426415 $
  */
 public class InstallationDescriptorExtension {
     DocumentFragment descriptorExtension;

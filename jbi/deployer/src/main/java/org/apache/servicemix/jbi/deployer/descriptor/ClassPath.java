@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * @version $Revision: 426415 $
+ * The <code>jbi:classpath</code> complex type.
  */
 public class ClassPath {
     

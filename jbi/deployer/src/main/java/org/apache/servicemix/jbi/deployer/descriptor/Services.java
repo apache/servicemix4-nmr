@@ -17,7 +17,7 @@
 package org.apache.servicemix.jbi.deployer.descriptor;
 
 /**
- * @version $Revision: 426415 $
+ * The <code>&lt;jbi:services&gt;</code> element.
  */
 public class Services {
     private boolean bindingComponent;

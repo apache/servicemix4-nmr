@@ -31,11 +31,30 @@ import org.apache.servicemix.jbi.deployer.descriptor.DescriptorFactory;
 import org.apache.servicemix.jbi.deployer.impl.FileUtil;
 
 /**
- * Helper class to transform JBI artifacts into OSGi bundles
+ * Helper class to transform JBI artifacts into OSGi bundles.
  */
 public class Transformer {
 
-    public static void transformToOSGiBundle(File jbiArtifact, File jbiBundle) throws Exception {
+    /**
+     * Prevent instanciation.
+     */
+    private Transformer() {
+    }
+
+    /**
+     * Create an OSGi bundle from the JBI artifact.
+     * The process creates the following OSGi manifest entries:
+     * <ul>
+     *   <li><b><code>Bundle-SymbolicName</code></b>: the name of the JBI artifact</li>
+     *   <li><b><code>Bundle-Version</code></b>: retrieved from the <code>Implementation-Version</code> manifest entry</li>
+     *   <li><b><code>DynamicImport-Package</code></b>: javax.*,org.xml.*,org.w3c.*</li>
+     * </ul>
+     *
+     * @param jbiArtifact the input JBI artifact.
+     * @param osgiBundle the output OSGi bundle.
+     * @throws Exception if an error occurs during the transformation process.
+     */
+    public static void transformToOSGiBundle(File jbiArtifact, File osgiBundle) throws Exception {
     	JarFile jar = new JarFile(jbiArtifact);
         Manifest m = jar.getManifest();
         if (m == null) {
@@ -62,7 +81,7 @@ public class Transformer {
         m.getMainAttributes().putValue("DynamicImport-Package", "javax.*,org.xml.*,org.w3c.*");
 
 		JarInputStream jis = new JarInputStream(new FileInputStream(jbiArtifact));
-		JarOutputStream jos = new JarOutputStream(new FileOutputStream(jbiBundle), m);
+		JarOutputStream jos = new JarOutputStream(new FileOutputStream(osgiBundle), m);
 
 		JarEntry entry = jis.getNextJarEntry();
 		while (entry != null) {

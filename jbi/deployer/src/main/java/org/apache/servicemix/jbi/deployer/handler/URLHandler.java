@@ -26,10 +26,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.osgi.service.url.AbstractURLStreamHandlerService;
 
-
 /**
  * A URL handler that will transform a JBI artifact to an OSGi bundle
- * on the fly.
+ * on the fly.  Needs to be registered in the OSGi registry.
  */
 public class URLHandler extends AbstractURLStreamHandlerService {
 	
@@ -38,8 +37,15 @@ public class URLHandler extends AbstractURLStreamHandlerService {
 	private static String SYNTAX = "jbi: jbi-jar-uri";
 	
 	private URL jbiArtifactURL;
-	
-	@Override
+
+    /**
+     * Open the connection for the given URL.
+     *
+     * @param url the url from which to open a connection.
+     * @return a connection on the specified URL.
+     * @throws IOException if an error occurs or if the URL is malformed.
+     */
+    @Override
 	public URLConnection openConnection(URL url) throws IOException {
 		if (url.getPath() == null || url.getPath().trim().length() == 0) {
 			throw new MalformedURLException ("Path can not be null or empty. Syntax: " + SYNTAX );

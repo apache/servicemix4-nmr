@@ -29,7 +29,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.deployer.impl.FileUtil;
 
-
+/**
+ * A URL connection to handle the JBI to OSGi transformation
+ * using a URL.
+ */
 public class Connection extends URLConnection {
 	
 	private static Log logger = LogFactory.getLog(Connection.class);
@@ -42,15 +45,22 @@ public class Connection extends URLConnection {
 	}
 
 
-	@Override
-	public void connect() throws IOException {
-		
+    /**
+     * Connect method.  Nothing to do in our case.
+     */
+    @Override
+	public void connect() {
 	}
-	
-	@Override
+
+    /**
+     * Retrieve an InputStream on the OSGi bundle.
+     * 
+     * @return an InputStream used to read the transformation output.
+     * @throws IOException if an error occurs when transforming the JBI artifact.
+     */
+    @Override
 	public InputStream getInputStream() throws IOException {
 		try {
-			connect();
 			InputStream targetInputStream = urlHandler.getJbiArtifactURL().openConnection().getInputStream();
 			File jbiZipFile = File.createTempFile("jbi", ".zip");
 			FileOutputStream jbiZip = new FileOutputStream(jbiZipFile);

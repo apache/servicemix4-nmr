@@ -16,12 +16,11 @@
  */
 package org.apache.servicemix.jbi.deployer.descriptor;
 
-import org.apache.servicemix.jbi.deployer.descriptor.ComponentDesc;
-
 /**
- * @version $Revision: 426415 $
+ * The <code>&lt;jbi:jbi&gt;</code> element.
  */
 public class Descriptor {
+
     private double version;
     private ComponentDesc component;
     private SharedLibraryDesc sharedLibrary;
@@ -69,94 +68,3 @@ public class Descriptor {
     }
 }
 
-/*
-default namespace this = "http://java.sun.com/xml/ns/jbi"
-start =
-  element jbi {
-    attribute version { xsd:decimal },
-    ( component | shared-library | service-assembly | services)
-  }
-component =
-  element component {
-    attribute type { "service-engine" | "binding-component" },
-    attribute component-class-loader-delegation { "parent-first" | "self-first" }?,
-    attribute bootstrap-class-loader-delegation { "parent-first" | "self-first" }?,
-    identification,
-    element component-class-name { attribute description { text }?, text },
-    element component-class-path { class-path },
-    element bootstrap-class-name { text },
-    element bootstrap-class-path { class-path },
-    shared-library-list*,
-    element* -this:* { text }*
-  }
-shared-library =
-  element shared-library {
-    attribute class-loader-delegation { "parent-first" | "self-first" }?,
-    attribute version { text }?,
-    identification,
-    element shared-library-class-path { class-path }
-  }
-shared-library-list =
-  element shared-library {
-    attribute version { text }?,
-    text
-  }
-service-assembly =
-  element service-assembly {
-    identification,
-    service-unit*,
-    connections?,
-    element* -this:* { text }*
-  }
-service-unit =
-  element service-unit {
-    identification,
-    element target {
-      element artifacts-zip { text },
-      element component-name { xsd:NCName }
-    },
-    element* -this:* { text }*
-  }
-identification =
-  element identification {
-    element name { xsd:NCName },
-    element description { text },
-    element* -this:* { text }*
- }
-class-path =
-  (element path-element { text })+
-services =
-  element services {
-    attribute binding-component { xsd:boolean },
-    provides*,
-    consumes*,
-    element* -this:* { text }*
-  }
-connections =
-  element connections {
-    element connection {
-      element consumer {
-        ( attribute interface-name { xsd:QName } |
-          (attribute service-name { xsd:QName }, attribute endpoint-name { text })
-        )
-      },
-      element provider {
-        attribute service-name { xsd:QName }, attribute endpoint-name { text }
-      }
-    }*,
-    element* -this:* { text }*
-  }
-provides =
-  element provides {
-    attribute interface-name { xsd:QName },
-    attribute service-name {xsd:QName }, attribute endpoint-name { text },
-    element* -this:* { text }*
-  }
-consumes =
-  element consumes {
-    attribute interface-name { xsd:QName },
-    ( attribute service-name {xsd:QName }, attribute endpoint-name { text },
-      attribute link-type { "standard" | "hard" | "soft" }? )?,
-    element* -this:* { text }*
-  }
-*/

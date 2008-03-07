@@ -19,7 +19,7 @@ package org.apache.servicemix.jbi.deployer;
 import javax.jbi.management.ComponentLifeCycleMBean;
 
 /**
- * Represents a JBI component lifecycle.
+ * Represents a JBI component.
  */
 public interface Component extends ComponentLifeCycleMBean {
 

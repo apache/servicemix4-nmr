@@ -17,7 +17,7 @@
 package org.apache.servicemix.jbi.deployer.descriptor;
 
 /**
- * @version $Revision: 426415 $
+ * The <code>&lt;jbi:shared-library&gt;</code> element.
  */
 public class SharedLibraryDesc {
     private String classLoaderDelegation = "parent-first";

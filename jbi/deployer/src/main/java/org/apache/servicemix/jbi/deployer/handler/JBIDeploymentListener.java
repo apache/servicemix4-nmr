@@ -24,14 +24,27 @@ import java.util.jar.Manifest;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.servicemix.jbi.deployer.descriptor.DescriptorFactory;
 import org.apache.servicemix.kernel.filemonitor.DeploymentListener;
 
-
+/**
+ * A JBI DeploymentListener which transforms plain JBI artifacts to OSGi bundles.
+ * The deployer will recognize zip and jar files containing a JBI descriptor and
+ * without any OSGi manifest entries.
+ */
 public class JBIDeploymentListener implements DeploymentListener {
 	
 	private static final Log Logger = LogFactory.getLog(JBIDeploymentListener.class);
-	
-	public boolean canHandle(File artifact) {
+
+    /**
+     * Check if the file is a recognized JBI artifact that needs to be
+     * processed.
+     *
+     * @param artifact the file to check
+     * @return <code>true</code> is the file is a JBI artifact that
+     *         should be transformed into an OSGi bundle.
+     */
+    public boolean canHandle(File artifact) {
 		try {
             // Accept jars and zips
             if (!artifact.getName().endsWith(".zip") &&
@@ -39,7 +52,7 @@ public class JBIDeploymentListener implements DeploymentListener {
                 return false;
             }
 			JarFile jar = new JarFile(artifact);
-			JarEntry entry = jar.getJarEntry("META-INF/jbi.xml");
+			JarEntry entry = jar.getJarEntry(DescriptorFactory.DESCRIPTOR_FILE);
             // Only handle JBI artifacts
             if (entry == null) {
 				return false;
@@ -57,8 +70,16 @@ public class JBIDeploymentListener implements DeploymentListener {
 		}
 	}
 
-	
-	public File handle(File artifact, File tmpDir) {
+
+    /**
+     * Transform the file, which is a JBI artifact, into an OSGi bundle.
+     *
+     * @param artifact the file to transform.
+     * @param tmpDir the location where the file should be stored.
+     * @return the location of the transformed OSGi bundle, or <code>null</code>
+     *         if the transformation could not take place.
+     */
+    public File handle(File artifact, File tmpDir) {
 		try{
 			String bundleName = artifact.getName().substring(0, artifact.getName().length() -4 ) + ".jar";
 			File destFile = new File(tmpDir, bundleName);

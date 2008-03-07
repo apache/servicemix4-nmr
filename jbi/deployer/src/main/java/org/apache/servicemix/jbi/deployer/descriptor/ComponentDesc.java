@@ -19,7 +19,7 @@ package org.apache.servicemix.jbi.deployer.descriptor;
 import org.apache.servicemix.jbi.deployer.descriptor.ClassPath;
 
 /**
- * @version $Revision: 426415 $
+ * The <code>&lt;jbi:component&gt;</code> element.
  */
 public class ComponentDesc {
     private String type;

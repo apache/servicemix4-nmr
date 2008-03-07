@@ -19,7 +19,7 @@ package org.apache.servicemix.jbi.deployer.descriptor;
 import javax.xml.namespace.QName;
 
 /**
- * @version $Revision: 426415 $
+ * The <code>&lt;jbi:provider&gt;</code> element.
  */
 public class Provider {
     private QName serviceName;
