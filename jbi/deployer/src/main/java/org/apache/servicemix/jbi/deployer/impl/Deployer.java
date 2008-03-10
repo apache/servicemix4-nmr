@@ -141,7 +141,7 @@ public class Deployer extends AbstractBundleWatcher {
             }
         } catch (PendingException e) {
             pendingBundles.add(e.getBundle());
-            LOGGER.warn("Requirements not met for JBI artifact in bundle " + OsgiStringUtils.nullSafeNameAndSymName(bundle) + ". Installation pending.");
+            LOGGER.warn("Requirements not met for JBI artifact in bundle " + OsgiStringUtils.nullSafeNameAndSymName(bundle) + ". Installation pending. " + e);
         } catch (Exception e) {
             LOGGER.error("Error handling bundle start event", e);
         } finally {
