@@ -26,6 +26,15 @@ Please refer to the web site for more informations and feel free to ask any
 questions on the ServiceMix mailing lists or simply to provide feedback 
 (we appreciate it very much).
 
+The current feature set includes a JBI container with a few missing things:
+  * no support for JMX deployment and Ant tasks
+  * no support for Service Assemblies Connections
+  * no support for transactions (a transaction manager and a naming context
+     can be injected into components if they are available as OSGi services,
+     but not transaction processing  - suspend / resume - will be performed,
+     as it would be requested for real support)
+
+
 Thanks you for downloading ServiceMix NMR.  Enjoy !
 
 The ServiceMix Team

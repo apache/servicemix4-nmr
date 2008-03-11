@@ -23,7 +23,7 @@
 
     <parent>
         <groupId>org.apache.servicemix.nmr</groupId>
-        <artifactId>nmr</artifactId>
+        <artifactId>nmr-parent</artifactId>
         <version>1.0-m1-SNAPSHOT</version>
     </parent>
 
@@ -98,6 +98,26 @@
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.woodstox-3.2.3</artifactId>
             <version>${pom.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.prefs</artifactId>
+            <version>${felix.prefs.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-activation_1.1_spec</artifactId>
+            <version>${geronimo.activation.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-javamail_1.4_spec</artifactId>
+            <version>${geronimo.javamail.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jta_1.1_spec</artifactId>
+            <version>${geronimo.jta.version}</version>
         </dependency>
     </dependencies>
     <build>

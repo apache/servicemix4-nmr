@@ -74,6 +74,8 @@
       <felix.bundlerepository.version>1.0.2</felix.bundlerepository.version>
       <felix.prefs.version>1.0.2</felix.prefs.version>
       <geronimo.activation.version>1.0.2</geronimo.activation.version>
+      <geronimo.javamail.version>1.2</geronimo.javamail.version>
+      <geronimo.jta.version>1.1.1</geronimo.jta.version>
       <geronimo.servlet.version>1.1.2</geronimo.servlet.version>
       <geronimo.stax.version>1.0.1</geronimo.stax.version>
       <gshell.version>1.0-alpha-1</gshell.version>
