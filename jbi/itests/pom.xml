@@ -133,6 +133,12 @@
             <version>${felix.prefs.version}</version>
             <scope>test</scope>
         </dependency>
+	    <dependency>
+            <groupId>org.apache.xbean</groupId>
+            <artifactId>xbean-classloader</artifactId>
+            <version>${xbean.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.apache.servicemix</groupId>
             <artifactId>servicemix-shared-compat</artifactId>
