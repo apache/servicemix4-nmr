@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <!--
 
@@ -25,20 +23,20 @@
     <parent>
         <groupId>org.apache.servicemix.jbi</groupId>
         <artifactId>jbi</artifactId>
-        <version>1.0-m1-SNAPSHOT</version>
+        <version>1.0-m1</version>
     </parent>
 
     <groupId>org.apache.servicemix.jbi</groupId>
     <artifactId>org.apache.servicemix.jbi.deployer</artifactId>
     <packaging>bundle</packaging>
-    <version>1.0-m1-SNAPSHOT</version>
+    <version>1.0-m1</version>
     <name>ServiceMix JBI Deployer</name>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.servicemix.jbi</groupId>
             <artifactId>org.apache.servicemix.jbi.api</artifactId>
-	        <version>1.0-m1-SNAPSHOT</version>
+	        <version>1.0-m1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.kernel</groupId>
@@ -87,7 +85,6 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Private-Package>org.apache.xbean*</Private-Package>
                         <Export-Package>${pom.artifactId}*</Export-Package>
                         <Spring-Context>*;publish-context:=false;create-asynchronously:=false</Spring-Context>
                     </instructions>

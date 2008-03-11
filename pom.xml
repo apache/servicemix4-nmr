@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <!--
 
@@ -31,7 +29,7 @@
   <groupId>org.apache.servicemix.nmr</groupId>
   <artifactId>nmr-parent</artifactId>
   <packaging>pom</packaging>
-  <version>1.0-m1-SNAPSHOT</version>
+  <version>1.0-m1</version>
   <name>Apache ServiceMix NMR</name>
 
   <modules>
@@ -43,9 +41,9 @@
   </modules>
 
   <scm>
-      <connection>scm:svn:http://svn.apache.org/repos/asf/servicemix/smx4/nmr/trunk</connection>
-      <developerConnection>scm:svn:https://svn.apache.org/repos/asf/servicemix/smx4/nmr/trunk</developerConnection>
-      <url>http://svn.apache.org/viewvc/servicemix/smx4/nmr/trunk/</url>
+      <connection>scm:svn:http://svn.apache.org/repos/asf/servicemix/smx4/nmr/tags/nmr-1.0-m1</connection>
+      <developerConnection>scm:svn:https://svn.apache.org/repos/asf/servicemix/smx4/nmr/tags/nmr-1.0-m1</developerConnection>
+      <url>http://svn.apache.org/viewvc/servicemix/smx4/nmr/tags/nmr-1.0-m1</url>
   </scm>
 
   <issueManagement>
@@ -74,6 +72,8 @@
       <felix.bundlerepository.version>1.0.2</felix.bundlerepository.version>
       <felix.prefs.version>1.0.2</felix.prefs.version>
       <geronimo.activation.version>1.0.2</geronimo.activation.version>
+      <geronimo.javamail.version>1.2</geronimo.javamail.version>
+      <geronimo.jta.version>1.1.1</geronimo.jta.version>
       <geronimo.servlet.version>1.1.2</geronimo.servlet.version>
       <geronimo.stax.version>1.0.1</geronimo.stax.version>
       <gshell.version>1.0-alpha-1</gshell.version>
@@ -266,6 +266,9 @@
                   <groupId>org.apache.maven.plugins</groupId>
                   <artifactId>maven-surefire-plugin</artifactId>
                   <version>2.4.2</version>
+                  <configuration>
+                      <failIfNoTests>false</failIfNoTests>
+                  </configuration>
               </plugin>
           </plugins>
       </pluginManagement>
@@ -363,7 +366,6 @@
                       <artifactId>maven-deploy-plugin</artifactId>
                       <version>2.3</version>
                       <configuration>
-                          <altDeploymentRepository>${deploy.altRepository}</altDeploymentRepository>
                           <updateReleaseInfo>true</updateReleaseInfo>
                       </configuration>
                   </plugin>

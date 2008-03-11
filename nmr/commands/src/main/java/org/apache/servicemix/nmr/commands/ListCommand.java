@@ -22,11 +22,12 @@ import org.osgi.framework.ServiceReference;
 /**
  * Displays the name of existing NMR endpoints
  */
+@org.apache.geronimo.gshell.command.annotation.CommandComponent(id = "nmr:list", description = "List NMR endpoints")
 public class ListCommand extends NmrCommandSupport {
 
     protected Object doExecute() throws Exception {
-        io.out.println("Shared Libraries");
-        io.out.println("----------------");
+        io.out.println("Endpoints");
+        io.out.println("---------");
         ServiceReference[] references = getBundleContext().getAllServiceReferences(Endpoint.class.getName(), null);
         if (references != null) {
             for (ServiceReference ref : references) {

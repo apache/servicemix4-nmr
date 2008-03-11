@@ -24,14 +24,19 @@
     <parent>
         <groupId>org.apache.servicemix.nmr</groupId>
         <artifactId>nmr</artifactId>
-        <version>1.0-m1-SNAPSHOT</version>
+        <version>1.0-m1</version>
     </parent>
 
     <groupId>org.apache.servicemix.nmr</groupId>
     <artifactId>org.apache.servicemix.nmr.bundle</artifactId>
     <packaging>jar</packaging>
-    <version>1.0-m1-SNAPSHOT</version>
+    <version>1.0-m1</version>
     <name>ServiceMix NMR :: Bundle</name>
+
+    <properties>
+        <maven.test.skip>true</maven.test.skip>
+        <createSourcesJar>false</createSourcesJar>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -103,12 +108,6 @@
     <build>
         <plugins>
           <plugin>
-              <artifactId>maven-remote-resources-plugin</artifactId>
-              <version>1.0-beta-2</version>
-              <executions>
-              </executions>
-          </plugin>
-          <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-shade-plugin</artifactId>
               <version>1.0</version>
@@ -122,8 +121,25 @@
                           <shadedGroupFilter>org.apache.servicemix</shadedGroupFilter>
                           <shadedArtifactAttached>false</shadedArtifactAttached>
                           <createSourcesJar>${createSourcesJar}</createSourcesJar>
-                          <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
+                          <promoteTransitiveDependencies>false</promoteTransitiveDependencies>
                           <createDependencyReducedPom>true</createDependencyReducedPom>
+                          <artifactSet>
+                              <includes>
+                                  <include>org.apache.servicemix.nmr:org.apache.servicemix.nmr.api</include>
+                                  <include>org.apache.servicemix.nmr:org.apache.servicemix.nmr.core</include>
+                                  <include>org.apache.servicemix.nmr:org.apache.servicemix.nmr.spring</include>
+                                  <include>org.apache.servicemix.nmr:org.apache.servicemix.nmr.osgi</include>
+                                  <include>org.apache.servicemix.nmr:org.apache.servicemix.nmr.commands</include>
+                                  <include>org.apache.servicemix.nmr:org.apache.servicemix.nmr.management</include>
+                                  <include>org.apache.servicemix.jbi:org.apache.servicemix.jbi.api</include>
+                                  <include>org.apache.servicemix.jbi:org.apache.servicemix.jbi.runtime</include>
+                                  <include>org.apache.servicemix.jbi:org.apache.servicemix.jbi.osgi</include>
+                                  <include>org.apache.servicemix.jbi:org.apache.servicemix.jbi.deployer</include>
+                                  <include>org.apache.servicemix.jbi:org.apache.servicemix.jbi.commands</include>
+                                  <include>org.apache.servicemix.jbi:org.apache.servicemix.jbi.management</include>
+                              </includes>
+                          </artifactSet>
+<!--
                           <filters>
                               <filter>
                                   <artifact>${project.groupId}:${project.artifactId}</artifact>
@@ -132,6 +148,7 @@
                                   </excludes>
                               </filter>
                           </filters>
+-->
                           <transformers>
                               <transformer implementation="org.apache.maven.plugins.shade.resource.ApacheNoticeResourceTransformer">
                                   <projectName>Apache ServiceMix</projectName>
@@ -158,7 +175,7 @@
                         <executions>
                             <execution>
                                 <id>unpack-sources</id>
-                                <phase>generate-sources</phase>
+                                <phase>compile</phase>
                                 <goals>
                                     <goal>unpack-dependencies</goal>
                                 </goals>

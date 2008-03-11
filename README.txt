@@ -28,6 +28,10 @@ BUILDING.txt for instructions on building Apache ServiceMix NMR.
 
 For an Apache ServiceMix NMR binary distribution, please read
 RELEASE-NOTES.txt for the list of supported and unsupported features.
+ServiceMix NMR distribution contains a set of OSGi bundles meant to
+be deployed onto an OSGi Runtime, preferably ServiceMix Kernel.
+To deploy the NMR on ServiceMix Kernel, simply copy the bundles inside
+the lib directory into the deploy directory of ServiceMix Kernel.
 
 Alternatively, you can also find out how to get started here:
     http://servicemix.apache.org/nmr/
