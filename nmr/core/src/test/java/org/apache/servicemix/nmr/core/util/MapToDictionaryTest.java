@@ -20,6 +20,7 @@ import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -45,7 +46,7 @@ public class MapToDictionaryTest {
 
     @Test
     public void test() {
-        Map<Integer, Boolean> map = new HashMap<Integer, Boolean>();
+        Map<Integer, Boolean> map = new TreeMap<Integer, Boolean>();
         map.put(3, true);
         map.put(5, false);
         Dictionary<Integer, Boolean> dic = new MapToDictionary(map);
