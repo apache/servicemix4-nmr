@@ -46,33 +46,44 @@ public class FlowRegistryImpl extends ServiceRegistryImpl<Flow> implements FlowR
             if (exchange.getDestination() == null) {
                 InternalReference target = (InternalReference) exchange.getTarget();
                 assert target != null;
+                boolean match = false;
                 for (InternalEndpoint endpoint : target.choose()) {
-                    for (Flow flow : getServices()) {
-                        if (flow.canDispatch(exchange, endpoint)) {
-                            exchange.setDestination(endpoint);
-                            flow.dispatch(exchange);
-                            return;
-                        }
-                    }
-                }
-                throw new ServiceMixException("Could not dispatch exchange. No flow can handle it.");
-            } else {
-                for (Flow flow : getServices()) {
-                    if (flow.canDispatch(exchange, exchange.getDestination())) {
-                        flow.dispatch(exchange);
+                    match = true;
+                    if (internalDispatch(exchange, endpoint, true)) {
                         return;
                     }
                 }
-                throw new ServiceMixException("Could not dispatch exchange. No flow can handle it.");
-            }
-        } else {
-            for (Flow flow : getServices()) {
-                if (flow.canDispatch(exchange, exchange.getSource())) {
-                    flow.dispatch(exchange);
-                    return;
+                if (!match) {
+                    throw new ServiceMixException("Could not dispatch exchange. No matching endpoints.");
+                } else {
+                    throw new ServiceMixException("Could not dispatch exchange. No flow can handle it.");
+                }
+            } else {
+                if (!internalDispatch(exchange, exchange.getDestination())) {
+                    throw new ServiceMixException("Could not dispatch exchange. No flow can handle it.");
                 }
             }
-            throw new ServiceMixException("Could not dispatch exchange. No flow can handle it.");
+        } else {
+            if (!internalDispatch(exchange, exchange.getSource())) {
+                throw new ServiceMixException("Could not dispatch exchange. No flow can handle it.");
+            }
         }
+    }
+
+    protected boolean internalDispatch(InternalExchange exchange, InternalEndpoint endpoint) {
+        return internalDispatch(exchange, endpoint, false);
+    }
+
+    protected boolean internalDispatch(InternalExchange exchange, InternalEndpoint endpoint, boolean setDestination) {
+        for (Flow flow : getServices()) {
+            if (flow.canDispatch(exchange, endpoint)) {
+                if (setDestination) {
+                    exchange.setDestination(endpoint);
+                }
+                flow.dispatch(exchange);
+                return true;
+            }
+        }
+        return false;
     }
 }
