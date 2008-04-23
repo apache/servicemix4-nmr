@@ -27,16 +27,8 @@ import org.apache.servicemix.kernel.testing.support.AbstractIntegrationTest;
 public class IntegrationTest extends AbstractIntegrationTest {
 
     static {
-        File f = new File("target/smx4");
-        f.mkdirs();
-        System.setProperty("servicemix.home", f.getAbsolutePath());
-        System.setProperty("servicemix.base", f.getAbsolutePath());
-        System.setProperty("org.apache.servicemix.filemonitor.configDir", new File(f, "etc").getAbsolutePath());
-        System.setProperty("org.apache.servicemix.filemonitor.monitorDir", new File(f, "deploy").getAbsolutePath());
-        System.setProperty("org.apache.servicemix.filemonitor.generatedJarDir", new File(f, "data/generate-bundles").getAbsolutePath());
         System.setProperty("javax.xml.parsers.DocumentBuilderFactory", "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
         System.setProperty("javax.xml.parsers.SAXParserFactory", "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl");
-        System.setProperty("org.osgi.vendor.framework", "org.apache.servicemix.jbi");
     }
 
     private Properties dependencies;
@@ -69,8 +61,9 @@ public class IntegrationTest extends AbstractIntegrationTest {
 	 */
 	protected String[] getTestBundlesNames() {
         return new String[] {
-            getBundle("org.apache.geronimo.specs", "geronimo-stax-api_1.0_spec"),
+            getBundle("org.apache.servicemix.specs", "org.apache.servicemix.specs.stax-api-1.0"),
             getBundle("org.apache.geronimo.specs", "geronimo-activation_1.1_spec"),
+            getBundle("org.apache.geronimo.specs", "geronimo-jta_1.1_spec"),
             getBundle("org.apache.felix", "org.apache.felix.prefs"),
             getBundle("org.apache.xbean", "xbean-classloader"),
             getBundle("org.apache.servicemix.nmr", "org.apache.servicemix.nmr.api"),

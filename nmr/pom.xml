@@ -29,7 +29,7 @@
     <groupId>org.apache.servicemix.nmr</groupId>
     <artifactId>nmr</artifactId>
     <packaging>pom</packaging>
-    <name>ServiceMix NMR</name>
+    <name>Apache ServiceMix NMR</name>
 
     <modules>
         <module>api</module>

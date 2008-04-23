@@ -29,17 +29,13 @@
     <groupId>org.apache.servicemix.jbi</groupId>
     <artifactId>org.apache.servicemix.jbi.itests</artifactId>
     <packaging>jar</packaging>
-    <name>ServiceMix JBI Integration Tests</name>
-
-    <properties>
-        <osgi.test.platform>org.springframework.osgi.test.platform.FelixPlatform</osgi.test.platform>
-    </properties>
+    <name>Apache ServiceMix JBI Integration Tests</name>
 
     <dependencies>
         <dependency>
             <groupId>org.apache.servicemix.kernel</groupId>
             <artifactId>org.apache.servicemix.kernel.main</artifactId>
-            <version>${smx.kernel.version}</version>
+            <version>${servicemix.kernel.version}</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -51,7 +47,7 @@
         <dependency>
             <groupId>org.apache.servicemix.kernel.testing</groupId>
             <artifactId>org.apache.servicemix.kernel.testing.support</artifactId>
-		    <version>${smx.kernel.version}</version>
+		    <version>${servicemix.kernel.version}</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -63,7 +59,7 @@
         <dependency>
             <groupId>org.apache.servicemix.kernel</groupId>
             <artifactId>org.apache.servicemix.kernel.filemonitor</artifactId>
-            <version>${smx.kernel.version}</version>
+            <version>${servicemix.kernel.version}</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -75,7 +71,7 @@
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.ant-${ant.version}</artifactId>
-            <version>${smx.kernel.version}</version>
+            <version>${servicemix.kernel.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>
@@ -140,21 +136,21 @@
         <dependency>
             <groupId>org.apache.servicemix</groupId>
             <artifactId>servicemix-shared-compat</artifactId>
-            <version>${smx3.version}</version>
+            <version>${servicemix3.version}</version>
             <classifier>installer</classifier>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix</groupId>
             <artifactId>servicemix-eip</artifactId>
-            <version>${smx3.version}</version>
+            <version>${servicemix3.version}</version>
             <classifier>installer</classifier>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix</groupId>
             <artifactId>servicemix-jsr181</artifactId>
-            <version>${smx3.version}</version>
+            <version>${servicemix3.version}</version>
             <classifier>installer</classifier>
             <type>zip</type>
             <exclusions>
@@ -171,14 +167,14 @@
         <dependency>
             <groupId>org.apache.servicemix</groupId>
             <artifactId>servicemix-http</artifactId>
-            <version>${smx3.version}</version>
+            <version>${servicemix3.version}</version>
             <classifier>installer</classifier>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.samples.wsdl-first</groupId>
             <artifactId>wsdl-first-sa</artifactId>
-            <version>${smx3.version}</version>
+            <version>${servicemix3.version}</version>
             <type>zip</type>
             <exclusions>
                 <exclusion>
@@ -191,6 +187,17 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jta_1.1_spec</artifactId>
+            <version>${geronimo.jta.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.specs</groupId>
+            <artifactId>org.apache.servicemix.specs.stax-api-1.0</artifactId>
+            <version>${servicemix.specs.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -199,7 +206,7 @@
             <plugin>
                 <groupId>org.apache.servicemix.kernel.testing</groupId>
                 <artifactId>depends-maven-plugin</artifactId>
-                <version>${smx.kernel.version}</version>
+                <version>${servicemix.kernel.version}</version>
                 <executions>
                     <execution>
                         <id>generate-depends-file</id>
@@ -226,35 +233,35 @@
                                 <artifactItem>
                                     <groupId>org.apache.servicemix</groupId>
                                     <artifactId>servicemix-shared-compat</artifactId>
-                                    <version>${smx3.version}</version>
+                                    <version>${servicemix3.version}</version>
                                     <classifier>installer</classifier>
                                     <type>zip</type>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.apache.servicemix</groupId>
                                     <artifactId>servicemix-eip</artifactId>
-                                    <version>${smx3.version}</version>
+                                    <version>${servicemix3.version}</version>
                                     <classifier>installer</classifier>
                                     <type>zip</type>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.apache.servicemix</groupId>
                                     <artifactId>servicemix-jsr181</artifactId>
-                                    <version>${smx3.version}</version>
+                                    <version>${servicemix3.version}</version>
                                     <classifier>installer</classifier>
                                     <type>zip</type>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.apache.servicemix</groupId>
                                     <artifactId>servicemix-http</artifactId>
-                                    <version>${smx3.version}</version>
+                                    <version>${servicemix3.version}</version>
                                     <classifier>installer</classifier>
                                     <type>zip</type>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.apache.servicemix.samples.wsdl-first</groupId>
                                     <artifactId>wsdl-first-sa</artifactId>
-                                    <version>${smx3.version}</version>
+                                    <version>${servicemix3.version}</version>
                                     <type>zip</type>
                                 </artifactItem>
                             </artifactItems>
@@ -267,12 +274,6 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <forkMode>pertest</forkMode>
-                    <systemProperties>
-                        <property>
-                            <name>org.springframework.osgi.test.framework</name>
-                            <value>${osgi.test.platform}</value>
-                        </property>
-                    </systemProperties>
                 </configuration>
             </plugin>
         </plugins>

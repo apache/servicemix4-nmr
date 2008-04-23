@@ -30,7 +30,7 @@
     <artifactId>org.apache.servicemix.jbi.deployer</artifactId>
     <packaging>bundle</packaging>
     <version>1.0-m2-SNAPSHOT</version>
-    <name>ServiceMix JBI Deployer</name>
+    <name>Apache ServiceMix JBI Deployer</name>
 
     <dependencies>
         <dependency>
@@ -41,7 +41,7 @@
         <dependency>
             <groupId>org.apache.servicemix.kernel</groupId>
             <artifactId>org.apache.servicemix.kernel.filemonitor</artifactId>
-            <version>${smx.kernel.version}</version>
+            <version>${servicemix.kernel.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.felix</groupId>

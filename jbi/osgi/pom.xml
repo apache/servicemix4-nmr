@@ -29,7 +29,7 @@
     <groupId>org.apache.servicemix.jbi</groupId>
     <artifactId>org.apache.servicemix.jbi.osgi</artifactId>
     <packaging>bundle</packaging>
-    <name>ServiceMix JBI OSGi</name>
+    <name>Apache ServiceMix JBI OSGi</name>
 
     <dependencies>
         <dependency>

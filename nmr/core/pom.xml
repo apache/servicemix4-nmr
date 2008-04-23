@@ -29,7 +29,7 @@
     <groupId>org.apache.servicemix.nmr</groupId>
     <artifactId>org.apache.servicemix.nmr.core</artifactId>
     <packaging>bundle</packaging>
-    <name>ServiceMix NMR Core</name>
+    <name>Apache ServiceMix NMR Core</name>
 
     <dependencies>
         <dependency>

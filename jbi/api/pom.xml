@@ -31,7 +31,7 @@
     <artifactId>org.apache.servicemix.jbi.api</artifactId>
     <packaging>bundle</packaging>
     <version>1.0-m2-SNAPSHOT</version>
-    <name>ServiceMix JBI API</name>
+    <name>Apache ServiceMix JBI API</name>
 
     <dependencies>
         <dependency>

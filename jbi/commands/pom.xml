@@ -29,7 +29,7 @@
     <groupId>org.apache.servicemix.jbi</groupId>
     <artifactId>org.apache.servicemix.jbi.commands</artifactId>
     <packaging>bundle</packaging>
-    <name>ServiceMix JBI Commands</name>
+    <name>Apache ServiceMix JBI Commands</name>
 
     <dependencies>
         <dependency>
@@ -40,7 +40,7 @@
         <dependency>
             <groupId>org.apache.servicemix.kernel.gshell</groupId>
             <artifactId>org.apache.servicemix.kernel.gshell.core</artifactId>
-            <version>${smx.kernel.version}</version>
+            <version>${servicemix.kernel.version}</version>
         </dependency>
     </dependencies>
 

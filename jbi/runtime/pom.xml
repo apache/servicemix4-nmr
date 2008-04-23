@@ -29,7 +29,7 @@
     <groupId>org.apache.servicemix.jbi</groupId>
     <artifactId>org.apache.servicemix.jbi.runtime</artifactId>
     <packaging>bundle</packaging>
-    <name>ServiceMix JBI Runtime</name>
+    <name>Apache ServiceMix JBI Runtime</name>
 
     <dependencies>
         <dependency>
@@ -50,7 +50,7 @@
         <dependency>
             <groupId>org.apache.servicemix</groupId>
             <artifactId>servicemix-eip</artifactId>
-		    <version>${smx3.version}</version>
+		    <version>${servicemix3.version}</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -74,13 +74,13 @@
         <dependency>
             <groupId>org.apache.servicemix</groupId>
             <artifactId>servicemix-common</artifactId>
-		    <version>${smx3.version}</version>
+		    <version>${servicemix3.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix</groupId>
             <artifactId>servicemix-core</artifactId>
-		    <version>${smx3.version}</version>
+		    <version>${servicemix3.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
