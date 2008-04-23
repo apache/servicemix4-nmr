@@ -83,7 +83,7 @@
       <pax.logging.version>1.0</pax.logging.version>
       <servicemix3.version>3.2.1</servicemix3.version>
       <servicemix.kernel.version>1.0-m3-SNAPSHOT</servicemix.kernel.version>
-      <servicemix.legal.version>1.0-SNAPSHOT</servicemix.legal.version>
+      <servicemix.legal.version>1.0</servicemix.legal.version>
       <servicemix.specs.version>1.0-SNAPSHOT</servicemix.specs.version>
       <spring.osgi.version>1.0.2</spring.osgi.version>
       <spring.version>2.5.2</spring.version>
