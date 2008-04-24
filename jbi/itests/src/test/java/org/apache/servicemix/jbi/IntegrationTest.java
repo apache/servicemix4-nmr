@@ -26,11 +26,6 @@ import org.apache.servicemix.kernel.testing.support.AbstractIntegrationTest;
 
 public class IntegrationTest extends AbstractIntegrationTest {
 
-    static {
-        System.setProperty("javax.xml.parsers.DocumentBuilderFactory", "com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderFactoryImpl");
-        System.setProperty("javax.xml.parsers.SAXParserFactory", "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl");
-    }
-
     private Properties dependencies;
 
     /**
