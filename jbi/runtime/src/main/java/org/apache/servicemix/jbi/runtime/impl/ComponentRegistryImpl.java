@@ -29,13 +29,14 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.runtime.ComponentRegistry;
 import org.apache.servicemix.jbi.runtime.DocumentRepository;
 import org.apache.servicemix.jbi.runtime.Environment;
+import org.apache.servicemix.jbi.runtime.ComponentWrapper;
 import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.nmr.core.ServiceRegistryImpl;
 
 /**
  * Registry of JBI components objects
  */
-public class ComponentRegistryImpl extends ServiceRegistryImpl<Component>  implements ComponentRegistry {
+public class ComponentRegistryImpl extends ServiceRegistryImpl<ComponentWrapper>  implements ComponentRegistry {
 
     private static final Log LOGGER = LogFactory.getLog(ComponentRegistryImpl.class);
 
@@ -88,14 +89,14 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<Component>  imple
      * @param properties the associated metadata
      */
     @Override
-    protected void doRegister(Component component, Map<String, ?> properties) throws JBIException {
+    protected void doRegister(ComponentWrapper component, Map<String, ?> properties) throws JBIException {
         LOGGER.info("JBI component registered with properties: " + properties);
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(component.getClass().getClassLoader());
         try {
             String name = (String) properties.get(NAME);
             ComponentContextImpl context = new ComponentContextImpl(this, environment, managementContext, component, properties);
-            component.getLifeCycle().init(context);
+            component.getComponent().getLifeCycle().init(context);
             if (name != null) {
                 contexts.put(name, context);
             } else {
@@ -112,7 +113,7 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<Component>  imple
      * @param component the component to unregister
      */
     @Override
-    protected void doUnregister(Component component, Map<String, ?> properties)throws JBIException {
+    protected void doUnregister(ComponentWrapper component, Map<String, ?> properties)throws JBIException {
         LOGGER.info("JBI component unregistered with properties: " + properties);
         String name = properties != null ? (String) properties.get(NAME) : null;
         if (name != null) {
@@ -121,7 +122,7 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<Component>  imple
         }
     }
 
-    public Component getComponent(String name) {
+    public ComponentWrapper getComponent(String name) {
         return contexts.get(name).getComponent();
     }
 

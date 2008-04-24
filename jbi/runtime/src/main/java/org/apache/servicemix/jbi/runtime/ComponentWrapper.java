@@ -16,26 +16,15 @@
  */
 package org.apache.servicemix.jbi.runtime;
 
-import org.apache.servicemix.nmr.api.service.ServiceRegistry;
-
 import javax.jbi.component.Component;
 
 /**
- * Registry of JBI components.
- *
- * This registry will usually be populated by an OSGi service listener
- * configured via spring-osgi.
+ * ComponentWrapper is a simple interface holding a JBI component.
+ * This is used instead of managing directly the component because
+ * there is a need to wrap it to maintain and manage its state.
  */
-public interface ComponentRegistry extends ServiceRegistry<ComponentWrapper>  {
+public interface ComponentWrapper {
 
-    public static final String NAME = "NAME";
-    public static final String TYPE = "TYPE";
-
-    /**
-     * Retrieve a component given its name
-     * @param name the name of the component
-     * @return the component, or null if not registered
-     */
-    ComponentWrapper getComponent(String name);
+    Component getComponent();
 
 }

@@ -38,12 +38,13 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
 import org.apache.servicemix.jbi.deployer.descriptor.ComponentDesc;
+import org.apache.servicemix.jbi.runtime.ComponentWrapper;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
 /**
  */
-public class ComponentImpl implements Component {
+public class ComponentImpl implements Component, ComponentWrapper {
 
     private static final Log LOGGER = LogFactory.getLog(ComponentImpl.class);
 

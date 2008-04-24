@@ -53,6 +53,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.runtime.ComponentRegistry;
 import org.apache.servicemix.jbi.runtime.DocumentRepository;
 import org.apache.servicemix.jbi.runtime.Environment;
+import org.apache.servicemix.jbi.runtime.ComponentWrapper;
 import org.apache.servicemix.jbi.runtime.impl.utils.DOMUtil;
 import org.apache.servicemix.jbi.runtime.impl.utils.URIResolver;
 import org.apache.servicemix.jbi.runtime.impl.utils.WSAddressingConstants;
@@ -78,7 +79,7 @@ public class ComponentContextImpl implements ComponentContext, MBeanNames {
     private NMR nmr;
     private ComponentRegistryImpl componentRegistry;
     private DocumentRepository documentRepository;
-    private Component component;
+    private ComponentWrapper component;
     private Map<String,?> properties;
     private BlockingQueue<Exchange> queue;
     private DeliveryChannel dc;
@@ -92,7 +93,7 @@ public class ComponentContextImpl implements ComponentContext, MBeanNames {
     public ComponentContextImpl(ComponentRegistryImpl componentRegistry,
                                 Environment environment,
                                 ManagementContext managementContext,
-                                Component component,
+                                ComponentWrapper component,
                                 Map<String,?> properties) {
         this.componentRegistry = componentRegistry;
         this.environment = environment;
@@ -127,7 +128,7 @@ public class ComponentContextImpl implements ComponentContext, MBeanNames {
             props.put(Endpoint.NAME, serviceName.toString() + ":" + endpointName);
             props.put(Endpoint.SERVICE_NAME, serviceName);
             props.put(Endpoint.ENDPOINT_NAME, endpointName);
-            Document doc = component.getServiceDescription(endpoint);
+            Document doc = component.getComponent().getServiceDescription(endpoint);
             if (doc != null) {
                 String data = DOMUtil.asXML(doc);
                 String url = documentRepository.register(data.getBytes());
@@ -161,8 +162,8 @@ public class ComponentContextImpl implements ComponentContext, MBeanNames {
     }
 
     public ServiceEndpoint resolveEndpointReference(DocumentFragment epr) {
-        for (Component component : componentRegistry.getServices()) {
-            ServiceEndpoint se = component.resolveEndpointReference(epr);
+        for (ComponentWrapper component : componentRegistry.getServices()) {
+            ServiceEndpoint se = component.getComponent().resolveEndpointReference(epr);
             if (se != null) {
                 return se;
             }
@@ -435,7 +436,7 @@ public class ComponentContextImpl implements ComponentContext, MBeanNames {
         return null;
     }
 
-    public Component getComponent() {
+    public ComponentWrapper getComponent() {
         return component;
     }
 

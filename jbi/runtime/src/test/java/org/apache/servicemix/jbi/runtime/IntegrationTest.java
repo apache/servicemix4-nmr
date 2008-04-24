@@ -18,7 +18,6 @@ package org.apache.servicemix.jbi.runtime;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import javax.xml.namespace.QName;
 
@@ -76,7 +75,7 @@ public class IntegrationTest {
         ep.setTarget(new ExchangeTarget());
         ep.getTarget().setService(new QName("target"));
         eip.setEndpoints(new EIPEndpoint[] { ep });
-        eip.init(new ComponentContextImpl(reg, null, null, eip, new HashMap()));
+        eip.init(new ComponentContextImpl(reg, null, null, new SimpleComponentWrapper(eip), new HashMap()));
         eip.getLifeCycle().start();
 
         Channel channel = smx.createChannel();
@@ -85,4 +84,5 @@ public class IntegrationTest {
         e.setTarget(smx.getEndpointRegistry().lookup(ServiceHelper.createMap(Endpoint.NAME, "{uri:foo}bar:ep")));
         channel.sendSync(e);
     }
+
 }

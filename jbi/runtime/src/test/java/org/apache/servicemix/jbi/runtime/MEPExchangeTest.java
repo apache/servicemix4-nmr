@@ -75,8 +75,8 @@ public class MEPExchangeTest extends TestCase {
         provider = new TestComponent(new QName("provider"), "endpoint");
         consumer = new TestComponent(new QName("consumer"), "endpoint");
         // Register components
-        reg.register(provider, ServiceHelper.createMap(ComponentRegistry.NAME, "provider"));
-        reg.register(consumer, ServiceHelper.createMap(ComponentRegistry.NAME, "consumer"));
+        reg.register(new SimpleComponentWrapper(provider), ServiceHelper.createMap(ComponentRegistry.NAME, "provider"));
+        reg.register(new SimpleComponentWrapper(consumer), ServiceHelper.createMap(ComponentRegistry.NAME, "consumer"));
     }
 
     public void tearDown() throws Exception {

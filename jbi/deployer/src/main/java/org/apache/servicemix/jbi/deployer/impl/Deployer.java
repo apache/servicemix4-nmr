@@ -28,6 +28,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jbi.JBIException;
@@ -46,12 +47,16 @@ import org.apache.servicemix.jbi.deployer.descriptor.ServiceAssemblyDesc;
 import org.apache.servicemix.jbi.deployer.descriptor.ServiceUnitDesc;
 import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryDesc;
 import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryList;
+import org.apache.servicemix.jbi.deployer.descriptor.Identification;
+import org.apache.servicemix.jbi.runtime.ComponentWrapper;
 import org.apache.xbean.classloader.MultiParentClassLoader;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.ServiceReference;
 import org.osgi.service.prefs.Preferences;
 import org.osgi.service.prefs.PreferencesService;
+import org.osgi.util.tracker.ServiceTracker;
 import org.springframework.osgi.util.BundleDelegatingClassLoader;
 import org.springframework.osgi.util.OsgiStringUtils;
 
@@ -74,6 +79,8 @@ public class Deployer extends AbstractBundleWatcher {
 
     private Map<String, ComponentImpl> components;
 
+    private Map<String, Boolean> wrappedComponents;
+
     private Map<Bundle, List<ServiceRegistration>> services;
 
     private List<Bundle> pendingBundles;
@@ -84,10 +91,13 @@ public class Deployer extends AbstractBundleWatcher {
 
     private boolean autoStart = true;
 
+    private ServiceTracker tracker;
+
     public Deployer() throws JBIException{
         sharedLibraries = new ConcurrentHashMap<String, SharedLibraryImpl>();
         serviceAssemblies = new ConcurrentHashMap<String, ServiceAssemblyImpl>();
         components = new ConcurrentHashMap<String, ComponentImpl>();
+        wrappedComponents = new ConcurrentHashMap<String, Boolean>();
         services = new ConcurrentHashMap<Bundle, List<ServiceRegistration>>();
         pendingBundles = new ArrayList<Bundle>();
         // TODO: control that using properties
@@ -109,6 +119,30 @@ public class Deployer extends AbstractBundleWatcher {
 
     public void setAutoStart(boolean autoStart) {
         this.autoStart = autoStart;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        super.afterPropertiesSet();
+        tracker = new ServiceTracker(getBundleContext(), javax.jbi.component.Component.class.getName(), null) {
+            public Object addingService(ServiceReference serviceReference) {
+                Object o = super.addingService(serviceReference);
+                maybeWrapComponent(serviceReference, (javax.jbi.component.Component) o);
+                return o;
+            }
+
+            public void removedService(ServiceReference serviceReference, Object o) {
+                maybeUnwrapComponent(serviceReference, (javax.jbi.component.Component) o);
+                super.removedService(serviceReference, o);
+            }
+        };
+        tracker.open();
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        tracker.close();
+        super.destroy();
     }
 
     @Override
@@ -209,7 +243,8 @@ public class Deployer extends AbstractBundleWatcher {
         // register the component in the OSGi registry
         LOGGER.debug("Registering JBI component");
         registerService(bundle, Component.class.getName(), component, props);
-        registerService(bundle, javax.jbi.component.Component.class.getName(), component.getComponent(), props);
+        registerService(bundle, ComponentWrapper.class.getName(), component, props);
+        registerService(bundle, javax.jbi.component.Component.class.getName(), innerComponent, props);
     }
 
     private void extractBundle(File installRoot, Bundle bundle, String path) throws IOException {
@@ -344,7 +379,35 @@ public class Deployer extends AbstractBundleWatcher {
             }
         }
     }
+
     protected void uninstallSharedLibrary(SharedLibraryDesc sharedLibraryDesc, Bundle bundle) throws JBIException {
+    }
+
+    protected void maybeWrapComponent(ServiceReference reference, javax.jbi.component.Component component) {
+        String name = (String) reference.getProperty(NAME);
+        if (name != null && !components.containsKey(name)) {
+            String type = (String) reference.getProperty(TYPE);
+            Preferences prefs = preferencesService.getUserPreferences(name);
+            ComponentDesc componentDesc = new ComponentDesc();
+            componentDesc.setIdentification(new Identification());
+            componentDesc.getIdentification().setName(name);
+            componentDesc.setType(type);
+            ComponentImpl wrapper = new ComponentImpl(componentDesc, component, prefs, autoStart, this);
+            wrappedComponents.put(name, true);
+            components.put(name, wrapper);
+            Dictionary<String, String> props = new Hashtable<String, String>();
+            props.put(NAME, name);
+            props.put(TYPE, componentDesc.getType());
+            registerService(reference.getBundle(), Component.class.getName(), wrapper, props);
+            registerService(reference.getBundle(), ComponentWrapper.class.getName(), wrapper, props);
+        }
+    }
+
+    protected void maybeUnwrapComponent(ServiceReference reference, javax.jbi.component.Component component) {
+        String name = (String) reference.getProperty(NAME);
+        if (name != null && wrappedComponents.remove(name)) {
+            components.remove(name);
+        }
     }
 
     protected void checkPendingBundles() {
