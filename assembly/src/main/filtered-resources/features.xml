@@ -27,10 +27,11 @@
 	</feature>
 	<feature name="jbi">
 		<feature>nmr</feature>
-		<bundle>mvn:org.apache.geronimo.specs/geronimo-activation_1.1_spec/${geronimo.activation.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.0/${servicemix.specs.version}</bundle>
+        <bundle>mvn:org.apache.geronimo.specs/geronimo-activation_1.1_spec/${geronimo.activation.version}</bundle>
 		<bundle>mvn:org.apache.geronimo.specs/geronimo-javamail_1.4_spec/${geronimo.javamail.version}</bundle>
 		<bundle>mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimo.jta.version}</bundle>
-        <bundle>mvn:http://svn.apache.org/repos/asf/servicemix/m2-repo!org.apache.xbean/xbean-classloader/${xbean.version}</bundle>
+        <bundle>mvn:org.apache.xbean/xbean-classloader/${xbean.version}</bundle>
 	    <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.woodstox-3.2.3/${pom.version}</bundle>
 	    <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.api/${pom.version}</bundle>
 	    <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.runtime/${pom.version}</bundle>
