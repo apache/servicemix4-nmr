@@ -14,20 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicemix.jbi.runtime.impl;
+package org.apache.servicemix.document.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 
 import junit.framework.TestCase;
-import org.apache.servicemix.jbi.util.FileUtil;
 import org.osgi.service.url.URLStreamHandlerSetter;
 
 public class DocumentRepositoryImplTest extends TestCase {
@@ -56,7 +56,7 @@ public class DocumentRepositoryImplTest extends TestCase {
 
         InputStream is = new URL(url).openStream();
         ByteArrayOutputStream os = new ByteArrayOutputStream();
-        FileUtil.copyInputStream(is, os);
+        copyInputStream(is, os);
         byte[] d = os.toByteArray();
         assertEquals(4, d.length);
         for (int i = 0; i < 4; i++) {
@@ -90,5 +90,22 @@ public class DocumentRepositoryImplTest extends TestCase {
             super.setURL(u, protocol, host, port, authority, userInfo, path, query, ref);
         }
     }
+
+    /**
+     * Copy in stream to an out stream
+     * 
+     * @param in
+     * @param out
+     * @throws IOException
+     */
+    public static void copyInputStream(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[8192];
+        int len = in.read(buffer);
+        while (len >= 0) {
+            out.write(buffer, 0, len);
+            len = in.read(buffer);
+        }
+    }
+
 }
 

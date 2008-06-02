@@ -37,10 +37,6 @@
         <property name="environment" ref="environment" />
     </bean>
 
-    <!-- URL handler for in memory documents -->
-    <bean id="documentRepository" class="org.apache.servicemix.jbi.runtime.impl.DocumentRepositoryImpl">
-    </bean>
-
     <!-- Management context -->
     <bean id="managementContext" class="org.apache.servicemix.jbi.runtime.impl.ManagementContext">
         <property name="jmxDomainName" value="org.apache.servicemix" />
@@ -69,6 +65,10 @@
     <osgi:reference id="nmr"
                     interface="org.apache.servicemix.nmr.api.NMR" />
 
+    <!-- Reference to the DocumentRepository -->
+    <osgi:reference id="documentRepository"
+                    interface="org.apache.servicemix.document.DocumentRepository" />
+
     <!-- Reference to the Transaction Manager -->
     <osgi:list id="transactionManagers"
                interface="javax.transaction.TransactionManager"
@@ -89,17 +89,6 @@
         <osgi:interfaces>
             <value>org.apache.servicemix.jbi.runtime.ComponentRegistry</value>
         </osgi:interfaces>
-    </osgi:service>
-
-    <!-- Expose the Document Registry / URL Handler -->
-    <osgi:service ref="documentRepository" >
-        <osgi:interfaces>
-            <value>org.apache.servicemix.jbi.runtime.DocumentRepository</value>
-            <value>org.osgi.service.url.URLStreamHandlerService</value>
-        </osgi:interfaces>
-        <osgi:service-properties>
-            <entry key="url.handler.protocol" value="document" />       
-        </osgi:service-properties>
     </osgi:service>
 
 </beans>

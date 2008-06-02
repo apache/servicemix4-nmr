@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicemix.jbi.runtime;
+package org.apache.servicemix.document;
 
 import java.io.IOException;
 import java.io.InputStream;

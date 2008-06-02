@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.security.auth.Subject;
+
 import org.apache.servicemix.nmr.api.Message;
 
 /**
@@ -38,6 +40,7 @@ public class MessageImpl implements Message {
     private Object body;
     private String contentType;
     private String contentEncoding;
+    private Subject securitySubject;
     private Map<String, Object> headers;
     private Map<String, Object> attachments;
     private transient Converter converter;
@@ -117,6 +120,24 @@ public class MessageImpl implements Message {
      */
     public void setContentEncoding(String encoding) {
         this.contentEncoding = encoding;
+    }
+
+    /**
+     * Get the security subject for this message
+     *
+     * @return the security subject
+     */
+    public Subject getSecuritySubject() {
+        return securitySubject;
+    }
+
+    /**
+     * Set the security subject for this message
+     *
+     * @param securitySubject the security subject
+     */
+    public void setSecuritySubject(Subject securitySubject) {
+        this.securitySubject = securitySubject;
     }
 
     /**

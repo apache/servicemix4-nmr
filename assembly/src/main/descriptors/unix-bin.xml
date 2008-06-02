@@ -116,6 +116,7 @@
                 <include>org.apache.servicemix.nmr:org.apache.servicemix.nmr.osgi</include>
                 <include>org.apache.servicemix.nmr:org.apache.servicemix.nmr.commands</include>
                 <include>org.apache.servicemix.nmr:org.apache.servicemix.nmr.management</include>
+                <include>org.apache.servicemix.document:org.apache.servicemix.document</include>
                 <include>org.apache.servicemix.jbi:org.apache.servicemix.jbi.api</include>
                 <include>org.apache.servicemix.jbi:org.apache.servicemix.jbi.runtime</include>
                 <include>org.apache.servicemix.jbi:org.apache.servicemix.jbi.osgi</include>

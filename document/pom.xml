@@ -22,27 +22,46 @@
 
     <parent>
         <groupId>org.apache.servicemix.nmr</groupId>
-        <artifactId>nmr</artifactId>
+        <artifactId>nmr-parent</artifactId>
         <version>1.0-m2-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.servicemix.nmr</groupId>
-    <artifactId>org.apache.servicemix.nmr.api</artifactId>
+    <groupId>org.apache.servicemix.document</groupId>
+    <artifactId>org.apache.servicemix.document</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache ServiceMix NMR API</name>
+    <name>Apache ServiceMix Document</name>
 
     <dependencies>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>${commons.logging.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.osgi</groupId>
+            <artifactId>spring-osgi-core</artifactId>
+            <version>${spring.osgi.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.osgi.core</artifactId>
             <version>${felix.osgi.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -53,11 +72,9 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
-                        <Bundle-Name>${pom.name}</Bundle-Name>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>
-                            ${pom.artifactId},${pom.artifactId}.service,${pom.artifactId}.event,${pom.artifactId}.internal,${pom.artifactId}.security
-                        </Export-Package>
+                        <Export-Package>${pom.artifactId},${pom.artifactId}.factory</Export-Package>
+                        <Private-Package>${pom.artifactId}.impl</Private-Package>
                     </instructions>
                 </configuration>
             </plugin>

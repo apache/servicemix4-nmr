@@ -35,6 +35,11 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.apache.servicemix.document</groupId>
+            <artifactId>org.apache.servicemix.document</artifactId>
+            <version>${pom.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>
             <artifactId>org.apache.servicemix.nmr.api</artifactId>
             <version>${pom.version}</version>

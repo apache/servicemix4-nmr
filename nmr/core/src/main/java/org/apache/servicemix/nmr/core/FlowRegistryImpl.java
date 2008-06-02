@@ -16,8 +16,15 @@
  */
 package org.apache.servicemix.nmr.core;
 
+import java.util.Set;
+import java.security.Principal;
+
+import javax.security.auth.Subject;
+
 import org.apache.servicemix.nmr.api.Role;
 import org.apache.servicemix.nmr.api.ServiceMixException;
+import org.apache.servicemix.nmr.api.security.AuthorizationService;
+import org.apache.servicemix.nmr.api.security.GroupPrincipal;
 import org.apache.servicemix.nmr.api.internal.Flow;
 import org.apache.servicemix.nmr.api.internal.FlowRegistry;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
@@ -31,6 +38,16 @@ import org.apache.servicemix.nmr.api.internal.InternalReference;
  * @since 4.0
  */
 public class FlowRegistryImpl extends ServiceRegistryImpl<Flow> implements FlowRegistry {
+
+    private AuthorizationService authorizationService;
+
+    public AuthorizationService getAuthorizationService() {
+        return authorizationService;
+    }
+
+    public void setAuthorizationService(AuthorizationService authorizationService) {
+        this.authorizationService = authorizationService;
+    }
 
     public boolean canDispatch(InternalExchange exchange, InternalEndpoint endpoint) {
         for (Flow flow : getServices()) {
@@ -47,31 +64,44 @@ public class FlowRegistryImpl extends ServiceRegistryImpl<Flow> implements FlowR
                 InternalReference target = (InternalReference) exchange.getTarget();
                 assert target != null;
                 boolean match = false;
+                boolean securityMatch = false;
                 for (InternalEndpoint endpoint : target.choose()) {
                     match = true;
+                    if (authorizationService != null) {
+                        Set<GroupPrincipal> acls = authorizationService.getAcls(endpoint.getId(), exchange.getOperation());
+                        if (!acls.contains(GroupPrincipal.ANY)) {
+                            Subject subject = exchange.getIn().getSecuritySubject();
+                            if (subject == null) {
+                                continue;
+                            }
+                            acls.retainAll(subject.getPrincipals());
+                            if (acls.size() == 0) {
+                                continue;
+                            }
+                        }
+                    }
+                    securityMatch = true;
                     if (internalDispatch(exchange, endpoint, true)) {
                         return;
                     }
                 }
                 if (!match) {
                     throw new ServiceMixException("Could not dispatch exchange. No matching endpoints.");
+                } else if (!securityMatch) {
+                    throw new ServiceMixException("User not authenticated or not authorized to access any matching endpoint.");
                 } else {
                     throw new ServiceMixException("Could not dispatch exchange. No flow can handle it.");
                 }
             } else {
-                if (!internalDispatch(exchange, exchange.getDestination())) {
+                if (!internalDispatch(exchange, exchange.getDestination(), false)) {
                     throw new ServiceMixException("Could not dispatch exchange. No flow can handle it.");
                 }
             }
         } else {
-            if (!internalDispatch(exchange, exchange.getSource())) {
+            if (!internalDispatch(exchange, exchange.getSource(), false)) {
                 throw new ServiceMixException("Could not dispatch exchange. No flow can handle it.");
             }
         }
-    }
-
-    protected boolean internalDispatch(InternalExchange exchange, InternalEndpoint endpoint) {
-        return internalDispatch(exchange, endpoint, false);
     }
 
     protected boolean internalDispatch(InternalExchange exchange, InternalEndpoint endpoint, boolean setDestination) {

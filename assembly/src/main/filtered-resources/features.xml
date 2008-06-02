@@ -18,26 +18,27 @@
 -->
 <features>
     <feature name="nmr">
-	    <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.api/${pom.version}</bundle>
-	    <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.core/${pom.version}</bundle>
-	    <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.osgi/${pom.version}</bundle>
-	    <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.spring/${pom.version}</bundle>
-	    <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.commands/${pom.version}</bundle>
-	    <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.management/${pom.version}</bundle>
-	</feature>
-	<feature name="jbi">
-		<feature>nmr</feature>
+        <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.api/${pom.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.core/${pom.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.osgi/${pom.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.spring/${pom.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.commands/${pom.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.management/${pom.version}</bundle>
+    </feature>
+    <feature name="jbi">
+        <feature>nmr</feature>
         <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.0/${servicemix.specs.version}</bundle>
         <bundle>mvn:org.apache.geronimo.specs/geronimo-activation_1.1_spec/${geronimo.activation.version}</bundle>
-		<bundle>mvn:org.apache.geronimo.specs/geronimo-javamail_1.4_spec/${geronimo.javamail.version}</bundle>
-		<bundle>mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimo.jta.version}</bundle>
+        <bundle>mvn:org.apache.geronimo.specs/geronimo-javamail_1.4_spec/${geronimo.javamail.version}</bundle>
+        <bundle>mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimo.jta.version}</bundle>
         <bundle>mvn:org.apache.xbean/xbean-classloader/${xbean.version}</bundle>
-	    <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.woodstox-3.2.3/${pom.version}</bundle>
-	    <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.api/${pom.version}</bundle>
-	    <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.runtime/${pom.version}</bundle>
-	    <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.osgi/${pom.version}</bundle>
-	    <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.deployer/${pom.version}</bundle>
-	    <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.commands/${pom.version}</bundle>
-	    <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.management/${pom.version}</bundle>
-	</feature>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.woodstox-3.2.3/${pom.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.document/org.apache.servicemix.document/${pom.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.api/${pom.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.runtime/${pom.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.osgi/${pom.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.deployer/${pom.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.commands/${pom.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.management/${pom.version}</bundle>
+    </feature>
 </features>

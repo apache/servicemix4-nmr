@@ -27,8 +27,6 @@ import java.util.Map;
  * representing a link to a logical endpoint.
  * Exchanges are created using the {@link Channel}.
  *
- * TODO: transactions
- *
  * @version $Revision: $
  * @since 4.0
  */

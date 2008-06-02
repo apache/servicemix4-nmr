@@ -80,7 +80,7 @@ public class NormalizedMessageImpl implements NormalizedMessage {
     }
 
     public void setSecuritySubject(Subject subject) {
-        message.setHeader(Subject.class, subject);
+        message.setSecuritySubject(subject);
     }
 
     public Set getPropertyNames() {
@@ -92,6 +92,6 @@ public class NormalizedMessageImpl implements NormalizedMessage {
     }
 
     public Subject getSecuritySubject() {
-        return message.getHeader(Subject.class);
+        return message.getSecuritySubject();
     }
 }

@@ -14,16 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicemix.jbi.runtime;
+package org.apache.servicemix.nmr.api.security;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.security.cert.X509Certificate;
+
+import javax.security.auth.callback.Callback;
 
 /**
- * A resource which is capable of creating an input stream
+ * A callback to retrieve an X509Certificate.
+ * This class is mainly used from the related login module.
+ *
+ * @see CertificatesLoginModule
  */
-public interface Resource {
+public class CertificateCallback implements Callback {
 
-    InputStream open() throws IOException;
+    private X509Certificate certificate;
 
+    public X509Certificate getCertificate() {
+        return certificate;
+    }
+
+    public void setCertificate(X509Certificate certificate) {
+        this.certificate = certificate;
+    }
 }

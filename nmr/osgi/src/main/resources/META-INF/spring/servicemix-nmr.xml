@@ -42,7 +42,9 @@
     </osgi:service>
 
     <!-- Flow registry and service tracker -->
-    <bean id="flowRegistry" class="org.apache.servicemix.nmr.core.FlowRegistryImpl" />
+    <bean id="flowRegistry" class="org.apache.servicemix.nmr.core.FlowRegistryImpl">
+        <property name="authorizationService" ref="authorizationService" />
+    </bean>
     <osgi:list id="flows"
                interface="org.apache.servicemix.nmr.api.internal.Flow"
                cardinality="0..N">
@@ -76,5 +78,30 @@
             <value>org.apache.servicemix.nmr.api.internal.Flow</value>
         </osgi:interfaces>
     </osgi:service>
+
+    <!-- AuthorizationService -->
+    <bean id="authorizationService" class="org.apache.servicemix.nmr.core.security.DefaultAuthorizationService" />
+    <osgi:service ref="authorizationService" interface="org.apache.servicemix.nmr.api.security.AuthorizationService" />
+
+    <!-- AuthorizationEntries -->
+    <osgi:list id="authorizationEntries"
+               interface="org.apache.servicemix.nmr.api.security.AuthorizationEntry"
+               cardinality="0..N">
+        <osgi:listener ref="authorizationService" bind-method="register" unbind-method="unregister" />
+    </osgi:list>
+
+    <!-- Default authorization entry -->
+    <osgi:service interface="org.apache.servicemix.nmr.api.security.AuthorizationEntry">
+        <bean class="org.apache.servicemix.nmr.core.security.DefaultAuthorizationEntry">
+            <property name="endpoint" value="*" />
+            <property name="rank" value="-2147483648" />
+            <property name="roles" value="*" />
+            <property name="type" value="Set" />
+        </bean>
+    </osgi:service>
+
+    <!-- AuthenticationService -->
+    <bean id="authenticationService" class="org.apache.servicemix.nmr.core.security.JaasAuthenticationService" />
+    <osgi:service ref="authenticationService" interface="org.apache.servicemix.nmr.api.security.AuthorizationService" />
 
 </beans>

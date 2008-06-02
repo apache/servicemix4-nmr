@@ -98,6 +98,12 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.apache.servicemix.document</groupId>
+            <artifactId>org.apache.servicemix.document</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.apache.servicemix.jbi</groupId>
             <artifactId>org.apache.servicemix.jbi.api</artifactId>
             <version>${project.version}</version>

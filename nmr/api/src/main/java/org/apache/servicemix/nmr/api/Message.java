@@ -19,6 +19,8 @@ package org.apache.servicemix.nmr.api;
 import java.io.Serializable;
 import java.util.Map;
 
+import javax.security.auth.Subject;
+
 /**
  * The Message represents the content of a request, a response or a fault.
  * Messages are part of {@link Exchange}s are created using
@@ -198,6 +200,20 @@ public interface Message extends Serializable {
      * @param encoding the encoding
      */
     void setContentEncoding(String encoding);
+
+    /**
+     * Get the security subject for this message
+     *
+     * @return the security subject
+     */
+    Subject getSecuritySubject();
+
+    /**
+     * Set the security subject for this message
+     *
+     * @param securitySubject the security subject
+     */
+    void setSecuritySubject(Subject securitySubject);
 
     /**
      * Copies the contents of the other message into this message

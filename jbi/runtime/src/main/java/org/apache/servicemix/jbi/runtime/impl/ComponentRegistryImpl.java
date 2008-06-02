@@ -16,18 +16,15 @@
  */
 package org.apache.servicemix.jbi.runtime.impl;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jbi.JBIException;
-import javax.jbi.component.Component;
-import javax.jbi.component.ComponentContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.servicemix.document.DocumentRepository;
 import org.apache.servicemix.jbi.runtime.ComponentRegistry;
-import org.apache.servicemix.jbi.runtime.DocumentRepository;
 import org.apache.servicemix.jbi.runtime.Environment;
 import org.apache.servicemix.jbi.runtime.ComponentWrapper;
 import org.apache.servicemix.nmr.api.NMR;

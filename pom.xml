@@ -35,6 +35,7 @@
   <modules>
       <module>bundles</module>
       <module>nmr</module>
+      <module>document</module>
       <module>jbi</module>
       <module>bundle</module>
       <module>assembly</module>

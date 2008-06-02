@@ -14,27 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicemix.jbi.runtime.impl;
+package org.apache.servicemix.document.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.servicemix.jbi.runtime.DocumentRepository;
-import org.apache.servicemix.jbi.runtime.Resource;
+import org.apache.servicemix.document.Resource;
+import org.apache.servicemix.document.DocumentRepository;
 import org.osgi.service.url.AbstractURLStreamHandlerService;
 
 /**
  * Simple document repository
  */
-public class DocumentRepositoryImpl extends AbstractURLStreamHandlerService implements DocumentRepository  {
+public class DocumentRepositoryImpl extends AbstractURLStreamHandlerService implements DocumentRepository {
 
     public static final String PROTOCOL = "document";
     public static final String PROTOCOL_COLUMN = PROTOCOL + ":";
