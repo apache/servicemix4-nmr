@@ -67,6 +67,7 @@
                             javax.management,
                             javax.naming,
                             javax.transaction,
+                            org.apache.servicemix.document,
                             org.apache.servicemix.nmr.api,
                             org.apache.servicemix.jbi.runtime,
                             org.apache.servicemix.jbi.runtime.impl,
