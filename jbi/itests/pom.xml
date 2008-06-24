@@ -70,8 +70,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.ant-${ant.version}</artifactId>
-            <version>${servicemix.kernel.version}</version>
+            <artifactId>org.apache.servicemix.bundles.ant</artifactId>
+            <version>${ant.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>

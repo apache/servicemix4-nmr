@@ -106,8 +106,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.woodstox-3.2.3</artifactId>
-            <version>${pom.version}</version>
+            <artifactId>org.apache.servicemix.bundles.woodstox</artifactId>
+            <version>${woodstox.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
