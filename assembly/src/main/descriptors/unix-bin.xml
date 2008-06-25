@@ -109,7 +109,7 @@
                 <include>org.apache.geronimo.specs:geronimo-activation_1.1_spec</include>
                 <include>org.apache.geronimo.specs:geronimo-javamail_1.4_spec</include>
                 <include>org.apache.geronimo.specs:geronimo-jta_1.1_spec</include>
-                <include>org.apache.servicemix.bundles:org.apache.servicemix.bundles.woodstox-3.2.3</include>
+                <include>org.apache.servicemix.bundles:org.apache.servicemix.bundles.woodstox</include>
                 <include>org.apache.xbean:xbean-classloader</include>
                 <include>org.apache.servicemix.nmr:org.apache.servicemix.nmr.api</include>
                 <include>org.apache.servicemix.nmr:org.apache.servicemix.nmr.core</include>
