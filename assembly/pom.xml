@@ -184,6 +184,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.2-beta-2</version>
                 <executions>
                     <execution>
                         <id>unix-bin</id>
@@ -196,7 +197,6 @@
                                 <descriptor>src/main/descriptors/unix-bin.xml</descriptor>
                             </descriptors>
                             <finalName>${pom.artifactId}-${pom.version}</finalName>
-                            <appendAssemblyId>false</appendAssemblyId>
                             <tarLongFileMode>gnu</tarLongFileMode>
                         </configuration>
                     </execution>
@@ -211,7 +211,6 @@
                                 <descriptor>src/main/descriptors/windows-bin.xml</descriptor>
                             </descriptors>
                             <finalName>${pom.artifactId}-${pom.version}</finalName>
-                            <appendAssemblyId>false</appendAssemblyId>
                         </configuration>
                     </execution>
                     <execution>
