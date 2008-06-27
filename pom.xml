@@ -115,6 +115,12 @@
                <enabled>true</enabled>
            </snapshots>
        </repository>
+       <!-- Spring OSGi milestone -->
+       <repository>
+           <id>spring-maven-milestone</id>
+           <name>Springframework Maven Repository</name>
+           <url>http://s3.amazonaws.com/maven.springframework.org/milestone</url>
+       </repository>
    </repositories>
 
     <dependencies>
