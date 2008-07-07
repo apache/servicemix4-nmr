@@ -42,6 +42,8 @@ import org.apache.servicemix.jbi.runtime.ComponentWrapper;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
+import com.sun.org.apache.bcel.internal.generic.CPInstruction;
+
 /**
  */
 public class ComponentImpl implements Component, ComponentWrapper {
@@ -240,7 +242,7 @@ public class ComponentImpl implements Component, ComponentWrapper {
         public void init(ComponentContext context) throws JBIException {
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
             try {
-                Thread.currentThread().setContextClassLoader(lifeCycle.getClass().getClassLoader());
+                Thread.currentThread().setContextClassLoader(component.getClass().getClassLoader());
                 lifeCycle.init(context);
                 state = State.Initialized;
                 if (runningState == State.Started) {
