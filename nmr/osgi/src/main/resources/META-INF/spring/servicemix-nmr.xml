@@ -102,6 +102,6 @@
 
     <!-- AuthenticationService -->
     <bean id="authenticationService" class="org.apache.servicemix.nmr.core.security.JaasAuthenticationService" />
-    <osgi:service ref="authenticationService" interface="org.apache.servicemix.nmr.api.security.AuthorizationService" />
+    <osgi:service ref="authenticationService" interface="org.apache.servicemix.nmr.api.security.AuthenticationService" />
 
 </beans>
