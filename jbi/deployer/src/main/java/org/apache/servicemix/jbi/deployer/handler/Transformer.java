@@ -66,7 +66,11 @@ public class Transformer {
         Descriptor desc = DescriptorFactory.buildDescriptor(is);
 
         String version = m.getMainAttributes().getValue("Implementation-Version");
-        version = Builder.cleanupVersion(version);
+        if (version != null) {
+            version = Builder.cleanupVersion(version);
+        } else {
+            version = "0.0.0";
+        }
         String name = m.getMainAttributes().getValue("Implementation-Title");
 
         if (desc.getComponent() != null) {
