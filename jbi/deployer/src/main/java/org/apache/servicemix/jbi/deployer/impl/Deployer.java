@@ -462,7 +462,7 @@ public class Deployer extends AbstractBundleWatcher {
                         urls,
                         parents,
                         component.isComponentClassLoaderDelegationSelfFirst(),
-                        new String[0],
+                        new String[] {"javax.xml.bind"},
                         new String[] {"java.", "javax." });
     }
 
