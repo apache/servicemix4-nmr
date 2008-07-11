@@ -49,7 +49,7 @@ public class DeliveryChannelImpl implements DeliveryChannel {
     private final AtomicBoolean closed;
 
     /** The Component Context **/
-    private final ComponentContextImpl context;
+    private final AbstractComponentContext context;
 
     /** Holds exchanges to be polled by the component */
     private final BlockingQueue<Exchange> queue;
@@ -60,7 +60,7 @@ public class DeliveryChannelImpl implements DeliveryChannel {
     /** The default QName for endpoints not having this property */
     private static final QName DEFAULT_SERVICE_NAME = new QName("urn:servicemix.apache.org", "jbi");
 
-    public DeliveryChannelImpl(ComponentContextImpl context, Channel channel, BlockingQueue<Exchange> queue) {
+    public DeliveryChannelImpl(AbstractComponentContext context, Channel channel, BlockingQueue<Exchange> queue) {
         this.context = context;
         this.channel = channel;
         this.queue = queue;
@@ -163,11 +163,6 @@ public class DeliveryChannelImpl implements DeliveryChannel {
             me.setEndpoint(new ServiceEndpointImpl(serviceName, endpointName));
         }
         return me;
-    }
-
-    protected Exchange getExchange(MessageExchange messageExchange) {
-        // TODO
-        return null;
     }
 
     public void send(MessageExchange exchange) throws MessagingException {

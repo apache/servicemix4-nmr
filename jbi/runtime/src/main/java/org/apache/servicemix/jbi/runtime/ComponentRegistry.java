@@ -19,6 +19,7 @@ package org.apache.servicemix.jbi.runtime;
 import org.apache.servicemix.nmr.api.service.ServiceRegistry;
 
 import javax.jbi.component.Component;
+import javax.jbi.component.ComponentContext;
 
 /**
  * Registry of JBI components.
@@ -37,5 +38,12 @@ public interface ComponentRegistry extends ServiceRegistry<ComponentWrapper>  {
      * @return the component, or null if not registered
      */
     ComponentWrapper getComponent(String name);
+
+    /**
+     * Create a JBI ComponentContext that can be used to send messages to the JBI bus.
+     * The ComponentContext has limited capabilities and can not be used to activate endpoints.
+     * @return
+     */
+    ComponentContext createComponentContext();
 
 }

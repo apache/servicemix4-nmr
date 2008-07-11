@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jbi.JBIException;
+import javax.jbi.component.ComponentContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -92,7 +93,7 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<ComponentWrapper>
         Thread.currentThread().setContextClassLoader(component.getClass().getClassLoader());
         try {
             String name = (String) properties.get(NAME);
-            ComponentContextImpl context = new ComponentContextImpl(this, environment, managementContext, component, properties);
+            ComponentContextImpl context = new ComponentContextImpl(this, component, properties);
             component.getComponent().getLifeCycle().init(context);
             if (name != null) {
                 contexts.put(name, context);
@@ -115,7 +116,9 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<ComponentWrapper>
         String name = properties != null ? (String) properties.get(NAME) : null;
         if (name != null) {
             ComponentContextImpl context = contexts.remove(name);
-            context.getDeliveryChannel().close();
+            if (context != null && context.getDeliveryChannel() != null) {
+                context.getDeliveryChannel().close();
+            }
         }
     }
 
@@ -123,4 +126,7 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<ComponentWrapper>
         return contexts.get(name).getComponent();
     }
 
+    public ComponentContext createComponentContext() {
+        return new ClientComponentContext(this);
+    }
 }

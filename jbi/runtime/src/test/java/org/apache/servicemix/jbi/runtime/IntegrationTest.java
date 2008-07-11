@@ -36,13 +36,6 @@ import org.apache.servicemix.nmr.api.service.ServiceHelper;
 import org.apache.servicemix.nmr.core.ServiceMix;
 import org.junit.Test;
 
-/**
- * Created by IntelliJ IDEA.
- * User: gnodet
- * Date: Oct 5, 2007
- * Time: 1:31:44 PM
- * To change this template use File | Settings | File Templates.
- */
 public class IntegrationTest {
 
     @Test
@@ -75,7 +68,7 @@ public class IntegrationTest {
         ep.setTarget(new ExchangeTarget());
         ep.getTarget().setService(new QName("target"));
         eip.setEndpoints(new EIPEndpoint[] { ep });
-        eip.init(new ComponentContextImpl(reg, null, null, new SimpleComponentWrapper(eip), new HashMap()));
+        eip.init(new ComponentContextImpl(reg, new SimpleComponentWrapper(eip), new HashMap()));
         eip.getLifeCycle().start();
 
         Channel channel = smx.createChannel();
