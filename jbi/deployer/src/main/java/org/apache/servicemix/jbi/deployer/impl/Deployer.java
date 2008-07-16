@@ -405,7 +405,7 @@ public class Deployer extends AbstractBundleWatcher {
 
     protected void maybeUnwrapComponent(ServiceReference reference, javax.jbi.component.Component component) {
         String name = (String) reference.getProperty(NAME);
-        if (name != null && wrappedComponents.remove(name)) {
+        if (name != null && Boolean.TRUE.equals(wrappedComponents.remove(name))) {
             components.remove(name);
         }
     }
