@@ -44,6 +44,11 @@
     <!-- Flow registry and service tracker -->
     <bean id="flowRegistry" class="org.apache.servicemix.nmr.core.FlowRegistryImpl">
         <property name="authorizationService" ref="authorizationService" />
+        <property name="nonOsgiFlows">
+            <list>
+                <bean id="staightThroughFlow" class="org.apache.servicemix.nmr.core.StraightThroughFlow" />
+            </list>
+        </property>
     </bean>
     <osgi:list id="flows"
                interface="org.apache.servicemix.nmr.api.internal.Flow"
@@ -70,14 +75,6 @@
                cardinality="0..N">
         <osgi:listener ref="endpointRegistry" bind-method="register" unbind-method="unregister" />
     </osgi:list>
-
-    <!-- Register the Straight-Through flow -->
-    <bean id="staightThroughFlow" class="org.apache.servicemix.nmr.core.StraightThroughFlow" />
-    <osgi:service ref="staightThroughFlow">
-        <osgi:interfaces>
-            <value>org.apache.servicemix.nmr.api.internal.Flow</value>
-        </osgi:interfaces>
-    </osgi:service>
 
     <!-- AuthorizationService -->
     <bean id="authorizationService" class="org.apache.servicemix.nmr.core.security.DefaultAuthorizationService" />

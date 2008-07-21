@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
@@ -38,9 +39,11 @@ public class DefaultAuthorizationService implements AuthorizationService {
 
     private List<AuthorizationEntry> authorizationEntries;
     private Comparator<AuthorizationEntry> comparator;
+    private Map<String, Set<GroupPrincipal>> cache;
 
     public DefaultAuthorizationService() {
         authorizationEntries = new ArrayList<AuthorizationEntry>();
+        cache = Collections.synchronizedMap(new LRUMap<String, Set<GroupPrincipal>>(64));
         comparator = new Comparator<AuthorizationEntry>() {
             public int compare(AuthorizationEntry o1, AuthorizationEntry o2) {
                 if (o1.getRank() < o2.getRank()) {
@@ -57,26 +60,33 @@ public class DefaultAuthorizationService implements AuthorizationService {
     public void register(AuthorizationEntry entry, Map<String,?> props) {
         authorizationEntries.add(entry);
         Collections.sort(authorizationEntries, comparator);
+        cache.clear();
     }
 
     public void unregister(AuthorizationEntry entry, Map<String,?> props) {
         authorizationEntries.remove(entry);
         Collections.sort(authorizationEntries, comparator);
+        cache.clear();
     }
 
     public Set<GroupPrincipal> getAcls(String endpoint, QName operation) {
-        Set<GroupPrincipal> acls = new HashSet<GroupPrincipal>();
-        for (AuthorizationEntry entry : authorizationEntries) {
-            if (match(entry, endpoint, operation)) {
-                if (AuthorizationEntry.Type.Add == entry.getType()) {
-                    acls.addAll(entry.getAcls());
-                } else if (AuthorizationEntry.Type.Set == entry.getType()) {
-                    acls.clear();
-                    acls.addAll(entry.getAcls());
-                } else if (AuthorizationEntry.Type.Remove == entry.getType()) {
-                    acls.removeAll(entry.getAcls());
+        String key = endpoint + "|" + (operation != null ? operation.toString() : "");
+        Set<GroupPrincipal> acls = cache.get(key);
+        if (acls == null) {
+            acls = new HashSet<GroupPrincipal>();
+            for (AuthorizationEntry entry : authorizationEntries) {
+                if (match(entry, endpoint, operation)) {
+                    if (AuthorizationEntry.Type.Add == entry.getType()) {
+                        acls.addAll(entry.getAcls());
+                    } else if (AuthorizationEntry.Type.Set == entry.getType()) {
+                        acls.clear();
+                        acls.addAll(entry.getAcls());
+                    } else if (AuthorizationEntry.Type.Remove == entry.getType()) {
+                        acls.removeAll(entry.getAcls());
+                    }
                 }
             }
+            cache.put(key, acls);
         }
         return acls;
     }

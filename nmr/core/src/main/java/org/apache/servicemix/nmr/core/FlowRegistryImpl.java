@@ -17,6 +17,7 @@
 package org.apache.servicemix.nmr.core;
 
 import java.util.Set;
+import java.util.Collection;
 import java.security.Principal;
 
 import javax.security.auth.Subject;
@@ -56,6 +57,12 @@ public class FlowRegistryImpl extends ServiceRegistryImpl<Flow> implements FlowR
             }
         }
         return false;
+    }
+
+    public void setNonOsgiFlows(Collection<Flow> flows) {
+        for (Flow f : flows) {
+            register(f, null);
+        }
     }
 
     public void dispatch(InternalExchange exchange) {
