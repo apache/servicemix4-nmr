@@ -68,7 +68,7 @@ public class ServiceRegistryImpl<T> implements ServiceRegistry<T> {
 
     public void unregister(T service, Map<String, ?> properties) {
         assert service != null : "service should not be null";
-        if (registry.remove(service) != null) {
+        if (service != null && registry.remove(service) != null) {
             try {
                 doUnregister(service, properties);
             } catch (Exception e) {

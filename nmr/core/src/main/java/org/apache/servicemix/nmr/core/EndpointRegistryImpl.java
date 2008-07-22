@@ -127,7 +127,9 @@ public class EndpointRegistryImpl implements EndpointRegistry {
             endpoints.remove(endpoint);
         } else {
             wrapper = endpoints.remove(endpoint);
-            wrappers.remove(wrapper);
+            if (wrapper != null) {
+                wrappers.remove(wrapper);
+            }
         }
         registry.unregister(wrapper, properties);
         for (EndpointListener listener : nmr.getListenerRegistry().getListeners(EndpointListener.class)) {

@@ -89,6 +89,7 @@ public class ManagementAgent implements DisposableBean {
         } catch (NotCompliantMBeanException e) {
             // If this is not a "normal" MBean, then try to deploy it using JMX
             // annotations
+            LOG.info("It's not a normal MBean");
             ModelMBeanInfo mbi = assembler.getMBeanInfo(obj, name.toString());
             RequiredModelMBean mbean = (RequiredModelMBean) mbeanServer.instantiate(RequiredModelMBean.class.getName());
             mbean.setModelMBeanInfo(mbi);
@@ -101,8 +102,11 @@ public class ManagementAgent implements DisposableBean {
         }
     }
 
-    public void unregister(ObjectName name) throws JMException {
-        mbeanServer.unregisterMBean(name);
+    public synchronized void unregister(ObjectName name) throws JMException {
+        if (mbeans.contains(name)) {
+            //check if this bean already get removed in destory method
+            mbeanServer.unregisterMBean(name);
+        }
     }
 
     private void registerMBeanWithServer(Object obj, ObjectName name, boolean forceRegistration) throws JMException {
@@ -116,6 +120,8 @@ public class ManagementAgent implements DisposableBean {
             } else {
                 throw e;
             }
+        } catch (NotCompliantMBeanException e) {
+            throw e;
         }
 
         if (instance != null) {
