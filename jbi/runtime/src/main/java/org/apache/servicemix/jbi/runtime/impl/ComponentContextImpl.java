@@ -88,6 +88,15 @@ public class ComponentContextImpl extends AbstractComponentContext {
         this.installRoot.mkdirs();
     }
 
+    public void destroy() {
+        try {
+            dc.close();
+        } catch (MessagingException e) {
+            LOG.warn("Error when closing the delivery channel", e);
+        }
+        componentRegistry.getNmr().getEndpointRegistry().unregister(componentEndpoint, properties);
+    }
+
     public synchronized ServiceEndpoint activateEndpoint(QName serviceName, String endpointName) throws JBIException {
         try {
             EndpointImpl endpoint = new EndpointImpl();

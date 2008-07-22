@@ -116,8 +116,8 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<ComponentWrapper>
         String name = properties != null ? (String) properties.get(NAME) : null;
         if (name != null) {
             ComponentContextImpl context = contexts.remove(name);
-            if (context != null && context.getDeliveryChannel() != null) {
-                context.getDeliveryChannel().close();
+            if (context != null) {
+                context.destroy();
             }
         }
     }
