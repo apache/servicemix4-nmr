@@ -83,7 +83,7 @@
       <servicemix3.version>3.2.1</servicemix3.version>
       <servicemix.kernel.version>1.0.0-SNAPSHOT</servicemix.kernel.version>
       <servicemix.legal.version>1.0</servicemix.legal.version>
-      <servicemix.specs.version>1.0.0</servicemix.specs.version>
+      <servicemix.specs.version>1.1-SNAPSHOT</servicemix.specs.version>
       <spring.osgi.version>1.1.0</spring.osgi.version>
       <spring.version>2.5.5</spring.version>
       <woodstox.version>3.2.6_1-SNAPSHOT</woodstox.version>
