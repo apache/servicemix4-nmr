@@ -264,15 +264,33 @@ public class ComponentImpl implements Component, ComponentWrapper {
         }
 
         public void shutDown() throws JBIException {
-            lifeCycle.shutDown();
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            try {
+                Thread.currentThread().setContextClassLoader(component.getClass().getClassLoader());
+                lifeCycle.shutDown();
+            } finally {
+                Thread.currentThread().setContextClassLoader(cl);
+            }
         }
 
         public void start() throws JBIException {
-            lifeCycle.start();
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            try {
+                Thread.currentThread().setContextClassLoader(component.getClass().getClassLoader());
+                lifeCycle.start();
+            } finally {
+                Thread.currentThread().setContextClassLoader(cl);
+            }
         }
 
         public void stop() throws JBIException {
-            lifeCycle.stop();
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            try {
+                Thread.currentThread().setContextClassLoader(component.getClass().getClassLoader());
+                lifeCycle.stop();
+            } finally {
+                Thread.currentThread().setContextClassLoader(cl);
+            }
         }
     }
 
