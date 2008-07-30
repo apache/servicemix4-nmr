@@ -60,7 +60,7 @@
       <aopalliance.version>1.0_1</aopalliance.version>
       <asm.version>2.2.3_1</asm.version>
       <cglib.version>2.1_3</cglib.version>
-      <camel.version>1.4-SNAPSHOT</camel.version>
+      <camel.version>1.4.0</camel.version>
       <commons.io.version>1.3.2_1</commons.io.version>
       <commons.logging.version>1.1.1</commons.logging.version>
       <depends.maven.plugin.version>1.0-SNAPSHOT</depends.maven.plugin.version>
@@ -84,7 +84,7 @@
       <servicemix3.version>3.2.1</servicemix3.version>
       <servicemix.kernel.version>1.0.0-SNAPSHOT</servicemix.kernel.version>
       <servicemix.legal.version>1.0</servicemix.legal.version>
-      <servicemix.specs.version>1.1-SNAPSHOT</servicemix.specs.version>
+      <servicemix.specs.version>1.0.1</servicemix.specs.version>
       <spring.osgi.version>1.1.0</spring.osgi.version>
       <spring.version>2.5.5</spring.version>
       <woodstox.version>3.2.6_1-SNAPSHOT</woodstox.version>
