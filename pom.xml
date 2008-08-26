@@ -76,6 +76,7 @@
       <geronimo.javamail.version>1.2</geronimo.javamail.version>
       <geronimo.jta.version>1.1.1</geronimo.jta.version>
       <geronimo.servlet.version>1.1.2</geronimo.servlet.version>
+      <jbi.api.version>1.1-SNAPSHOT</jbi.api.version>
       <jline.version>0.9.94</jline.version>
       <junit.version>4.4_1</junit.version>
       <log4j.version>1.2.14</log4j.version>

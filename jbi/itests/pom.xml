@@ -104,9 +104,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.servicemix.jbi</groupId>
-            <artifactId>org.apache.servicemix.jbi.api</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.apache.servicemix.specs</groupId>
+            <artifactId>org.apache.servicemix.specs.jbi-api-1.0</artifactId>
+            <version>${jbi.api.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

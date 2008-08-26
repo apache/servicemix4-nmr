@@ -33,7 +33,6 @@
     <name>Apache ServiceMix JBI</name>
 
     <modules>
-        <module>api</module>
         <module>runtime</module>
         <module>deployer</module>
         <module>osgi</module>

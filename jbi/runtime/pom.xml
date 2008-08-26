@@ -38,9 +38,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.servicemix.jbi</groupId>
-            <artifactId>org.apache.servicemix.jbi.api</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.apache.servicemix.specs</groupId>
+            <artifactId>org.apache.servicemix.specs.jbi-api-1.0</artifactId>
+            <version>1.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.document</groupId>
