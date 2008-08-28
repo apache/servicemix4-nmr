@@ -45,7 +45,7 @@ public enum Pattern {
             case InOnly:
                 return "http://www.w3.org/ns/wsdl/in-only";
             case InOptionalOut:
-                return "http://www.w3.org/ns/wsdl/in-optional-out";
+                return "http://www.w3.org/ns/wsdl/in-opt-out";
             case InOut:
                 return "http://www.w3.org/ns/wsdl/in-out";
             case RobustInOnly:
