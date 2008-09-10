@@ -60,7 +60,8 @@
     <bean id="listenerRegistry" class="org.apache.servicemix.nmr.core.ListenerRegistryImpl" />
     <osgi:list id="listeners"
                interface="org.apache.servicemix.nmr.api.event.Listener"
-               cardinality="0..N">
+               cardinality="0..N"
+               greedy-proxying="true">
         <osgi:listener ref="listenerRegistry" bind-method="register" unbind-method="unregister" />
     </osgi:list>
 
