@@ -48,7 +48,7 @@
 
   <issueManagement>
       <system>jira</system>
-      <url>http://issues.apache.org/activemq/browse/SM</url>
+      <url>http://issues.apache.org/activemq/browse/SMX4NMR</url>
   </issueManagement>
 
   <prerequisites>
@@ -63,7 +63,7 @@
       <camel.version>1.4.0</camel.version>
       <commons.io.version>1.3.2_1</commons.io.version>
       <commons.logging.version>1.1.1</commons.logging.version>
-      <depends.maven.plugin.version>1.0-SNAPSHOT</depends.maven.plugin.version>
+      <depends.maven.plugin.version>1.0</depends.maven.plugin.version>
       <felix.configadmin.version>1.0.0</felix.configadmin.version>
       <felix.main.version>1.0.4</felix.main.version>
       <felix.plugin.version>1.4.1</felix.plugin.version>
@@ -76,7 +76,7 @@
       <geronimo.javamail.version>1.2</geronimo.javamail.version>
       <geronimo.jta.version>1.1.1</geronimo.jta.version>
       <geronimo.servlet.version>1.1.2</geronimo.servlet.version>
-      <jbi.api.version>1.1-SNAPSHOT</jbi.api.version>
+      <jbi.api.version>1.1.0</jbi.api.version>
       <jline.version>0.9.94</jline.version>
       <junit.version>4.4_1</junit.version>
       <log4j.version>1.2.14</log4j.version>
@@ -85,10 +85,10 @@
       <servicemix3.version>3.2.1</servicemix3.version>
       <servicemix.kernel.version>1.0.0-SNAPSHOT</servicemix.kernel.version>
       <servicemix.legal.version>1.0</servicemix.legal.version>
-      <servicemix.specs.version>1.0.1</servicemix.specs.version>
+      <servicemix.specs.version>1.1.0</servicemix.specs.version>
       <spring.osgi.version>1.1.0</spring.osgi.version>
       <spring.version>2.5.5</spring.version>
-      <woodstox.version>3.2.6_1-SNAPSHOT</woodstox.version>
+      <woodstox.version>3.2.7_1</woodstox.version>
       <xbean.version>3.4.3</xbean.version>
   </properties>
 
@@ -117,22 +117,7 @@
                <enabled>true</enabled>
            </snapshots>
        </repository>
-       <!-- Spring OSGi milestone -->
-       <repository>
-           <id>spring-maven-milestone</id>
-           <name>Springframework Maven Repository</name>
-           <url>http://s3.amazonaws.com/maven.springframework.org/milestone</url>
-       </repository>
    </repositories>
-
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.4</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 
   <pluginRepositories>
       <!-- Apache snapshot -->
@@ -148,6 +133,15 @@
           </snapshots>
       </pluginRepository>
   </pluginRepositories>
+
+  <dependencies>
+      <dependency>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+          <version>4.4</version>
+          <scope>test</scope>
+      </dependency>
+  </dependencies>
 
   <dependencyManagement>
     <dependencies>
