@@ -94,7 +94,11 @@ public class ManagementEndpointRegistry implements ExchangeListener, Initializin
                 String id = ((InternalExchange) exchange).getSource().getId();
                 LOG.info("Source endpoint: " + id + " (known endpoints: " + endpoints + ")");
                 ManagedEndpoint me = endpoints.get(id);
-                me.incrementOutbound();
+                if (me == null) {
+                    LOG.warn("No managed endpoint registered with id: " + id);
+                } else {
+                    me.incrementOutbound();
+                }
             }
         } catch (Throwable t) {
             LOG.warn("Caught exception while processing exchange: " + t, t);
@@ -112,7 +116,11 @@ public class ManagementEndpointRegistry implements ExchangeListener, Initializin
                 String id = ((InternalExchange) exchange).getDestination().getId();
                 LOG.info("Dest endpoint: " + id + " (known endpoints: " + endpoints + ")");
                 ManagedEndpoint me = endpoints.get(id);
-                me.incrementInbound();
+                if (me == null) {
+                    LOG.warn("No managed endpoint registered with id: " + id);
+                } else {
+                    me.incrementInbound();
+                }
             }
         } catch (Throwable t) {
             LOG.warn("Caught exception while processing exchange: " + t, t);
