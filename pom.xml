@@ -83,7 +83,7 @@
       <mina.version>1.1.6_1</mina.version>
       <pax.logging.version>1.1.1</pax.logging.version>
       <servicemix3.version>3.2.1</servicemix3.version>
-      <servicemix.kernel.version>1.0.0-SNAPSHOT</servicemix.kernel.version>
+      <servicemix.kernel.version>1.1.0-SNAPSHOT</servicemix.kernel.version>
       <servicemix.legal.version>1.0</servicemix.legal.version>
       <servicemix.specs.version>1.1.0</servicemix.specs.version>
       <spring.osgi.version>1.1.0</spring.osgi.version>
@@ -98,12 +98,24 @@
            <id>central</id>
            <name>Default maven repo</name>
            <url>http://repo1.maven.org/maven2</url>
+           <releases>
+               <enabled>true</enabled>
+           </releases>
+           <snapshots>     
+               <enabled>false</enabled>
+           </snapshots>     
        </repository>
        <!-- ServiceMix repo -->
        <repository>
            <id>servicemix</id>
            <name>Apache ServiceMix Repository</name>
            <url>http://svn.apache.org/repos/asf/servicemix/m2-repo</url>
+           <releases>
+               <enabled>true</enabled>
+           </releases>
+           <snapshots>     
+               <enabled>false</enabled>
+           </snapshots>     
        </repository>
        <!-- Apache snapshot -->
        <repository>
