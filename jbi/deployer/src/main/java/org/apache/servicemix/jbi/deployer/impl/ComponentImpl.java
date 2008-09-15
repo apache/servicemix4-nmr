@@ -42,8 +42,6 @@ import org.apache.servicemix.jbi.runtime.ComponentWrapper;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
-import com.sun.org.apache.bcel.internal.generic.CPInstruction;
-
 /**
  */
 public class ComponentImpl implements Component, ComponentWrapper {
