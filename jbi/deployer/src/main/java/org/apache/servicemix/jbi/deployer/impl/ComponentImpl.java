@@ -137,7 +137,9 @@ public class ComponentImpl implements Component, ComponentWrapper {
         if (state == State.Started) {
             // Stop deployed SAs
             for (ServiceAssemblyImpl sa : getServiceAssemblies()) {
-                sa.stop(false);
+                if (sa.getState() == ServiceAssemblyImpl.State.Started) {
+                    sa.stop(false);
+                }
             }
             // Stop component
             component.getLifeCycle().stop();
@@ -160,7 +162,10 @@ public class ComponentImpl implements Component, ComponentWrapper {
         if (state == State.Stopped) {
             // Shutdown deployed SAs
             for (ServiceAssemblyImpl sa : getServiceAssemblies()) {
-                sa.shutDown(false);
+                if (sa.getState() == ServiceAssemblyImpl.State.Stopped
+                        || sa.getState() == ServiceAssemblyImpl.State.Initialized) {
+                    sa.shutDown(false);
+                }
             }
             // Shutdown component
             component.getLifeCycle().shutDown();
