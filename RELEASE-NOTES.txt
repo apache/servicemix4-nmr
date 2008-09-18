@@ -15,6 +15,56 @@
  * limitations under the License.
  */
 
+                  Apache ServiceMix NMR 1.0.0-m2
+                  ================================
+
+  Overview
+  --------
+
+ This second milestone of Apache ServiceMix NMR contains a bunch of new features and bug fixes.
+ The most important one is SMX4NMR-28, which allows JBI components to be deployed as pure OSGi
+ bundles, thus bypassing the JBI packaging.  This feature is really important in that it allows
+ JBI components to leverage the OSGi platform.
+ See the change log below for more informations.
+
+  Changelog
+  ---------
+
+ The following list shows the bug fixes and enhancements included in this release:
+
+ ** Bug
+     * [SMX4NMR-27] - x.x-SNAPSHOT versions startup problem
+     * [SMX4NMR-34] - classloader incorrect used in ComponentImpl
+     * [SMX4NMR-35] - NMR throws a null pointer exception when I attempt to deploy the ode bpel engine.
+     * [SMX4NMR-41] - The JBI layer does not unregister the endpoint associated to the component when the component is unregistered
+     * [SMX4NMR-42] - Start, Stop and Shutdown methods on the JBI component lifecycle are not called in the right thread context classloader
+     * [SMX4NMR-43] - When the OSGi bundle containing the JBI component is stopped, the component should be stopped / shutdown correctly
+     * [SMX4NMR-44] - NPE when unregistering endpoints
+     * [SMX4NMR-45] - The SMX4 NMR can not correctly handle the "http://www.w3.org/2004/08/wsdl/in-opt-out" MEP
+     * [SMX4NMR-46] - NMR endpoints statistics are not updated
+     * [SMX4NMR-48] - When stopping a JBI component, the framework tries to stop SAs, even if they are already stopped, thus leading to an exception
+
+ ** Improvement
+     * [SMX4NMR-36] - add javax.xml.bind as hidden for MultiParentClassLoader in Deployer
+     * [SMX4NMR-40] - Optimize message dispatch
+
+ ** New Feature
+     * [SMX4NMR-28] - Ability for a JBI component to register itself in the registry, thus bypassing the JBI packaging and allowing pure bundles to register JBI components
+     * [SMX4NMR-29] - Security in NMR (provides an authentication and an authorization mechanism)
+     * [SMX4NMR-30] - Split the document repository and url handler in its own bundle
+     * [SMX4NMR-37] - Provide a way to retrieve a ComponentContext for client side
+
+ ** Task
+     * [SMX4NMR-32] - Extract bundles from the svn tree
+
+
+  Known Issues
+  ------------
+
+ * no support for JMX deployment and Ant tasks
+ * no support for Service Assemblies Connections
+ 
+
                   Apache ServiceMix NMR 1.0-m1
                   ================================
 
