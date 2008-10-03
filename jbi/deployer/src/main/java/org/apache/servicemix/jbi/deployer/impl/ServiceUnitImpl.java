@@ -86,12 +86,12 @@ public class ServiceUnitImpl implements ServiceUnit {
 	}
 
     public void deploy() throws JBIException {
-        component.getComponent().getServiceUnitManager().deploy(getName(), getRootDir().getAbsolutePath());
+        component.getComponent().getServiceUnitManager().deploy(getName(), getRootDir() != null ? getRootDir().getAbsolutePath() : null);
         component.addServiceUnit(this);
     }
 
 	public void init() throws JBIException {
-        component.getComponent().getServiceUnitManager().init(getName(), getRootDir().getAbsolutePath());
+        component.getComponent().getServiceUnitManager().init(getName(), getRootDir() != null ? getRootDir().getAbsolutePath() : null);
 	}
 		
 	public void start() throws JBIException {

@@ -28,7 +28,6 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jbi.JBIException;
@@ -40,6 +39,7 @@ import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
 import org.apache.servicemix.jbi.deployer.SharedLibrary;
+import org.apache.servicemix.jbi.deployer.DeployedAssembly;
 import org.apache.servicemix.jbi.deployer.descriptor.ComponentDesc;
 import org.apache.servicemix.jbi.deployer.descriptor.Descriptor;
 import org.apache.servicemix.jbi.deployer.descriptor.DescriptorFactory;
@@ -48,6 +48,7 @@ import org.apache.servicemix.jbi.deployer.descriptor.ServiceUnitDesc;
 import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryDesc;
 import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryList;
 import org.apache.servicemix.jbi.deployer.descriptor.Identification;
+import org.apache.servicemix.jbi.deployer.descriptor.Target;
 import org.apache.servicemix.jbi.runtime.ComponentWrapper;
 import org.apache.xbean.classloader.MultiParentClassLoader;
 import org.osgi.framework.Bundle;
@@ -93,6 +94,8 @@ public class Deployer extends AbstractBundleWatcher {
 
     private ServiceTracker tracker;
 
+    private ServiceTracker deployedAssembliesTracker;
+
     public Deployer() throws JBIException{
         sharedLibraries = new ConcurrentHashMap<String, SharedLibraryImpl>();
         serviceAssemblies = new ConcurrentHashMap<String, ServiceAssemblyImpl>();
@@ -137,11 +140,26 @@ public class Deployer extends AbstractBundleWatcher {
             }
         };
         tracker.open();
+
+        deployedAssembliesTracker = new ServiceTracker(getBundleContext(), DeployedAssembly.class.getName(), null) {
+            public Object addingService(ServiceReference serviceReference) {
+                Object o = super.addingService(serviceReference);
+                registerDeployedServiceAssembly(serviceReference, (DeployedAssembly) o);
+                return o;
+            }
+
+            public void removedService(ServiceReference serviceReference, Object o) {
+                unregisterDeployedServiceAssembly(serviceReference, (DeployedAssembly) o);
+                super.removedService(serviceReference, o);
+            }
+        };
+        deployedAssembliesTracker.open();
     }
 
     @Override
     public void destroy() throws Exception {
         tracker.close();
+        deployedAssembliesTracker.close();
         super.destroy();
     }
 
@@ -324,6 +342,11 @@ public class Deployer extends AbstractBundleWatcher {
             }
             return;
         }
+        registerSA(serviceAssembyDesc, bundle, sus);
+
+    }
+
+    protected void registerSA(ServiceAssemblyDesc serviceAssembyDesc, Bundle bundle, List<ServiceUnitImpl> sus) throws JBIException {
         // Now create the SA and initialize it
         Preferences prefs = preferencesService.getUserPreferences(serviceAssembyDesc.getIdentification().getName());
         ServiceAssemblyImpl sa = new ServiceAssemblyImpl(serviceAssembyDesc, sus, prefs, autoStart);
@@ -366,6 +389,10 @@ public class Deployer extends AbstractBundleWatcher {
     }
     protected void undeployServiceAssembly(ServiceAssemblyDesc serviceAssembyDesc, Bundle bundle) throws Exception {
         String name = serviceAssembyDesc.getIdentification().getName();
+        unregisterSA(name);
+    }
+
+    protected void unregisterSA(String name) throws JBIException {
         ServiceAssemblyImpl sa = serviceAssemblies.remove(name);
         if (sa != null) {
             if (sa.getState() == ServiceAssemblyImpl.State.Started) {
@@ -480,6 +507,35 @@ public class Deployer extends AbstractBundleWatcher {
             return sl.getClassLoader();
         } else {
             throw new IllegalStateException("SharedLibrary not installed: " + sharedLibraryList.getName());
+        }
+    }
+
+    public void registerDeployedServiceAssembly(ServiceReference serviceReference, DeployedAssembly assembly) {
+        try {
+            ServiceAssemblyDesc desc = new ServiceAssemblyDesc();
+            desc.setIdentification(new Identification());
+            desc.getIdentification().setName(assembly.getName());
+            List<ServiceUnitImpl> sus = new ArrayList<ServiceUnitImpl>();
+            for (Map.Entry<String, String> unit : assembly.getServiceUnits().entrySet()) {
+                ServiceUnitDesc suDesc = new ServiceUnitDesc();
+                suDesc.setIdentification(new Identification());
+                suDesc.getIdentification().setName(unit.getKey());
+                suDesc.setTarget(new Target());
+                suDesc.getTarget().setComponentName(unit.getValue());
+                ServiceUnitImpl su = new ServiceUnitImpl(suDesc, null, components.get(unit.getValue()));
+                sus.add(su);
+            }
+            registerSA(desc, serviceReference.getBundle(), sus);
+        } catch (Exception e) {
+            LOGGER.error("Error registering deployed service assembly", e);
+        }
+    }
+
+    public void unregisterDeployedServiceAssembly(ServiceReference serviceReference, DeployedAssembly assembly) {
+        try {
+            unregisterSA(assembly.getName());
+        } catch (Exception e) {
+            LOGGER.error("Error unregistering deployed service assembly", e);
         }
     }
 

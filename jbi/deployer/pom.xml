@@ -54,7 +54,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-	    <dependency>
+        <dependency>
             <groupId>org.apache.xbean</groupId>
             <artifactId>xbean-classloader</artifactId>
             <version>${xbean.version}</version>
