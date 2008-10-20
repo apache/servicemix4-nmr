@@ -52,6 +52,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Import-Package>org.osgi.framework;version="[1.3,2.0)",*</Import-Package>
                         <Export-Package>${pom.artifactId}</Export-Package>
                         <Spring-Context>*;publish-context:=false;create-asynchronously:=false</Spring-Context>
                     </instructions>

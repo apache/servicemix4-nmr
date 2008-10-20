@@ -72,6 +72,7 @@
                             org.apache.servicemix.jbi.runtime,
                             org.apache.servicemix.jbi.runtime.impl,
                             org.apache.servicemix.jbi.osgi,
+                            org.osgi.framework;version="[1.3,2.0)",
                             org.osgi.service.url,
                             *
                         </Import-Package>
