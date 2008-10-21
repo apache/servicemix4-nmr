@@ -33,6 +33,7 @@ import org.apache.servicemix.nmr.api.Status;
 import org.apache.servicemix.nmr.api.Type;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
 import org.apache.servicemix.nmr.api.internal.InternalExchange;
+import org.apache.servicemix.nmr.core.util.ExchangeUtils;
 
 /**
  * The default {@link Exchange} implementation.
@@ -375,15 +376,7 @@ public class ExchangeImpl implements InternalExchange {
     }
 
     public void ensureReReadable() {
-        if (in != null) {
-            in.ensureReReadable();
-        }
-        if (out != null) {
-            out.ensureReReadable();
-        }
-        if (fault != null) {
-            fault.ensureReReadable();
-        }
+        ExchangeUtils.ensureReReadable(this);
     }
 
     /**
@@ -422,18 +415,11 @@ public class ExchangeImpl implements InternalExchange {
     }
 
     public String display(boolean displayContent) {
-        if (displayContent) {
-            ensureReReadable();
-        }
-        StringBuilder sb = new StringBuilder();
-        sb.append("Exchange [");
-        sb.append("id=").append(id);
-        sb.append("]");
-        return sb.toString();
+        return ExchangeUtils.display(this, displayContent);
     }
 
     public String toString() {
-        return display(true);
+        return display(false);
     }
 
     public InternalEndpoint getSource() {

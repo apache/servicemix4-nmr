@@ -23,6 +23,7 @@ import java.util.Map;
 import javax.security.auth.Subject;
 
 import org.apache.servicemix.nmr.api.Message;
+import org.apache.servicemix.nmr.core.util.ExchangeUtils;
 
 /**
  * The default {@link Message} implementation.
@@ -311,10 +312,9 @@ public class MessageImpl implements Message {
      * This method will be called by the framework when persisting
      * the message or when displaying it.
      * <p/>
-     * TODO: do we really need this method
      */
     public void ensureReReadable() {
-        // TODO: implement        
+        ExchangeUtils.ensureReReadable(this);
     }
 
     /**
@@ -385,6 +385,6 @@ public class MessageImpl implements Message {
     }
 
     public String toString() {
-        return display(true);
+        return display(false);
     }
 }

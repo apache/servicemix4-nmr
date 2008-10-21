@@ -235,12 +235,22 @@ public interface Message extends Serializable {
      * attachments are transformed to re-readable sources.
      * This method will be called by the framework when persisting
      * the message or when displaying it.
-     *
-     * TODO: do we really need this method
      */
-    void        ensureReReadable();
+    void ensureReReadable();
 
-    // TODO: is toString() sufficient ?
-    String      display(boolean displayContent);
+    /**
+     * Returns a string representation of this message.
+     * The <code>displayContent</code> property can be specified to
+     * control wether the content should be displayed or not.
+     * If set to <code>true</code>, the content and attachments will
+     * be converted into re-readable objects (for java.io.InputStream
+     * and javax.xml.transform.Source objects) and printed.
+     *
+     * @param displayContent if the content and attachments of the exchange
+     *                       should be transformed if needed and displayed
+     *                       or left unmodified
+     * @return the string representation
+     */
+    String display(boolean displayContent);
 
 }

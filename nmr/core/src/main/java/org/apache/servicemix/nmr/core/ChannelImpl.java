@@ -46,7 +46,7 @@ import org.apache.servicemix.nmr.api.internal.InternalExchange;
  */
 public class ChannelImpl implements InternalChannel {
 
-    private static final Log LOG = LogFactory.getLog(ChannelImpl.class);
+    private static final Log LOG = LogFactory.getLog(NMR.class);
 
     private final InternalEndpoint endpoint;
     private final Executor executor;
@@ -163,6 +163,12 @@ public class ChannelImpl implements InternalChannel {
      * @param exchange the exchange to delivery
      */
     public void deliver(final InternalExchange exchange) {
+        // Log the exchange
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("Channel " + name + " delivering exchange: " + exchange.display(true));
+        } else if (LOG.isDebugEnabled()) {
+            LOG.debug("Channel " + name + " delivering exchange: " + exchange.display(false));
+        }
         // Handle case where the exchange has been sent synchronously
         Semaphore lock = exchange.getRole() == Role.Provider ? exchange.getConsumerLock(false)
                 : exchange.getProviderLock(false);
@@ -211,8 +217,11 @@ public class ChannelImpl implements InternalChannel {
      * @param exchange the exchange to dispatch
      */
     protected void dispatch(InternalExchange exchange) {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Channel " + name + " dispatching exchange " + exchange);
+        // Log the exchange
+        if (LOG.isTraceEnabled()) {
+            LOG.trace("Channel " + name + " dispatching exchange: " + exchange.display(true));
+        } else if (LOG.isDebugEnabled()) {
+            LOG.debug("Channel " + name + " dispatching exchange: " + exchange.display(false));
         }
         // Set source endpoint
         if (exchange.getSource() == null) {
