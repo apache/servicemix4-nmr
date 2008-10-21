@@ -80,10 +80,9 @@
       <jline.version>0.9.94</jline.version>
       <junit.version>4.4_1</junit.version>
       <log4j.version>1.2.14</log4j.version>
-      <mina.version>1.1.6_1</mina.version>
       <pax.logging.version>1.1.1</pax.logging.version>
       <servicemix3.version>3.2.1</servicemix3.version>
-      <servicemix.kernel.version>1.1.0-SNAPSHOT</servicemix.kernel.version>
+      <servicemix.kernel.version>1.0.0</servicemix.kernel.version>
       <servicemix.legal.version>1.0</servicemix.legal.version>
       <servicemix.specs.version>1.1.0</servicemix.specs.version>
       <spring.osgi.version>1.1.0</spring.osgi.version>
@@ -187,16 +186,6 @@
                   <artifactId>asm.osgi</artifactId>
               </exclusion>
           </exclusions>
-      </dependency>
-      <dependency>
-          <groupId>org.apache.mina</groupId>
-          <artifactId>mina-core</artifactId>
-          <version>${mina.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>org.apache.mina</groupId>
-          <artifactId>mina-filter-ssl</artifactId>
-          <version>${mina.version}</version>
       </dependency>
       <dependency>
           <groupId>log4j</groupId>
