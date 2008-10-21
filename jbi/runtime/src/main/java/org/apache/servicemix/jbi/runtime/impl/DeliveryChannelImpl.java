@@ -143,7 +143,7 @@ public class DeliveryChannelImpl implements DeliveryChannel {
                 } else if (exchange.getPattern() == Pattern.RobustInOnly) {
                     me = new RobustInOnlyImpl(exchange);
                 } else {
-                    throw new IllegalStateException("Unkown pattern: " + exchange.getPattern());
+                    throw new IllegalStateException("Unknown pattern: " + exchange.getPattern());
                 }
                 exchange.setProperty(MessageExchange.class, me);
             }
