@@ -15,6 +15,40 @@
  * limitations under the License.
  */
 
+                  Apache ServiceMix NMR 1.0.0-m3
+                  ================================
+
+  Overview
+  --------
+
+ This this milestone contains only a single change, which is related to the lifecycle
+ of JBI endpoints using the OSGi packaging.  A service assembly is now created for the
+ deployed spring configuration and the JBI lifecycle can now be applied to such
+ endpoints.
+ See the change log below for more informations.
+
+  Changelog
+  ---------
+
+ The following list shows the bug fixes and enhancements included in this release:
+
+ ** Bug
+     * [SMX4NMR-52] - Use version ranges to make sure the NMR can be deployed at least onto ServiceMix Kernel 1.0.0
+
+ ** Improvement
+     * [SMX4NMR-51] - Exchange should be logged at debug level as in smx3
+
+ ** New Feature
+     * [SMX4NMR-24] - Lifecycle / clean shutdown for service assemblies deployed with the OSGi packaging
+
+
+  Known Issues
+  ------------
+
+ * no support for JMX deployment and Ant tasks
+ * no support for Service Assemblies Connections
+
+
                   Apache ServiceMix NMR 1.0.0-m2
                   ================================
 
