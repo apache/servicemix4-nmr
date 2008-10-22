@@ -24,13 +24,13 @@
     <parent>
         <groupId>org.apache.servicemix.nmr</groupId>
         <artifactId>nmr-parent</artifactId>
-        <version>1.0.0-m3-SNAPSHOT</version>
+        <version>1.0.0-m3</version>
     </parent>
 
     <groupId>org.apache.servicemix.nmr</groupId>
     <artifactId>apache-servicemix-nmr</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0-m3-SNAPSHOT</version>
+    <version>1.0.0-m3</version>
     <name>Apache ServiceMix NMR :: Assembly</name>
 
     <dependencies>

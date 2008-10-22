@@ -23,13 +23,13 @@
     <parent>
         <groupId>org.apache.servicemix.nmr</groupId>
         <artifactId>nmr-parent</artifactId>
-        <version>1.0.0-m3-SNAPSHOT</version>
+        <version>1.0.0-m3</version>
     </parent>
 
     <groupId>org.apache.servicemix.jbi</groupId>
     <artifactId>jbi</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0-m3-SNAPSHOT</version>
+    <version>1.0.0-m3</version>
     <name>Apache ServiceMix JBI</name>
 
     <modules>
