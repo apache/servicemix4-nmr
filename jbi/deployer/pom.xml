@@ -23,13 +23,13 @@
     <parent>
         <groupId>org.apache.servicemix.jbi</groupId>
         <artifactId>jbi</artifactId>
-        <version>1.0.0-m3</version>
+        <version>1.0.0-m4-SNAPSHOT</version>
     </parent>
 
     <groupId>org.apache.servicemix.jbi</groupId>
     <artifactId>org.apache.servicemix.jbi.deployer</artifactId>
     <packaging>bundle</packaging>
-    <version>1.0.0-m3</version>
+    <version>1.0.0-m4-SNAPSHOT</version>
     <name>Apache ServiceMix JBI Deployer</name>
 
     <dependencies>
