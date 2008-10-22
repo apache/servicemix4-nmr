@@ -68,4 +68,8 @@ public class DynamicReferenceImpl implements InternalReference {
         this.matches = null;
     }
 
+    public String toString() {
+        return "DynamicReference[filter=" + filter + "]";
+    }
+
 }

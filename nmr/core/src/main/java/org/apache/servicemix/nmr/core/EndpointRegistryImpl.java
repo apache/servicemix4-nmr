@@ -202,6 +202,9 @@ public class EndpointRegistryImpl implements EndpointRegistry {
                 }
                 return true;
             }
+            public String toString() {
+                return properties.toString();
+            }
         });
         this.references.put(ref, true);
         return ref;
@@ -226,7 +229,7 @@ public class EndpointRegistryImpl implements EndpointRegistry {
      * @param filter a LDAP filter used to find matching endpoints
      * @return a new Reference that uses the given filter
      */
-    public Reference lookup(String filter) {
+    public Reference lookup(final String filter) {
         try {
             try {
                 final org.osgi.framework.Filter flt = org.osgi.framework.FrameworkUtil.createFilter(filter);
@@ -234,6 +237,9 @@ public class EndpointRegistryImpl implements EndpointRegistry {
                     public boolean match(InternalEndpoint endpoint) {
                         Map<String, ?> props = EndpointRegistryImpl.this.getProperties(endpoint);
                         return flt.match(new MapToDictionary(props));
+                    }
+                    public String toString() {
+                        return filter;
                     }
                 });
                 this.references.put(ref, true);
