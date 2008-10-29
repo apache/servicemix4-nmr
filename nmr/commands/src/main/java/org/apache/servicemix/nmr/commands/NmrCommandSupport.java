@@ -17,9 +17,8 @@
 package org.apache.servicemix.nmr.commands;
 
 import java.util.List;
-
-import org.apache.geronimo.gshell.support.OsgiCommandSupport;
 import org.apache.servicemix.nmr.api.Endpoint;
+import org.apache.servicemix.kernel.gshell.core.OsgiCommandSupport;
 
 /**
  * Base class for NMR related commands

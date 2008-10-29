@@ -22,7 +22,6 @@ import org.osgi.framework.ServiceReference;
 /**
  * Displays the name of existing NMR endpoints
  */
-@org.apache.geronimo.gshell.command.annotation.CommandComponent(id = "nmr:list", description = "List NMR endpoints")
 public class ListCommand extends NmrCommandSupport {
 
     protected Object doExecute() throws Exception {
