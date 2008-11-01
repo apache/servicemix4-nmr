@@ -22,7 +22,6 @@ import javax.jbi.management.LifeCycleMBean;
 /**
  * Shutdown a JBI artifact
  */
-@org.apache.geronimo.gshell.command.annotation.CommandComponent(id = "jbi:shutdown", description = "Shutdown a JBI artifact")
 public class ShutdownCommand extends JbiLifeCycleCommandSupport {
 
     protected void handle(LifeCycleMBean artifact) throws JBIException {

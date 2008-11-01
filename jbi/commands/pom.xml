@@ -52,6 +52,12 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Import-Package>
+                              org.apache.geronimo.gshell.wisdom.command,
+                              org.apache.geronimo.gshell.wisdom.registry,
+                              org.apache.servicemix.kernel.gshell.core,
+                              *
+                        </Import-Package>
                         <Export-Package>${pom.artifactId}*</Export-Package>
                         <Spring-Context>*;publish-context:=false;create-asynchronously:=false</Spring-Context>
                     </instructions>

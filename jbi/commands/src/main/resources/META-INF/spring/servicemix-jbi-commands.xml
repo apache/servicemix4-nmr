@@ -19,48 +19,29 @@
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:osgi="http://www.springframework.org/schema/osgi"
-       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:gshell="http://servicemix.apache.org/schema/servicemix-gshell"
        xsi:schemaLocation="
   http://www.springframework.org/schema/beans
   http://www.springframework.org/schema/beans/spring-beans.xsd
-  http://www.springframework.org/schema/util
-  http://www.springframework.org/schema/util/spring-util.xsd
-  http://www.springframework.org/schema/osgi
-  http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+  http://servicemix.apache.org/schema/servicemix-gshell
+  http://servicemix.apache.org/schema/servicemix-gshell/servicemix-gshell.xsd">
 
-    <bean id="list" class="org.apache.servicemix.jbi.commands.ListCommand" />
+    <import resource="classpath:org/apache/servicemix/kernel/gshell/core/commands.xml" />
 
-    <bean id="start" class="org.apache.servicemix.jbi.commands.StartCommand" />
-
-    <bean id="stop" class="org.apache.servicemix.jbi.commands.StopCommand" />
-
-    <bean id="shutdown" class="org.apache.servicemix.jbi.commands.ShutdownCommand" />
-
-    <osgi:service ref="list" interface="org.apache.geronimo.gshell.command.Command">
-      <osgi:service-properties>
-        <entry key="shell" value="jbi"/>
-        <entry key="alias" value="ls"/>
-      </osgi:service-properties>
-    </osgi:service>
-
-    <osgi:service ref="start" interface="org.apache.geronimo.gshell.command.Command">
-      <osgi:service-properties>
-        <entry key="shell" value="jbi"/>
-      </osgi:service-properties>
-    </osgi:service>
-
-    <osgi:service ref="stop" interface="org.apache.geronimo.gshell.command.Command">
-      <osgi:service-properties>
-        <entry key="shell" value="jbi"/>
-      </osgi:service-properties>
-    </osgi:service>
-
-    <osgi:service ref="shutdown" interface="org.apache.geronimo.gshell.command.Command">
-      <osgi:service-properties>
-        <entry key="shell" value="jbi"/>
-      </osgi:service-properties>
-    </osgi:service>
-
+    <gshell:command-bundle>
+        <gshell:command name="jbi/list">
+            <gshell:action class="org.apache.servicemix.jbi.commands.ListCommand" />
+        </gshell:command>
+        <gshell:alias name="jbi/ls" alias="jbi/list" />
+        <gshell:command name="jbi/start">
+            <gshell:action class="org.apache.servicemix.jbi.commands.StartCommand" />
+        </gshell:command>
+        <gshell:command name="jbi/stop">
+            <gshell:action class="org.apache.servicemix.jbi.commands.StopCommand" />
+        </gshell:command>
+        <gshell:command name="jbi/shutdown">
+            <gshell:action class="org.apache.servicemix.jbi.commands.ShutdownCommand" />
+        </gshell:command>
+    </gshell:command-bundle>
 
 </beans>

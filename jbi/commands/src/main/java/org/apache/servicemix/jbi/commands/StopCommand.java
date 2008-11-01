@@ -22,7 +22,6 @@ import javax.jbi.management.LifeCycleMBean;
 /**
  * Stop a JBI artifact
  */
-@org.apache.geronimo.gshell.command.annotation.CommandComponent(id = "jbi:stop", description = "Stop a JBI artifact")
 public class StopCommand extends JbiLifeCycleCommandSupport {
 
     protected void handle(LifeCycleMBean artifact) throws JBIException {

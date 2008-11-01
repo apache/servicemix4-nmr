@@ -25,7 +25,6 @@ import org.apache.servicemix.jbi.deployer.SharedLibrary;
 /**
  * List JBI artifacts
  */
-@org.apache.geronimo.gshell.command.annotation.CommandComponent(id = "jbi:list", description = "List deployed JBI artifacts")
 public class ListCommand extends JbiCommandSupport {
 
     protected Object doExecute() throws Exception {
