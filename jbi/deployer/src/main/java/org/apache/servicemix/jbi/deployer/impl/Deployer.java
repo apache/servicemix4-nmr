@@ -203,6 +203,7 @@ public class Deployer extends AbstractBundleWatcher {
 
     @Override
     protected void unregister(Bundle bundle) {
+        // Other bundles are JBI artifacts
         pendingBundles.remove(bundle);
         List<ServiceRegistration> registrations = services.remove(bundle);
         if (registrations != null) {
@@ -512,6 +513,7 @@ public class Deployer extends AbstractBundleWatcher {
 
     public void registerDeployedServiceAssembly(ServiceReference serviceReference, DeployedAssembly assembly) {
         try {
+            assembly.deploy();
             ServiceAssemblyDesc desc = new ServiceAssemblyDesc();
             desc.setIdentification(new Identification());
             desc.getIdentification().setName(assembly.getName());

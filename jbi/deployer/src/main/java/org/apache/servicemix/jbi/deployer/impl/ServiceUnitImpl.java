@@ -110,7 +110,7 @@ public class ServiceUnitImpl implements ServiceUnit {
     }
 
     public void undeploy() throws JBIException {
-        component.getComponent().getServiceUnitManager().undeploy(getName(), getRootDir().getAbsolutePath());
+        component.getComponent().getServiceUnitManager().undeploy(getName(), getRootDir() != null ? getRootDir().getAbsolutePath() : null);
         component.removeServiceUnit(this);
     }
 
