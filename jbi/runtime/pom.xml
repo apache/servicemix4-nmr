@@ -55,7 +55,7 @@
         <dependency>
             <groupId>org.apache.servicemix</groupId>
             <artifactId>servicemix-eip</artifactId>
-		    <version>${servicemix3.version}</version>
+		    <version>${servicemix3.component.version}</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -79,7 +79,7 @@
         <dependency>
             <groupId>org.apache.servicemix</groupId>
             <artifactId>servicemix-common</artifactId>
-		    <version>${servicemix3.version}</version>
+		    <version>${servicemix3.component.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -107,6 +107,12 @@
             <artifactId>log4j</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+                <groupId>wsdl4j</groupId>
+                <artifactId>wsdl4j</artifactId>
+                <version>1.6.2</version>
+                <scope>test</scope>
+            </dependency>
     </dependencies>
 
     <build>
