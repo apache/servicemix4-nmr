@@ -131,6 +131,18 @@
                <enabled>true</enabled>
            </snapshots>
        </repository>
+       <!-- SSHD snapshots -->
+        <repository>
+            <id>sshd-snapshots</id>
+            <name>SSHD Snapshots repository</name>
+            <url>http://sshd.googlecode.com/svn/m2-snapshot-repo/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
    </repositories>
 
   <pluginRepositories>
