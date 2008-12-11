@@ -17,6 +17,8 @@
 package org.apache.servicemix.nmr.core;
 
 import java.util.UUID;
+import java.util.Map;
+import java.util.Collections;
 import java.util.concurrent.Executors;
 
 import org.apache.servicemix.nmr.api.Channel;
@@ -44,6 +46,10 @@ public class ClientChannel extends ChannelImpl {
 
         public String getId() {
             return id;
+        }
+
+        public Map<String, ?> getMetaData() {
+            return Collections.emptyMap();
         }
 
         public Endpoint getEndpoint() {

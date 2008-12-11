@@ -21,15 +21,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.Role;
 import org.apache.servicemix.nmr.api.Status;
 import org.apache.servicemix.nmr.api.event.ExchangeListener;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
 import org.apache.servicemix.nmr.api.internal.InternalExchange;
-import org.apache.servicemix.nmr.api.service.ServiceRegistry;
-import org.apache.servicemix.nmr.core.ServiceRegistryImpl;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
@@ -85,14 +82,18 @@ public class ManagementEndpointRegistry implements ExchangeListener, Initializin
 
     public void exchangeSent(Exchange exchange) {
         try {
-            LOG.info("Sending exchange: " + exchange);
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Sending exchange: " + exchange);
+            }
             if (exchange.getStatus() == Status.Active &&
                     exchange.getRole() == Role.Consumer &&
                     exchange.getOut(false) == null &&
                     exchange.getFault(false) == null &&
                     exchange instanceof InternalExchange) {
                 String id = ((InternalExchange) exchange).getSource().getId();
-                LOG.info("Source endpoint: " + id + " (known endpoints: " + endpoints + ")");
+                if (LOG.isTraceEnabled()) {
+                    LOG.trace("Source endpoint: " + id + " (known endpoints: " + endpoints + ")");
+                }
                 ManagedEndpoint me = endpoints.get(id);
                 if (me == null) {
                     LOG.warn("No managed endpoint registered with id: " + id);
@@ -107,14 +108,18 @@ public class ManagementEndpointRegistry implements ExchangeListener, Initializin
 
     public void exchangeDelivered(Exchange exchange) {
         try {
-            LOG.info("Receiving exchange: " + exchange);
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Receiving exchange: " + exchange);
+            }
             if (exchange.getStatus() == Status.Active &&
                     exchange.getRole() == Role.Provider &&
                     exchange.getOut(false) == null &&
                     exchange.getFault(false) == null &&
                     exchange instanceof InternalExchange) {
                 String id = ((InternalExchange) exchange).getDestination().getId();
-                LOG.info("Dest endpoint: " + id + " (known endpoints: " + endpoints + ")");
+                if (LOG.isTraceEnabled()) {
+                    LOG.trace("Dest endpoint: " + id + " (known endpoints: " + endpoints + ")");
+                }
                 ManagedEndpoint me = endpoints.get(id);
                 if (me == null) {
                     LOG.warn("No managed endpoint registered with id: " + id);

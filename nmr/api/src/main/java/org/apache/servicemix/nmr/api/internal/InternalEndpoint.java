@@ -16,6 +16,8 @@
  */
 package org.apache.servicemix.nmr.api.internal;
 
+import java.util.Map;
+
 import org.apache.servicemix.nmr.api.Endpoint;
 
 /**
@@ -33,6 +35,13 @@ public interface InternalEndpoint extends Endpoint {
      * @return the id of the endpoint
      */
     String getId();
+
+    /**
+     * Retrieve the metadata associated with this endpoint
+     *
+     * @return a non null map containing the metadata
+     */
+    Map<String,?> getMetaData();
 
     /**
      * Retrieve the channel associated with this endpoint.

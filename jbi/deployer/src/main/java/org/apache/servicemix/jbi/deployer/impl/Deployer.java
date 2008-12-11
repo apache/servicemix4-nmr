@@ -95,6 +95,7 @@ public class Deployer extends AbstractBundleWatcher {
     private ServiceTracker tracker;
 
     private ServiceTracker deployedAssembliesTracker;
+    private AssemblyReferencesListener endpointListener;
 
     public Deployer() throws JBIException{
         sharedLibraries = new ConcurrentHashMap<String, SharedLibraryImpl>();
@@ -122,6 +123,14 @@ public class Deployer extends AbstractBundleWatcher {
 
     public void setAutoStart(boolean autoStart) {
         this.autoStart = autoStart;
+    }
+
+    public void setEndpointListener(AssemblyReferencesListener endpointListener) {
+        this.endpointListener = endpointListener;
+    }
+
+    public AssemblyReferencesListener getEndpointListener() {
+        return endpointListener;
     }
 
     @Override
@@ -350,7 +359,7 @@ public class Deployer extends AbstractBundleWatcher {
     protected void registerSA(ServiceAssemblyDesc serviceAssembyDesc, Bundle bundle, List<ServiceUnitImpl> sus) throws JBIException {
         // Now create the SA and initialize it
         Preferences prefs = preferencesService.getUserPreferences(serviceAssembyDesc.getIdentification().getName());
-        ServiceAssemblyImpl sa = new ServiceAssemblyImpl(serviceAssembyDesc, sus, prefs, autoStart);
+        ServiceAssemblyImpl sa = new ServiceAssemblyImpl(serviceAssembyDesc, sus, prefs, endpointListener, autoStart);
         sa.init();
         serviceAssemblies.put(sa.getName(), sa);
         // populate props from the component meta-data
@@ -382,7 +391,7 @@ public class Deployer extends AbstractBundleWatcher {
                 component.stop(false);
             }
             if (component.getState() == ComponentImpl.State.Stopped) {
-                component.shutDown(false);
+                component.shutDown(false, false);
             }
             File file = new File(System.getProperty("servicemix.base"), "data/jbi/" + name);
             FileUtil.deleteFile(file);
@@ -400,7 +409,7 @@ public class Deployer extends AbstractBundleWatcher {
                 sa.stop(false);
             }
             if (sa.getState() == ServiceAssemblyImpl.State.Stopped) {
-                sa.shutDown(false);
+                sa.shutDown(false, false);
             }
             for (ServiceUnit su : sa.getServiceUnits()) {
                 ((ServiceUnitImpl) su).undeploy();
@@ -438,7 +447,7 @@ public class Deployer extends AbstractBundleWatcher {
             if (ci != null) {
                 try {
                     ci.stop(false);
-                    ci.shutDown(false);
+                    ci.shutDown(false, false);
                 } catch (JBIException e) {
                     LOGGER.warn("Error when shutting down component", e);
                 }

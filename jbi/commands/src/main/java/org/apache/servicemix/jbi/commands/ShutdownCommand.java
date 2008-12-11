@@ -19,12 +19,27 @@ package org.apache.servicemix.jbi.commands;
 import javax.jbi.JBIException;
 import javax.jbi.management.LifeCycleMBean;
 
+import org.apache.geronimo.gshell.clp.Option;
+import org.apache.servicemix.jbi.deployer.ServiceAssembly;
+import org.apache.servicemix.jbi.deployer.Component;
+
 /**
  * Shutdown a JBI artifact
  */
 public class ShutdownCommand extends JbiLifeCycleCommandSupport {
 
+    @Option(name = "--force")
+    private boolean force;
+
     protected void handle(LifeCycleMBean artifact) throws JBIException {
-        artifact.shutDown();
+        if (force) {
+            if (artifact instanceof ServiceAssembly) {
+                ((ServiceAssembly) artifact).forceShutDown();
+            } else if (artifact instanceof Component) {
+                ((Component) artifact).forceShutDown();
+            }
+        } else {
+            artifact.shutDown();
+        }
     }
 }

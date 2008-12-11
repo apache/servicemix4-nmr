@@ -97,7 +97,7 @@ public class EndpointRegistryImpl implements EndpointRegistry {
      * @see org.apache.servicemix.nmr.api.Endpoint
      */
     public void register(Endpoint endpoint, Map<String, ?> properties) {
-        InternalEndpointWrapper wrapper = new InternalEndpointWrapper(endpoint);
+        InternalEndpointWrapper wrapper = new InternalEndpointWrapper(endpoint, properties);
         if (endpoints.putIfAbsent(endpoint, wrapper) == null) {
             Executor executor = Executors.newCachedThreadPool();
             ChannelImpl channel = new ChannelImpl(wrapper, executor, nmr);

@@ -151,10 +151,14 @@ public class ComponentImpl implements Component, ComponentWrapper {
     }
 
     public void shutDown() throws JBIException {
-        shutDown(true);
+        shutDown(true, false);
     }
 
-    public void shutDown(boolean saveState) throws JBIException {
+    public void forceShutDown() throws JBIException {
+        shutDown(true, true);
+    }
+
+    public void shutDown(boolean saveState, boolean force) throws JBIException {
         LOGGER.info("Shutting down component " + getName());
         if (state == State.Started) {
             stop(saveState);
@@ -164,7 +168,7 @@ public class ComponentImpl implements Component, ComponentWrapper {
             for (ServiceAssemblyImpl sa : getServiceAssemblies()) {
                 if (sa.getState() == ServiceAssemblyImpl.State.Stopped
                         || sa.getState() == ServiceAssemblyImpl.State.Initialized) {
-                    sa.shutDown(false);
+                    sa.shutDown(false, force);
                 }
             }
             // Shutdown component

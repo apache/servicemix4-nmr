@@ -18,6 +18,7 @@ package org.apache.servicemix.jbi.deployer.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.jbi.JBIException;
 import javax.jbi.management.LifeCycleMBean;
@@ -27,6 +28,8 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
 import org.apache.servicemix.jbi.deployer.descriptor.ServiceAssemblyDesc;
+import org.apache.servicemix.nmr.api.event.EndpointListener;
+import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
 import org.osgi.service.prefs.Preferences;
 import org.osgi.service.prefs.BackingStoreException;
 
@@ -47,23 +50,27 @@ public class ServiceAssemblyImpl implements ServiceAssembly {
         Shutdown,
     }
 
-	private ServiceAssemblyDesc serviceAssemblyDesc;
+	private final ServiceAssemblyDesc serviceAssemblyDesc;
 
-    private List<ServiceUnitImpl> serviceUnits;
+    private final List<ServiceUnitImpl> serviceUnits;
 
-    private State state = State.Unknown;
+    private final Preferences prefs;
 
-    private Preferences prefs;
+    private final AssemblyReferencesListener listener;
 
     private State runningState;
+
+    private State state = State.Unknown;
 
     public ServiceAssemblyImpl(ServiceAssemblyDesc serviceAssemblyDesc,
                                List<ServiceUnitImpl> serviceUnits,
                                Preferences prefs,
+                               AssemblyReferencesListener listener,
                                boolean autoStart) {
 		this.serviceAssemblyDesc = serviceAssemblyDesc;
         this.serviceUnits = serviceUnits;
         this.prefs = prefs;
+        this.listener = listener;
         this.runningState = State.valueOf(this.prefs.get(STATE, (autoStart ? State.Started : State.Initialized).name()));
         for (ServiceUnitImpl su : serviceUnits) {
             su.setServiceAssemblyImpl(this);
@@ -100,15 +107,20 @@ public class ServiceAssemblyImpl implements ServiceAssembly {
         }
     }
 
-    public void init() throws JBIException {
-        transition(State.Initialized);
-        if (runningState == State.Started) {
-            transition(State.Started);
-        } else if (runningState == State.Stopped) {
-            transition(State.Started);
-            transition(State.Stopped);
-        } else if (runningState == State.Shutdown) {
-            transition(State.Shutdown);
+    public synchronized void init() throws JBIException {
+        listener.setAssembly(this);
+        try {
+            transition(State.Initialized);
+            if (runningState == State.Started) {
+                transition(State.Started);
+            } else if (runningState == State.Stopped) {
+                transition(State.Started);
+                transition(State.Stopped);
+            } else if (runningState == State.Shutdown) {
+                transition(State.Shutdown);
+            }
+        } finally {
+            listener.setAssembly(null);
         }
     }
 
@@ -116,10 +128,21 @@ public class ServiceAssemblyImpl implements ServiceAssembly {
         start(true);
     }
 
-    public void start(boolean persist) throws JBIException {
-        transition(State.Started);
-        if (persist) {
-            saveState();
+    public synchronized void start(boolean persist) throws JBIException {
+        listener.setAssembly(this);
+        try {
+            if (state == State.Started) {
+                return;
+            }
+            if (state == State.Shutdown) {
+                transition(State.Initialized);
+            }
+            transition(State.Started);
+            if (persist) {
+                saveState();
+            }
+        } finally {
+            listener.setAssembly(null);
         }
     }
 
@@ -127,21 +150,59 @@ public class ServiceAssemblyImpl implements ServiceAssembly {
         stop(true);
 	}
 
-    public void stop(boolean persist) throws JBIException {
-        transition(State.Stopped);
-        if (persist) {
-            saveState();
+    public synchronized void stop(boolean persist) throws JBIException {
+        listener.setAssembly(this);
+        try {
+            if (state == State.Stopped) {
+                return;
+            }
+            if (state == State.Shutdown) {
+                transition(State.Initialized);
+            }
+            if (state == State.Started) {
+                transition(State.Stopped);
+            }
+            if (persist) {
+                saveState();
+            }
+        } finally {
+            listener.setAssembly(null);
         }
     }
 
     public void shutDown() throws JBIException {
-        shutDown(true);
+        shutDown(true, false);
     }
 
-    public void shutDown(boolean persist) throws JBIException {
-        transition(State.Shutdown);
-        if (persist) {
-            saveState();
+    public void forceShutDown() throws JBIException {
+        shutDown(true, true);
+    }
+
+    public synchronized void shutDown(boolean persist, boolean force) throws JBIException {
+        listener.setAssembly(this);
+        try {
+            if (state == State.Shutdown) {
+                return;
+            }
+            if (state == State.Started) {
+                transition(State.Stopped);
+            }
+            if (!force) {
+                for (;;) {
+                    try {
+                        listener.waitFor(this);
+                        break;
+                    } catch (InterruptedException e) {
+                    }
+                }
+            }
+            transition(State.Shutdown);
+            if (persist) {
+                saveState();
+            }
+        } finally {
+            listener.setAssembly(null);
+            listener.forget(this);
         }
     }
 

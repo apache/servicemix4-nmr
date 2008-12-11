@@ -17,6 +17,7 @@
 package org.apache.servicemix.jbi.deployer;
 
 import javax.jbi.management.ComponentLifeCycleMBean;
+import javax.jbi.JBIException;
 
 /**
  * Represents a JBI component.
@@ -45,4 +46,11 @@ public interface Component extends ComponentLifeCycleMBean {
      * Retrieve the ServiceUnits deployed on this component 
      */
     ServiceUnit[] getServiceUnits();
+
+    /**
+     * Force a shutdown of this component
+     *
+     * @throws javax.jbi.JBIException
+     */
+    void forceShutDown() throws JBIException;
 }

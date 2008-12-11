@@ -70,8 +70,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.ant</artifactId>
-            <version>${ant.version}</version>
+            <artifactId>org.apache.servicemix.bundles.woodstox</artifactId>
+            <version>${woodstox.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>
@@ -141,8 +141,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix</groupId>
-            <artifactId>servicemix-shared-compat</artifactId>
-            <version>${servicemix3.shared.compat.version}</version>
+            <artifactId>servicemix-shared</artifactId>
+            <version>${servicemix.shared.version}</version>
             <classifier>installer</classifier>
             <type>zip</type>
             <exclusions>
@@ -163,14 +163,14 @@
         <dependency>
             <groupId>org.apache.servicemix</groupId>
             <artifactId>servicemix-eip</artifactId>
-            <version>${servicemix3.component.version}</version>
+            <version>${servicemix.eip.version}</version>
             <classifier>installer</classifier>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix</groupId>
             <artifactId>servicemix-jsr181</artifactId>
-            <version>${servicemix3.component.version}</version>
+            <version>${servicemix.jsr181.version}</version>
             <classifier>installer</classifier>
             <type>zip</type>
             <exclusions>
@@ -187,7 +187,7 @@
         <dependency>
             <groupId>org.apache.servicemix</groupId>
             <artifactId>servicemix-http</artifactId>
-            <version>${servicemix3.component.version}</version>
+            <version>${servicemix.http.version}</version>
             <classifier>installer</classifier>
             <type>zip</type>
         </dependency>
@@ -211,6 +211,11 @@
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jta_1.1_spec</artifactId>
             <version>${geronimo.jta.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-javamail_1.4_spec</artifactId>
+            <version>${geronimo.javamail.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.specs</groupId>
@@ -252,29 +257,29 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.apache.servicemix</groupId>
-                                    <artifactId>servicemix-shared-compat</artifactId>
-                                    <version>${servicemix3.shared.compat.version}</version>
+                                    <artifactId>servicemix-shared</artifactId>
+                                    <version>${servicemix.shared.version}</version>
                                     <classifier>installer</classifier>
                                     <type>zip</type>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.apache.servicemix</groupId>
                                     <artifactId>servicemix-eip</artifactId>
-                                    <version>${servicemix3.component.version}</version>
+                                    <version>${servicemix.eip.version}</version>
                                     <classifier>installer</classifier>
                                     <type>zip</type>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.apache.servicemix</groupId>
                                     <artifactId>servicemix-jsr181</artifactId>
-                                    <version>${servicemix3.component.version}</version>
+                                    <version>${servicemix.jsr181.version}</version>
                                     <classifier>installer</classifier>
                                     <type>zip</type>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.apache.servicemix</groupId>
                                     <artifactId>servicemix-http</artifactId>
-                                    <version>${servicemix3.component.version}</version>
+                                    <version>${servicemix.http.version}</version>
                                     <classifier>installer</classifier>
                                     <type>zip</type>
                                 </artifactItem>

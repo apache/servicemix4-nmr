@@ -76,14 +76,17 @@
       <geronimo.javamail.version>1.5</geronimo.javamail.version>
       <geronimo.jta.version>1.1.1</geronimo.jta.version>
       <geronimo.servlet.version>1.1.2</geronimo.servlet.version>
+      <geronimo.stax.version>1.0.1</geronimo.stax.version>
       <jbi.api.version>1.1.0</jbi.api.version>
       <jline.version>0.9.94</jline.version>
       <junit.version>4.4_1</junit.version>
       <log4j.version>1.2.14</log4j.version>
       <pax.logging.version>1.1.1</pax.logging.version>
-      <servicemix3.component.version>2008.01</servicemix3.component.version>
       <servicemix3.version>3.3</servicemix3.version>
-      <servicemix3.shared.compat.version>3.2.3</servicemix3.shared.compat.version>
+      <servicemix.eip.version>2008.01</servicemix.eip.version>
+      <servicemix.http.version>2008.02-SNAPSHOT</servicemix.http.version>
+      <servicemix.jsr181.version>2008.01</servicemix.jsr181.version>
+      <servicemix.shared.version>2008.01</servicemix.shared.version>
       <servicemix.kernel.version>1.1.0-SNAPSHOT</servicemix.kernel.version>
       <servicemix.legal.version>1.0</servicemix.legal.version>
       <servicemix.specs.version>1.1.0</servicemix.specs.version>

@@ -43,4 +43,10 @@ public interface ServiceAssembly extends LifeCycleMBean {
      */
     ServiceUnit[] getServiceUnits();
 
+    /**
+     * Force a shutdown of this service assembly
+     *
+     * @throws JBIException
+     */
+    void forceShutDown() throws JBIException;
 }

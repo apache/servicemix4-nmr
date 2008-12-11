@@ -17,6 +17,8 @@
 package org.apache.servicemix.nmr.core;
 
 import java.util.UUID;
+import java.util.Map;
+import java.util.Collections;
 
 import org.apache.servicemix.nmr.api.Channel;
 import org.apache.servicemix.nmr.api.Endpoint;
@@ -31,10 +33,12 @@ public class InternalEndpointWrapper implements InternalEndpoint {
 
     private final Endpoint endpoint;
     private final String id;
+    private final Map<String,?> metadata;
     private InternalChannel channel;
 
-    public InternalEndpointWrapper(Endpoint endpoint) {
+    public InternalEndpointWrapper(Endpoint endpoint, Map<String,?> metadata) {
         this.endpoint = endpoint;
+        this.metadata = metadata;
         this.id = UUID.randomUUID().toString();
     }
 
@@ -48,6 +52,10 @@ public class InternalEndpointWrapper implements InternalEndpoint {
 
     public String getId() {
         return id;
+    }
+
+    public Map<String, ?> getMetaData() {
+        return Collections.unmodifiableMap(metadata);
     }
 
     /**

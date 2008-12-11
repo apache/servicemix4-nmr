@@ -33,7 +33,11 @@
     <bean id="deployer" class="org.apache.servicemix.jbi.deployer.impl.Deployer">
         <property name="preferencesService" ref="preferencesService" />
         <property name="autoStart" value="true" />
+        <property name="endpointListener" ref="endpointListener" />
     </bean>
+
+    <!-- Endpoint listener -->
+    <bean id="endpointListener" class="org.apache.servicemix.jbi.deployer.impl.AssemblyReferencesListener" />
 
     <!-- Deployment listener -->
     <bean id="listener" class="org.apache.servicemix.jbi.deployer.handler.JBIDeploymentListener" />
@@ -52,5 +56,13 @@
     </osgi:service>
 
     <osgi:service ref="listener" interface="org.apache.servicemix.kernel.filemonitor.DeploymentListener" />
+
+    <osgi:service ref="endpointListener">
+        <osgi:interfaces>
+            <value>org.apache.servicemix.nmr.api.event.Listener</value>
+            <value>org.apache.servicemix.nmr.api.event.EndpointListener</value>
+            <value>org.apache.servicemix.nmr.api.event.ExchangeListener</value>
+        </osgi:interfaces>
+    </osgi:service>
 
 </beans>

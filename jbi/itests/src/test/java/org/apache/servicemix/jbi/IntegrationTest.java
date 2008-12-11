@@ -18,11 +18,18 @@ package org.apache.servicemix.jbi;
 
 import java.io.File;
 import java.util.Properties;
+import java.util.concurrent.CountDownLatch;
+import java.net.URL;
+import java.net.URLConnection;
 
 import javax.jbi.component.Component;
 
 import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.kernel.testing.support.AbstractIntegrationTest;
+import org.apache.servicemix.jbi.deployer.ServiceAssembly;
+import org.apache.servicemix.jbi.deployer.handler.JBIDeploymentListener;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleException;
 
 public class IntegrationTest extends AbstractIntegrationTest {
 
@@ -59,6 +66,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
             getBundle("org.apache.servicemix.specs", "org.apache.servicemix.specs.stax-api-1.0"),
             getBundle("org.apache.servicemix.specs", "org.apache.servicemix.specs.jbi-api-1.0"),
             getBundle("org.apache.geronimo.specs", "geronimo-activation_1.1_spec"),
+            getBundle("org.apache.geronimo.specs", "geronimo-javamail_1.4_spec"),
             getBundle("org.apache.geronimo.specs", "geronimo-jta_1.1_spec"),
             getBundle("org.apache.felix", "org.apache.felix.prefs"),
             getBundle("org.apache.xbean", "xbean-classloader"),
@@ -71,7 +79,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
             getBundle("org.apache.servicemix.jbi", "org.apache.servicemix.jbi.deployer"),
             getBundle("org.apache.servicemix.jbi", "org.apache.servicemix.jbi.osgi"),
             getBundle("org.apache.servicemix.kernel", "org.apache.servicemix.kernel.filemonitor"),
-            getBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.ant"),
+            getBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.woodstox"),
 		};
 	}
 
@@ -79,26 +87,72 @@ public class IntegrationTest extends AbstractIntegrationTest {
         System.out.println("Waiting for NMR");
         NMR nmr = getOsgiService(NMR.class);
         assertNotNull(nmr);
-        installBundle("org.apache.servicemix", "servicemix-shared-compat", "installer", "zip");
-        installBundle("org.apache.servicemix", "servicemix-eip", "installer", "zip");
+        installJbiBundle("org.apache.servicemix", "servicemix-shared", "installer", "zip");
+        installJbiBundle("org.apache.servicemix", "servicemix-eip", "installer", "zip");
         System.out.println("Waiting for JBI Component");
-        Component cmp = (Component) getOsgiService(Component.class);
+        Component cmp = getOsgiService(Component.class);
         assertNotNull(cmp);
     }
 
-    /*
     public void testServiceAssembly() throws Exception {
         System.out.println("Waiting for NMR");
         NMR nmr = getOsgiService(NMR.class);
         assertNotNull(nmr);
-        installBundle("org.apache.servicemix", "servicemix-shared-compat", "installer", "zip");
-        installBundle("org.apache.servicemix", "servicemix-jsr181", "installer", "zip");
-        installBundle("org.apache.servicemix", "servicemix-http", "installer", "zip");
-        installBundle("org.apache.servicemix.samples.wsdl-first", "wsdl-first-sa", null, "zip");
+        installJbiBundle("org.apache.servicemix", "servicemix-shared", "installer", "zip");
+        installJbiBundle("org.apache.servicemix", "servicemix-jsr181", "installer", "zip");
+        installJbiBundle("org.apache.servicemix", "servicemix-http", "installer", "zip");
+        Bundle saBundle = installJbiBundle("org.apache.servicemix.samples.wsdl-first", "wsdl-first-sa", null, "zip");
         System.out.println("Waiting for JBI Service Assembly");
-        ServiceAssembly sa = (ServiceAssembly) getOsgiService(ServiceAssembly.class);
+        ServiceAssembly sa = getOsgiService(ServiceAssembly.class);
         assertNotNull(sa);
-    }
-    */
 
+        final CountDownLatch latch = new CountDownLatch(50);
+        for (int i = 0; i < 2; i++) {
+            new Thread() {
+                public void run() {
+                    try {
+                        for (;;) {
+                            URL url = new URL("http://localhost:8192/PersonService/");
+                            URLConnection connection = url.openConnection();
+                            connection.setDoInput(true);
+                            connection.setDoOutput(true);
+                            connection.getOutputStream().write(
+                                   ("<env:Envelope xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\"\n" +
+                                    "              xmlns:tns=\"http://servicemix.apache.org/samples/wsdl-first/types\">\n" +
+                                    "  <env:Body>\n" +
+                                    "    <tns:GetPerson>\n" +
+                                    "      <tns:personId>world</tns:personId>\n" +
+                                    "    </tns:GetPerson>\n" +
+                                    "  </env:Body>\n" +
+                                    "</env:Envelope>").getBytes());
+                            byte[] buffer = new byte[8192];
+                            int len = connection.getInputStream().read(buffer);
+                            String result = new String(buffer, 0, len);
+                            System.out.println(result);
+                            latch.countDown();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }.start();
+        }
+
+        latch.await();
+        //Thread.sleep(500);
+        saBundle.uninstall();
+        //sa.stop();
+        //sa.shutDown();
+    }
+
+    protected Bundle installJbiBundle(String groupId, String artifactId, String classifier, String type) throws BundleException {
+        String version = getBundleVersion(groupId, artifactId);
+        File loc = localMavenBundle(groupId, artifactId, version, classifier, type);
+        File tmpDir = new File("target/temp/");
+        tmpDir.mkdirs();
+        File out = new JBIDeploymentListener().handle(loc, tmpDir);
+        Bundle bundle = bundleContext.installBundle(out.toURI().toString());
+        bundle.start();
+        return bundle;
+    }
 }
