@@ -216,8 +216,6 @@ public class ServiceAssemblyImpl implements ServiceAssembly {
     }
 
     protected void transition(State to) throws JBIException {
-        // TODO: reject invalid transitions, for example Started -> Shutdown
-        // we need to either automatically follow the intermediate steps, or just throw an exception
         LOGGER.info("Changing SA state to " + to);
         State from = state;
         List<ServiceUnitImpl> success = new ArrayList<ServiceUnitImpl>();
