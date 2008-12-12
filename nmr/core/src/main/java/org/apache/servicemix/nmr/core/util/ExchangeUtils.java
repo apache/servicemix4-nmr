@@ -23,6 +23,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.io.PrintWriter;
 
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.dom.DOMResult;
@@ -70,6 +71,13 @@ public class ExchangeUtils {
         display(exchange, Type.In, sb);
         display(exchange, Type.Out, sb);
         display(exchange, Type.Fault, sb);
+        if (exchange.getError() != null) {
+            sb.append("  error: [").append('\n');
+            StringWriter sw = new StringWriter();
+            exchange.getError().printStackTrace(new PrintWriter(sw));
+            sb.append("    ").append(sw.toString().replace("\n", "\n    ").replace("\t", "  ").trim()).append('\n');
+            sb.append("  ]").append('\n');
+        }
         sb.append("]\n");
         return sb.toString();
     }
