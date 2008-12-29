@@ -86,7 +86,7 @@
       <servicemix.eip.version>2008.01</servicemix.eip.version>
       <servicemix.http.version>2008.02-SNAPSHOT</servicemix.http.version>
       <servicemix.jsr181.version>2008.01</servicemix.jsr181.version>
-      <servicemix.shared.version>2008.01</servicemix.shared.version>
+      <servicemix.shared.version>2008.02-SNAPSHOT</servicemix.shared.version>
       <servicemix.kernel.version>1.1.0-SNAPSHOT</servicemix.kernel.version>
       <servicemix.legal.version>1.0</servicemix.legal.version>
       <servicemix.specs.version>1.1.0</servicemix.specs.version>
