@@ -65,8 +65,8 @@ public class IntegrationTest extends AbstractIntegrationTest {
         return new String[] {
             getBundle("org.apache.servicemix.specs", "org.apache.servicemix.specs.stax-api-1.0"),
             getBundle("org.apache.servicemix.specs", "org.apache.servicemix.specs.jbi-api-1.0"),
-            getBundle("org.apache.geronimo.specs", "geronimo-activation_1.1_spec"),
-            getBundle("org.apache.geronimo.specs", "geronimo-javamail_1.4_spec"),
+            getBundle("org.apache.servicemix.specs", "org.apache.servicemix.specs.activation-api-1.1"),
+            getBundle("org.apache.servicemix.specs", "org.apache.servicemix.specs.javamail-api-1.4"),
             getBundle("org.apache.geronimo.specs", "geronimo-jta_1.1_spec"),
             getBundle("org.apache.felix", "org.apache.felix.prefs"),
             getBundle("org.apache.xbean", "xbean-classloader"),

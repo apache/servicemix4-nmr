@@ -106,8 +106,8 @@
             <scope>runtime</scope>
             <includes>
                 <include>org.apache.servicemix.specs:org.apache.servicemix.specs.stax-api-1.0</include>
-                <include>org.apache.geronimo.specs:geronimo-activation_1.1_spec</include>
-                <include>org.apache.geronimo.specs:geronimo-javamail_1.4_spec</include>
+                <include>org.apache.servicemix.specs:org.apache.servicemix.specs.activation-api-1.1</include>
+                <include>org.apache.servicemix.specs:org.apache.servicemix.specs.javamail-api-1.4</include>
                 <include>org.apache.geronimo.specs:geronimo-jta_1.1_spec</include>
                 <include>org.apache.servicemix.bundles:org.apache.servicemix.bundles.woodstox</include>
                 <include>org.apache.xbean:xbean-classloader</include>

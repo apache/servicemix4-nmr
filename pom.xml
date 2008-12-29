@@ -72,8 +72,6 @@
       <felix.compendium.version>1.2.0</felix.compendium.version>
       <felix.bundlerepository.version>1.2.0</felix.bundlerepository.version>
       <felix.prefs.version>1.0.2</felix.prefs.version>
-      <geronimo.activation.version>1.0.2</geronimo.activation.version>
-      <geronimo.javamail.version>1.5</geronimo.javamail.version>
       <geronimo.jta.version>1.1.1</geronimo.jta.version>
       <geronimo.servlet.version>1.1.2</geronimo.servlet.version>
       <geronimo.stax.version>1.0.1</geronimo.stax.version>
@@ -89,7 +87,7 @@
       <servicemix.shared.version>2008.02-SNAPSHOT</servicemix.shared.version>
       <servicemix.kernel.version>1.1.0-SNAPSHOT</servicemix.kernel.version>
       <servicemix.legal.version>1.0</servicemix.legal.version>
-      <servicemix.specs.version>1.1.0</servicemix.specs.version>
+      <servicemix.specs.version>1.2-SNAPSHOT</servicemix.specs.version>
       <spring.osgi.version>1.1.0</spring.osgi.version>
       <spring.version>2.5.5</spring.version>
       <woodstox.version>3.2.7_1</woodstox.version>
