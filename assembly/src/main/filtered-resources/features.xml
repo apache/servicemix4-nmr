@@ -27,7 +27,7 @@
         <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.management/${pom.version}</bundle>
     </feature>
     <feature name="jbi" version="${version}">
-        <feature>nmr</feature>
+        <feature version="${version}">nmr</feature>
         <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${servicemix.specs.version}</bundle>
         <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.javamail-api-1.4/${servicemix.specs.version}</bundle>
         <bundle>mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimo.jta.version}</bundle>
