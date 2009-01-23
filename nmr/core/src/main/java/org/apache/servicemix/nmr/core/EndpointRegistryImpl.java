@@ -107,8 +107,10 @@ public class EndpointRegistryImpl implements EndpointRegistry {
             for (EndpointListener listener : nmr.getListenerRegistry().getListeners(EndpointListener.class)) {
                 listener.endpointRegistered(wrapper);
             }
-            for (DynamicReferenceImpl ref : references.keySet()) {
-                ref.setDirty();
+            synchronized (this.references) {
+                for (DynamicReferenceImpl ref : references.keySet()) {
+                    ref.setDirty();
+                }
             }
         }
     }
@@ -141,8 +143,10 @@ public class EndpointRegistryImpl implements EndpointRegistry {
                 listener.endpointUnregistered(wrapper);
             }
         }
-        for (DynamicReferenceImpl ref : references.keySet()) {
-            ref.setDirty();
+        synchronized (this.references) {
+            for (DynamicReferenceImpl ref : references.keySet()) {
+                ref.setDirty();
+            }
         }
     }
 
@@ -206,7 +210,9 @@ public class EndpointRegistryImpl implements EndpointRegistry {
                 return properties.toString();
             }
         });
-        this.references.put(ref, true);
+        synchronized (this.references) {
+            this.references.put(ref, true);
+        }
         return ref;
     }
 
@@ -242,7 +248,9 @@ public class EndpointRegistryImpl implements EndpointRegistry {
                         return filter;
                     }
                 });
-                this.references.put(ref, true);
+                synchronized (this.references) {
+                    this.references.put(ref, true);
+                }
                 return ref;
             } catch (org.osgi.framework.InvalidSyntaxException e) {
                 throw new ServiceMixException("Invalid filter syntax: " + e.getMessage());
