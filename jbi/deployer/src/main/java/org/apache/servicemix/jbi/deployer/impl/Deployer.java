@@ -216,10 +216,11 @@ public class Deployer extends AbstractBundleWatcher {
         pendingBundles.remove(bundle);
         List<ServiceRegistration> registrations = services.remove(bundle);
         if (registrations != null) {
-            for (ServiceRegistration reg : registrations) {
+        	for (ServiceRegistration reg : registrations) {
                 try {
-                    reg.unregister();
+                	reg.unregister();
                 } catch (IllegalStateException e) {
+                	e.printStackTrace();
                     // Ignore
                 }
             }
@@ -448,6 +449,18 @@ public class Deployer extends AbstractBundleWatcher {
                 try {
                     ci.stop(false);
                     ci.shutDown(false, false);
+                    pendingBundles.remove(reference.getBundle());
+                    List<ServiceRegistration> registrations = services.remove(reference.getBundle());
+                    if (registrations != null) {
+                    	for (ServiceRegistration reg : registrations) {
+                            try {
+                            	reg.unregister();
+                            } catch (IllegalStateException e) {
+                            	e.printStackTrace();
+                                // Ignore
+                            }
+                        }
+                    }
                 } catch (JBIException e) {
                     LOGGER.warn("Error when shutting down component", e);
                 }
