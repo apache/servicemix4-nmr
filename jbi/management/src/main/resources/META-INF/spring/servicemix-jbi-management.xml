@@ -38,13 +38,29 @@
     <bean id="managedJbiRegistry" class="org.apache.servicemix.jbi.management.ManagedJbiRegistry">
         <property name="namingStrategy" ref="namingStrategy" />
         <property name="managementAgent" ref="managementAgent" />
+        <property name="adminCommandsService" ref="adminCommandsService" />
+        <property name="adminService" ref="adminService" />
     </bean>
 
     <bean id="namingStrategy" class="org.apache.servicemix.jbi.management.DefaultNamingStrategy">
         <property name="jmxDomainName" value="org.apache.servicemix" />
     </bean>
+    <bean id="adminService" class="org.apache.servicemix.jbi.management.AdminService">
+        <property name="namingStrategy" ref="namingStrategy" />
+    </bean>
+    
+    <bean id="adminCommandsService" class="org.apache.servicemix.jbi.management.AdminCommandsService">
+        <property name="installationService" ref="installationService" />
+        <property name="adminService" ref="adminService" />
+    </bean>
+    <bean id="installationService" class="org.apache.servicemix.jbi.management.InstallationService">
+        <property name="namingStrategy" ref="namingStrategy" />
+        <property name="managementAgent" ref="managementAgent" />
+        <property name="adminService" ref="adminService" />
+    </bean>
+    
 
-    <bean id="managementAgent" class="org.apache.servicemix.jbi.management.ManagementAgent">
+   <bean id="managementAgent" class="org.apache.servicemix.jbi.management.ManagementAgent">
         <property name="mbeanServer" ref="mbeanServer" />
     </bean>
 

@@ -34,6 +34,8 @@ public class ManagedJbiRegistry implements InitializingBean {
 
     private NamingStrategy namingStrategy;
     private ManagementAgent managementAgent;
+    private AdminCommandsService adminCommandsService;
+    private AdminService adminService;
     private Map<String, ManagedSharedLibrary> sharedLibraries;
     private Map<String, ManagedComponent> components;
     private Map<String, ManagedServiceAssembly> serviceAssemblies;
@@ -52,7 +54,23 @@ public class ManagedJbiRegistry implements InitializingBean {
         this.namingStrategy = namingStrategy;
     }
 
-    public ManagementAgent getManagementAgent() {
+    public void setAdminService(AdminService adminService) {
+		this.adminService = adminService;
+	}
+
+	public AdminService getAdminService() {
+		return adminService;
+	}
+
+	public void setAdminCommandsService(AdminCommandsService adminCommandsService) {
+		this.adminCommandsService = adminCommandsService;
+	}
+
+	public AdminCommandsService getAdminCommandsService() {
+		return adminCommandsService;
+	}
+
+	public ManagementAgent getManagementAgent() {
         return managementAgent;
     }
 
@@ -130,7 +148,12 @@ public class ManagedJbiRegistry implements InitializingBean {
         if (namingStrategy == null) {
             throw new IllegalArgumentException("namingStrategy must not be null");
         }
+        
+        if (adminCommandsService == null) {
+        	throw new IllegalArgumentException("adminCommandsService must not be null");
+        }
 
+        managementAgent.register(adminCommandsService, namingStrategy.getObjectName(adminCommandsService));
     }
 
 }

@@ -16,8 +16,13 @@
  */
 package org.apache.servicemix.jbi.management;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import javax.management.ObjectName;
 import javax.management.MalformedObjectNameException;
+
+import org.apache.servicemix.jbi.runtime.impl.ManagementContext;
 
 /**
  */
@@ -52,6 +57,13 @@ public class DefaultNamingStrategy implements NamingStrategy {
                                     "Type=ServiceAssembly," +
                                     "Name=" + sanitize(serviceAssembly.getName()));
     }
+    
+    public ObjectName getObjectName(AdminCommandsServiceMBean adminCommandsService) throws MalformedObjectNameException {
+        return new ObjectName(jmxDomainName + ":" +
+                                    "Type=SystemService," +
+                                    "Name=AdminCommandsService");
+    }
+    
 
     private String sanitize(String in) {
         String result = null;
@@ -65,6 +77,17 @@ public class DefaultNamingStrategy implements NamingStrategy {
         }
         return result;
     }
+    
+    public ObjectName createCustomComponentMBeanName(String type, String name) {
+        Map<String, String> result = new LinkedHashMap<String, String>();
+        result.put("Type", "Component");
+        result.put("Name", sanitize(name));
+        result.put("SubType", sanitize(type));
+        return createObjectName(result);
+    }
 
+    public ObjectName createObjectName(Map<String, String> props) {
+        return ManagementContext.createObjectName(getJmxDomainName(), props);
+    }
 }
 

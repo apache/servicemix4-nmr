@@ -28,5 +28,10 @@ public interface NamingStrategy {
     ObjectName getObjectName(ManagedComponent component) throws MalformedObjectNameException;
 
     ObjectName getObjectName(ManagedServiceAssembly serviceAssembly) throws MalformedObjectNameException;
-
+    
+    ObjectName getObjectName(AdminCommandsServiceMBean adminCommandsService) throws MalformedObjectNameException;
+    
+    ObjectName createCustomComponentMBeanName(String type, String name);
+    	
+    String getJmxDomainName();
 }

@@ -99,5 +99,13 @@ public class Transformer {
 		jos.close();
 		jis.close();
     }
+    
+    public static Descriptor getDescriptor(File jbiArtifact) throws Exception {
+    	JarFile jar = new JarFile(jbiArtifact);
+    	JarEntry jarEntry = jar.getJarEntry("META-INF/jbi.xml");
+        InputStream is = jar.getInputStream(jarEntry);
+        Descriptor desc = DescriptorFactory.buildDescriptor(is);
+        return desc;
+    }
 
 }
