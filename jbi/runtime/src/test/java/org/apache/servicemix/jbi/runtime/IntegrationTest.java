@@ -36,6 +36,8 @@ import org.apache.servicemix.nmr.api.service.ServiceHelper;
 import org.apache.servicemix.nmr.core.ServiceMix;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 public class IntegrationTest {
 
     @Test
@@ -58,7 +60,7 @@ public class IntegrationTest {
             }
         };
         Map<String, Object> props = new HashMap<String, Object>();
-        props.put(Endpoint.SERVICE_NAME, new QName("target"));
+        props.put(Endpoint.SERVICE_NAME, new QName("target").toString());
         smx.getEndpointRegistry().register(tep, props);
 
         EIPComponent eip = new EIPComponent();
@@ -76,6 +78,10 @@ public class IntegrationTest {
         e.getIn().setBody("<hello/>");
         e.setTarget(smx.getEndpointRegistry().lookup(ServiceHelper.createMap(Endpoint.NAME, "{uri:foo}bar:ep")));
         channel.sendSync(e);
+        if (e.getError() != null) {
+            throw e.getError();
+        }
+        assertEquals(Status.Done, e.getStatus());
     }
 
 }

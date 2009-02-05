@@ -35,6 +35,7 @@ import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.Pattern;
 import org.apache.servicemix.nmr.api.Reference;
+import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.nmr.api.internal.InternalExchange;
 
 /**
@@ -152,7 +153,7 @@ public class DeliveryChannelImpl implements DeliveryChannel {
         if (((InternalExchange) exchange).getDestination() != null && me.getEndpoint() == null) {
             Endpoint ep = ((InternalExchange) exchange).getDestination();
             Map<String, ?> props = context.getNmr().getEndpointRegistry().getProperties(ep);
-            QName serviceName = (QName) props.get(Endpoint.SERVICE_NAME);
+            QName serviceName = QName.valueOf((String) props.get(Endpoint.SERVICE_NAME));
             if (serviceName == null) {
                 serviceName = DEFAULT_SERVICE_NAME;
             }
@@ -167,7 +168,7 @@ public class DeliveryChannelImpl implements DeliveryChannel {
 
     public void send(MessageExchange exchange) throws MessagingException {
         assert exchange != null;
-        createTarget(exchange);
+        createTarget(context.getNmr(), exchange);
         exchange.setProperty(SEND_SYNC, null);
         ((MessageExchangeImpl) exchange).afterSend();
         channel.send(((MessageExchangeImpl) exchange).getInternalExchange());
@@ -175,7 +176,7 @@ public class DeliveryChannelImpl implements DeliveryChannel {
 
     public boolean sendSync(MessageExchange exchange) throws MessagingException {
         assert exchange != null;
-        createTarget(exchange);
+        createTarget(context.getNmr(), exchange);
         exchange.setProperty(SEND_SYNC, Boolean.TRUE);
         ((MessageExchangeImpl) exchange).afterSend();
         return channel.sendSync(((MessageExchangeImpl) exchange).getInternalExchange());
@@ -183,34 +184,38 @@ public class DeliveryChannelImpl implements DeliveryChannel {
 
     public boolean sendSync(MessageExchange exchange, long timeout) throws MessagingException {
         assert exchange != null;
-        createTarget(exchange);
+        createTarget(context.getNmr(), exchange);
         exchange.setProperty(SEND_SYNC, Boolean.TRUE);
         ((MessageExchangeImpl) exchange).afterSend();
         return channel.sendSync(((MessageExchangeImpl) exchange).getInternalExchange(), timeout);
     }
 
-    protected void createTarget(MessageExchange messageExchange) throws MessagingException {
-        Exchange exchange = ((MessageExchangeImpl) messageExchange).getInternalExchange();
+    public static void createTarget(NMR nmr, MessageExchange messageExchange) {
+        createTarget(nmr, ((MessageExchangeImpl) messageExchange).getInternalExchange());
+    }
+
+    public static void createTarget(NMR nmr, Exchange exchange) {
         if (exchange.getTarget() == null) {
             Map<String, Object> props = new HashMap<String, Object>();
-            if (messageExchange.getEndpoint() != null) {
-                props.put(Endpoint.SERVICE_NAME, messageExchange.getEndpoint().getServiceName());
-                props.put(Endpoint.ENDPOINT_NAME, messageExchange.getEndpoint().getEndpointName());
+            ServiceEndpoint ep = MessageExchangeImpl.getEndpoint(exchange);
+            if (ep != null) {
+                props.put(Endpoint.SERVICE_NAME, ep.getServiceName().toString());
+                props.put(Endpoint.ENDPOINT_NAME, ep.getEndpointName());
             } else {
-                QName serviceName = messageExchange.getService();
+                QName serviceName = MessageExchangeImpl.getService(exchange);
                 if (serviceName != null) {
-                    props.put(Endpoint.SERVICE_NAME, serviceName);
+                    props.put(Endpoint.SERVICE_NAME, serviceName.toString());
                 } else {
-                    QName interfaceName = messageExchange.getInterfaceName();
+                    QName interfaceName = MessageExchangeImpl.getInterfaceName(exchange);
                     if (interfaceName != null) {
-                        props.put(Endpoint.INTERFACE_NAME, interfaceName);
+                        props.put(Endpoint.INTERFACE_NAME, interfaceName.toString());
                     }
                 }
             }
             if (props.isEmpty()) {
-                throw new MessagingException("No endpoint, service or interface name specified for routing");
+                throw new IllegalStateException("No endpoint, service or interface name specified for routing");
             }
-            Reference target = context.getNmr().getEndpointRegistry().lookup(props);
+            Reference target = nmr.getEndpointRegistry().lookup(props);
             exchange.setTarget(target);
         }
     }

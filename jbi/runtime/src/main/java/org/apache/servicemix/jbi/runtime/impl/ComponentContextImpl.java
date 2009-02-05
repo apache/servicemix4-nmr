@@ -19,37 +19,22 @@ package org.apache.servicemix.jbi.runtime.impl;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.MissingResourceException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.logging.Logger;
 
 import javax.jbi.JBIException;
-import javax.jbi.management.MBeanNames;
-import javax.jbi.messaging.DeliveryChannel;
 import javax.jbi.messaging.MessagingException;
 import javax.jbi.servicedesc.ServiceEndpoint;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.naming.InitialContext;
 import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.DocumentFragment;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.servicemix.document.DocumentRepository;
 import org.apache.servicemix.jbi.runtime.ComponentRegistry;
-import org.apache.servicemix.jbi.runtime.Environment;
 import org.apache.servicemix.jbi.runtime.ComponentWrapper;
 import org.apache.servicemix.jbi.runtime.impl.utils.DOMUtil;
-import org.apache.servicemix.jbi.runtime.impl.utils.URIResolver;
-import org.apache.servicemix.jbi.runtime.impl.utils.WSAddressingConstants;
 import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.Exchange;
 
@@ -77,7 +62,7 @@ public class ComponentContextImpl extends AbstractComponentContext {
         this.component = component;
         this.properties = properties;
         this.queue = new ArrayBlockingQueue<Exchange>(DEFAULT_QUEUE_CAPACITY);
-        this.componentEndpoint = new EndpointImpl();
+        this.componentEndpoint = new EndpointImpl(properties);
         this.componentEndpoint.setQueue(queue);
         this.componentRegistry.getNmr().getEndpointRegistry().register(componentEndpoint, properties);
         this.dc = new DeliveryChannelImpl(this, componentEndpoint.getChannel(), queue);
@@ -99,14 +84,12 @@ public class ComponentContextImpl extends AbstractComponentContext {
 
     public synchronized ServiceEndpoint activateEndpoint(QName serviceName, String endpointName) throws JBIException {
         try {
-            EndpointImpl endpoint = new EndpointImpl();
-            endpoint.setQueue(queue);
-            endpoint.setServiceName(serviceName);
-            endpoint.setEndpointName(endpointName);
             Map<String, Object> props = new HashMap<String, Object>();
             props.put(Endpoint.NAME, serviceName.toString() + ":" + endpointName);
-            props.put(Endpoint.SERVICE_NAME, serviceName);
+            props.put(Endpoint.SERVICE_NAME, serviceName.toString());
             props.put(Endpoint.ENDPOINT_NAME, endpointName);
+            EndpointImpl endpoint = new EndpointImpl(props);
+            endpoint.setQueue(queue);
             Document doc = component.getComponent().getServiceDescription(endpoint);
             if (doc != null) {
                 String data = DOMUtil.asXML(doc);
@@ -114,21 +97,15 @@ public class ComponentContextImpl extends AbstractComponentContext {
                 props.put(Endpoint.WSDL_URL, url);
             }
             componentRegistry.getNmr().getEndpointRegistry().register(endpoint,  props);
-            return new SimpleServiceEndpoint(props, endpoint);
+            return endpoint;
         } catch (TransformerException e) {
             throw new JBIException(e);
         }
     }
 
     public synchronized void deactivateEndpoint(ServiceEndpoint endpoint) throws JBIException {
-        EndpointImpl ep;
-        if (endpoint instanceof EndpointImpl) {
-            ep = (EndpointImpl) endpoint;
-        } else if (endpoint instanceof SimpleServiceEndpoint) {
-            ep = ((SimpleServiceEndpoint) endpoint).getEndpoint();
-        } else {
-            throw new IllegalArgumentException("Unrecognized endpoint");
-        }
+        // TODO: retrieve the correct endpoint if needed
+        EndpointImpl ep = (EndpointImpl) endpoint;
         componentRegistry.getNmr().getEndpointRegistry().unregister(ep, null);
     }
 

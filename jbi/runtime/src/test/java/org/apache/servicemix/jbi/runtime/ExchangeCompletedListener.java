@@ -33,7 +33,7 @@ public class ExchangeCompletedListener extends Assert implements ExchangeListene
     private long timeout;
 
     public ExchangeCompletedListener() {
-        this(1000);
+        this(5000);
     }
 
     public ExchangeCompletedListener(long timeout) {
@@ -43,7 +43,7 @@ public class ExchangeCompletedListener extends Assert implements ExchangeListene
     public void exchangeSent(Exchange exchange) {
         synchronized (exchanges) {
             exchanges.put(exchange.getId(), exchange);
-            exchanges.notify();
+            exchanges.notifyAll();
         }
     }
 

@@ -219,15 +219,15 @@ public class MessageExchangeImpl implements MessageExchange  {
     }
 
     public ServiceEndpoint getEndpoint() {
-        return exchange.getProperty(SERVICE_ENDPOINT_PROP, ServiceEndpoint.class);
+        return getEndpoint(exchange);
     }
 
     public QName getInterfaceName() {
-        return exchange.getProperty(INTERFACE_NAME_PROP, QName.class);
+        return getInterfaceName(exchange);
     }
 
     public QName getService() {
-        return exchange.getProperty(SERVICE_NAME_PROP, QName.class);
+        return getService(exchange);
     }
 
     public boolean isTransacted() {
@@ -242,5 +242,17 @@ public class MessageExchangeImpl implements MessageExchange  {
         if (previousStatus == ExchangeStatus.DONE || previousStatus == ExchangeStatus.ERROR) {
             throw new MessagingException("Can not send a terminated exchange");
         }
+    }
+
+    public static ServiceEndpoint getEndpoint(Exchange exchange) {
+        return exchange.getProperty(SERVICE_ENDPOINT_PROP, ServiceEndpoint.class);
+    }
+
+    public static QName getInterfaceName(Exchange exchange) {
+        return exchange.getProperty(INTERFACE_NAME_PROP, QName.class);
+    }
+
+    public static QName getService(Exchange exchange) {
+        return exchange.getProperty(SERVICE_NAME_PROP, QName.class);
     }
 }

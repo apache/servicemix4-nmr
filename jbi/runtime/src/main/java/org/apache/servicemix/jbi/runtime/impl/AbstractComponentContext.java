@@ -54,13 +54,6 @@ import org.apache.commons.logging.LogFactory;
 
 public abstract class AbstractComponentContext implements ComponentContext, MBeanNames {
 
-    public static final String JBI_NAMESPACE = "http://java.sun.com/jbi/end-point-reference";
-    public static final String JBI_PREFIX = "jbi:";
-    public static final String JBI_ENDPOINT_REFERENCE = "end-point-reference";
-    public static final String JBI_SERVICE_NAME = "service-name";
-    public static final String JBI_ENDPOINT_NAME = "end-point-name";
-    public static final String XMLNS_NAMESPACE = "http://www.w3.org/2000/xmlns/";
-
     private static final Log LOG = LogFactory.getLog(AbstractComponentContext.class);
 
     protected DeliveryChannel dc;
@@ -83,24 +76,26 @@ public abstract class AbstractComponentContext implements ComponentContext, MBea
             return null;
         }
         Map<String, ?> p = getNmr().getEndpointRegistry().getProperties(endpoints.get(0));
-        return new ComponentContextImpl.SimpleServiceEndpoint(p);
+        return new ServiceEndpointImpl(p);
     }
 
     public Document getEndpointDescriptor(ServiceEndpoint endpoint) throws JBIException {
-        if (endpoint instanceof ComponentContextImpl.SimpleServiceEndpoint) {
-            Map<String, ?> props = ((ComponentContextImpl.SimpleServiceEndpoint) endpoint).getProperties();
-            String url = (String) props.get(Endpoint.WSDL_URL);
-            if (url != null) {
-                InputStream is = null;
-                try {
-                    is = new URL(url).openStream();
-                    return DOMUtil.parseDocument(is);
-                } catch (Exception e) {
-                    if (is != null) {
-                        try {
-                            is.close();
-                        } catch (IOException e2) {
-                            // Ignore
+        if (endpoint instanceof ServiceEndpointImpl) {
+            Map<String, ?> props = ((ServiceEndpointImpl) endpoint).getProperties();
+            if (props != null) {
+                String url = (String) props.get(Endpoint.WSDL_URL);
+                if (url != null) {
+                    InputStream is = null;
+                    try {
+                        is = new URL(url).openStream();
+                        return DOMUtil.parseDocument(is);
+                    } catch (Exception e) {
+                        if (is != null) {
+                            try {
+                                is.close();
+                            } catch (IOException e2) {
+                                // Ignore
+                            }
                         }
                     }
                 }
@@ -115,7 +110,7 @@ public abstract class AbstractComponentContext implements ComponentContext, MBea
         return internalQueryEndpoints(props);
     }
 
-    protected ComponentContextImpl.SimpleServiceEndpoint[] internalQueryEndpoints(Map<String, Object> props) {
+    protected ServiceEndpointImpl[] internalQueryEndpoints(Map<String, Object> props) {
         List<Endpoint> endpoints = getNmr().getEndpointRegistry().query(props);
         List<ServiceEndpoint> ses = new ArrayList<ServiceEndpoint>();
         for (Endpoint endpoint : endpoints) {
@@ -123,10 +118,10 @@ public abstract class AbstractComponentContext implements ComponentContext, MBea
             QName serviceName = (QName) epProps.get(Endpoint.SERVICE_NAME);
             String endpointName = (String) epProps.get(Endpoint.ENDPOINT_NAME);
             if (serviceName != null && endpointName != null) {
-                ses.add(new ComponentContextImpl.SimpleServiceEndpoint(epProps));
+                ses.add(new ServiceEndpointImpl(epProps));
             }
         }
-        return ses.toArray(new ComponentContextImpl.SimpleServiceEndpoint[ses.size()]);
+        return ses.toArray(new ServiceEndpointImpl[ses.size()]);
     }
 
     public ServiceEndpoint[] getEndpointsForService(QName serviceName) {
@@ -241,18 +236,18 @@ public abstract class AbstractComponentContext implements ComponentContext, MBea
             }
             Element el = (Element) n;
             // Namespace should be "http://java.sun.com/jbi/end-point-reference"
-            if (el.getNamespaceURI() == null || !el.getNamespaceURI().equals(JBI_NAMESPACE)) {
+            if (el.getNamespaceURI() == null || !el.getNamespaceURI().equals(ServiceEndpointImpl.JBI_NAMESPACE)) {
                 continue;
             }
-            if (el.getLocalName() == null || !el.getLocalName().equals(JBI_ENDPOINT_REFERENCE)) {
+            if (el.getLocalName() == null || !el.getLocalName().equals(ServiceEndpointImpl.JBI_ENDPOINT_REFERENCE)) {
                 continue;
             }
-            String serviceName = el.getAttributeNS(el.getNamespaceURI(), JBI_SERVICE_NAME);
+            String serviceName = el.getAttributeNS(el.getNamespaceURI(), ServiceEndpointImpl.JBI_SERVICE_NAME);
             // Now the DOM pain-in-the-you-know-what: we need to come up with QName for this;
             // fortunately, there is only one place where the xmlns:xxx attribute could be, on
             // the end-point-reference element!
             QName serviceQName = DOMUtil.createQName(el, serviceName);
-            String endpointName = el.getAttributeNS(el.getNamespaceURI(), JBI_ENDPOINT_NAME);
+            String endpointName = el.getAttributeNS(el.getNamespaceURI(), ServiceEndpointImpl.JBI_ENDPOINT_NAME);
             return getEndpoint(serviceQName, endpointName);
         }
         return null;
@@ -338,55 +333,4 @@ public abstract class AbstractComponentContext implements ComponentContext, MBea
         return null;
     }
 
-    protected static class SimpleServiceEndpoint implements ServiceEndpoint {
-
-        private Map<String, ?> properties;
-        private EndpointImpl endpoint;
-
-        public SimpleServiceEndpoint(Map<String, ?> properties) {
-            this.properties = properties;
-        }
-
-        public SimpleServiceEndpoint(Map<String, ?> properties, EndpointImpl endpoint) {
-            this.properties = properties;
-            this.endpoint = endpoint;
-        }
-
-        public Map<String, ?> getProperties() {
-            return properties;
-        }
-
-        public EndpointImpl getEndpoint() {
-            return endpoint;
-        }
-
-        public DocumentFragment getAsReference(QName operationName) {
-            try {
-                Document doc = DOMUtil.newDocument();
-                DocumentFragment fragment = doc.createDocumentFragment();
-                Element epr = doc.createElementNS(JBI_NAMESPACE, JBI_PREFIX + JBI_ENDPOINT_REFERENCE);
-                epr.setAttributeNS(XMLNS_NAMESPACE, "xmlns:sns", endpoint.getServiceName().getNamespaceURI());
-                epr.setAttributeNS(JBI_NAMESPACE, JBI_PREFIX + JBI_SERVICE_NAME, "sns:" + endpoint.getServiceName().getLocalPart());
-                epr.setAttributeNS(JBI_NAMESPACE, JBI_PREFIX + JBI_ENDPOINT_NAME, endpoint.getEndpointName());
-                fragment.appendChild(epr);
-                return fragment;
-            } catch (Exception e) {
-                LOG.warn("Unable to create reference for ServiceEndpoint " + endpoint, e);
-                return null;
-            }
-        }
-
-        public String getEndpointName() {
-            return (String) properties.get(Endpoint.ENDPOINT_NAME);
-        }
-
-        public QName[] getInterfaces() {
-            QName itf = (QName) properties.get(Endpoint.INTERFACE_NAME);
-            return itf != null ? new QName[] { itf } : new QName[0];
-        }
-
-        public QName getServiceName() {
-            return (QName) properties.get(Endpoint.SERVICE_NAME);
-        }
-    }
 }

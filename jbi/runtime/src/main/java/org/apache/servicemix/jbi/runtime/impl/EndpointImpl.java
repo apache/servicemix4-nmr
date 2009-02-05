@@ -24,17 +24,17 @@ import org.w3c.dom.DocumentFragment;
 import javax.jbi.servicedesc.ServiceEndpoint;
 import javax.xml.namespace.QName;
 import java.util.Queue;
+import java.util.Map;
 
 /**
  */
-public class EndpointImpl implements Endpoint, ServiceEndpoint {
+public class EndpointImpl extends ServiceEndpointImpl implements Endpoint {
 
     private Channel channel;
     private Queue<Exchange> queue;
-    private QName serviceName;
-    private String endpointName;
 
-    public EndpointImpl() {
+    public EndpointImpl(Map<String, ?> properties) {
+        super(properties);
     }
 
     public void process(Exchange exchange) {
@@ -42,16 +42,6 @@ public class EndpointImpl implements Endpoint, ServiceEndpoint {
             exchange.setProperty(ServiceEndpoint.class, this);
         }
         queue.offer(exchange);
-    }
-
-    public DocumentFragment getAsReference(QName operationName) {
-        // TODO
-        return null;
-    }
-
-    public QName[] getInterfaces() {
-        // TODO
-        return new QName[0];
     }
 
     public Channel getChannel() {
@@ -68,22 +58,6 @@ public class EndpointImpl implements Endpoint, ServiceEndpoint {
 
     public void setQueue(Queue<Exchange> queue) {
         this.queue = queue;
-    }
-
-    public QName getServiceName() {
-        return serviceName;
-    }
-
-    public void setServiceName(QName serviceName) {
-        this.serviceName = serviceName;
-    }
-
-    public String getEndpointName() {
-        return endpointName;
-    }
-
-    public void setEndpointName(String endpointName) {
-        this.endpointName = endpointName;
     }
 
     public boolean equals(Object o) {
