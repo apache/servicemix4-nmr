@@ -56,11 +56,12 @@
   </prerequisites>
 
   <properties>
+      <activemq.version>5.3-SNAPSHOT</activemq.version>
       <ant.version>1.7.0_1</ant.version>
       <aopalliance.version>1.0_1</aopalliance.version>
       <asm.version>2.2.3_1</asm.version>
       <cglib.version>2.1_3</cglib.version>
-      <camel.version>1.4.0</camel.version>
+      <camel.version>1.5.0</camel.version>
       <commons.io.version>1.3.2_1</commons.io.version>
       <commons.logging.version>1.1.1</commons.logging.version>
       <depends.maven.plugin.version>1.0</depends.maven.plugin.version>
@@ -72,10 +73,12 @@
       <felix.compendium.version>1.2.0</felix.compendium.version>
       <felix.bundlerepository.version>1.2.0</felix.bundlerepository.version>
       <felix.prefs.version>1.0.2</felix.prefs.version>
+      <geronimo.jms.version>1.1.1</geronimo.jms.version>
       <geronimo.jta.version>1.1.1</geronimo.jta.version>
       <geronimo.servlet.version>1.1.2</geronimo.servlet.version>
       <geronimo.stax.version>1.0.1</geronimo.stax.version>
       <jbi.api.version>1.1.0</jbi.api.version>
+      <jencks.version>2.1_1</jencks.version>
       <jline.version>0.9.94</jline.version>
       <junit.version>4.4_1</junit.version>
       <log4j.version>1.2.14</log4j.version>
@@ -122,7 +125,7 @@
        </repository>
        <!-- Apache snapshot -->
        <repository>
-           <id>apache-snapshots</id>
+           <id>apache.snapshots</id>
            <name>Apache Snapshot repository</name>
            <url>http://people.apache.org/repo/m2-snapshot-repository</url>
            <releases>
@@ -132,18 +135,19 @@
                <enabled>true</enabled>
            </snapshots>
        </repository>
-       <!-- SSHD snapshots -->
-        <repository>
-            <id>sshd-snapshots</id>
-            <name>SSHD Snapshots repository</name>
-            <url>http://sshd.googlecode.com/svn/m2-snapshot-repo/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
+       <!-- Spring milestones repository -->
+       <!-- TODO: remove this repo when spring-dm 1.2.0 is out -->
+       <repository>
+           <id>spring-milestone</id>
+           <name>Spring Portfolio Milestone Repository</name>
+           <url>http://s3.amazonaws.com/maven.springframework.org/milestone</url>
+           <releases>
+               <enabled>true</enabled>
+           </releases>
+           <snapshots>
+               <enabled>false</enabled>
+           </snapshots>
+       </repository>
    </repositories>
 
   <pluginRepositories>
@@ -193,6 +197,11 @@
           <version>${spring.version}</version>
       </dependency>
       <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-jms</artifactId>
+          <version>${spring.version}</version>
+      </dependency>
+      <dependency>
           <groupId>org.springframework.osgi</groupId>
           <artifactId>spring-osgi-test</artifactId>
           <version>${spring.osgi.version}</version>
@@ -227,6 +236,26 @@
           <groupId>org.apache.geronimo.specs</groupId>
           <artifactId>geronimo-stax-api_1.0_spec</artifactId>
           <version>${geronimo.stax.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.camel</groupId>
+          <artifactId>camel-core</artifactId>
+          <version>${camel.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.bundles</groupId>
+          <artifactId>org.apache.servicemix.bundles.jencks</artifactId>
+          <version>${jencks.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.activemq</groupId>
+          <artifactId>activemq-core</artifactId>
+          <version>${activemq.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.activemq</groupId>
+          <artifactId>activemq-pool</artifactId>
+          <version>${activemq.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
