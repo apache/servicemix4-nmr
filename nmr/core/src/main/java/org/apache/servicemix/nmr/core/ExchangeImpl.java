@@ -63,7 +63,8 @@ public class ExchangeImpl implements InternalExchange {
     private InternalEndpoint destination;
     private Semaphore consumerLock;
     private Semaphore providerLock;
-    private transient Converter converter;
+
+    private static transient Converter converter;
 
     /**
      * Creates and exchange of the given pattern
@@ -456,14 +457,22 @@ public class ExchangeImpl implements InternalExchange {
         if (type.isInstance(body)) {
             return type.cast(body);
         }
+        return getConverter().convert(body, type);
+    }
+
+    public static Converter getConverter() {
         if (converter == null) {
-            try {
-                converter = new CamelConverter();
-            } catch (Throwable t) {
-                converter = new DummyConverter();
+            synchronized (ExchangeImpl.class) {
+                if (converter == null) {
+                    try {
+                        converter = new CamelConverter();
+                    } catch (Throwable t) {
+                        converter = new DummyConverter();
+                    }
+                }
             }
         }
-        return converter.convert(body, type);
+        return converter;
     }
 
 }

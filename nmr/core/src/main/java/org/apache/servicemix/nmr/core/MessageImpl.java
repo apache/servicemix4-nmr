@@ -44,7 +44,7 @@ public class MessageImpl implements Message {
     private Subject securitySubject;
     private Map<String, Object> headers;
     private Map<String, Object> attachments;
-    private transient Converter converter;
+    private static transient Converter converter;
 
     public MessageImpl() {
     }
@@ -367,14 +367,7 @@ public class MessageImpl implements Message {
         if (type.isInstance(body)) {
             return type.cast(body);
         }
-        if (converter == null) {
-            try {
-                converter = new CamelConverter();
-            } catch (Throwable t) {
-                converter = new DummyConverter();
-            }
-        }
-        return converter.convert(body, type);
+        return ExchangeImpl.getConverter().convert(body, type);
     }
 
    public String display(boolean displayContent) {

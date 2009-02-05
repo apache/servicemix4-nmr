@@ -21,6 +21,9 @@ import java.io.ByteArrayInputStream;
 
 import javax.xml.namespace.QName;
 import javax.xml.transform.dom.DOMSource;
+import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
 
 import junit.framework.TestCase;
 import org.apache.servicemix.nmr.api.Exchange;
@@ -28,7 +31,6 @@ import org.apache.servicemix.nmr.api.Pattern;
 import org.apache.servicemix.nmr.api.Status;
 import org.apache.servicemix.nmr.api.Message;
 import org.apache.servicemix.nmr.core.ExchangeImpl;
-import org.apache.camel.converter.jaxp.StringSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -40,12 +42,12 @@ public class ExchangeUtilsTest extends TestCase {
         Exchange e = new ExchangeImpl(Pattern.InOnly);
         Message msg = e.getIn();
         msg.addAttachment("id", new BufferedInputStream(new ByteArrayInputStream(new byte[] { 1, 2, 3, 4 })));
-        msg.setBody(new StringSource("<hello/>"));
+        msg.setBody(new DOMSource(parse("<hello/>")));
 
         e.ensureReReadable();
 
         assertNotNull(msg.getBody());
-        assertTrue(msg.getBody() instanceof DOMSource);
+        assertTrue(msg.getBody() instanceof StringSource);
         assertNotNull(msg.getAttachment("id"));
         assertTrue(msg.getAttachment("id") instanceof ByteArrayInputStream);
     }
@@ -70,9 +72,13 @@ public class ExchangeUtilsTest extends TestCase {
         str = e.display(true);
         LOG.info(str);
         assertNotNull(msg.getBody());
-        assertTrue(msg.getBody() instanceof DOMSource);
+        assertTrue(msg.getBody() instanceof StringSource);
         assertNotNull(msg.getAttachment("id"));
         assertTrue(msg.getAttachment("id") instanceof ByteArrayInputStream);
+    }
+
+    private Document parse(String str) throws Exception {
+        return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new ByteArrayInputStream(str.getBytes()));
     }
 
 }

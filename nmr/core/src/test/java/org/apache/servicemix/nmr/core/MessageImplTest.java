@@ -46,8 +46,6 @@ public class MessageImplTest {
         assertNotNull(msg.getBody(byte[].class));
         msg.setBody("<hello>world</hello>", byte[].class);
         assertTrue(msg.getBody() instanceof byte[]);
-        msg.setBody("hello", Message.class);
-        assertEquals("hello", msg.getBody());
     }
 
     @Test

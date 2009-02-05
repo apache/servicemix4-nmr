@@ -150,8 +150,8 @@ public class ExchangeUtils {
                 result = result.substring(0, MAX_MSG_DISPLAY_SIZE) + "...";
             }
             return result;
-        } catch (Exception e) {
-            return "Error display value (" + e.toString() + ")";
+        } catch (Throwable t) {
+            return "Error display value (" + t.toString() + ")";
         }
     }
 
@@ -231,12 +231,21 @@ public class ExchangeUtils {
         return is;
     }
 
+    private static TransformerFactory transformerFactory;
+
+    private static TransformerFactory getTransformerFactory() {
+        if (transformerFactory == null) {
+            transformerFactory = TransformerFactory.newInstance();
+        }
+        return transformerFactory;
+    }
+
     private static Source convertSource(Source src) throws TransformerException {
-        if (!(src instanceof DOMSource)) {
-            DOMResult result = new DOMResult();
-            Transformer transformer = TransformerFactory.newInstance().newTransformer();
-            transformer.transform(src, result);
-            return new DOMSource(result.getNode());
+        if (!(src instanceof StringSource)) {
+            StringWriter writer = new StringWriter();
+            StreamResult result = new StreamResult(writer);
+            getTransformerFactory().newTransformer().transform(src, result);
+            return new StringSource(writer.toString());
         }
         return src;
     }
