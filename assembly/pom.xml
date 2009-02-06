@@ -110,6 +110,11 @@
             <version>${woodstox.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.wsdl4j</artifactId>
+            <version>${wsdl4j.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.prefs</artifactId>
             <version>${felix.prefs.version}</version>

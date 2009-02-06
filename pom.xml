@@ -94,6 +94,7 @@
       <spring.osgi.version>1.2.0-m2</spring.osgi.version>
       <spring.version>2.5.6</spring.version>
       <woodstox.version>3.2.7_1</woodstox.version>
+      <wsdl4j.version>1.6.1_1</wsdl4j.version>
       <xbean.version>3.4.3</xbean.version>
       <geronimo.stax.version>1.0.1</geronimo.stax.version>
   </properties>
@@ -256,6 +257,11 @@
           <groupId>org.apache.activemq</groupId>
           <artifactId>activemq-pool</artifactId>
           <version>${activemq.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.bundles</groupId>
+          <artifactId>org.apache.servicemix.bundles.wsdl4j</artifactId>
+          <version>${wsdl4j.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

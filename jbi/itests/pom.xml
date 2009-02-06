@@ -74,6 +74,11 @@
             <version>${woodstox.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.wsdl4j</artifactId>
+            <version>${wsdl4j.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>
             <artifactId>org.apache.servicemix.nmr.api</artifactId>
             <version>${project.version}</version>
