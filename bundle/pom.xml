@@ -42,67 +42,54 @@
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>
             <artifactId>org.apache.servicemix.nmr.api</artifactId>
-            <version>${pom.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>
             <artifactId>org.apache.servicemix.nmr.commands</artifactId>
-            <version>${pom.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>
             <artifactId>org.apache.servicemix.nmr.core</artifactId>
-            <version>${pom.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>
             <artifactId>org.apache.servicemix.nmr.management</artifactId>
-            <version>${pom.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>
             <artifactId>org.apache.servicemix.nmr.osgi</artifactId>
-            <version>${pom.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>
             <artifactId>org.apache.servicemix.nmr.spring</artifactId>
-            <version>${pom.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.specs</groupId>
             <artifactId>org.apache.servicemix.specs.jbi-api-1.0</artifactId>
-            <version>${jbi.api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.jbi</groupId>
             <artifactId>org.apache.servicemix.jbi.commands</artifactId>
-            <version>${pom.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.jbi</groupId>
             <artifactId>org.apache.servicemix.jbi.deployer</artifactId>
-            <version>${pom.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.jbi</groupId>
             <artifactId>org.apache.servicemix.jbi.management</artifactId>
-            <version>${pom.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.jbi</groupId>
             <artifactId>org.apache.servicemix.jbi.osgi</artifactId>
-            <version>${pom.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.jbi</groupId>
             <artifactId>org.apache.servicemix.jbi.runtime</artifactId>
-            <version>${pom.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.woodstox</artifactId>
-            <version>${woodstox.version}</version>
         </dependency>
     </dependencies>
     <build>
@@ -110,7 +97,6 @@
           <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-shade-plugin</artifactId>
-              <version>1.0</version>
               <executions>
                   <execution>
                       <phase>package</phase>

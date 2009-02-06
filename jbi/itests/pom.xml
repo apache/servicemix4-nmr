@@ -35,202 +35,125 @@
         <dependency>
             <groupId>org.apache.servicemix.kernel</groupId>
             <artifactId>org.apache.servicemix.kernel.main</artifactId>
-            <version>${servicemix.kernel.version}</version>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>org.osgi.core</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.kernel.testing</groupId>
             <artifactId>org.apache.servicemix.kernel.testing.support</artifactId>
-		    <version>${servicemix.kernel.version}</version>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>org.osgi.core</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.kernel</groupId>
             <artifactId>org.apache.servicemix.kernel.filemonitor</artifactId>
-            <version>${servicemix.kernel.version}</version>
             <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>org.osgi.core</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.woodstox</artifactId>
-            <version>${woodstox.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.wsdl4j</artifactId>
-            <version>${wsdl4j.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>
             <artifactId>org.apache.servicemix.nmr.api</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>
             <artifactId>org.apache.servicemix.nmr.core</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>
             <artifactId>org.apache.servicemix.nmr.osgi</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>
             <artifactId>org.apache.servicemix.nmr.spring</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.document</groupId>
             <artifactId>org.apache.servicemix.document</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.specs</groupId>
             <artifactId>org.apache.servicemix.specs.jbi-api-1.0</artifactId>
-            <version>${jbi.api.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.jbi</groupId>
             <artifactId>org.apache.servicemix.jbi.runtime</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.jbi</groupId>
             <artifactId>org.apache.servicemix.jbi.osgi</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.jbi</groupId>
             <artifactId>org.apache.servicemix.jbi.deployer</artifactId>
-            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.prefs</artifactId>
-            <version>${felix.prefs.version}</version>
             <scope>test</scope>
         </dependency>
 	    <dependency>
             <groupId>org.apache.xbean</groupId>
             <artifactId>xbean-classloader</artifactId>
-            <version>${xbean.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix</groupId>
             <artifactId>servicemix-shared</artifactId>
-            <version>${servicemix.shared.version}</version>
             <classifier>installer</classifier>
             <type>zip</type>
-            <exclusions>
-                <exclusion>
-                    <groupId>xalan</groupId>
-                    <artifactId>xalan</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>xerces</groupId>
-                    <artifactId>xercesImpl</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>xml-apis</groupId>
-                    <artifactId>xml-apis</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix</groupId>
             <artifactId>servicemix-eip</artifactId>
-            <version>${servicemix.eip.version}</version>
             <classifier>installer</classifier>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix</groupId>
             <artifactId>servicemix-jsr181</artifactId>
-            <version>${servicemix.jsr181.version}</version>
             <classifier>installer</classifier>
             <type>zip</type>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>xfire</groupId>
-                    <artifactId>saaj-impl</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix</groupId>
             <artifactId>servicemix-http</artifactId>
-            <version>${servicemix.http.version}</version>
             <classifier>installer</classifier>
             <type>zip</type>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.samples.wsdl-first</groupId>
             <artifactId>wsdl-first-sa</artifactId>
-            <version>${servicemix3.version}</version>
             <type>zip</type>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.servicemix.samples.wsdl-first</groupId>
-                    <artifactId>wsdl-first-jsr181-su</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.servicemix.samples.wsdl-first</groupId>
-                    <artifactId>wsdl-first-http-su</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jta_1.1_spec</artifactId>
-            <version>${geronimo.jta.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.specs</groupId>
             <artifactId>org.apache.servicemix.specs.javamail-api-1.4</artifactId>
-            <version>${servicemix.specs.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.specs</groupId>
             <artifactId>org.apache.servicemix.specs.activation-api-1.1</artifactId>
-            <version>${servicemix.specs.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.specs</groupId>
             <artifactId>org.apache.servicemix.specs.stax-api-1.0</artifactId>
-            <version>${servicemix.specs.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -241,7 +164,6 @@
             <plugin>
                 <groupId>org.apache.servicemix.tooling</groupId>
                 <artifactId>depends-maven-plugin</artifactId>
-                <version>${depends.maven.plugin.version}</version>
                 <executions>
                     <execution>
                         <id>generate-depends-file</id>
@@ -268,35 +190,30 @@
                                 <artifactItem>
                                     <groupId>org.apache.servicemix</groupId>
                                     <artifactId>servicemix-shared</artifactId>
-                                    <version>${servicemix.shared.version}</version>
                                     <classifier>installer</classifier>
                                     <type>zip</type>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.apache.servicemix</groupId>
                                     <artifactId>servicemix-eip</artifactId>
-                                    <version>${servicemix.eip.version}</version>
                                     <classifier>installer</classifier>
                                     <type>zip</type>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.apache.servicemix</groupId>
                                     <artifactId>servicemix-jsr181</artifactId>
-                                    <version>${servicemix.jsr181.version}</version>
                                     <classifier>installer</classifier>
                                     <type>zip</type>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.apache.servicemix</groupId>
                                     <artifactId>servicemix-http</artifactId>
-                                    <version>${servicemix.http.version}</version>
                                     <classifier>installer</classifier>
                                     <type>zip</type>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>org.apache.servicemix.samples.wsdl-first</groupId>
                                     <artifactId>wsdl-first-sa</artifactId>
-                                    <version>${servicemix3.version}</version>
                                     <type>zip</type>
                                 </artifactItem>
                             </artifactItems>

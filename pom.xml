@@ -80,7 +80,7 @@
       <jbi.api.version>1.1.0</jbi.api.version>
       <jencks.version>2.1_1</jencks.version>
       <jline.version>0.9.94</jline.version>
-      <junit.version>4.4_1</junit.version>
+      <junit.version>3.8.2_1-SNAPSHOT</junit.version>
       <log4j.version>1.2.14</log4j.version>
       <pax.logging.version>1.1.1</pax.logging.version>
       <servicemix3.version>3.3</servicemix3.version>
@@ -263,6 +263,288 @@
           <artifactId>org.apache.servicemix.bundles.wsdl4j</artifactId>
           <version>${wsdl4j.version}</version>
       </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.document</groupId>
+          <artifactId>org.apache.servicemix.document</artifactId>
+          <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.nmr</groupId>
+          <artifactId>org.apache.servicemix.nmr.api</artifactId>
+          <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.nmr</groupId>
+          <artifactId>org.apache.servicemix.nmr.commands</artifactId>
+          <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.nmr</groupId>
+          <artifactId>org.apache.servicemix.nmr.core</artifactId>
+          <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.nmr</groupId>
+          <artifactId>org.apache.servicemix.nmr.management</artifactId>
+          <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.nmr</groupId>
+          <artifactId>org.apache.servicemix.nmr.osgi</artifactId>
+          <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.nmr</groupId>
+          <artifactId>org.apache.servicemix.nmr.spring</artifactId>
+          <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.specs</groupId>
+          <artifactId>org.apache.servicemix.specs.jbi-api-1.0</artifactId>
+          <version>${jbi.api.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.jbi</groupId>
+          <artifactId>org.apache.servicemix.jbi.commands</artifactId>
+          <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.jbi</groupId>
+          <artifactId>org.apache.servicemix.jbi.deployer</artifactId>
+          <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.jbi</groupId>
+          <artifactId>org.apache.servicemix.jbi.management</artifactId>
+          <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.jbi</groupId>
+          <artifactId>org.apache.servicemix.jbi.osgi</artifactId>
+          <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.jbi</groupId>
+          <artifactId>org.apache.servicemix.jbi.runtime</artifactId>
+          <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.jbi</groupId>
+          <artifactId>org.apache.servicemix.jbi.runtime</artifactId>
+          <type>test-jar</type>
+          <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.specs</groupId>
+          <artifactId>org.apache.servicemix.specs.stax-api-1.0</artifactId>
+          <version>${servicemix.specs.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.bundles</groupId>
+          <artifactId>org.apache.servicemix.bundles.woodstox</artifactId>
+          <version>${woodstox.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.bundles</groupId>
+          <artifactId>org.apache.servicemix.bundles.wsdl4j</artifactId>
+          <version>${wsdl4j.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>org.apache.felix.prefs</artifactId>
+          <version>${felix.prefs.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>org.apache.felix.framework</artifactId>
+          <version>${felix.framework.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.specs</groupId>
+          <artifactId>org.apache.servicemix.specs.activation-api-1.1</artifactId>
+          <version>${servicemix.specs.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.specs</groupId>
+          <artifactId>org.apache.servicemix.specs.javamail-api-1.4</artifactId>
+          <version>${servicemix.specs.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.geronimo.specs</groupId>
+          <artifactId>geronimo-jta_1.1_spec</artifactId>
+          <version>${geronimo.jta.version}</version>
+      </dependency>
+	    <dependency>
+          <groupId>org.apache.xbean</groupId>
+          <artifactId>xbean-classloader</artifactId>
+          <version>${xbean.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.springframework.osgi</groupId>
+          <artifactId>spring-osgi-core</artifactId>
+          <version>${spring.osgi.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>org.osgi.core</artifactId>
+          <version>${felix.osgi.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.geronimo.specs</groupId>
+          <artifactId>geronimo-jms_1.1_spec</artifactId>
+          <version>${geronimo.jms.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.geronimo.specs</groupId>
+          <artifactId>geronimo-jta_1.1_spec</artifactId>
+          <version>${geronimo.jta.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.bundles</groupId>
+          <artifactId>org.apache.servicemix.bundles.junit</artifactId>
+          <version>${junit.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.kernel.gshell</groupId>
+          <artifactId>org.apache.servicemix.kernel.gshell.core</artifactId>
+          <version>${servicemix.kernel.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.kernel</groupId>
+          <artifactId>org.apache.servicemix.kernel.filemonitor</artifactId>
+          <version>${servicemix.kernel.version}</version>
+          <exclusions>
+              <exclusion>
+                  <groupId>org.apache.felix</groupId>
+                  <artifactId>org.osgi.core</artifactId>
+              </exclusion>
+          </exclusions>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.kernel.testing</groupId>
+          <artifactId>org.apache.servicemix.kernel.testing.support</artifactId>
+          <version>${servicemix.kernel.version}</version>
+          <exclusions>
+              <exclusion>
+                  <groupId>org.apache.felix</groupId>
+                  <artifactId>org.osgi.core</artifactId>
+              </exclusion>
+          </exclusions>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix</groupId>
+          <artifactId>servicemix-shared</artifactId>
+          <version>${servicemix.shared.version}</version>
+          <classifier>installer</classifier>
+          <type>zip</type>
+          <exclusions>
+              <exclusion>
+                  <groupId>xalan</groupId>
+                  <artifactId>xalan</artifactId>
+              </exclusion>
+              <exclusion>
+                  <groupId>xerces</groupId>
+                  <artifactId>xercesImpl</artifactId>
+              </exclusion>
+              <exclusion>
+                  <groupId>xml-apis</groupId>
+                  <artifactId>xml-apis</artifactId>
+              </exclusion>
+          </exclusions>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix</groupId>
+          <artifactId>servicemix-common</artifactId>
+          <version>${servicemix.shared.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix</groupId>
+          <artifactId>servicemix-eip</artifactId>
+          <version>${servicemix.eip.version}</version>
+          <classifier>installer</classifier>
+          <type>zip</type>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix</groupId>
+          <artifactId>servicemix-eip</artifactId>
+          <version>${servicemix.eip.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix</groupId>
+          <artifactId>servicemix-jsr181</artifactId>
+          <version>${servicemix.jsr181.version}</version>
+          <classifier>installer</classifier>
+          <type>zip</type>
+          <exclusions>
+              <exclusion>
+                  <groupId>org.springframework</groupId>
+                  <artifactId>spring</artifactId>
+              </exclusion>
+              <exclusion>
+                  <groupId>xfire</groupId>
+                  <artifactId>saaj-impl</artifactId>
+              </exclusion>
+          </exclusions>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix</groupId>
+          <artifactId>servicemix-http</artifactId>
+          <version>${servicemix.http.version}</version>
+          <classifier>installer</classifier>
+          <type>zip</type>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.samples.wsdl-first</groupId>
+          <artifactId>wsdl-first-sa</artifactId>
+          <version>${servicemix3.version}</version>
+          <type>zip</type>
+          <exclusions>
+              <exclusion>
+                  <groupId>org.apache.servicemix.samples.wsdl-first</groupId>
+                  <artifactId>wsdl-first-jsr181-su</artifactId>
+              </exclusion>
+              <exclusion>
+                  <groupId>org.apache.servicemix.samples.wsdl-first</groupId>
+                  <artifactId>wsdl-first-http-su</artifactId>
+              </exclusion>
+          </exclusions>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix</groupId>
+          <artifactId>servicemix-core</artifactId>
+          <version>${servicemix3.version}</version>
+          <exclusions>
+              <exclusion>
+                  <groupId>xalan</groupId>
+                  <artifactId>xalan</artifactId>
+              </exclusion>
+              <exclusion>
+                  <groupId>xerces</groupId>
+                  <artifactId>xercesImpl</artifactId>
+              </exclusion>
+              <exclusion>
+                  <groupId>xml-apis</groupId>
+                  <artifactId>xml-apis</artifactId>
+              </exclusion>
+          </exclusions>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.kernel</groupId>
+          <artifactId>org.apache.servicemix.kernel.main</artifactId>
+          <version>${servicemix.kernel.version}</version>
+          <exclusions>
+              <exclusion>
+                  <groupId>org.apache.felix</groupId>
+                  <artifactId>org.osgi.core</artifactId>
+              </exclusion>
+          </exclusions>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.legal</groupId>
+          <artifactId>legal</artifactId>
+          <version>${servicemix.legal.version}</version>
+          <type>xml</type>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 
@@ -327,13 +609,52 @@
                       <failIfNoTests>false</failIfNoTests>
                   </configuration>
               </plugin>
+              <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-assembly-plugin</artifactId>
+                  <version>2.2-beta-3</version>
+              </plugin>
+              <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-dependency-plugin</artifactId>
+                  <version>2.0</version>
+              </plugin>
+              <plugin>
+                  <groupId>org.apache.servicemix.tooling</groupId>
+                  <artifactId>depends-maven-plugin</artifactId>
+                  <version>${depends.maven.plugin.version}</version>
+              </plugin>
+              <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-jar-plugin</artifactId>
+                  <version>2.2</version>
+              </plugin>
+              <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-shade-plugin</artifactId>
+                  <version>1.0</version>
+              </plugin>
+              <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-javadoc-plugin</artifactId>
+                  <version>2.3</version>
+              </plugin>
+              <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-jxr-plugin</artifactId>
+                  <version>2.0</version>
+              </plugin>
+              <plugin>
+                  <groupId>org.codehaus.mojo</groupId>
+                  <artifactId>cobertura-maven-plugin</artifactId>
+                  <version>2.2</version>
+              </plugin>
           </plugins>
       </pluginManagement>
       <plugins>
           <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-dependency-plugin</artifactId>
-              <version>2.0</version>
               <executions>
                   <execution>
                       <id>copy-legal</id>
@@ -346,7 +667,6 @@
                               <artifactItem>
                                   <groupId>org.apache.servicemix.legal</groupId>
                                   <artifactId>legal</artifactId>
-                                  <version>${servicemix.legal.version}</version>
                                   <type>xml</type>
                                   <outputDirectory>target/legal/</outputDirectory>
                               </artifactItem>
@@ -388,17 +708,14 @@
           <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-javadoc-plugin</artifactId>
-              <version>2.3</version>
           </plugin>
           <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-jxr-plugin</artifactId>
-              <version>2.0</version>
           </plugin>
           <plugin>
               <groupId>org.codehaus.mojo</groupId>
               <artifactId>cobertura-maven-plugin</artifactId>
-              <version>2.2</version>
           </plugin>
       </plugins>
   </reporting>

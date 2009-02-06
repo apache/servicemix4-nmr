@@ -35,12 +35,10 @@
         <dependency>
             <groupId>org.apache.servicemix.jbi</groupId>
             <artifactId>org.apache.servicemix.jbi.deployer</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.kernel.gshell</groupId>
             <artifactId>org.apache.servicemix.kernel.gshell.core</artifactId>
-            <version>${servicemix.kernel.version}</version>
         </dependency>
     </dependencies>
 
