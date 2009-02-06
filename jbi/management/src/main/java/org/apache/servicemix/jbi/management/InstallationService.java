@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jbi.JBIException;
@@ -39,9 +40,11 @@ public class InstallationService implements InstallationServiceMBean {
 
     private static final Log LOG = LogFactory.getLog(InstallationService.class);
 
-    private Map<String, Installer> installers = new ConcurrentHashMap<String, Installer>();
+    private Map<String, ComponentInstaller> installers = new ConcurrentHashMap<String, ComponentInstaller>();
 
-    private Map<String, Installer> nonLoadedInstallers = new ConcurrentHashMap<String, Installer>();
+    private Map<String, ComponentInstaller> nonLoadedInstallers = new ConcurrentHashMap<String, ComponentInstaller>();
+    
+    private Map<String, SharedLibInstaller> sharedLibinstallers = new ConcurrentHashMap<String, SharedLibInstaller>();
 
     private AdminService adminService;
     
@@ -70,7 +73,7 @@ public class InstallationService implements InstallationServiceMBean {
                 if (desc != null && desc.getComponent() != null) {
                     String componentName = desc.getComponent().getIdentification().getName();
                     if (!installers.containsKey(componentName)) {
-                        Installer installer = doInstallArchive(desc, jarfile);
+                        ComponentInstaller installer = doInstallArchive(desc, jarfile);
                         if (installer != null) {
                             result = installer.getObjectName();
                             installers.put(componentName, installer);
@@ -98,8 +101,8 @@ public class InstallationService implements InstallationServiceMBean {
         }
     }
 
-    private Installer doInstallArchive(Descriptor desc, File jarfile) throws Exception {
-		return new Installer(new InstallationContextImpl(desc.getComponent(), getNamingStrategy(), getManagementAgent()), 
+    private ComponentInstaller doInstallArchive(Descriptor desc, File jarfile) throws Exception {
+		return new ComponentInstaller(new InstallationContextImpl(desc.getComponent(), getNamingStrategy(), getManagementAgent()), 
 			jarfile, getAdminService());
 	}
 
@@ -112,7 +115,7 @@ public class InstallationService implements InstallationServiceMBean {
      *         existing installation context.
      */
     public ObjectName loadInstaller(String aComponentName) {
-        Installer installer = installers.get(aComponentName);
+        ComponentInstaller installer = installers.get(aComponentName);
         if (installer == null) {
             installer = nonLoadedInstallers.get(aComponentName);
             if (installer != null) {
@@ -142,8 +145,8 @@ public class InstallationService implements InstallationServiceMBean {
     public boolean unloadInstaller(String componentName, boolean isToBeDeleted) {
     	boolean result = false;
         try {
-        	Installer installer = installers.remove(componentName);
-            result = installer != null;
+        	ComponentInstaller installer = installers.remove(componentName);
+        	result = installer != null;
             if (result) {
             	getManagementAgent().unregister(installer.getObjectName());
                 if (isToBeDeleted) {
@@ -167,8 +170,42 @@ public class InstallationService implements InstallationServiceMBean {
      *            URI locating a jar file containing a shared library.
      * @return - the name of the shared library loaded from aSharedLibURI.
      */
-    public String installSharedLibrary(String aSharedLibURI) {
-    	return ManagementSupport.createSuccessMessage("to be done");
+    public String installSharedLibrary(String location) {
+    	File jarfile = new File(location);
+    	String slName = null;
+    	try {
+        if (jarfile.exists()) {
+        	Descriptor desc = null;
+			try {
+				desc = Transformer.getDescriptor(jarfile);
+			} catch (Exception e) {
+				LOG.error("install sharedLib failed", e);
+				throw new DeploymentException("install sharedLib failed", e);
+			}
+            if (desc != null) {
+                if (desc.getSharedLibrary() == null) {
+                    throw new DeploymentException("JBI descriptor is not a sharedLib descriptor");
+                }
+                slName = desc.getSharedLibrary().getIdentification().getName();
+                LOG.info("Install ShareLib " + slName);
+                if (sharedLibinstallers.containsKey(slName)) {
+                    throw new DeploymentException("ShareLib " + slName+ " is already installed");
+                }
+                SharedLibInstaller slInstaller = new SharedLibInstaller(slName, this.getAdminService());
+                slInstaller.install(location);
+                sharedLibinstallers.put(slName, slInstaller);
+                       
+                return slName;
+            } else {
+                throw new DeploymentException("Could not find JBI descriptor");
+            }
+        } else {
+            throw new DeploymentException("Could not find sharedLib");
+        }
+    	} catch (Exception e) {
+    		LOG.error("install SharedLib failed", e);
+    	}
+    	return slName;
     }
 
     /**
@@ -179,9 +216,20 @@ public class InstallationService implements InstallationServiceMBean {
      * @return - true iff the uninstall was successful.
      */
     public boolean uninstallSharedLibrary(String aSharedLibName) {
-        // TODO
-    	return false;
-        
+    	boolean result = false;
+        try {
+        	SharedLibInstaller installer = sharedLibinstallers.remove(aSharedLibName);
+        	result = installer != null;
+            if (result) {
+            	installer.uninstall();
+                
+            }
+        } catch (Exception e) {
+            String errStr = "Problem uninstall SL: " + aSharedLibName;
+            LOG.error(errStr, e);
+        } finally {
+        }
+        return result;
     }
 
 	/**
@@ -211,7 +259,7 @@ public class InstallationService implements InstallationServiceMBean {
                 throw new DeploymentException("Could not find JBI descriptor");
             }
         } else {
-            throw new DeploymentException("Could not find JBI descriptor");
+            throw new DeploymentException("Could not find component");
         }
     }
     
@@ -229,7 +277,7 @@ public class InstallationService implements InstallationServiceMBean {
             if (installers.containsKey(componentName)) {
                 throw new DeploymentException("Component " + componentName + " is already installed");
             }
-            Installer installer = null;
+            ComponentInstaller installer = null;
 			try {
 				installer = doInstallArchive(desc, jarfile);
 			} catch (Exception e1) {
@@ -288,6 +336,14 @@ public class InstallationService implements InstallationServiceMBean {
 
 	public ManagementAgent getManagementAgent() {
 		return managementAgent;
+	}
+
+	public boolean containsSharedLibrary(String sharedLibraryName) {
+		return sharedLibinstallers.containsKey(sharedLibraryName);
+	}
+	
+	public Set<String> getInstalledSharedLibs() {
+		return sharedLibinstallers.keySet(); 
 	}
 	
 }

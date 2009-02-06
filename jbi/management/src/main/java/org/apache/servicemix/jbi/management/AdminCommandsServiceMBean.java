@@ -16,24 +16,21 @@
  */
 package org.apache.servicemix.jbi.management;
 
-import java.util.Properties;
-
 
 
 public interface AdminCommandsServiceMBean { 
-	String installComponent(String file, boolean deferException) throws Exception;
+	String installComponent(String file) throws Exception;
 	String uninstallComponent(String name) throws Exception;
-	String installSharedLibrary(String file, boolean deferException) throws Exception;
+	String installSharedLibrary(String file) throws Exception;
 	String uninstallSharedLibrary(String name) throws Exception;
 	String startComponent(String name) throws Exception;
 	String stopComponent(String name) throws Exception;
 	String shutdownComponent(String name) throws Exception;
-	String deployServiceAssembly(String file, boolean deferException) throws Exception;
+	String deployServiceAssembly(String file) throws Exception;
 	String undeployServiceAssembly(String name) throws Exception;
 	String startServiceAssembly(String name) throws Exception;
 	String stopServiceAssembly(String name) throws Exception;
 	String shutdownServiceAssembly(String name) throws Exception;
-	String installArchive(String location) throws Exception;
 	String listComponents(boolean excludeSEs,
 	                      boolean excludeBCs,
 	                      String requiredState,

@@ -20,7 +20,6 @@ import javax.jbi.management.AdminServiceMBean;
 import javax.management.ObjectName;
 
 import org.apache.servicemix.jbi.deployer.impl.Deployer;
-import org.apache.servicemix.jbi.runtime.impl.ManagementContext;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.springframework.osgi.context.BundleContextAware;

@@ -38,6 +38,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
 import org.apache.servicemix.jbi.deployer.descriptor.ComponentDesc;
+import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryList;
 import org.apache.servicemix.jbi.runtime.ComponentWrapper;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
@@ -124,12 +125,16 @@ public class ComponentImpl implements Component, ComponentWrapper {
         stop(true);
     }
 
-    protected Set<ServiceAssemblyImpl> getServiceAssemblies() {
+    public Set<ServiceAssemblyImpl> getServiceAssemblies() {
         Set<ServiceAssemblyImpl> sas = new HashSet<ServiceAssemblyImpl>();
         for (ServiceUnitImpl su : serviceUnits) {
             sas.add(su.getServiceAssemblyImpl());
         }
         return sas;
+    }
+    
+    public SharedLibraryList[] getSharedLibraries() {
+        return componentDesc.getSharedLibraries();
     }
 
     public void stop(boolean saveState) throws JBIException {
