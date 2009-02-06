@@ -266,9 +266,10 @@ public class EndpointRegistryImpl implements EndpointRegistry {
             endpoints.addAll(registry.getServices());
         } else {
             for (InternalEndpoint e : registry.getServices()) {
+                Map<String, ?> epProps = registry.getProperties(e);
                 boolean match = true;
                 for (String name : properties.keySet()) {
-                    if (!properties.get(name).equals(registry.getProperties(e).get(name))) {
+                    if (!properties.get(name).equals(epProps.get(name))) {
                         match = false;
                         break;
                     }

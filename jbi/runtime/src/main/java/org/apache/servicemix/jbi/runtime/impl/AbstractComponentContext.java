@@ -45,6 +45,7 @@ import org.w3c.dom.Node;
 
 import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.NMR;
+import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
 import org.apache.servicemix.jbi.runtime.impl.utils.DOMUtil;
 import org.apache.servicemix.jbi.runtime.impl.utils.WSAddressingConstants;
 import org.apache.servicemix.jbi.runtime.impl.utils.URIResolver;
@@ -108,23 +109,41 @@ public abstract class AbstractComponentContext implements ComponentContext, MBea
         Map<String, Object> props = null;
         if (interfaceName != null) {
             props = new HashMap<String, Object>();
-            props.put(Endpoint.INTERFACE_NAME, interfaceName);
+            props.put(Endpoint.INTERFACE_NAME, interfaceName.toString());
         }
         return internalQueryEndpoints(props);
     }
 
-    protected ServiceEndpointImpl[] internalQueryEndpoints(Map<String, Object> props) {
+    protected ServiceEndpoint[] internalQueryEndpoints(Map<String, Object> props) {
         List<Endpoint> endpoints = getNmr().getEndpointRegistry().query(props);
         List<ServiceEndpoint> ses = new ArrayList<ServiceEndpoint>();
         for (Endpoint endpoint : endpoints) {
+            ServiceEndpoint se = getServiceEndpoint(endpoint);
+            if (se != null) {
+                ses.add(se);
+            }
+        }
+        return ses.toArray(new ServiceEndpoint[ses.size()]);
+    }
+
+    protected ServiceEndpoint getServiceEndpoint(Endpoint endpoint) {
+        if (endpoint instanceof InternalEndpoint) {
+            endpoint = ((InternalEndpoint) endpoint).getEndpoint();
+        }
+        if (endpoint instanceof ServiceEndpoint) {
+            ServiceEndpoint se = (ServiceEndpoint) endpoint;
+            if (se.getServiceName() != null && se.getEndpointName() != null) {
+                return se;
+            }
+        } else {
             Map<String, ?> epProps = getNmr().getEndpointRegistry().getProperties(endpoint);
             QName serviceName = getServiceQNameFromProperties(epProps);
             String endpointName = epProps.get(Endpoint.ENDPOINT_NAME) != null ? (String) epProps.get(Endpoint.ENDPOINT_NAME) : null;
             if (serviceName != null && endpointName != null) {
-                ses.add(new ServiceEndpointImpl(epProps));
+                return new ServiceEndpointImpl(epProps);
             }
         }
-        return ses.toArray(new ServiceEndpointImpl[ses.size()]);
+        return null;
     }
 
     protected QName getServiceQNameFromProperties(Map<String, ?> epProps) {

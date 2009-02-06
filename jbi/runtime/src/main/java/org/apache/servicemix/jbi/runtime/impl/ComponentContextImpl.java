@@ -27,6 +27,12 @@ import javax.jbi.messaging.MessagingException;
 import javax.jbi.servicedesc.ServiceEndpoint;
 import javax.xml.namespace.QName;
 import javax.xml.transform.TransformerException;
+import javax.wsdl.xml.WSDLReader;
+import javax.wsdl.factory.WSDLFactory;
+import javax.wsdl.Definition;
+import javax.wsdl.PortType;
+import javax.wsdl.Service;
+import javax.wsdl.Port;
 
 import org.w3c.dom.Document;
 
@@ -37,6 +43,7 @@ import org.apache.servicemix.jbi.runtime.ComponentWrapper;
 import org.apache.servicemix.jbi.runtime.impl.utils.DOMUtil;
 import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.Exchange;
+import com.ibm.wsdl.Constants;
 
 /**
  * The ComponentContext implementation
@@ -84,18 +91,30 @@ public class ComponentContextImpl extends AbstractComponentContext {
 
     public synchronized ServiceEndpoint activateEndpoint(QName serviceName, String endpointName) throws JBIException {
         try {
+            ServiceEndpoint se = new ServiceEndpointImpl(serviceName, endpointName);
             Map<String, Object> props = new HashMap<String, Object>();
             props.put(Endpoint.NAME, serviceName.toString() + ":" + endpointName);
             props.put(Endpoint.SERVICE_NAME, serviceName.toString());
             props.put(Endpoint.ENDPOINT_NAME, endpointName);
-            EndpointImpl endpoint = new EndpointImpl(props);
-            endpoint.setQueue(queue);
-            Document doc = component.getComponent().getServiceDescription(endpoint);
+            Document doc = component.getComponent().getServiceDescription(se);
             if (doc != null) {
+                QName[] interfaceNames = getInterfaces(doc, se);
+                if (interfaceNames != null) {
+                    StringBuilder sb = new StringBuilder();
+                    for (QName itf : interfaceNames) {
+                        if (sb.length() > 0) {
+                            sb.append(",");
+                        }
+                        sb.append(itf.toString());
+                    }
+                    props.put(Endpoint.INTERFACE_NAME, sb.toString());
+                }
                 String data = DOMUtil.asXML(doc);
                 String url = componentRegistry.getDocumentRepository().register(data.getBytes());
                 props.put(Endpoint.WSDL_URL, url);
             }
+            EndpointImpl endpoint = new EndpointImpl(props);
+            endpoint.setQueue(queue);
             componentRegistry.getNmr().getEndpointRegistry().register(endpoint,  props);
             return endpoint;
         } catch (TransformerException e) {
@@ -133,5 +152,71 @@ public class ComponentContextImpl extends AbstractComponentContext {
         return component;
     }
 
+    public static final String WSDL1_NAMESPACE = "http://schemas.xmlsoap.org/wsdl/";
+
+    protected QName[] getInterfaces(Document document, ServiceEndpoint serviceEndpoint) {
+        try {
+            if (document == null || document.getDocumentElement() == null) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Endpoint " + serviceEndpoint + " has no service description");
+                }
+                return null;
+            }
+            if (!WSDL1_NAMESPACE.equals(document.getDocumentElement().getNamespaceURI())) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Endpoint " + serviceEndpoint + " has a non WSDL1 service description");
+                }
+                return null;
+            }
+            WSDLReader reader = WSDLFactory.newInstance().newWSDLReader();
+            reader.setFeature(Constants.FEATURE_VERBOSE, false);
+            Definition definition = reader.readWSDL(null, document);
+            // Check if the wsdl is only a port type
+            // In these cases, only the port type is used, as the service name and endpoint name
+            // are provided on the jbi endpoint
+            if (definition.getPortTypes().keySet().size() == 1
+                    && definition.getServices().keySet().size() == 0) {
+                PortType portType = (PortType) definition.getPortTypes().values().iterator().next();
+                QName interfaceName = portType.getQName();
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Endpoint " + serviceEndpoint + " implements interface " + interfaceName);
+                }
+                return new QName[] { interfaceName };
+            } else {
+                Service service = definition.getService(serviceEndpoint.getServiceName());
+                if (service == null) {
+                    LOG.info("Endpoint " + serviceEndpoint + " has a service description, but no matching service found in "
+                                    + definition.getServices().keySet());
+                    return null;
+                }
+                Port port = service.getPort(serviceEndpoint.getEndpointName());
+                if (port == null) {
+                    LOG.info("Endpoint " + serviceEndpoint + " has a service description, but no matching endpoint found in "
+                                    + service.getPorts().keySet());
+                    return null;
+                }
+                if (port.getBinding() == null) {
+                    LOG.info("Endpoint " + serviceEndpoint + " has a service description, but no binding found");
+                    return null;
+                }
+                if (port.getBinding().getPortType() == null) {
+                    LOG.info("Endpoint " + serviceEndpoint + " has a service description, but no port type found");
+                    return null;
+                }
+                QName interfaceName = port.getBinding().getPortType().getQName();
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Endpoint " + serviceEndpoint + " implements interface " + interfaceName);
+                }
+                return new QName[] { interfaceName };
+            }
+        } catch (Throwable e) {
+            LOG.warn("Error retrieving interfaces from service description: " + e.getMessage());
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Error retrieving interfaces from service description", e);
+            }
+            return null;
+        }
+        
+    }
 
 }
