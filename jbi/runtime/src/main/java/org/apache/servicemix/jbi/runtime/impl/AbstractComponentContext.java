@@ -69,7 +69,7 @@ public abstract class AbstractComponentContext implements ComponentContext, MBea
 
     public ServiceEndpoint getEndpoint(QName serviceName, String endpointName) {
         Map<String, Object> props = new HashMap<String, Object>();
-        props.put(Endpoint.SERVICE_NAME, serviceName);
+        props.put(Endpoint.SERVICE_NAME, serviceName.toString());
         props.put(Endpoint.ENDPOINT_NAME, endpointName);
         List<Endpoint> endpoints = getNmr().getEndpointRegistry().query(props);
         if (endpoints.isEmpty()) {
@@ -105,8 +105,11 @@ public abstract class AbstractComponentContext implements ComponentContext, MBea
     }
 
     public ServiceEndpoint[] getEndpoints(QName interfaceName) {
-        Map<String, Object> props = new HashMap<String, Object>();
-        props.put(Endpoint.INTERFACE_NAME, interfaceName);
+        Map<String, Object> props = null;
+        if (interfaceName != null) {
+            props = new HashMap<String, Object>();
+            props.put(Endpoint.INTERFACE_NAME, interfaceName);
+        }
         return internalQueryEndpoints(props);
     }
 
@@ -115,8 +118,8 @@ public abstract class AbstractComponentContext implements ComponentContext, MBea
         List<ServiceEndpoint> ses = new ArrayList<ServiceEndpoint>();
         for (Endpoint endpoint : endpoints) {
             Map<String, ?> epProps = getNmr().getEndpointRegistry().getProperties(endpoint);
-            QName serviceName = (QName) epProps.get(Endpoint.SERVICE_NAME);
-            String endpointName = (String) epProps.get(Endpoint.ENDPOINT_NAME);
+            QName serviceName = getServiceQNameFromProperties(epProps);
+            String endpointName = epProps.get(Endpoint.ENDPOINT_NAME) != null ? (String) epProps.get(Endpoint.ENDPOINT_NAME) : null;
             if (serviceName != null && endpointName != null) {
                 ses.add(new ServiceEndpointImpl(epProps));
             }
@@ -124,9 +127,28 @@ public abstract class AbstractComponentContext implements ComponentContext, MBea
         return ses.toArray(new ServiceEndpointImpl[ses.size()]);
     }
 
+    protected QName getServiceQNameFromProperties(Map<String, ?> epProps) {
+        QName svcName = null;
+
+        if (epProps != null && epProps.containsKey(Endpoint.SERVICE_NAME)) {
+            Object prop = epProps.get(Endpoint.SERVICE_NAME);
+            if (prop instanceof QName) {
+                svcName = (QName)prop;
+            } else if (prop instanceof String && prop.toString().trim().length()>0) {
+                svcName = QName.valueOf((String)prop);
+            }
+        }
+        
+        return svcName;
+    }
+    
     public ServiceEndpoint[] getEndpointsForService(QName serviceName) {
+        if (serviceName == null) {
+            // invalid
+            throw new IllegalArgumentException("This method needs a non-null serviceName parameter!");
+        }
         Map<String, Object> props = new HashMap<String, Object>();
-        props.put(Endpoint.SERVICE_NAME, serviceName);
+        props.put(Endpoint.SERVICE_NAME, serviceName.toString());
         return internalQueryEndpoints(props);
     }
 
