@@ -18,6 +18,7 @@ package org.apache.servicemix.jbi.management;
 
 import java.io.File;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jbi.JBIException;
@@ -27,6 +28,7 @@ import javax.jbi.management.LifeCycleMBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.deployer.Component;
+import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.descriptor.Descriptor;
 import org.apache.servicemix.jbi.deployer.descriptor.ServiceAssemblyDesc;
 import org.apache.servicemix.jbi.deployer.descriptor.ServiceUnitDesc;
@@ -160,31 +162,47 @@ public class DeploymentService implements DeploymentServiceMBean {
     }
 
     public String[] getDeployedServiceUnitList(String componentName) throws Exception {
-        return new String[0]; 
+        return getAdminService().getDeployedServiceUnitsForComponent(componentName);
     }
 
     public String[] getDeployedServiceAssemblies() throws Exception {
-        return new String[0];
+    	String[] ret = null;
+    	Set<String> sas = getAdminService().getDeployer().getDeployServiceAssemblies();
+    	ret = new String[sas.size()];
+    	sas.toArray(ret);
+    	return ret;
     }
 
     public String getServiceAssemblyDescriptor(String saName) throws Exception {
-        return null;
+        ServiceReference ref = getAdminService().getSAServiceReference("(" + Deployer.NAME + "=" + saName + ")");
+        if (ref == null) {
+            throw new JBIException("ServiceAssembly '" + saName + "' not found");
+        }
+        ServiceAssembly sa = (ServiceAssembly) getAdminService().getBundleContext().getService(ref);
+        return sa.getDescription();
     }
 
     public String[] getDeployedServiceAssembliesForComponent(String componentName) throws Exception {
-        return new String[0];
+    	return getAdminService().getDeployedServiceAssembliesForComponent(componentName);
     }
 
     public String[] getComponentsForDeployedServiceAssembly(String saName) throws Exception {
-        return new String[0];
+        return getAdminService().getComponentsForDeployedServiceAssembly(saName);
     }
 
     public boolean isDeployedServiceUnit(String componentName, String suName) throws Exception {
-        return false;
+        return getAdminService().isDeployedServiceUnit(componentName, suName);
     }
 
     public boolean canDeployToComponent(String componentName) {
-        return false;
+        ServiceReference ref = getAdminService().getComponentServiceReference("(" + Deployer.NAME + "=" + componentName + ")");
+        if (ref == null) {
+        	return false;
+        }
+        ComponentImpl componentImpl = (ComponentImpl) getAdminService().getBundleContext().getService(ref);
+        return componentImpl != null 
+        	&& componentImpl.getCurrentState() == LifeCycleMBean.STARTED 
+        		&& componentImpl.getComponent().getServiceUnitManager() != null;
     }
 
     public String start(String serviceAssemblyName) throws Exception {

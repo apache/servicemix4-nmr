@@ -16,9 +16,14 @@
  */
 package org.apache.servicemix.jbi.management;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.jbi.management.AdminServiceMBean;
 import javax.management.ObjectName;
 
+import org.apache.servicemix.jbi.deployer.ServiceAssembly;
+import org.apache.servicemix.jbi.deployer.ServiceUnit;
 import org.apache.servicemix.jbi.deployer.handler.JBIDeploymentListener;
 import org.apache.servicemix.jbi.deployer.impl.Deployer;
 import org.osgi.framework.BundleContext;
@@ -148,4 +153,100 @@ public class AdminService implements AdminServiceMBean, BundleContextAware {
                 null);
     	return (Deployer) ((JBIDeploymentListener)getBundleContext().getService(ref)).getDeployer();
 	}
+    
+    /**
+     * Returns a list of Service Assemblies that contain SUs for the given component.
+     * 
+     * @param componentName name of the component.
+     * @return list of Service Assembly names.
+     */
+    public String[] getDeployedServiceAssembliesForComponent(String componentName) {
+        String[] result = null;
+        // iterate through the service assembiliessalc
+        Set<String> tmpList = new HashSet<String>();
+        ServiceReference[] serviceRefs = getSAServiceReferences(null);
+        for (ServiceReference ref : serviceRefs) {
+        	ServiceAssembly sa = (ServiceAssembly) getBundleContext().getService(ref);
+            ServiceUnit[] sus = sa.getServiceUnits();
+            if (sus != null) {
+                for (int i = 0; i < sus.length; i++) {
+                    if (sus[i].getComponent().getName().equals(componentName)) {
+                        tmpList.add(sa.getName());
+                    }
+                }
+            }
+        }
+        result = new String[tmpList.size()];
+        tmpList.toArray(result);
+        return result;
+    }
+    
+    public String[] getDeployedServiceUnitsForComponent(String componentName) {
+        String[] result = null;
+        // iterate through the service assembiliessalc
+        Set<String> tmpList = new HashSet<String>();
+        ServiceReference[] serviceRefs = getSAServiceReferences(null);
+        for (ServiceReference ref : serviceRefs) {
+        	ServiceAssembly sa = (ServiceAssembly) getBundleContext().getService(ref);
+            ServiceUnit[] sus = sa.getServiceUnits();
+            if (sus != null) {
+                for (int i = 0; i < sus.length; i++) {
+                    if (sus[i].getComponent().getName().equals(componentName)) {
+                        tmpList.add(sus[i].getName());
+                    }
+                }
+            }
+        }
+        result = new String[tmpList.size()];
+        tmpList.toArray(result);
+        return result;
+    }
+    
+    public String[] getComponentsForDeployedServiceAssembly(String saName) {
+        String[] result = null;
+        // iterate through the service assembiliessalc
+        Set<String> tmpList = new HashSet<String>();
+        ServiceReference ref = getSAServiceReference("(" + Deployer.NAME + "=" + saName + ")");
+        if (ref != null) {
+        	ServiceAssembly sa = (ServiceAssembly) getBundleContext().getService(ref);
+            ServiceUnit[] sus = sa.getServiceUnits();
+            if (sus != null) {
+                for (int i = 0; i < sus.length; i++) {
+                    if (sus[i].getComponent().getName().equals(saName)) {
+                        tmpList.add(sus[i].getComponent().getName());
+                    }
+                }
+            }
+        }
+        result = new String[tmpList.size()];
+        tmpList.toArray(result);
+        return result;
+    }
+    
+    /**
+     * Returns a boolean value indicating whether the SU is currently deployed.
+     * 
+     * @param componentName - name of component.
+     * @param suName - name of the Service Unit.
+     * @return boolean value indicating whether the SU is currently deployed.
+     */
+    public boolean isDeployedServiceUnit(String componentName, String suName) {
+        boolean result = false;
+        ServiceReference[] serviceRefs = getSAServiceReferences(null);
+        for (ServiceReference ref : serviceRefs) {
+        	ServiceAssembly sa = (ServiceAssembly) getBundleContext().getService(ref);
+            ServiceUnit[] sus = sa.getServiceUnits();
+            if (sus != null) {
+                for (int i = 0; i < sus.length; i++) {
+                    if (sus[i].getComponent().getName().equals(componentName)
+                                    && sus[i].getName().equals(suName)) {
+                        result = true;
+                        break;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
 }

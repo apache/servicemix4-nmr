@@ -40,8 +40,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.springframework.osgi.context.BundleContextAware;
 
-import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
-
 public class AdminCommandsService implements AdminCommandsServiceMBean, BundleContextAware {
 
 	
@@ -442,7 +440,7 @@ public class AdminCommandsService implements AdminCommandsServiceMBean, BundleCo
         if (null != serviceAssemblyName && serviceAssemblyName.length() > 0) {
             result = new String[] {serviceAssemblyName };
         } else if (null != componentName && componentName.length() > 0) {
-            result = getDeployedServiceAssembliesForComponent(componentName);
+            result = getAdminService().getDeployedServiceAssembliesForComponent(componentName);
         } else {
         	ServiceReference[] serviceRefs = getAdminService().getSAServiceReferences(null);
         	result = new String[serviceRefs.length];
@@ -524,30 +522,5 @@ public class AdminCommandsService implements AdminCommandsServiceMBean, BundleCo
 		return adminService;
 	}
 	
-	/**
-     * Returns a list of Service Assemblies that contain SUs for the given component.
-     * 
-     * @param componentName name of the component.
-     * @return list of Service Assembly names.
-     */
-    public String[] getDeployedServiceAssembliesForComponent(String componentName) {
-        String[] result = null;
-        // iterate through the service assembiliessalc
-        Set<String> tmpList = new HashSet<String>();
-        ServiceReference[] serviceRefs = getAdminService().getSAServiceReferences(null);
-        for (ServiceReference ref : serviceRefs) {
-        	ServiceAssembly sa = (ServiceAssembly) getBundleContext().getService(ref);
-            ServiceUnit[] sus = sa.getServiceUnits();
-            if (sus != null) {
-                for (int i = 0; i < sus.length; i++) {
-                    if (sus[i].getComponent().getName().equals(componentName)) {
-                        tmpList.add(sa.getName());
-                    }
-                }
-            }
-        }
-        result = new String[tmpList.size()];
-        tmpList.toArray(result);
-        return result;
-    }
+	
 }
