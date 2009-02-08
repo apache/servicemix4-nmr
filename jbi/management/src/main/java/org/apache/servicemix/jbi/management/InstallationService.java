@@ -35,6 +35,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.deployer.descriptor.Descriptor;
 import org.apache.servicemix.jbi.deployer.handler.Transformer;
+import org.apache.servicemix.jbi.deployer.impl.Deployer;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.ServiceReference;
 
 public class InstallationService implements InstallationServiceMBean {
 
@@ -154,6 +157,17 @@ public class InstallationService implements InstallationServiceMBean {
                 } else {
                     nonLoadedInstallers.put(componentName, installer);
                 }
+            } else {
+            	//the component may not installed from Mbeans, so check the componet bundle directly
+            	ServiceReference ref = getAdminService().getComponentServiceReference("(" + Deployer.NAME + "=" + componentName + ")");
+            	if (ref != null) {
+            		Bundle bundle = ref.getBundle();
+            		if (bundle != null) {
+            			bundle.stop();
+            			bundle.uninstall();
+            			result = true;
+            		}
+            	}
             }
         } catch (Exception e) {
             String errStr = "Problem shutting down Component: " + componentName;
@@ -221,8 +235,20 @@ public class InstallationService implements InstallationServiceMBean {
         	SharedLibInstaller installer = sharedLibinstallers.remove(aSharedLibName);
         	result = installer != null;
             if (result) {
+            	//the SL installed from Mbean
             	installer.uninstall();
                 
+            } else {
+            	//the SL not installed from Mbeans, so check the SL bundle directly
+            	ServiceReference ref = getAdminService().getSLServiceReference("(" + Deployer.NAME + "=" + aSharedLibName + ")");
+            	if (ref != null) {
+            		Bundle bundle = ref.getBundle();
+            		if (bundle != null) {
+            			bundle.stop();
+            			bundle.uninstall();
+            			result = true;
+            		}
+            	}
             }
         } catch (Exception e) {
             String errStr = "Problem uninstall SL: " + aSharedLibName;

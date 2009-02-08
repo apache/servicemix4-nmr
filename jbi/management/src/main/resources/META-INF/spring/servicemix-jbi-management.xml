@@ -52,6 +52,7 @@
     <bean id="adminCommandsService" class="org.apache.servicemix.jbi.management.AdminCommandsService">
         <property name="installationService" ref="installationService" />
         <property name="adminService" ref="adminService" />
+        <property name="deploymentService" ref="deploymentService" />
     </bean>
     <bean id="installationService" class="org.apache.servicemix.jbi.management.InstallationService">
         <property name="namingStrategy" ref="namingStrategy" />
@@ -59,6 +60,9 @@
         <property name="adminService" ref="adminService" />
     </bean>
     
+   <bean id="deploymentService" class="org.apache.servicemix.jbi.management.DeploymentService">
+        <property name="adminService" ref="adminService" />
+   </bean>
 
    <bean id="managementAgent" class="org.apache.servicemix.jbi.management.ManagementAgent">
         <property name="mbeanServer" ref="mbeanServer" />

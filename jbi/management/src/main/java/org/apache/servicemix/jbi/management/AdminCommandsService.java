@@ -30,6 +30,8 @@ import javax.jbi.management.LifeCycleMBean;
 
 
 import org.apache.servicemix.jbi.deployer.Component;
+import org.apache.servicemix.jbi.deployer.ServiceAssembly;
+import org.apache.servicemix.jbi.deployer.ServiceUnit;
 import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryList;
 import org.apache.servicemix.jbi.deployer.impl.ComponentImpl;
 import org.apache.servicemix.jbi.deployer.impl.Deployer;
@@ -37,6 +39,8 @@ import org.apache.servicemix.jbi.deployer.impl.ServiceAssemblyImpl;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.springframework.osgi.context.BundleContextAware;
+
+import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
 
 public class AdminCommandsService implements AdminCommandsServiceMBean, BundleContextAware {
 
@@ -134,7 +138,11 @@ public class AdminCommandsService implements AdminCommandsServiceMBean, BundleCo
 	 * @return
 	 */
     public String installSharedLibrary(String file) throws Exception {
-    	return installationService.installSharedLibrary(file);
+    	try {
+    		return installationService.installSharedLibrary(file);
+    	} catch (Exception e) {
+            throw ManagementSupport.failure("installSharedLibrary", file, e);
+        }
     }
 
     /**
@@ -145,7 +153,7 @@ public class AdminCommandsService implements AdminCommandsServiceMBean, BundleCo
      */
     public String uninstallSharedLibrary(String name) throws Exception {
     	//Check that the library is installed
-        boolean isInstalled = getInstallationService().containsSharedLibrary(name);
+        boolean isInstalled = getAdminService().getDeployer().getInstalledSharedLibararies().contains(name);
         if (!isInstalled) {
             throw ManagementSupport.failure("uninstallSharedLibrary", "Shared library '" + name + "' is not installed.");
         }
@@ -239,13 +247,12 @@ public class AdminCommandsService implements AdminCommandsServiceMBean, BundleCo
      * @return
      */
     public String deployServiceAssembly(String file) throws Exception {
-    	return null;
-        /*if (deferException) {
-            container.updateExternalArchive(file);
-            return ManagementSupport.createSuccessMessage("deployServiceAssembly", file);
-        } else {
-            return deploymentService.deploy(file);
-        }*/
+    	try {
+    		return deploymentService.deploy(file);
+    	} catch (Exception e) {
+            throw ManagementSupport.failure("deployServiceAssembly", file, e);
+        }
+
     }
 
     /**
@@ -396,7 +403,7 @@ public class AdminCommandsService implements AdminCommandsServiceMBean, BundleCo
     public String listSharedLibraries(String componentName, String sharedLibraryName) throws Exception {
     	Set<String> libs = new HashSet<String>();
         if (sharedLibraryName != null && sharedLibraryName.length() > 0) {
-        	if (getInstallationService().containsSharedLibrary(sharedLibraryName)) {
+        	if (getAdminService().getDeployer().getInstalledSharedLibararies().contains(sharedLibraryName)) {
                 libs.add(sharedLibraryName);
             }
         } else if (componentName != null && componentName.length() > 0) {
@@ -409,7 +416,7 @@ public class AdminCommandsService implements AdminCommandsServiceMBean, BundleCo
             	libs.add(sl.getName());
             }
         } else {
-            libs = getInstallationService().getInstalledSharedLibs();
+            libs = getAdminService().getDeployer().getInstalledSharedLibararies();
         }
         StringBuffer buffer = new StringBuffer();
         buffer.append("<?xml version='1.0'?>\n");
@@ -431,7 +438,59 @@ public class AdminCommandsService implements AdminCommandsServiceMBean, BundleCo
      * @return
      */
     public String listServiceAssemblies(String state, String componentName, String serviceAssemblyName) throws Exception {
-    	return ManagementSupport.createSuccessMessage("to be done");
+    	String[] result = null;
+        if (null != serviceAssemblyName && serviceAssemblyName.length() > 0) {
+            result = new String[] {serviceAssemblyName };
+        } else if (null != componentName && componentName.length() > 0) {
+            result = getDeployedServiceAssembliesForComponent(componentName);
+        } else {
+        	ServiceReference[] serviceRefs = getAdminService().getSAServiceReferences(null);
+        	result = new String[serviceRefs.length];
+        	int i = 0;
+        	for (ServiceReference ref : serviceRefs) {
+            	ServiceAssembly sa = (ServiceAssembly) getBundleContext().getService(ref);
+            	result[i] = sa.getName();
+            	i++;
+        	}
+        }
+
+        List<ServiceAssemblyImpl> assemblies = new ArrayList<ServiceAssemblyImpl>();
+        for (int i = 0; i < result.length; i++) {
+        	ServiceReference ref = getAdminService().getSAServiceReference("(" + Deployer.NAME + "=" + result[i] + ")");
+        	ServiceAssemblyImpl sa = (ServiceAssemblyImpl) getBundleContext().getService(ref);
+            if (sa != null) {
+                // Check status
+                if (state != null && state.length() > 0 && !state.equals(sa.getCurrentState())) {
+                    continue;
+                }
+                assemblies.add(sa);
+            }
+        }
+
+        StringBuffer buffer = new StringBuffer();
+        buffer.append("<?xml version='1.0'?>\n");
+        buffer.append("<service-assembly-info-list xmlns='http://java.sun.com/xml/ns/jbi/service-assembly-info-list' version='1.0'>\n");
+        for (Iterator<ServiceAssemblyImpl> iter = assemblies.iterator(); iter.hasNext();) {
+        	ServiceAssemblyImpl sa = iter.next();
+            buffer.append("  <service-assembly-info");
+            buffer.append(" name='" + sa.getName() + "'");
+            buffer.append(" state='" + sa.getCurrentState() + "'>\n");
+            buffer.append("    <description>" + sa.getDescription() + "</description>\n");
+
+            ServiceUnit[] serviceUnitList = sa.getServiceUnits();
+            for (int i = 0; i < serviceUnitList.length; i++) {
+                buffer.append("    <service-unit-info");
+                buffer.append(" name='" + serviceUnitList[i].getName() + "'");
+                buffer.append(" deployed-on='" + serviceUnitList[i].getComponent().getName() + "'>\n");
+                buffer.append("      <description>" + serviceUnitList[i].getDescription() + "</description>\n");
+                buffer.append("    </service-unit-info>\n");
+            }
+
+            buffer.append("  </service-assembly-info>\n");
+        }
+        buffer.append("</service-assembly-info-list>");
+
+        return buffer.toString();
     }
 
 	public void setBundleContext(BundleContext bundleContext) {
@@ -464,5 +523,31 @@ public class AdminCommandsService implements AdminCommandsServiceMBean, BundleCo
 	public AdminService getAdminService() {
 		return adminService;
 	}
-
+	
+	/**
+     * Returns a list of Service Assemblies that contain SUs for the given component.
+     * 
+     * @param componentName name of the component.
+     * @return list of Service Assembly names.
+     */
+    public String[] getDeployedServiceAssembliesForComponent(String componentName) {
+        String[] result = null;
+        // iterate through the service assembiliessalc
+        Set<String> tmpList = new HashSet<String>();
+        ServiceReference[] serviceRefs = getAdminService().getSAServiceReferences(null);
+        for (ServiceReference ref : serviceRefs) {
+        	ServiceAssembly sa = (ServiceAssembly) getBundleContext().getService(ref);
+            ServiceUnit[] sus = sa.getServiceUnits();
+            if (sus != null) {
+                for (int i = 0; i < sus.length; i++) {
+                    if (sus[i].getComponent().getName().equals(componentName)) {
+                        tmpList.add(sa.getName());
+                    }
+                }
+            }
+        }
+        result = new String[tmpList.size()];
+        tmpList.toArray(result);
+        return result;
+    }
 }

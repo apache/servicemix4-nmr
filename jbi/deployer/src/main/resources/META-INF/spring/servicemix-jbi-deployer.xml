@@ -40,7 +40,9 @@
     <bean id="endpointListener" class="org.apache.servicemix.jbi.deployer.impl.AssemblyReferencesListener" />
 
     <!-- Deployment listener -->
-    <bean id="listener" class="org.apache.servicemix.jbi.deployer.handler.JBIDeploymentListener" />
+    <bean id="listener" class="org.apache.servicemix.jbi.deployer.handler.JBIDeploymentListener">
+        <property name="deployer" ref="deployer" />
+    </bean>
     
     <!-- JBI Handler -->
     <bean id="jbiHandler" class="org.apache.servicemix.jbi.deployer.handler.URLHandler" />

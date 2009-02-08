@@ -19,8 +19,10 @@ package org.apache.servicemix.jbi.management;
 import javax.jbi.management.AdminServiceMBean;
 import javax.management.ObjectName;
 
+import org.apache.servicemix.jbi.deployer.handler.JBIDeploymentListener;
 import org.apache.servicemix.jbi.deployer.impl.Deployer;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
 import org.springframework.osgi.context.BundleContextAware;
 import org.springframework.osgi.util.OsgiServiceReferenceUtils;
@@ -60,7 +62,28 @@ public class AdminService implements AdminServiceMBean, BundleContextAware {
                         org.apache.servicemix.jbi.deployer.Component.class.getName(),
                         filter);
     }
+    
+    protected ServiceReference getSLServiceReference(String filter) {
+        return OsgiServiceReferenceUtils.getServiceReference(
+                        getBundleContext(),
+                        org.apache.servicemix.jbi.deployer.SharedLibrary.class.getName(),
+                        filter);
+    }
 
+    protected ServiceReference getSAServiceReference(String filter) {
+        return OsgiServiceReferenceUtils.getServiceReference(
+                        getBundleContext(),
+                        org.apache.servicemix.jbi.deployer.ServiceAssembly.class.getName(),
+                        filter);
+    }
+    
+    protected ServiceReference[] getSAServiceReferences(String filter) {
+        return OsgiServiceReferenceUtils.getServiceReferences(
+                        getBundleContext(),
+                        org.apache.servicemix.jbi.deployer.ServiceAssembly.class.getName(),
+                        filter);
+    }
+    
     protected ServiceReference[] getComponentServiceReferences(String filter) {
         return OsgiServiceReferenceUtils.getServiceReferences(
                         getBundleContext(),
@@ -117,4 +140,12 @@ public class AdminService implements AdminServiceMBean, BundleContextAware {
         ServiceReference ref = getComponentServiceReference(filter);
         return "service-engine".equals(ref.getProperty(Deployer.TYPE));
     }
+    
+    public Deployer getDeployer() throws InvalidSyntaxException {
+    	ServiceReference ref = OsgiServiceReferenceUtils.getServiceReference(
+                getBundleContext(),
+                JBIDeploymentListener.class.getName(),
+                null);
+    	return (Deployer) ((JBIDeploymentListener)getBundleContext().getService(ref)).getDeployer();
+	}
 }

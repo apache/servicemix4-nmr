@@ -28,6 +28,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jbi.JBIException;
@@ -561,6 +562,18 @@ public class Deployer extends AbstractBundleWatcher {
         } catch (Exception e) {
             LOGGER.error("Error unregistering deployed service assembly", e);
         }
+    }
+    
+    public Set<String> getInstalledComponents() {
+    	return this.components.keySet();
+    }
+    
+    public Set<String> getInstalledSharedLibararies() {
+    	return this.sharedLibraries.keySet();
+    }
+    
+    public Set<String> getDeployServiceAssemblies() {
+    	return this.serviceAssemblies.keySet();
     }
 
 }
