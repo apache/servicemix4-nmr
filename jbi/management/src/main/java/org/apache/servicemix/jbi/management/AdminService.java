@@ -26,6 +26,7 @@ import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
 import org.apache.servicemix.jbi.deployer.handler.JBIDeploymentListener;
 import org.apache.servicemix.jbi.deployer.impl.Deployer;
+import org.apache.servicemix.kernel.filemonitor.DeploymentListener;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
@@ -155,12 +156,19 @@ public class AdminService implements AdminServiceMBean, BundleContextAware {
     }
     
     public Deployer getDeployer() throws InvalidSyntaxException {
-    	ServiceReference ref = OsgiServiceReferenceUtils.getServiceReference(
-                getBundleContext(),
-                JBIDeploymentListener.class.getName(),
-                null);
-    	return (Deployer) ((JBIDeploymentListener)getBundleContext().getService(ref)).getDeployer();
-	}
+    	ServiceReference[] srvRefs = getBundleContext().getAllServiceReferences(DeploymentListener.class.getName(), null);
+    	if(srvRefs != null) {
+		    for(ServiceReference sr : srvRefs) {
+		    	DeploymentListener deploymentListener = (DeploymentListener) getBundleContext().getService(sr);
+		    	if (deploymentListener instanceof JBIDeploymentListener) {
+		    		return ((JBIDeploymentListener)deploymentListener).getDeployer();
+	    			
+	    		}
+		    } 
+		    
+    	}
+    	return null;
+    }
     
     /**
      * Returns a list of Service Assemblies that contain SUs for the given component.
