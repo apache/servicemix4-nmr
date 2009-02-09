@@ -22,12 +22,16 @@ import java.util.Map;
 import javax.management.ObjectName;
 import javax.management.MalformedObjectNameException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.runtime.impl.ManagementContext;
 
 /**
  */
 public class DefaultNamingStrategy implements NamingStrategy {
 
+	private static final Log LOG= LogFactory.getLog(DefaultNamingStrategy.class);
+	
     private String jmxDomainName;
 
     public String getJmxDomainName() {
@@ -89,5 +93,28 @@ public class DefaultNamingStrategy implements NamingStrategy {
     public ObjectName createObjectName(Map<String, String> props) {
         return ManagementContext.createObjectName(getJmxDomainName(), props);
     }
+    
+    public static ObjectName getSystemObjectName(String domainName, String containerName, Class interfaceType) {
+        String tmp = domainName + ":ContainerName=" + containerName + ",Type=SystemService,Name=" + getSystemServiceName(interfaceType);
+        ObjectName result = null;
+        try {
+            result = new ObjectName(tmp);
+        } catch (MalformedObjectNameException e) {
+            LOG.error("Failed to build ObjectName:", e);
+        } catch (NullPointerException e) {
+            LOG.error("Failed to build ObjectName:", e);
+        }
+        return result;
+    }
+
+    public static String getSystemServiceName(Class interfaceType) {
+        String name = interfaceType.getName();
+        name = name.substring(name.lastIndexOf('.') + 1);
+        if (name.endsWith("MBean")) {
+            name = name.substring(0, name.length() - 5);
+        }
+        return name;
+    }
+    
 }
 

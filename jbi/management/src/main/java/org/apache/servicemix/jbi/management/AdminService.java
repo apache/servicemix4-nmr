@@ -36,6 +36,14 @@ import org.springframework.osgi.util.OsgiServiceReferenceUtils;
  */
 public class AdminService implements AdminServiceMBean, BundleContextAware {
 
+	public static final String DEFAULT_NAME = "ServiceMix4";
+
+	public static final String DEFAULT_DOMAIN = "org.apache.servicemix";
+
+	public static final String DEFAULT_CONNECTOR_PATH = "/jmxrmi";
+
+    public static final int DEFAULT_CONNECTOR_PORT = 1099;
+	
     private BundleContext bundleContext;
     private DefaultNamingStrategy namingStrategy;
 
