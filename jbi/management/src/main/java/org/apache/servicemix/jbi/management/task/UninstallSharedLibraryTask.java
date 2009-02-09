@@ -14,29 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicemix.jbi.task;
+package org.apache.servicemix.jbi.management.task;
 
 import org.apache.servicemix.jbi.management.AdminCommandsServiceMBean;
 import org.apache.tools.ant.BuildException;
 
 /**
- * Stop a Service Assembly
+ * Uninstall a shared library
  * 
  * @version $Revision$
  */
-public class StopServiceAssemblyTask extends JbiTask {
+public class UninstallSharedLibraryTask extends JbiTask {
     
-    private String name; //assembly name to stop.
+    private String name; //shared Library name to uninstall
 
     /**
-     * @return Returns the assembly name.
+     * @return Returns the name.
      */
     public String getName() {
         return name;
     }
 
     /**
-     * @param name The assembly name to set.
+     * @param name The name to set.
      */
     public void setName(String name) {
         this.name = name;
@@ -51,7 +51,7 @@ public class StopServiceAssemblyTask extends JbiTask {
         if (name == null) {
             throw new BuildException("null componentName");
         }
-        acs.stopServiceAssembly(name);
+        acs.uninstallSharedLibrary(name);
     }
-    
+
 }

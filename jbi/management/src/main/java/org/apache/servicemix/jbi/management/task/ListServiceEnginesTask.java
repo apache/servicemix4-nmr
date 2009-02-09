@@ -14,19 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicemix.jbi.task;
+package org.apache.servicemix.jbi.management.task;
 
 import org.apache.servicemix.jbi.management.AdminCommandsServiceMBean;
 import org.apache.tools.ant.Project;
 
 /**
- * ListSharedLibrariesTask
+ * ListServiceEnginesTask
  * 
  * @version $Revision:
  */
-public class ListSharedLibrariesTask extends JbiTask {
+public class ListServiceEnginesTask extends JbiTask {
 
-    private String componentName;
+    private String state;
+
+    private String serviceAssemblyName;
 
     private String sharedLibraryName;
 
@@ -49,24 +51,41 @@ public class ListSharedLibrariesTask extends JbiTask {
 
     /**
      * 
-     * @return component name
+     * @return the state
      */
-    public String getComponentName() {
-        return componentName;
+    public String getState() {
+        return state;
     }
 
     /**
      * 
-     * @param componentName
-     *            The component name to set
+     * @param state
+     *            Sets the state
      */
-    public void setComponentName(String componentName) {
-        this.componentName = componentName;
+    public void setState(String state) {
+        this.state = state;
     }
 
     /**
      * 
-     * @return shared library name
+     * @return service assembly name
+     */
+    public String getServiceAssemblyName() {
+        return serviceAssemblyName;
+    }
+
+    /**
+     * 
+     * @param serviceAssemblyName
+     *            the service assembly name to set
+     */
+    public void setServiceAssemblyName(String serviceAssemblyName) {
+        this.serviceAssemblyName = serviceAssemblyName;
+    }
+
+    /**
+     * 
+     * @return The shared library name
      */
     public String getSharedLibraryName() {
         return sharedLibraryName;
@@ -75,7 +94,7 @@ public class ListSharedLibrariesTask extends JbiTask {
     /**
      * 
      * @param sharedLibraryName
-     *            the shared library name to set
+     *            Sets the shared library name
      */
     public void setSharedLibraryName(String sharedLibraryName) {
         this.sharedLibraryName = sharedLibraryName;
@@ -87,7 +106,7 @@ public class ListSharedLibrariesTask extends JbiTask {
      * @throws BuildException
      */
     public void doExecute(AdminCommandsServiceMBean acs) throws Exception {
-        String result = acs.listSharedLibraries(getComponentName(), getSharedLibraryName());
+        String result = acs.listComponents(false, true, getState(), getSharedLibraryName(), getServiceAssemblyName());
         if (xmlOutput != null) {
             getProject().setProperty(xmlOutput, result);
         }

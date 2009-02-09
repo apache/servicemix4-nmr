@@ -14,29 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicemix.jbi.task;
+package org.apache.servicemix.jbi.management.task;
 
 import org.apache.servicemix.jbi.management.AdminCommandsServiceMBean;
 import org.apache.tools.ant.BuildException;
 
 /**
- * Stop a Component
+ * Start a Service Assembly
  * 
  * @version $Revision$
  */
-public class StopComponentTask extends JbiTask {
+public class StartServiceAssemblyTask extends JbiTask {
     
-    private String name;
+    private String name; //assembly name to get descriptor for
 
     /**
-     * @return Returns the component name.
+     * @return Returns the assembly name.
      */
     public String getName() {
         return name;
     }
 
     /**
-     * @param name The component name to set.
+     * @param name The assembly name to set.
      */
     public void setName(String name) {
         this.name = name;
@@ -49,9 +49,9 @@ public class StopComponentTask extends JbiTask {
      */
     public void doExecute(AdminCommandsServiceMBean acs) throws Exception {
         if (name == null) {
-            throw new BuildException("null componentName");
+            throw new BuildException("null service assembly name");
         }
-        acs.stopComponent(name);
+        acs.startServiceAssembly(name);
     }
     
 }

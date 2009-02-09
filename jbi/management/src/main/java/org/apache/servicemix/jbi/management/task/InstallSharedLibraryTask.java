@@ -14,31 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicemix.jbi.task;
+package org.apache.servicemix.jbi.management.task;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
 
 import org.apache.servicemix.jbi.management.AdminCommandsServiceMBean;
 import org.apache.tools.ant.BuildException;
 
 /**
- * Install a Component
+ * Install a shared library
  * 
  * @version $Revision$
  */
-public class InstallComponentTask extends JbiTask {
+public class InstallSharedLibraryTask extends JbiTask {
 
-    private String file; // file to install
-
-    private String paramsFile;
-
-    private List nestedParams;
+    private String file; // shared library URI to install
 
     private boolean deferExceptions;
 
@@ -59,27 +49,10 @@ public class InstallComponentTask extends JbiTask {
 
     /**
      * @param file
-     *            The file to set.
+     *            The shared library URI to set.
      */
     public void setFile(String file) {
         this.file = file;
-    }
-
-    public String getParams() {
-        return paramsFile;
-    }
-
-    public void setParams(String params) {
-        this.paramsFile = params;
-    }
-
-    public Param createParam() {
-        Param p = new Param();
-        if (nestedParams == null) {
-            nestedParams = new ArrayList();
-        }
-        nestedParams.add(p);
-        return p;
     }
 
     /**
@@ -100,44 +73,7 @@ public class InstallComponentTask extends JbiTask {
             // if it's not a file, assume it's a url and pass it along
             location = file;
         }
-        Properties props = getProperties();
-        acs.installComponent(location);
-    }
-
-    private Properties getProperties() throws IOException {
-        Properties props = new Properties();
-        if (paramsFile != null) {
-            props.load(new FileInputStream(paramsFile));
-        }
-        if (nestedParams != null) {
-            for (Iterator iter = nestedParams.iterator(); iter.hasNext();) {
-                Param p = (Param) iter.next();
-                props.setProperty(p.getName(), p.getValue());
-            }
-        }
-        return props;
-    }
-
-    public static class Param {
-        private String name;
-
-        private String value;
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
-        }
+        acs.installSharedLibrary(location);
     }
 
 }

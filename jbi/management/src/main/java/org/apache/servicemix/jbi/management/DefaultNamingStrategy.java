@@ -63,8 +63,8 @@ public class DefaultNamingStrategy implements NamingStrategy {
     }
     
     public ObjectName getObjectName(AdminCommandsServiceMBean adminCommandsService) throws MalformedObjectNameException {
-        return new ObjectName(jmxDomainName + ":" +
-                                    "Type=SystemService," +
+        return new ObjectName(jmxDomainName + ":ContainerName=" + AdminService.DEFAULT_NAME +
+                                    ",Type=SystemService," +
                                     "Name=AdminCommandsService");
     }
     

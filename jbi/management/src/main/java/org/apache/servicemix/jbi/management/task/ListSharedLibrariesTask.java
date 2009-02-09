@@ -14,25 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicemix.jbi.task;
+package org.apache.servicemix.jbi.management.task;
 
 import org.apache.servicemix.jbi.management.AdminCommandsServiceMBean;
 import org.apache.tools.ant.Project;
 
 /**
- * ListBindingComponentsTask
+ * ListSharedLibrariesTask
  * 
  * @version $Revision:
  */
-public class ListBindingComponentsTask extends JbiTask {
+public class ListSharedLibrariesTask extends JbiTask {
+
+    private String componentName;
 
     private String sharedLibraryName;
-
-    private String serviceAssemblyName;
-
-    private String bindingComponentName;
-
-    private String state;
 
     private String xmlOutput;
 
@@ -53,6 +49,23 @@ public class ListBindingComponentsTask extends JbiTask {
 
     /**
      * 
+     * @return component name
+     */
+    public String getComponentName() {
+        return componentName;
+    }
+
+    /**
+     * 
+     * @param componentName
+     *            The component name to set
+     */
+    public void setComponentName(String componentName) {
+        this.componentName = componentName;
+    }
+
+    /**
+     * 
      * @return shared library name
      */
     public String getSharedLibraryName() {
@@ -62,58 +75,10 @@ public class ListBindingComponentsTask extends JbiTask {
     /**
      * 
      * @param sharedLibraryName
+     *            the shared library name to set
      */
     public void setSharedLibraryName(String sharedLibraryName) {
         this.sharedLibraryName = sharedLibraryName;
-    }
-
-    /**
-     * 
-     * @return service assembly name
-     */
-    public String getServiceAssemblyName() {
-        return serviceAssemblyName;
-    }
-
-    /**
-     * 
-     * @param serviceAssemblyName
-     */
-    public void setServiceAssemblyName(String serviceAssemblyName) {
-        this.serviceAssemblyName = serviceAssemblyName;
-    }
-
-    /**
-     * 
-     * @return binding component name
-     */
-    public String getBindingComponentName() {
-        return bindingComponentName;
-    }
-
-    /**
-     * 
-     * @param bindingComponentName
-     */
-    public void setBindingComponentName(String bindingComponentName) {
-        this.bindingComponentName = bindingComponentName;
-    }
-
-    /**
-     * 
-     * @return component state
-     */
-    public String getState() {
-        return state;
-    }
-
-    /**
-     * 
-     * @param state
-     *            Sets the component state
-     */
-    public void setState(String state) {
-        this.state = state;
     }
 
     /**
@@ -122,7 +87,7 @@ public class ListBindingComponentsTask extends JbiTask {
      * @throws BuildException
      */
     public void doExecute(AdminCommandsServiceMBean acs) throws Exception {
-        String result = acs.listComponents(true, false, getState(), getSharedLibraryName(), getServiceAssemblyName());
+        String result = acs.listSharedLibraries(getComponentName(), getSharedLibraryName());
         if (xmlOutput != null) {
             getProject().setProperty(xmlOutput, result);
         }

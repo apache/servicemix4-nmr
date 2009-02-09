@@ -14,29 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicemix.jbi.task;
+package org.apache.servicemix.jbi.management.task;
 
 import org.apache.servicemix.jbi.management.AdminCommandsServiceMBean;
 import org.apache.tools.ant.BuildException;
 
 /**
- * Start a Component
+ * Shutdown a Component
  * 
  * @version $Revision$
  */
-public class StartComponentTask extends JbiTask {
-    
+public class ShutDownComponentTask extends JbiTask {
+
     private String name;
 
     /**
-     * @return Returns the component name.
+     * @return Returns the componentName.
      */
     public String getName() {
         return name;
     }
 
     /**
-     * @param name The componentName to set.
+     * @param name
+     *            The component name to set.
      */
     public void setName(String name) {
         this.name = name;
@@ -51,7 +52,7 @@ public class StartComponentTask extends JbiTask {
         if (name == null) {
             throw new BuildException("null componentName");
         }
-        acs.startComponent(name);
+        acs.shutdownComponent(name);
     }
-    
+
 }

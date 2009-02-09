@@ -14,29 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicemix.jbi.task;
+package org.apache.servicemix.jbi.management.task;
 
 import org.apache.servicemix.jbi.management.AdminCommandsServiceMBean;
 import org.apache.tools.ant.BuildException;
 
 /**
- * Shut down a Service Assembly
+ * Stop a Component
  * 
  * @version $Revision$
  */
-public class ShutDownServiceAssemblyTask extends JbiTask {
+public class StopComponentTask extends JbiTask {
     
     private String name;
 
     /**
-     * @return Returns the assembly name.
+     * @return Returns the component name.
      */
     public String getName() {
         return name;
     }
 
     /**
-     * @param name The assembly name to set.
+     * @param name The component name to set.
      */
     public void setName(String name) {
         this.name = name;
@@ -49,9 +49,9 @@ public class ShutDownServiceAssemblyTask extends JbiTask {
      */
     public void doExecute(AdminCommandsServiceMBean acs) throws Exception {
         if (name == null) {
-            throw new BuildException("null service assembly name");
+            throw new BuildException("null componentName");
         }
-        acs.shutdownServiceAssembly(name);
+        acs.stopComponent(name);
     }
     
 }
