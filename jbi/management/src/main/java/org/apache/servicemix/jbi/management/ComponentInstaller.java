@@ -39,6 +39,7 @@ public class ComponentInstaller extends AbstractInstaller
     private InstallationContextImpl context;
     private File jbiArtifact;
     private ObjectName objectName;
+    private ObjectName extensionMBeanName;
     private AdminService adminService;
 
     
@@ -49,6 +50,7 @@ public class ComponentInstaller extends AbstractInstaller
         this.jbiArtifact = jbiArtifact;
         this.adminService = adminService;
         setBundleContext(this.adminService.getBundleContext());
+        extensionMBeanName = ic.createCustomComponentMBeanName("Configuration");
     }
 
     /**
@@ -136,8 +138,7 @@ public class ComponentInstaller extends AbstractInstaller
      * @throws javax.jbi.JBIException if the component is not in the LOADED state or any error occurs during processing.
      */
     public ObjectName getInstallerConfigurationMBean() throws javax.jbi.JBIException {
-    	//TODO
-        return null;
+    	return this.extensionMBeanName;
     }
     /**
      * @return Returns the objectName.

@@ -68,7 +68,7 @@ public class DefaultNamingStrategy implements NamingStrategy {
                                     "Name=AdminCommandsService");
     }
     
-
+ 
     private String sanitize(String in) {
         String result = null;
         if (in != null) {

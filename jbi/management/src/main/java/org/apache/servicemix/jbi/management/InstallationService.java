@@ -78,7 +78,8 @@ public class InstallationService implements InstallationServiceMBean {
                     if (!installers.containsKey(componentName)) {
                         ComponentInstaller installer = doInstallArchive(desc, jarfile);
                         if (installer != null) {
-                            result = installer.getObjectName();
+                        	result = getNamingStrategy().createCustomComponentMBeanName("LifeCycle", componentName);
+                            installer.setObjectName(result);
                             installers.put(componentName, installer);
                         }
                     } else {
@@ -124,7 +125,7 @@ public class InstallationService implements InstallationServiceMBean {
             if (installer != null) {
                 try {
                     // create an MBean for the installer
-                    ObjectName objectName = getNamingStrategy().createCustomComponentMBeanName("Installer", aComponentName);
+                    ObjectName objectName = getNamingStrategy().createCustomComponentMBeanName("LifeCycle", aComponentName);
                     installer.setObjectName(objectName);
                     getManagementAgent().register(installer, objectName);
                 } catch (Exception e) {
