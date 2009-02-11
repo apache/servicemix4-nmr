@@ -41,13 +41,21 @@ public class ExchangeCompletedListener extends Assert implements ExchangeListene
     }
 
     public void exchangeSent(Exchange exchange) {
-        synchronized (exchanges) {
-            exchanges.put(exchange.getId(), exchange);
-            exchanges.notifyAll();
+        if (exchange.getStatus() == Status.Active) {
+            synchronized (exchanges) {
+                exchanges.put(exchange.getId(), exchange);
+                exchanges.notifyAll();
+            }
         }
     }
 
     public void exchangeDelivered(Exchange exchange) {
+        if (exchange.getStatus() != Status.Active) {
+            synchronized (exchanges) {
+                exchanges.put(exchange.getId(), exchange);
+                exchanges.notifyAll();
+            }
+        }
     }
 
     public void assertExchangeCompleted() throws Exception {
