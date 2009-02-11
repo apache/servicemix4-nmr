@@ -34,6 +34,7 @@
 
     <modules>
         <module>runtime</module>
+        <module>cluster</module>
         <module>deployer</module>
         <module>osgi</module>
         <module>management</module>

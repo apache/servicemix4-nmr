@@ -87,6 +87,18 @@
             <artifactId>org.apache.servicemix.jbi.runtime</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.servicemix.jbi.cluster</groupId>
+            <artifactId>org.apache.servicemix.jbi.cluster.requestor</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.jbi.cluster</groupId>
+            <artifactId>org.apache.servicemix.jbi.cluster.engine</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.jbi.cluster</groupId>
+            <artifactId>org.apache.servicemix.jbi.cluster.config</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.servicemix.specs</groupId>
             <artifactId>org.apache.servicemix.specs.stax-api-1.0</artifactId>
         </dependency>

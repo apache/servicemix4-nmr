@@ -21,23 +21,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.servicemix.jbi</groupId>
-        <artifactId>jbi</artifactId>
+        <groupId>org.apache.servicemix.jbi.cluster</groupId>
+        <artifactId>cluster</artifactId>
         <version>1.0.0-m4-SNAPSHOT</version>
     </parent>
 
     <groupId>org.apache.servicemix.jbi.cluster</groupId>
-    <artifactId>cluster</artifactId>
-    <packaging>pom</packaging>
-    <name>Apache ServiceMix JBI Clustering</name>
+    <artifactId>org.apache.servicemix.jbi.cluster.engine</artifactId>
+    <packaging>bundle</packaging>
+    <name>Apache ServiceMix JBI Clustering Engine</name>
 
-    <modules>
-        <module>requestor</module>
-        <module>engine</module>
-        <module>config</module>
-    </modules>
-
-    <!--
     <dependencies>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>
@@ -111,6 +104,10 @@
             <artifactId>org.apache.servicemix.bundles.jencks</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.jbi.cluster</groupId>
+            <artifactId>org.apache.servicemix.jbi.cluster.requestor</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -133,10 +130,13 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <forkMode>pertest</forkMode>
+                    <excludes>
+                        <exclude>**/*ReconnectTest.java</exclude>
+                        <exclude>**/*LoadTest.java</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-    -->
 
 </project>

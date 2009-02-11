@@ -21,44 +21,17 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.servicemix.jbi</groupId>
-        <artifactId>jbi</artifactId>
+        <groupId>org.apache.servicemix.jbi.cluster</groupId>
+        <artifactId>cluster</artifactId>
         <version>1.0.0-m4-SNAPSHOT</version>
     </parent>
 
     <groupId>org.apache.servicemix.jbi.cluster</groupId>
-    <artifactId>cluster</artifactId>
-    <packaging>pom</packaging>
-    <name>Apache ServiceMix JBI Clustering</name>
+    <artifactId>org.apache.servicemix.jbi.cluster.requestor</artifactId>
+    <packaging>bundle</packaging>
+    <name>Apache ServiceMix JBI Clustering Requestor</name>
 
-    <modules>
-        <module>requestor</module>
-        <module>engine</module>
-        <module>config</module>
-    </modules>
-
-    <!--
     <dependencies>
-        <dependency>
-            <groupId>org.apache.servicemix.nmr</groupId>
-            <artifactId>org.apache.servicemix.nmr.api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.nmr</groupId>
-            <artifactId>org.apache.servicemix.nmr.core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.nmr</groupId>
-            <artifactId>org.apache.servicemix.nmr.spring</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.jbi</groupId>
-            <artifactId>org.apache.servicemix.jbi.runtime</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.osgi</groupId>
-            <artifactId>spring-osgi-core</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
             <artifactId>geronimo-jms_1.1_spec</artifactId>
@@ -76,11 +49,6 @@
             <artifactId>spring-jms</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-core</artifactId>
             <optional>true</optional>
@@ -93,22 +61,6 @@
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.jbi</groupId>
-            <artifactId>org.apache.servicemix.jbi.runtime</artifactId>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.jencks</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -137,6 +89,5 @@
             </plugin>
         </plugins>
     </build>
-    -->
 
 </project>

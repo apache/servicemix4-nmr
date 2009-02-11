@@ -124,6 +124,9 @@
                 <include>org.apache.servicemix.jbi:org.apache.servicemix.jbi.deployer</include>
                 <include>org.apache.servicemix.jbi:org.apache.servicemix.jbi.commands</include>
                 <include>org.apache.servicemix.jbi:org.apache.servicemix.jbi.management</include>
+                <include>org.apache.servicemix.jbi.cluster:org.apache.servicemix.jbi.cluster.requestor</include>
+                <include>org.apache.servicemix.jbi.cluster:org.apache.servicemix.jbi.cluster.engine</include>
+                <include>org.apache.servicemix.jbi.cluster:org.apache.servicemix.jbi.cluster.config</include>
             </includes>
         </dependencySet>
 
