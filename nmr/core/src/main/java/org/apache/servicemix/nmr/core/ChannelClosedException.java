@@ -14,25 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicemix.nmr.api.service;
-
-import java.util.Map;
-import java.util.HashMap;
+package org.apache.servicemix.nmr.core;
 
 /**
- *
+ * Exception thrown when using a closed channel.
  */
-public final class ServiceHelper {
+public class ChannelClosedException extends NmrRuntimeException {
 
-    private ServiceHelper() {
+    public ChannelClosedException() {
     }
 
-    public static Map<String, Object> createMap(String... data) {
-        Map<String, Object> props = new HashMap<String, Object>();
-        for (int i = 0; i < data.length / 2; i++) {
-            props.put(data[i*2], data[i*2+1]);
-        }
-        return props;
+    public ChannelClosedException(String message) {
+        super(message);
     }
 
+    public ChannelClosedException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public ChannelClosedException(Throwable cause) {
+        super(cause);
+    }
 }

@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 
 import org.w3c.dom.Document;
 
@@ -99,7 +100,7 @@ public class EndpointRegistryImpl implements EndpointRegistry {
     public void register(Endpoint endpoint, Map<String, ?> properties) {
         InternalEndpointWrapper wrapper = new InternalEndpointWrapper(endpoint, properties);
         if (endpoints.putIfAbsent(endpoint, wrapper) == null) {
-            Executor executor = Executors.newCachedThreadPool();
+            ExecutorService executor = Executors.newCachedThreadPool();
             ChannelImpl channel = new ChannelImpl(wrapper, executor, nmr);
             wrapper.setChannel(channel);
             wrappers.put(wrapper, endpoint);
@@ -138,6 +139,7 @@ public class EndpointRegistryImpl implements EndpointRegistry {
             }
         }
         if (wrapper != null) {
+            wrapper.getChannel().close();
             registry.unregister(wrapper, properties);
             for (EndpointListener listener : nmr.getListenerRegistry().getListeners(EndpointListener.class)) {
                 listener.endpointUnregistered(wrapper);

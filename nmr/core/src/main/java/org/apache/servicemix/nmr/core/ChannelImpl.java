@@ -21,6 +21,9 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,7 +42,7 @@ import org.apache.servicemix.nmr.api.internal.InternalExchange;
 /**
  * The {@link org.apache.servicemix.nmr.api.Channel} implementation.
  * The channel uses an Executor (usually a thread pool)
- * to delegate
+ * to delegate task executions to.
  *
  * @version $Revision: $
  * @since 4.0
@@ -49,11 +52,12 @@ public class ChannelImpl implements InternalChannel {
     private static final Log LOG = LogFactory.getLog(NMR.class);
 
     private final InternalEndpoint endpoint;
-    private final Executor executor;
+    private final ExecutorService executor;
     private final NMR nmr;
     private String name;
+    private AtomicBoolean closed = new AtomicBoolean();
 
-    public ChannelImpl(InternalEndpoint endpoint, Executor executor, NMR nmr) {
+    public ChannelImpl(InternalEndpoint endpoint, ExecutorService executor, NMR nmr) {
         this.endpoint = endpoint;
         this.executor = executor;
         this.nmr = nmr;
@@ -153,8 +157,11 @@ public class ChannelImpl implements InternalChannel {
      * the NMR.
      */
     public void close() {
-        Map<String,?> props = nmr.getEndpointRegistry().getProperties(endpoint);
-        nmr.getEndpointRegistry().unregister(endpoint, props);
+        if (closed.compareAndSet(false, true)) {
+            Map<String,?> props = nmr.getEndpointRegistry().getProperties(endpoint);
+            nmr.getEndpointRegistry().unregister(endpoint, props);
+            executor.shutdown();
+        }
     }
 
     /**
@@ -163,6 +170,9 @@ public class ChannelImpl implements InternalChannel {
      * @param exchange the exchange to delivery
      */
     public void deliver(final InternalExchange exchange) {
+        if (closed.get()) {
+            throw new ChannelClosedException();
+        }
         // Log the exchange
         if (LOG.isTraceEnabled()) {
             LOG.trace("Channel " + name + " delivering exchange: " + exchange.display(true));
@@ -177,11 +187,19 @@ public class ChannelImpl implements InternalChannel {
             return;
         }
         // Delegate processing to the executor
-        this.executor.execute(new Runnable() {
-            public void run() {
-                process(exchange);
+        try {
+            this.executor.execute(new Runnable() {
+                public void run() {
+                    process(exchange);
+                }
+            });
+        } catch (RejectedExecutionException e) {
+            if (closed.get()) {
+                throw new ChannelClosedException();
+            } else {
+                throw e;
             }
-        });
+        }
     }
 
     /**
@@ -217,6 +235,9 @@ public class ChannelImpl implements InternalChannel {
      * @param exchange the exchange to dispatch
      */
     protected void dispatch(InternalExchange exchange) {
+        if (closed.get()) {
+            throw new ChannelClosedException();
+        }
         // Log the exchange
         if (LOG.isTraceEnabled()) {
             LOG.trace("Channel " + name + " dispatching exchange: " + exchange.display(true));
