@@ -43,6 +43,7 @@ import org.apache.servicemix.jbi.runtime.ComponentWrapper;
 import org.apache.servicemix.jbi.runtime.impl.utils.DOMUtil;
 import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.Exchange;
+import org.apache.servicemix.nmr.api.service.ServiceHelper;
 import com.ibm.wsdl.Constants;
 
 /**
@@ -96,6 +97,7 @@ public class ComponentContextImpl extends AbstractComponentContext {
             props.put(Endpoint.NAME, serviceName.toString() + ":" + endpointName);
             props.put(Endpoint.SERVICE_NAME, serviceName.toString());
             props.put(Endpoint.ENDPOINT_NAME, endpointName);
+            props.put(INTERNAL_ENDPOINT, Boolean.TRUE.toString());
             Document doc = component.getComponent().getServiceDescription(se);
             if (doc != null) {
                 QName[] interfaceNames = getInterfaces(doc, se);
@@ -129,11 +131,51 @@ public class ComponentContextImpl extends AbstractComponentContext {
     }
 
     public void registerExternalEndpoint(ServiceEndpoint externalEndpoint) throws JBIException {
-        // TODO
+        try {
+            QName serviceName = externalEndpoint.getServiceName();
+            String endpointName = externalEndpoint.getEndpointName();
+            Map<String, Object> props = new HashMap<String, Object>();
+            props.put(Endpoint.NAME, serviceName.toString() + ":" + endpointName);
+            props.put(Endpoint.SERVICE_NAME, serviceName.toString());
+            props.put(Endpoint.ENDPOINT_NAME, endpointName);
+            props.put(EXTERNAL_ENDPOINT, Boolean.TRUE.toString());
+            props.put(ServiceEndpoint.class.getName(), externalEndpoint);
+            QName[] interfaceNames = externalEndpoint.getInterfaces();
+            if (interfaceNames != null) {
+                StringBuilder sb = new StringBuilder();
+                for (QName itf : interfaceNames) {
+                    if (sb.length() > 0) {
+                        sb.append(",");
+                    }
+                    sb.append(itf.toString());
+                }
+                props.put(Endpoint.INTERFACE_NAME, sb.toString());
+            }
+            Document doc = component.getComponent().getServiceDescription(externalEndpoint);
+            if (doc != null) {
+                String data = DOMUtil.asXML(doc);
+                String url = componentRegistry.getDocumentRepository().register(data.getBytes());
+                props.put(Endpoint.WSDL_URL, url);
+            }
+            EndpointImpl endpoint = new EndpointImpl(props);
+            endpoint.setQueue(queue);
+            componentRegistry.getNmr().getEndpointRegistry().register(endpoint,  props);
+        } catch (TransformerException e) {
+            throw new JBIException(e);
+        }
     }
 
     public void deregisterExternalEndpoint(ServiceEndpoint externalEndpoint) throws JBIException {
-        // TODO
+        ServiceEndpoint[] ses = doQueryEndpoints(ServiceHelper.createMap(Endpoint.SERVICE_NAME,
+                                                                         externalEndpoint.getServiceName().toString(),
+                                                                         Endpoint.ENDPOINT_NAME,
+                                                                         externalEndpoint.getEndpointName()),
+                                                 true);
+        if (ses != null && ses.length == 1) {
+            // TODO: retrieve the correct endpoint if needed
+            EndpointImpl ep = (EndpointImpl) ses[0];
+            componentRegistry.getNmr().getEndpointRegistry().unregister(ep, null);
+        }
     }
 
     public String getComponentName() {

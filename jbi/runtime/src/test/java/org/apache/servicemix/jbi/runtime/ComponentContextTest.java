@@ -17,8 +17,8 @@
 package org.apache.servicemix.jbi.runtime;
 
 import javax.jbi.component.ComponentContext;
-import javax.jbi.component.Component;
 import javax.jbi.servicedesc.ServiceEndpoint;
+import javax.jbi.messaging.MessageExchange;
 import javax.xml.namespace.QName;
 import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.Definition;
@@ -29,18 +29,18 @@ import org.w3c.dom.Document;
 import junit.framework.TestCase;
 import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.nmr.core.ServiceMix;
-import org.apache.servicemix.jbi.runtime.impl.ClientComponentContext;
 import org.apache.servicemix.jbi.runtime.impl.ComponentRegistryImpl;
-import org.apache.servicemix.jbi.util.DOMUtil;
 import org.apache.servicemix.common.DefaultComponent;
 import org.apache.servicemix.common.ServiceUnit;
 import org.apache.servicemix.common.endpoints.ProviderEndpoint;
+import org.apache.servicemix.common.endpoints.ConsumerEndpoint;
 import org.apache.servicemix.document.impl.DocumentRepositoryImpl;
 
 public class ComponentContextTest extends TestCase {
 
     private NMR nmr;
     private ComponentRegistry componentRegistry;
+    private SimpleComponentWrapper componentWrapper;
 
     @Override
     protected void setUp() throws Exception {
@@ -53,21 +53,29 @@ public class ComponentContextTest extends TestCase {
         this.componentRegistry = reg;
 
         DefaultComponent component = new DefaultComponent();
-        component.addEndpoint(new TestEndpoint(component.getServiceUnit(),
+        component.addEndpoint(new TestProviderEndpoint(component.getServiceUnit(),
                                                new QName("urn:test", "service"),
-                                               "endpoint",
+                                               "provider",
                                                new QName("urn:test", "interface")));
-        this.componentRegistry.register(new SimpleComponentWrapper(component), null);
+        component.addEndpoint(new TestConsumerEndpoint(component.getServiceUnit(),
+                                               new QName("urn:test", "service"),
+                                               "consumer",
+                                               new QName("urn:test", "interface")));
+        componentWrapper = new SimpleComponentWrapper(component);
+        this.componentRegistry.register(componentWrapper, null);
     }
 
     @Override
     protected void tearDown() throws Exception {
+        componentWrapper.getComponent().getLifeCycle().stop();
+        componentWrapper.getComponent().getLifeCycle().shutDown();
+        this.componentRegistry.unregister(componentWrapper, null);
         super.tearDown();
     }
 
     public void testQueryEndpoint() throws Exception {
         ComponentContext context = componentRegistry.createComponentContext();
-        ServiceEndpoint ep = context.getEndpoint(new QName("urn:test", "service"), "endpoint");
+        ServiceEndpoint ep = context.getEndpoint(new QName("urn:test", "service"), "provider");
         assertNotNull(ep);
     }
 
@@ -95,8 +103,32 @@ public class ComponentContextTest extends TestCase {
         assertNotNull(eps[0]);
     }
 
-    public static class TestEndpoint extends ProviderEndpoint {
-        public TestEndpoint(ServiceUnit serviceUnit, QName service, String endpoint, QName interfaceName) {
+    public void testQueryExternalEndpointForService() throws Exception {
+        ComponentContext context = componentRegistry.createComponentContext();
+        ServiceEndpoint[] eps = context.getExternalEndpointsForService(new QName("urn:test", "service"));
+        assertNotNull(eps);
+        assertEquals(1, eps.length);
+        assertNotNull(eps[0]);
+    }
+
+    public void testQueryExternalEndpointsForInterface() throws Exception {
+        ComponentContext context = componentRegistry.createComponentContext();
+        ServiceEndpoint[] eps = context.getExternalEndpoints(new QName("urn:test", "interface"));
+        assertNotNull(eps);
+        assertEquals(1, eps.length);
+        assertNotNull(eps[0]);
+    }
+
+    public void testQueryExternalEndpoints() throws Exception {
+        ComponentContext context = componentRegistry.createComponentContext();
+        ServiceEndpoint[] eps = context.getExternalEndpoints(null);
+        assertNotNull(eps);
+        assertEquals(1, eps.length);
+        assertNotNull(eps[0]);
+    }
+
+    public static class TestProviderEndpoint extends ProviderEndpoint {
+        public TestProviderEndpoint(ServiceUnit serviceUnit, QName service, String endpoint, QName interfaceName) {
             super(serviceUnit, service, endpoint);
             setInterfaceName(interfaceName);
             setDescription(createDescription(interfaceName));
@@ -119,6 +151,16 @@ public class ComponentContextTest extends TestCase {
                 return null;
             }
         }
+    }
 
+    public static class TestConsumerEndpoint extends ConsumerEndpoint {
+        public TestConsumerEndpoint(ServiceUnit serviceUnit, QName service, String endpoint, QName interfaceName) {
+            super(serviceUnit, service,  endpoint);
+            setTargetService(service);
+            setInterfaceName(interfaceName);
+        }
+
+        public void process(MessageExchange exchange) throws Exception {
+        }
     }
 }

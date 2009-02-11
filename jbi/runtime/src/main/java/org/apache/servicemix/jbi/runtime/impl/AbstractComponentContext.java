@@ -55,6 +55,9 @@ import org.apache.commons.logging.LogFactory;
 
 public abstract class AbstractComponentContext implements ComponentContext, MBeanNames {
 
+    public static final String INTERNAL_ENDPOINT = "jbi.internal";
+    public static final String EXTERNAL_ENDPOINT = "jbi.external";
+
     private static final Log LOG = LogFactory.getLog(AbstractComponentContext.class);
 
     protected DeliveryChannel dc;
@@ -111,10 +114,22 @@ public abstract class AbstractComponentContext implements ComponentContext, MBea
             props = new HashMap<String, Object>();
             props.put(Endpoint.INTERFACE_NAME, interfaceName.toString());
         }
-        return internalQueryEndpoints(props);
+        return queryInternalEndpoints(props);
     }
 
-    protected ServiceEndpoint[] internalQueryEndpoints(Map<String, Object> props) {
+    protected ServiceEndpoint[] queryInternalEndpoints(Map<String, Object> props) {
+        return doQueryEndpoints(props, false);
+    }
+
+    protected ServiceEndpoint[] queryExternalEndpoints(Map<String, Object> props) {
+        return doQueryEndpoints(props, true);
+    }
+
+    protected ServiceEndpoint[] doQueryEndpoints(Map<String, Object> props, boolean external) {
+        if (props == null) {
+            props = new HashMap<String, Object>();
+        }
+        props.put(external ? EXTERNAL_ENDPOINT : INTERNAL_ENDPOINT, Boolean.TRUE.toString());
         List<Endpoint> endpoints = getNmr().getEndpointRegistry().query(props);
         List<ServiceEndpoint> ses = new ArrayList<ServiceEndpoint>();
         for (Endpoint endpoint : endpoints) {
@@ -148,7 +163,6 @@ public abstract class AbstractComponentContext implements ComponentContext, MBea
 
     protected QName getServiceQNameFromProperties(Map<String, ?> epProps) {
         QName svcName = null;
-
         if (epProps != null && epProps.containsKey(Endpoint.SERVICE_NAME)) {
             Object prop = epProps.get(Endpoint.SERVICE_NAME);
             if (prop instanceof QName) {
@@ -168,15 +182,26 @@ public abstract class AbstractComponentContext implements ComponentContext, MBea
         }
         Map<String, Object> props = new HashMap<String, Object>();
         props.put(Endpoint.SERVICE_NAME, serviceName.toString());
-        return internalQueryEndpoints(props);
+        return queryInternalEndpoints(props);
     }
 
     public ServiceEndpoint[] getExternalEndpoints(QName interfaceName) {
-        return new ServiceEndpoint[0];  // TODO
+        Map<String, Object> props = null;
+        if (interfaceName != null) {
+            props = new HashMap<String, Object>();
+            props.put(Endpoint.INTERFACE_NAME, interfaceName.toString());
+        }
+        return queryExternalEndpoints(props);
     }
 
     public ServiceEndpoint[] getExternalEndpointsForService(QName serviceName) {
-        return new ServiceEndpoint[0];  // TODO
+        if (serviceName == null) {
+            // invalid
+            throw new IllegalArgumentException("This method needs a non-null serviceName parameter!");
+        }
+        Map<String, Object> props = new HashMap<String, Object>();
+        props.put(Endpoint.SERVICE_NAME, serviceName.toString());
+        return queryExternalEndpoints(props);
     }
 
     public DeliveryChannel getDeliveryChannel() throws MessagingException {
