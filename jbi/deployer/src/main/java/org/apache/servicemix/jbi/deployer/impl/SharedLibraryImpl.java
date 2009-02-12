@@ -17,6 +17,8 @@
 package org.apache.servicemix.jbi.deployer.impl;
 
 import java.net.URL;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.apache.servicemix.jbi.deployer.SharedLibrary;
 import org.apache.servicemix.jbi.deployer.descriptor.ClassPath;
@@ -58,16 +60,19 @@ public class SharedLibraryImpl implements SharedLibrary {
             boolean parentFirst = library.isParentFirstClassLoaderDelegation();
             ClassPath cp = library.getSharedLibraryClassPath();
             String[] classPathNames = cp.getPathElements();
-            URL[] urls = new URL[classPathNames.length];
+            List<URL> urls = new ArrayList<URL>();
             for (int i = 0; i < classPathNames.length; i++) {
-                urls[i] = bundle.getResource(classPathNames[i]);
-                if (urls[i] == null) {
-                    throw new IllegalArgumentException("SharedLibrary classpath entry not found: '" +  classPathNames[i] + "'");
+                if (!".".equals(classPathNames[i])) {
+                    URL url = bundle.getResource(classPathNames[i]);
+                    if (url == null) {
+                        throw new IllegalArgumentException("SharedLibrary classpath entry not found: '" +  classPathNames[i] + "'");
+                    }
+                    urls.add(url);
                 }
             }
             classLoader = new MultiParentClassLoader(
                             library.getIdentification().getName(),
-                            urls,
+                            urls.toArray(new URL[urls.size()]),
                             parent,
                             !parentFirst,
                             new String[0],
