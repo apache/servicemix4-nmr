@@ -38,7 +38,7 @@ public abstract class AutoFailTestSupport extends TestCase {
     private Thread autoFailThread;
 
     private boolean verbose = true;
-    private boolean useAutoFail; // Disable auto fail by default
+    private boolean useAutoFail = true;
     private AtomicBoolean isTestSuccess;
 
     protected void setUp() throws Exception {
