@@ -52,7 +52,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.beans.factory.DisposableBean;
 
-public abstract class AbstractClusterEndpointTest extends TestCase {
+public abstract class AbstractClusterEndpointTest extends AutoFailTestSupport {
 
     public static final String PROXY_ENDPOINT_NAME = "proxy";
     public static final String RECEIVER_ENDPOINT_NAME = "receiver";
@@ -67,6 +67,7 @@ public abstract class AbstractClusterEndpointTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
+        super.setUp();
         ExchangeImpl.getConverter();
         this.executor = createTaskExecutor();
         this.transactionManager = new GeronimoPlatformTransactionManager();
@@ -99,6 +100,7 @@ public abstract class AbstractClusterEndpointTest extends TestCase {
         if (broker != null) {
             broker.stop();
         }
+        super.tearDown();
     }
 
     protected TaskExecutor createTaskExecutor() {
