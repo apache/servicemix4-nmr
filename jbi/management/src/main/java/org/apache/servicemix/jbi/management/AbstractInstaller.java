@@ -144,20 +144,23 @@ public class AbstractInstaller {
     protected File transformArtifact(File file) throws Exception {
         // Check registered deployers
         ServiceReference[] srvRefs = bundleContext.getAllServiceReferences(DeploymentListener.class.getName(), null);
-		if(srvRefs != null) {
-		    for(ServiceReference sr : srvRefs) {
-		    	try {
-		    		DeploymentListener deploymentListener = (DeploymentListener) bundleContext.getService(sr);
-		    		if (deploymentListener.canHandle(file)) {
-		    			File transformedFile = deploymentListener.handle(file, getGenerateDir());
-		    			artifactToBundle.put(file.getAbsolutePath(), transformedFile.getAbsolutePath());
-		    			return transformedFile;
-		    		}
-		    	} finally {
-		    		bundleContext.ungetService(sr);
-		    	}
-		    }
-		}
+        if (srvRefs != null) {
+            for (ServiceReference sr : srvRefs) {
+                try {
+                    DeploymentListener deploymentListener = (DeploymentListener) bundleContext.getService(sr);
+                    if (deploymentListener.canHandle(file)) {
+                        File transformedFile = deploymentListener.handle(file, getGenerateDir());
+                        if (transformedFile == null) {
+                            throw new IllegalStateException("Unable to transform JBI artifact to an OSGi bundle");
+                        }
+                        artifactToBundle.put(file.getAbsolutePath(), transformedFile.getAbsolutePath());
+                        return transformedFile;
+                    }
+                } finally {
+                    bundleContext.ungetService(sr);
+                }
+            }
+        }
         JarFile jar = null;
         try {
             // Handle OSGi bundles with the default deployer
