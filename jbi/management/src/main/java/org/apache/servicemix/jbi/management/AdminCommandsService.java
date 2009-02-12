@@ -32,6 +32,7 @@ import javax.jbi.management.LifeCycleMBean;
 import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
+import org.apache.servicemix.jbi.deployer.SharedLibrary;
 import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryList;
 import org.apache.servicemix.jbi.deployer.impl.ComponentImpl;
 import org.apache.servicemix.jbi.deployer.impl.Deployer;
@@ -379,11 +380,11 @@ public class AdminCommandsService implements AdminCommandsServiceMBean, BundleCo
             }
             buffer.append(" name='" + component.getName() + "'");
             buffer.append(" state='" + component.getCurrentState() + "'>\n");
+            buffer.append("    <description>");
             if (component.getDescription() != null) {
-                buffer.append("    <description>");
                 buffer.append(component.getDescription());
-                buffer.append("</description>\n");
             }
+            buffer.append("</description>\n");
             buffer.append("  </component-info>\n");
         }
         buffer.append("</component-info-list>");
@@ -421,6 +422,21 @@ public class AdminCommandsService implements AdminCommandsServiceMBean, BundleCo
         buffer.append("<component-info-list xmlns='http://java.sun.com/xml/ns/jbi/component-info-list' version='1.0'>\n");
         for (String sl : libs) {
             buffer.append("  <component-info type='shared-library' name='").append(sl).append("' state='Started'>");
+            buffer.append("    <description>");
+
+            String desc = null;
+            ServiceReference ref = getAdminService().getSLServiceReference("(" + Deployer.NAME + "=" + sl + ")");
+            if (ref != null) {
+                SharedLibrary sharedLib = (SharedLibrary) getBundleContext().getService(ref);
+                if (sharedLib != null) {
+                    desc = sharedLib.getDescription();
+                    getBundleContext().ungetService(ref);
+                }
+            }
+            if (desc != null) {
+                buffer.append(desc);
+            }
+            buffer.append("</description>\n");
             buffer.append("  </component-info>\n");
         }
         buffer.append("</component-info-list>");
@@ -479,6 +495,7 @@ public class AdminCommandsService implements AdminCommandsServiceMBean, BundleCo
             for (int i = 0; i < serviceUnitList.length; i++) {
                 buffer.append("    <service-unit-info");
                 buffer.append(" name='" + serviceUnitList[i].getName() + "'");
+                buffer.append(" state='" + sa.getCurrentState() + "'");
                 buffer.append(" deployed-on='" + serviceUnitList[i].getComponent().getName() + "'>\n");
                 buffer.append("      <description>" + serviceUnitList[i].getDescription() + "</description>\n");
                 buffer.append("    </service-unit-info>\n");
