@@ -221,7 +221,6 @@ public class Deployer extends AbstractBundleWatcher {
                 try {
                 	reg.unregister();
                 } catch (IllegalStateException e) {
-                	e.printStackTrace();
                     // Ignore
                 }
             }
@@ -395,6 +394,9 @@ public class Deployer extends AbstractBundleWatcher {
             if (component.getState() == ComponentImpl.State.Stopped) {
                 component.shutDown(false, false);
             }
+            Preferences prefs = preferencesService.getUserPreferences(name);
+            prefs.clear();
+            prefs.flush();
             File file = new File(System.getProperty("servicemix.base"), "data/jbi/" + name);
             FileUtil.deleteFile(file);
         }
