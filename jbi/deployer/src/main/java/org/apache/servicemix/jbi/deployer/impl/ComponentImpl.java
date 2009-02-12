@@ -114,10 +114,15 @@ public class ComponentImpl implements Component, ComponentWrapper {
 
     public void start(boolean saveState) throws JBIException {
         LOGGER.info("Starting component " + getName());
-        component.getLifeCycle().start();
-        state = State.Started;
-        if (saveState) {
-            saveState();
+        if (state != State.Started) {
+            if (state == State.Shutdown) {
+                component.getLifeCycle().init(null);
+            }
+            component.getLifeCycle().start();
+            state = State.Started;
+            if (saveState) {
+                saveState();
+            }
         }
     }
 
@@ -215,6 +220,7 @@ public class ComponentImpl implements Component, ComponentWrapper {
     protected class ComponentWrapper implements javax.jbi.component.Component, ComponentLifeCycle {
         private javax.jbi.component.Component component;
         private ComponentLifeCycle lifeCycle;
+        private ComponentContext context;
 
         public ComponentWrapper(javax.jbi.component.Component component) {
             this.component = component;
@@ -252,6 +258,12 @@ public class ComponentImpl implements Component, ComponentWrapper {
         }
 
         public void init(ComponentContext context) throws JBIException {
+            if (this.context == null) {
+                this.context = context;
+            }
+            if (context == null) {
+                context = this.context;
+            }
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
             try {
                 Thread.currentThread().setContextClassLoader(component.getClass().getClassLoader());
