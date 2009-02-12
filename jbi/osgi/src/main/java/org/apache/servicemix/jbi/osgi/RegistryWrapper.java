@@ -26,6 +26,7 @@ import org.w3c.dom.Document;
 import org.apache.servicemix.nmr.api.EndpointRegistry;
 import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.Reference;
+import org.apache.servicemix.nmr.api.Wire;
 import org.apache.servicemix.nmr.core.util.MapToDictionary;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -85,5 +86,13 @@ public class RegistryWrapper implements EndpointRegistry {
 
     public Set<Endpoint> getServices() {
         return registry.getServices();
+    }
+    
+    public void register(Wire wire) {
+        registry.register(wire);
+    }
+    
+    public void unregister(Wire wire) {
+        registry.unregister(wire);
     }
 }

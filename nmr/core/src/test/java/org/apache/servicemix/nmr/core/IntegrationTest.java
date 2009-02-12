@@ -16,6 +16,8 @@
  */
 package org.apache.servicemix.nmr.core;
 
+import java.util.Map;
+
 import org.apache.servicemix.nmr.api.*;
 import org.apache.servicemix.nmr.api.service.ServiceHelper;
 import org.apache.servicemix.nmr.core.ServiceMix;
@@ -50,7 +52,25 @@ public class IntegrationTest {
         assertNotNull(endpoint.getExchange());
         assertEquals(Status.Done, e.getStatus());
     }
-
+    
+    @Test
+    public void testSendExchangeToWiredEndpointUsingClient() throws Exception {
+        MyEndpoint endpoint = new MyEndpoint();
+        Map<String, Object> target = ServiceHelper.createMap(Endpoint.NAME, "id");
+        Map<String, Object> wire = ServiceHelper.createMap(Endpoint.NAME, "wire");
+        //register the endpoint and a wire to the endpoint
+        nmr.getEndpointRegistry().register(endpoint, target);
+        nmr.getEndpointRegistry().register(ServiceHelper.createWire(wire, target));
+        
+        Channel client = nmr.createChannel();
+        Exchange e = client.createExchange(Pattern.InOnly);
+        e.setTarget(nmr.getEndpointRegistry().lookup(wire));
+        e.getIn().setBody("Hello");
+        boolean res = client.sendSync(e);
+        assertTrue(res);
+        assertNotNull(endpoint.getExchange());
+        assertEquals(Status.Done, e.getStatus());        
+    }
 
     public static class MyEndpoint implements Endpoint {
 

@@ -17,6 +17,8 @@
 package org.apache.servicemix.nmr.core;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -115,6 +117,57 @@ public class EndpointRegistryImplTest {
         assertTrue(regLatch.await(1, TimeUnit.SECONDS));
         registry.unregister(endpoint, null);
         assertTrue(unregLatch.await(1, TimeUnit.SECONDS));
+    }
+    
+    @Test
+    public void testHandleWiring() throws Exception {
+        final Map<String, Object> from = ServiceHelper.createMap(Endpoint.SERVICE_NAME, "test:wired-service",
+                                                                 Endpoint.ENDPOINT_NAME, "endpoint");
+        final Map<String, Object> to = ServiceHelper.createMap(Endpoint.SERVICE_NAME, "test:service",
+                                                               Endpoint.ENDPOINT_NAME, "endpoint");
+        createWiredEndpoint(from, to);
+        assertEquals(to, ((EndpointRegistryImpl) registry).handleWiring(from));
+        assertEquals(to, ((EndpointRegistryImpl) registry).handleWiring(to));
+    }
+        
+    public void testEndpointWiringOnQuery() throws Exception {
+        final Map<String, Object> from = ServiceHelper.createMap(Endpoint.SERVICE_NAME, "test:wired-service",
+                                                                 Endpoint.ENDPOINT_NAME, "endpoint");
+        final Endpoint endpoint = createWiredEndpoint(from);
+        
+        // make sure that the query for the wire's from returns the target endpoint
+        List<Endpoint> result = registry.query(from);
+        assertEquals(1, result.size());
+        assertEquals(endpoint, ((InternalEndpoint) result.get(0)).getEndpoint());
+    }
+    
+    @Test
+    public void testEndpointWiringOnLookup() throws Exception {
+        final Map<String, Object> from = ServiceHelper.createMap(Endpoint.SERVICE_NAME, "test:wired-service",
+                                                                 Endpoint.ENDPOINT_NAME, "endpoint");
+        final Endpoint endpoint = createWiredEndpoint(from);
+        
+        // make sure that the query for the wire's from returns the target endpoint
+        Reference ref = registry.lookup(from);
+        assertNotNull(ref);
+        assertTrue(ref instanceof DynamicReferenceImpl);
+        DynamicReferenceImpl reference = (DynamicReferenceImpl) ref;
+        Iterable<InternalEndpoint> endpoints = reference.choose();
+        assertNotNull(endpoints);
+        assertTrue(endpoints.iterator().hasNext());
+        assertEquals(endpoint, endpoints.iterator().next().getEndpoint());
+    }
+
+    private Endpoint createWiredEndpoint(Map<String, Object> from) {
+        return createWiredEndpoint(from, ServiceHelper.createMap(Endpoint.SERVICE_NAME, "test:service",
+                                                                 Endpoint.ENDPOINT_NAME, "endpoint"));
+    }
+
+    private Endpoint createWiredEndpoint(Map<String, Object> from, Map<String, Object> to) {
+        final Endpoint endpoint = new DummyEndpoint();
+        registry.register(endpoint, to);
+        registry.register(ServiceHelper.createWire(from, to));
+        return endpoint;
     }
 
     protected static class DummyEndpoint implements Endpoint {
