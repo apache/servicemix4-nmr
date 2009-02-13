@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
@@ -85,13 +87,18 @@ public class Transformer {
         m.getMainAttributes().putValue("Bundle-Version", version);
         m.getMainAttributes().putValue("DynamicImport-Package", "javax.*,org.xml.*,org.w3c.*");
 
-		JarInputStream jis = new JarInputStream(new FileInputStream(jbiArtifact));
-		JarOutputStream jos = new JarOutputStream(new FileOutputStream(osgiBundle), m);
+		JarInputStream jis = new JarInputStream(new BufferedInputStream(new FileInputStream(jbiArtifact)));
+		JarOutputStream jos = new JarOutputStream(new BufferedOutputStream(new FileOutputStream(osgiBundle)), m);
+        jos.setMethod(JarOutputStream.STORED);
 
 		JarEntry entry = jis.getNextJarEntry();
 		while (entry != null) {
             if (!"META-INF/MANIFEST.MF".equals(entry.getName())) {
-                jos.putNextEntry(entry);
+                JarEntry newEntry = new JarEntry(entry.getName());
+                newEntry.setSize(entry.getSize());
+                newEntry.setCompressedSize(entry.getSize());
+                newEntry.setCrc(entry.getCrc());
+                jos.putNextEntry(newEntry);
                 FileUtil.copyInputStream(jis, jos);
                 jos.closeEntry();
             }
