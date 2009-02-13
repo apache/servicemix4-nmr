@@ -89,16 +89,11 @@ public class Transformer {
 
 		JarInputStream jis = new JarInputStream(new BufferedInputStream(new FileInputStream(jbiArtifact)));
 		JarOutputStream jos = new JarOutputStream(new BufferedOutputStream(new FileOutputStream(osgiBundle)), m);
-        jos.setMethod(JarOutputStream.STORED);
 
 		JarEntry entry = jis.getNextJarEntry();
 		while (entry != null) {
             if (!"META-INF/MANIFEST.MF".equals(entry.getName())) {
-                JarEntry newEntry = new JarEntry(entry.getName());
-                newEntry.setSize(entry.getSize());
-                newEntry.setCompressedSize(entry.getSize());
-                newEntry.setCrc(entry.getCrc());
-                jos.putNextEntry(newEntry);
+                jos.putNextEntry(entry);
                 FileUtil.copyInputStream(jis, jos);
                 jos.closeEntry();
             }
