@@ -89,12 +89,12 @@
       <servicemix.shared.version>2008.02-SNAPSHOT</servicemix.shared.version>
       <servicemix.kernel.version>1.1.0-SNAPSHOT</servicemix.kernel.version>
       <servicemix.legal.version>1.0</servicemix.legal.version>
-      <servicemix.specs.version>1.2-SNAPSHOT</servicemix.specs.version>
+      <servicemix.specs.version>1.2.0</servicemix.specs.version>
       <spring.osgi.version>1.2.0-m2</spring.osgi.version>
       <spring.version>2.5.6</spring.version>
       <woodstox.version>3.2.7_1</woodstox.version>
       <wsdl4j.version>1.6.1_1</wsdl4j.version>
-      <xbean.version>3.4.3</xbean.version>
+      <xbean.version>3.5</xbean.version>
       <geronimo.stax.version>1.0.1</geronimo.stax.version>
   </properties>
 
