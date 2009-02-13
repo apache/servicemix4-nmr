@@ -204,7 +204,13 @@ public class InstallationService implements InstallationServiceMBean {
                 slName = desc.getSharedLibrary().getIdentification().getName();
                 LOG.info("Install ShareLib " + slName);
                 if (sharedLibinstallers.containsKey(slName)) {
-                    throw new DeploymentException("ShareLib " + slName+ " is already installed");
+                	ServiceReference ref = getAdminService().getSLServiceReference("(" + Deployer.NAME + "=" + slName + ")");
+                	if (ref == null) {
+                		//the Shared lib bundle uninstalled from console using osgi/uninstall
+                		sharedLibinstallers.remove(slName);
+                	} else {
+                		throw new DeploymentException("ShareLib " + slName+ " is already installed");
+                	}
                 }
                 SharedLibInstaller slInstaller = new SharedLibInstaller(slName, this.getAdminService());
                 slInstaller.install(location);
@@ -302,7 +308,13 @@ public class InstallationService implements InstallationServiceMBean {
         if (desc.getComponent() != null) {
             String componentName = desc.getComponent().getIdentification().getName();
             if (installers.containsKey(componentName)) {
-                throw new DeploymentException("Component " + componentName + " is already installed");
+            	ServiceReference ref = getAdminService().getComponentServiceReference("(" + Deployer.NAME + "=" + componentName + ")");
+            	if (ref == null) {
+            		//the component bundle uninstalled from console using osgi/uninstall
+            		installers.remove(componentName);
+            	} else {
+            		throw new DeploymentException("Component " + componentName + " is already installed");
+            	}
             }
             ComponentInstaller installer = null;
 			try {
