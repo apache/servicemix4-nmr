@@ -18,9 +18,13 @@ package org.apache.servicemix.jbi;
 
 import java.io.File;
 import java.util.Properties;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.HttpURLConnection;
 
 import javax.jbi.component.Component;
 
@@ -95,24 +99,32 @@ public class IntegrationTest extends AbstractIntegrationTest {
         assertNotNull(cmp);
     }
 
-    public void testServiceAssembly() throws Exception {
+    public void testServiceAssembly() throws Throwable {
         System.out.println("Waiting for NMR");
         NMR nmr = getOsgiService(NMR.class);
         assertNotNull(nmr);
         installJbiBundle("org.apache.servicemix", "servicemix-shared", "installer", "zip");
         installJbiBundle("org.apache.servicemix", "servicemix-jsr181", "installer", "zip");
         installJbiBundle("org.apache.servicemix", "servicemix-http", "installer", "zip");
+
+        Thread.sleep(500);
+
         Bundle saBundle = installJbiBundle("org.apache.servicemix.samples.wsdl-first", "wsdl-first-sa", null, "zip");
         System.out.println("Waiting for JBI Service Assembly");
         ServiceAssembly sa = getOsgiService(ServiceAssembly.class);
         assertNotNull(sa);
 
-        final CountDownLatch latch = new CountDownLatch(50);
-        for (int i = 0; i < 2; i++) {
+        Thread.sleep(500);
+        
+        final List<Throwable> errors = new CopyOnWriteArrayList<Throwable>();
+        final int nbThreads = 2;
+        final int nbMessagesPerThread = 10;
+        final CountDownLatch latch = new CountDownLatch(nbThreads * nbMessagesPerThread);
+        for (int i = 0; i < nbThreads; i++) {
             new Thread() {
                 public void run() {
-                    try {
-                        for (;;) {
+                    for (int i = 0; i < nbMessagesPerThread; i++) {
+                        try {
                             URL url = new URL("http://localhost:8192/PersonService/");
                             URLConnection connection = url.openConnection();
                             connection.setDoInput(true);
@@ -128,18 +140,28 @@ public class IntegrationTest extends AbstractIntegrationTest {
                                     "</env:Envelope>").getBytes());
                             byte[] buffer = new byte[8192];
                             int len = connection.getInputStream().read(buffer);
+                            if (len == -1) {
+                                throw new Exception("No response available");
+                            }
                             String result = new String(buffer, 0, len);
                             System.out.println(result);
+                        } catch (Throwable t) {
+                            errors.add(t);
+                            t.printStackTrace();
+                        } finally {
                             latch.countDown();
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
                 }
             }.start();
         }
 
-        latch.await();
+        if (!latch.await(60, TimeUnit.SECONDS)) {
+            fail("Test timed out");
+        }
+        if (!errors.isEmpty()) {
+            throw errors.get(0);
+        }
         //Thread.sleep(500);
         saBundle.uninstall();
         //sa.stop();
