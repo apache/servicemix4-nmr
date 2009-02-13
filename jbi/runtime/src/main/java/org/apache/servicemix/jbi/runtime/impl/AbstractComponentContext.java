@@ -75,6 +75,7 @@ public abstract class AbstractComponentContext implements ComponentContext, MBea
         Map<String, Object> props = new HashMap<String, Object>();
         props.put(Endpoint.SERVICE_NAME, serviceName.toString());
         props.put(Endpoint.ENDPOINT_NAME, endpointName);
+        props.put(INTERNAL_ENDPOINT, Boolean.TRUE.toString());
         List<Endpoint> endpoints = getNmr().getEndpointRegistry().query(props);
         if (endpoints.isEmpty()) {
             return null;
@@ -118,19 +119,15 @@ public abstract class AbstractComponentContext implements ComponentContext, MBea
     }
 
     protected ServiceEndpoint[] queryInternalEndpoints(Map<String, Object> props) {
-        return doQueryEndpoints(props, false);
+        return doQueryServiceEndpoints(props, false);
     }
 
     protected ServiceEndpoint[] queryExternalEndpoints(Map<String, Object> props) {
-        return doQueryEndpoints(props, true);
+        return doQueryServiceEndpoints(props, true);
     }
 
-    protected ServiceEndpoint[] doQueryEndpoints(Map<String, Object> props, boolean external) {
-        if (props == null) {
-            props = new HashMap<String, Object>();
-        }
-        props.put(external ? EXTERNAL_ENDPOINT : INTERNAL_ENDPOINT, Boolean.TRUE.toString());
-        List<Endpoint> endpoints = getNmr().getEndpointRegistry().query(props);
+    protected ServiceEndpoint[] doQueryServiceEndpoints(Map<String, Object> props, boolean external) {
+        List<Endpoint> endpoints = doQueryEndpoints(props, external);
         List<ServiceEndpoint> ses = new ArrayList<ServiceEndpoint>();
         for (Endpoint endpoint : endpoints) {
             ServiceEndpoint se = getServiceEndpoint(endpoint);
@@ -139,6 +136,15 @@ public abstract class AbstractComponentContext implements ComponentContext, MBea
             }
         }
         return ses.toArray(new ServiceEndpoint[ses.size()]);
+    }
+
+    protected List<Endpoint> doQueryEndpoints(Map<String, Object> props, boolean external) {
+        if (props == null) {
+            props = new HashMap<String, Object>();
+        }
+        props.put(external ? EXTERNAL_ENDPOINT : INTERNAL_ENDPOINT, Boolean.TRUE.toString());
+        List<Endpoint> endpoints = getNmr().getEndpointRegistry().query(props);
+        return endpoints;
     }
 
     protected ServiceEndpoint getServiceEndpoint(Endpoint endpoint) {

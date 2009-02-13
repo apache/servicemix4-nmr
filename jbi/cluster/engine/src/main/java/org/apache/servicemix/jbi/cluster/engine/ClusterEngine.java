@@ -48,6 +48,7 @@ import org.apache.servicemix.nmr.core.ServiceRegistryImpl;
 import org.apache.servicemix.jbi.runtime.impl.MessageExchangeImpl;
 import org.apache.servicemix.jbi.runtime.impl.ServiceEndpointImpl;
 import org.apache.servicemix.jbi.runtime.impl.DeliveryChannelImpl;
+import org.apache.servicemix.jbi.runtime.impl.AbstractComponentContext;
 import org.apache.servicemix.jbi.cluster.requestor.JmsRequestor;
 import org.apache.servicemix.jbi.cluster.requestor.Transacted;
 import org.apache.servicemix.jbi.cluster.requestor.JmsRequestorListener;
@@ -522,7 +523,8 @@ public class ClusterEngine extends ServiceRegistryImpl<ClusterRegistration>
         for (Endpoint ep : registry.getServices()) {
             Map<String,?> props = registry.getProperties(ep);
             // Check if this endpoint is addressable in the JBI space
-            if (props.get(Endpoint.SERVICE_NAME) != null && props.get(Endpoint.ENDPOINT_NAME) != null) {
+            if (props.get(Endpoint.SERVICE_NAME) != null && props.get(Endpoint.ENDPOINT_NAME) != null
+                    && props.get(AbstractComponentContext.INTERNAL_ENDPOINT) != null) {
                 endpoints.add(new ServiceEndpointImpl(props));
             }
         }

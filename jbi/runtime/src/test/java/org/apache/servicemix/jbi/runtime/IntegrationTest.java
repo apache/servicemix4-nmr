@@ -27,6 +27,7 @@ import org.apache.servicemix.eip.patterns.WireTap;
 import org.apache.servicemix.eip.support.ExchangeTarget;
 import org.apache.servicemix.jbi.runtime.impl.ComponentContextImpl;
 import org.apache.servicemix.jbi.runtime.impl.ComponentRegistryImpl;
+import org.apache.servicemix.jbi.runtime.impl.AbstractComponentContext;
 import org.apache.servicemix.nmr.api.Channel;
 import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.Exchange;
@@ -61,6 +62,7 @@ public class IntegrationTest {
         };
         Map<String, Object> props = new HashMap<String, Object>();
         props.put(Endpoint.SERVICE_NAME, new QName("target").toString());
+        props.put(AbstractComponentContext.INTERNAL_ENDPOINT, Boolean.TRUE.toString());
         smx.getEndpointRegistry().register(tep, props);
 
         EIPComponent eip = new EIPComponent();

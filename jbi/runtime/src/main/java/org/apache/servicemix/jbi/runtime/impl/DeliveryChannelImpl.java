@@ -175,9 +175,30 @@ public class DeliveryChannelImpl implements DeliveryChannel {
         exchange.setProperty(SEND_SYNC, null);
         ((MessageExchangeImpl) exchange).afterSend();
         InternalExchange ie = (InternalExchange) ((MessageExchangeImpl) exchange).getInternalExchange();
-        // If this
+        getChannelToUse(ie).send(ie);
+    }
+
+    public boolean sendSync(MessageExchange exchange) throws MessagingException {
+        assert exchange != null;
+        createTarget(context.getNmr(), exchange);
+        exchange.setProperty(SEND_SYNC, Boolean.TRUE);
+        ((MessageExchangeImpl) exchange).afterSend();
+        InternalExchange ie = (InternalExchange) ((MessageExchangeImpl) exchange).getInternalExchange();
+        return getChannelToUse(ie).sendSync(ie);
+    }
+
+    public boolean sendSync(MessageExchange exchange, long timeout) throws MessagingException {
+        assert exchange != null;
+        createTarget(context.getNmr(), exchange);
+        exchange.setProperty(SEND_SYNC, Boolean.TRUE);
+        ((MessageExchangeImpl) exchange).afterSend();
+        InternalExchange ie = (InternalExchange) ((MessageExchangeImpl) exchange).getInternalExchange();
+        return getChannelToUse(ie).sendSync(ie, timeout);
+    }
+
+    protected Channel getChannelToUse(InternalExchange exchange) {
         Channel channelToUse = channel;
-        if (ie.getSource() == null) {
+        if (exchange.getSource() == null) {
             // We need to look up the channel corresponding to the sender endpoint
             try {
                 String sender = (String) exchange.getProperty(SENDER_ENDPOINT);
@@ -185,7 +206,11 @@ public class DeliveryChannelImpl implements DeliveryChannel {
                     int idx = sender.lastIndexOf(':');
                     String svc = sender.substring(0, idx);
                     String ep = sender.substring(idx + 1);
-                    List<Endpoint> eps = channel.getNMR().getEndpointRegistry().query(ServiceHelper.createMap(Endpoint.SERVICE_NAME, svc, Endpoint.ENDPOINT_NAME, ep));
+                    Map<String, Object> props = ServiceHelper.createMap(Endpoint.SERVICE_NAME, svc,
+                                                                        Endpoint.ENDPOINT_NAME, ep);
+                    // TODO: we may be using the wrong channel if both an internal endpoint and an external endpoint
+                    // have been registered with the same svc / ep name
+                    List<Endpoint> eps = channel.getNMR().getEndpointRegistry().query(props);
                     if (eps != null && eps.size() == 1) {
                         channelToUse = ((InternalEndpoint) eps.get(0)).getChannel();
                     }
@@ -194,25 +219,9 @@ public class DeliveryChannelImpl implements DeliveryChannel {
                 // Ignore
             }
         } else {
-            channelToUse = ie.getSource().getChannel();
+            channelToUse = exchange.getSource().getChannel();
         }
-        channelToUse.send(ie);
-    }
-
-    public boolean sendSync(MessageExchange exchange) throws MessagingException {
-        assert exchange != null;
-        createTarget(context.getNmr(), exchange);
-        exchange.setProperty(SEND_SYNC, Boolean.TRUE);
-        ((MessageExchangeImpl) exchange).afterSend();
-        return channel.sendSync(((MessageExchangeImpl) exchange).getInternalExchange());
-    }
-
-    public boolean sendSync(MessageExchange exchange, long timeout) throws MessagingException {
-        assert exchange != null;
-        createTarget(context.getNmr(), exchange);
-        exchange.setProperty(SEND_SYNC, Boolean.TRUE);
-        ((MessageExchangeImpl) exchange).afterSend();
-        return channel.sendSync(((MessageExchangeImpl) exchange).getInternalExchange(), timeout);
+        return channelToUse;
     }
 
     public static void createTarget(NMR nmr, MessageExchange messageExchange) {
@@ -240,6 +249,7 @@ public class DeliveryChannelImpl implements DeliveryChannel {
             if (props.isEmpty()) {
                 throw new IllegalStateException("No endpoint, service or interface name specified for routing");
             }
+            props.put(AbstractComponentContext.INTERNAL_ENDPOINT, Boolean.TRUE.toString());
             Reference target = nmr.getEndpointRegistry().lookup(props);
             exchange.setTarget(target);
         }

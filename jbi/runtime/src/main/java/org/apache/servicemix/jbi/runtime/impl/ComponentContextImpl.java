@@ -19,6 +19,7 @@ package org.apache.servicemix.jbi.runtime.impl;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -125,9 +126,15 @@ public class ComponentContextImpl extends AbstractComponentContext {
     }
 
     public synchronized void deactivateEndpoint(ServiceEndpoint endpoint) throws JBIException {
-        // TODO: retrieve the correct endpoint if needed
-        EndpointImpl ep = (EndpointImpl) endpoint;
-        componentRegistry.getNmr().getEndpointRegistry().unregister(ep, null);
+        List<Endpoint> eps = doQueryEndpoints(ServiceHelper.createMap(Endpoint.SERVICE_NAME,
+                                                                      endpoint.getServiceName().toString(),
+                                                                      Endpoint.ENDPOINT_NAME,
+                                                                      endpoint.getEndpointName()),
+                                              false);
+        if (eps != null && eps.size() == 1) {
+            Endpoint ep = eps.get(0);
+            componentRegistry.getNmr().getEndpointRegistry().unregister(ep, null);
+        }
     }
 
     public void registerExternalEndpoint(ServiceEndpoint externalEndpoint) throws JBIException {
@@ -166,14 +173,13 @@ public class ComponentContextImpl extends AbstractComponentContext {
     }
 
     public void deregisterExternalEndpoint(ServiceEndpoint externalEndpoint) throws JBIException {
-        ServiceEndpoint[] ses = doQueryEndpoints(ServiceHelper.createMap(Endpoint.SERVICE_NAME,
-                                                                         externalEndpoint.getServiceName().toString(),
-                                                                         Endpoint.ENDPOINT_NAME,
-                                                                         externalEndpoint.getEndpointName()),
+        List<Endpoint> eps = doQueryEndpoints(ServiceHelper.createMap(Endpoint.SERVICE_NAME,
+                                                                      externalEndpoint.getServiceName().toString(),
+                                                                      Endpoint.ENDPOINT_NAME,
+                                                                      externalEndpoint.getEndpointName()),
                                                  true);
-        if (ses != null && ses.length == 1) {
-            // TODO: retrieve the correct endpoint if needed
-            EndpointImpl ep = (EndpointImpl) ses[0];
+        if (eps != null && eps.size() == 1) {
+            Endpoint ep = eps.get(0);
             componentRegistry.getNmr().getEndpointRegistry().unregister(ep, null);
         }
     }
