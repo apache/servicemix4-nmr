@@ -28,6 +28,8 @@ import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.Reference;
 import org.apache.servicemix.nmr.api.Wire;
 import org.apache.servicemix.nmr.core.util.MapToDictionary;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
@@ -41,6 +43,8 @@ import org.osgi.framework.ServiceRegistration;
  *
  */
 public class RegistryWrapper implements EndpointRegistry {
+
+    private static final Log LOG = LogFactory.getLog(RegistryWrapper.class);
 
     private EndpointRegistry registry;
     private BundleContext bundleContext;
@@ -61,7 +65,11 @@ public class RegistryWrapper implements EndpointRegistry {
 
     public void unregister(Endpoint endpoint, Map<String, ?> properties) {
         ServiceRegistration reg = registrations.remove(endpoint);
-        reg.unregister();
+        if (reg != null) {
+            reg.unregister();
+        } else {
+            LOG.warn("Unregistration failed: the endpoint was not found in registry: " + endpoint + " (" + properties + ")");
+        }
     }
 
     public List<Endpoint> query(Map<String, ?> properties) {
