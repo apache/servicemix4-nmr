@@ -77,7 +77,6 @@
       <geronimo.jta.version>1.1.1</geronimo.jta.version>
       <geronimo.servlet.version>1.1.2</geronimo.servlet.version>
       <geronimo.stax.version>1.0.1</geronimo.stax.version>
-      <jbi.api.version>1.1.0</jbi.api.version>
       <jencks.version>2.1_1</jencks.version>
       <jline.version>0.9.94</jline.version>
       <junit.version>3.8.2_1-SNAPSHOT</junit.version>
@@ -301,7 +300,7 @@
       <dependency>
           <groupId>org.apache.servicemix.specs</groupId>
           <artifactId>org.apache.servicemix.specs.jbi-api-1.0</artifactId>
-          <version>${jbi.api.version}</version>
+          <version>${servicemix.specs.version}</version>
       </dependency>
       <dependency>
           <groupId>org.apache.servicemix.jbi</groupId>
