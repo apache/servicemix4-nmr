@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Dictionary;
 import java.util.Enumeration;
@@ -51,7 +52,6 @@ import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryList;
 import org.apache.servicemix.jbi.deployer.descriptor.Identification;
 import org.apache.servicemix.jbi.deployer.descriptor.Target;
 import org.apache.servicemix.jbi.runtime.ComponentWrapper;
-import org.apache.xbean.classloader.MultiParentClassLoader;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -422,6 +422,7 @@ public class Deployer extends AbstractBundleWatcher {
     }
 
     protected void uninstallSharedLibrary(SharedLibraryDesc sharedLibraryDesc, Bundle bundle) throws JBIException {
+        sharedLibraries.remove(sharedLibraryDesc.getIdentification().getName());
     }
 
     protected void maybeWrapComponent(ServiceReference reference, javax.jbi.component.Component component) {
@@ -498,14 +499,15 @@ public class Deployer extends AbstractBundleWatcher {
         // Create parents classloaders
         ClassLoader[] parents;
         if (component.getSharedLibraries() != null) {
-            parents = new ClassLoader[component.getSharedLibraries().length + 1];
+            parents = new ClassLoader[component.getSharedLibraries().length + 2];
             for (int i = 0; i < component.getSharedLibraries().length; i++) {
-                parents[i + 1] = getSharedLibraryClassLoader(component.getSharedLibraries()[i]);
+                parents[i + 2] = getSharedLibraryClassLoader(component.getSharedLibraries()[i]);
             }
         } else {
-            parents = new ClassLoader[1];
+            parents = new ClassLoader[2];
         }
-        parents[0] = BundleDelegatingClassLoader.createBundleClassLoaderFor(bundle, getClass().getClassLoader());
+        parents[0] = BundleDelegatingClassLoader.createBundleClassLoaderFor(getBundleContext().getBundle(0));
+        parents[1] = BundleDelegatingClassLoader.createBundleClassLoaderFor(bundle, getClass().getClassLoader());
 
         // Create urls
         String[] classPathNames = component.getComponentClassPath().getPathElements();
@@ -515,10 +517,19 @@ public class Deployer extends AbstractBundleWatcher {
             if (urls[i] == null) {
                 throw new IllegalArgumentException("SharedLibrary classpath entry not found: '" +  classPathNames[i] + "'");
             }
+            Enumeration en = bundle.findEntries(classPathNames[i], null, false);
+            if (en != null && en.hasMoreElements()) {
+                try {
+                    urls[i] = new URL(urls[i].toString() + "/");
+                } catch (MalformedURLException e) {
+                    // Ignore
+                }
+            }
         }
 
         // Create classloader
-        return new MultiParentClassLoader(
+        return new OsgiMultiParentClassLoader(
+                        bundle,
                         component.getIdentification().getName(),
                         urls,
                         parents,

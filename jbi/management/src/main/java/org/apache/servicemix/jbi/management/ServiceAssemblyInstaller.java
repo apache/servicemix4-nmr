@@ -20,8 +20,13 @@ import javax.jbi.JBIException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.servicemix.jbi.deployer.impl.ComponentImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.prefs.BackingStoreException;
+import org.osgi.service.prefs.PreferencesService;
+import org.osgi.service.prefs.Preferences;
 
 public class ServiceAssemblyInstaller extends AbstractInstaller {
 
@@ -37,6 +42,11 @@ private static final Log LOGGER = LogFactory.getLog(SharedLibInstaller.class);
 	}
 	
 	public void deploy(String filename) {
+        try {
+            initializePreferences();
+        } catch (BackingStoreException e) {
+            LOGGER.warn("Error initializing persistent state for service assembly: " + name, e);
+        }
 		deployFile(filename);
 	}
 	
@@ -50,10 +60,45 @@ private static final Log LOGGER = LogFactory.getLog(SharedLibInstaller.class);
             else {
                 bundle.stop();
                 bundle.uninstall();
+                try {
+                    deletePreferences();
+                } catch (BackingStoreException e) {
+                    LOGGER.warn("Error cleaning persistent state for service assembly: " + name, e);
+                }
             }
         } catch (BundleException e) {
         	LOGGER.error("failed to uninstall Service Assembly: " + name, e);
         	throw new JBIException(e);
 		} 
     }
+
+    protected void initializePreferences() throws BackingStoreException {
+        PreferencesService preferencesService = getPreferencesService();
+        Preferences prefs = preferencesService.getUserPreferences(name);
+        prefs.put(ComponentImpl.STATE, ComponentImpl.State.Shutdown.name());
+        prefs.flush();
+    }
+
+    protected void deletePreferences() throws BackingStoreException {
+        PreferencesService preferencesService = getPreferencesService();
+        Preferences prefs = preferencesService.getUserPreferences(name);
+        prefs.clear();
+        prefs.flush();
+    }
+
+    private PreferencesService getPreferencesService() throws BackingStoreException {
+        PreferencesService preferencesService = null;
+        for (Bundle bundle : getBundleContext().getBundles()) {
+            if ("org.apache.servicemix.jbi.deployer".equals(bundle.getSymbolicName())) {
+                ServiceReference ref = bundle.getBundleContext().getServiceReference(PreferencesService.class.getName());
+                preferencesService = (PreferencesService) bundle.getBundleContext().getService(ref);
+                break;
+            }
+        }
+        if (preferencesService == null) {
+            throw new BackingStoreException("Unable to find bundle 'org.apache.servicemix.jbi.deployer'");
+        }
+        return preferencesService;
+    }
+
 }

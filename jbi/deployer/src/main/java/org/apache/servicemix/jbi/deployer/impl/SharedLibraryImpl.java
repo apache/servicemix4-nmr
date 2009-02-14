@@ -17,8 +17,10 @@
 package org.apache.servicemix.jbi.deployer.impl;
 
 import java.net.URL;
+import java.net.MalformedURLException;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Enumeration;
 
 import org.apache.servicemix.jbi.deployer.SharedLibrary;
 import org.apache.servicemix.jbi.deployer.descriptor.ClassPath;
@@ -67,10 +69,19 @@ public class SharedLibraryImpl implements SharedLibrary {
                     if (url == null) {
                         throw new IllegalArgumentException("SharedLibrary classpath entry not found: '" +  classPathNames[i] + "'");
                     }
+                    Enumeration en = bundle.findEntries(classPathNames[i], null, false);
+                    if (en != null && en.hasMoreElements()) {
+                        try {
+                            url = new URL(url.toString() + "/");
+                        } catch (MalformedURLException e) {
+                            // Ignore
+                        }
+                    }
                     urls.add(url);
                 }
             }
-            classLoader = new MultiParentClassLoader(
+            classLoader = new OsgiMultiParentClassLoader(
+                            bundle,
                             library.getIdentification().getName(),
                             urls.toArray(new URL[urls.size()]),
                             parent,

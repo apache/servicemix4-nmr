@@ -37,8 +37,6 @@ import org.osgi.framework.BundleException;
 
 public class IntegrationTest extends AbstractIntegrationTest {
 
-    private Properties dependencies;
-
     /**
 	 * The manifest to use for the "virtual bundle" created
 	 * out of the test classes and resources in this project
@@ -82,7 +80,10 @@ public class IntegrationTest extends AbstractIntegrationTest {
             getBundle("org.apache.servicemix.jbi", "org.apache.servicemix.jbi.runtime"),
             getBundle("org.apache.servicemix.jbi", "org.apache.servicemix.jbi.deployer"),
             getBundle("org.apache.servicemix.jbi", "org.apache.servicemix.jbi.osgi"),
+            getBundle("org.apache.servicemix.jbi", "org.apache.servicemix.jbi.management"),
             getBundle("org.apache.servicemix.kernel", "org.apache.servicemix.kernel.filemonitor"),
+            getBundle("org.apache.servicemix.kernel", "org.apache.servicemix.kernel.management"),
+            getBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.ant"),
             getBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.woodstox"),
             getBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.wsdl4j"),
 		};

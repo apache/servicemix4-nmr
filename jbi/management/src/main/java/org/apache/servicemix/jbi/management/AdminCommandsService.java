@@ -151,34 +151,38 @@ public class AdminCommandsService implements AdminCommandsServiceMBean, BundleCo
      * @return
      */
     public String uninstallSharedLibrary(String name) throws Exception {
-    	//Check that the library is installed
-        boolean isInstalled = getAdminService().getDeployer().getInstalledSharedLibararies().contains(name);
-        if (!isInstalled) {
-            throw ManagementSupport.failure("uninstallSharedLibrary", "Shared library '" + name + "' is not installed.");
-        }
-        // Check that it is not used by a running component
-        ServiceReference[] refs = getAdminService().getComponentServiceReferences(null);
-        
-        
-        for (ServiceReference ref : refs) {
-        	ComponentImpl component = (ComponentImpl) getBundleContext().getService(ref);
-            if (!component.getCurrentState().equalsIgnoreCase(LifeCycleMBean.SHUTDOWN)) {
-                SharedLibraryList[] sls = component.getSharedLibraries();
-                if (sls != null) {
-                    for (int i = 0; i < sls.length; i++) {
-                    	if (name.equals(sls[i].getName())) {
-                    		throw ManagementSupport.failure("uninstallSharedLibrary", "Shared library '" + name
-                                            + "' is used by component '" + component.getName() + "'.");
+        try {
+            //Check that the library is installed
+            boolean isInstalled = getAdminService().getDeployer().getInstalledSharedLibararies().contains(name);
+            if (!isInstalled) {
+                throw ManagementSupport.failure("uninstallSharedLibrary", "Shared library '" + name + "' is not installed.");
+            }
+            // Check that it is not used by a running component
+            ServiceReference[] refs = getAdminService().getComponentServiceReferences(null);
+
+
+            for (ServiceReference ref : refs) {
+                ComponentImpl component = (ComponentImpl) getBundleContext().getService(ref);
+                if (!component.getCurrentState().equalsIgnoreCase(LifeCycleMBean.SHUTDOWN)) {
+                    SharedLibraryList[] sls = component.getSharedLibraries();
+                    if (sls != null) {
+                        for (int i = 0; i < sls.length; i++) {
+                            if (name.equals(sls[i].getName())) {
+                                throw ManagementSupport.failure("uninstallSharedLibrary", "Shared library '" + name
+                                                + "' is used by component '" + component.getName() + "'.");
+                            }
                         }
                     }
                 }
             }
-        }
-        boolean success = getInstallationService().uninstallSharedLibrary(name);
-        if (success) {
-            return ManagementSupport.createSuccessMessage("uninstallSharedLibrary", name);
-        } else {
-            throw ManagementSupport.failure("uninstallSharedLibrary", name);
+            boolean success = getInstallationService().uninstallSharedLibrary(name);
+            if (success) {
+                return ManagementSupport.createSuccessMessage("uninstallSharedLibrary", name);
+            } else {
+                throw ManagementSupport.failure("uninstallSharedLibrary", name);
+            }
+        } catch (Throwable e) {
+            throw ManagementSupport.failure("uninstallSharedLibrary", name, e);
         }
     }
 
@@ -196,7 +200,7 @@ public class AdminCommandsService implements AdminCommandsServiceMBean, BundleCo
                 }
             });
             return ManagementSupport.createSuccessMessage("startComponent", name);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw ManagementSupport.failure("startComponent", name, e);
         }
     }
@@ -215,7 +219,7 @@ public class AdminCommandsService implements AdminCommandsServiceMBean, BundleCo
                 }
             });
             return ManagementSupport.createSuccessMessage("stopComponent", name);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw ManagementSupport.failure("stopComponent", name, e);
         }
     }
@@ -234,7 +238,7 @@ public class AdminCommandsService implements AdminCommandsServiceMBean, BundleCo
                 }
             });
             return ManagementSupport.createSuccessMessage("shutdownComponent", name);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             throw ManagementSupport.failure("shutdownComponent", name, e);
         }
     }
@@ -248,7 +252,7 @@ public class AdminCommandsService implements AdminCommandsServiceMBean, BundleCo
     public String deployServiceAssembly(String file) throws Exception {
     	try {
     		return deploymentService.deploy(file);
-    	} catch (Exception e) {
+    	} catch (Throwable e) {
             throw ManagementSupport.failure("deployServiceAssembly", file, e);
         }
 
@@ -261,7 +265,11 @@ public class AdminCommandsService implements AdminCommandsServiceMBean, BundleCo
      * @return
      */
     public String undeployServiceAssembly(String name) throws Exception {
-        return getDeploymentService().undeploy(name);
+        try {
+            return getDeploymentService().undeploy(name);
+        } catch (Throwable e) {
+            throw ManagementSupport.failure("undeployServiceAssembly", name, e);
+        }
     }
 
     /**
@@ -271,7 +279,11 @@ public class AdminCommandsService implements AdminCommandsServiceMBean, BundleCo
      * @return
      */
     public String startServiceAssembly(String name) throws Exception {
-        return getDeploymentService().start(name);
+        try {
+            return getDeploymentService().start(name);
+        } catch (Throwable e) {
+            throw ManagementSupport.failure("startServiceAssembly", name, e);
+        }
     }
 
     /**
@@ -281,7 +293,11 @@ public class AdminCommandsService implements AdminCommandsServiceMBean, BundleCo
      * @return
      */
     public String stopServiceAssembly(String name) throws Exception {
-        return getDeploymentService().stop(name);
+        try {
+            return getDeploymentService().stop(name);
+        } catch (Throwable e) {
+            throw ManagementSupport.failure("stopServiceAssembly", name, e);
+        }
     }
 
     /**
@@ -291,7 +307,11 @@ public class AdminCommandsService implements AdminCommandsServiceMBean, BundleCo
      * @return
      */
     public String shutdownServiceAssembly(String name) throws Exception {
-        return getDeploymentService().shutDown(name);
+        try {
+            return getDeploymentService().shutDown(name);
+        } catch (Throwable e) {
+            throw ManagementSupport.failure("shutdownServiceAssembly", name, e);
+        }
     }
 
     

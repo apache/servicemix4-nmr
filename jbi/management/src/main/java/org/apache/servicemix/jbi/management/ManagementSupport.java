@@ -47,16 +47,16 @@ public final class ManagementSupport {
         private boolean isCauseFramework;
         private String task;
         private String result;
-        private Exception exception;
+        private Throwable exception;
         private String type;
         private String message;
         private String component;
         private String locale;
 
-        public Exception getException() {
+        public Throwable getException() {
             return exception;
         }
-        public void setException(Exception exception) {
+        public void setException(Throwable exception) {
             this.exception = exception;
         }
         public boolean isCauseFramework() {
@@ -111,16 +111,16 @@ public final class ManagementSupport {
         return failure(task, null, null, componentResults);
     }
 
-    public static Exception failure(String task, String info, Exception e) throws Exception {
-        return failure(task, info, e, null);
+    public static Exception failure(String task, String info, Throwable t) throws Exception {
+        return failure(task, info, t, null);
     }
 
-    public static Exception failure(String task, String info, Exception e, List componentResults) throws Exception {
+    public static Exception failure(String task, String info, Throwable t, List componentResults) throws Exception {
         ManagementSupport.Message msg = new ManagementSupport.Message();
         msg.setTask(task);
         msg.setResult("FAILED");
         msg.setType("ERROR");
-        msg.setException(e);
+        msg.setException(t);
         msg.setMessage(info);
         return new Exception(ManagementSupport.createFrameworkMessage(msg, componentResults));
     }
@@ -263,23 +263,23 @@ public final class ManagementSupport {
         return createComponentMessage(msg);
     }
 
-    public static Element createComponentFailure(String task, String component, String info, Exception e) {
+    public static Element createComponentFailure(String task, String component, String info, Throwable t) {
         ManagementSupport.Message msg = new ManagementSupport.Message();
         msg.setTask(task);
         msg.setResult("FAILED");
         msg.setType("ERROR");
-        msg.setException(e);
+        msg.setException(t);
         msg.setMessage(info);
         msg.setComponent(component);
         return createComponentMessage(msg);
     }
 
-    public static Element createComponentWarning(String task, String component, String info, Exception e) {
+    public static Element createComponentWarning(String task, String component, String info, Throwable t) {
         ManagementSupport.Message msg = new ManagementSupport.Message();
         msg.setTask(task);
         msg.setResult("SUCCESS");
         msg.setType("WARNING");
-        msg.setException(e);
+        msg.setException(t);
         msg.setMessage(info);
         msg.setComponent(component);
         return createComponentMessage(msg);

@@ -197,4 +197,7 @@ public class AbstractInstaller {
 		this.bundleContext = bundleContext;		
 	}
 
+    public BundleContext getBundleContext() {
+        return bundleContext;
+    }
 }

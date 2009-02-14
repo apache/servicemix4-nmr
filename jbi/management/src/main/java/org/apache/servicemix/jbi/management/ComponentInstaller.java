@@ -26,9 +26,14 @@ import javax.management.ObjectName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.servicemix.jbi.deployer.impl.ComponentImpl;
 import org.osgi.framework.Bundle;
 
 import org.osgi.framework.BundleException;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.prefs.PreferencesService;
+import org.osgi.service.prefs.Preferences;
+import org.osgi.service.prefs.BackingStoreException;
 
 public class ComponentInstaller extends AbstractInstaller 
 	implements InstallerMBean {
@@ -81,10 +86,23 @@ public class ComponentInstaller extends AbstractInstaller
     			return null;
             }
     		if (f.exists()) {
+                try {
+                    initializePreferences();
+                } catch (BackingStoreException e) {
+                    LOGGER.warn("Error initializing persistent state for component: " + context.getComponentName(), e);
+                }
         		deployBundle(f);
             }
 			context.setInstall(false);
 			ObjectName ret = this.adminService.getComponentByName(context.getComponentName());
+             if (ret == null) {
+                 // something wrong happened
+                 // TODO: we need to retrieve the correct problem somehow
+                 if (getBundle() != null) {
+                    getBundle().uninstall();
+                 }
+                 throw new Exception("Error installing component");
+             }
 			return ret;
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
@@ -124,6 +142,11 @@ public class ComponentInstaller extends AbstractInstaller
             else {
                 bundle.stop();
                 bundle.uninstall();
+                try {
+                    deletePreferences();
+                } catch (BackingStoreException e) {
+                    LOGGER.warn("Error cleaning persistent state for component: " + componentName, e);
+                }
             }
         } catch (BundleException e) {
         	LOGGER.error("failed to uninstall component: " + componentName, e);
@@ -151,6 +174,35 @@ public class ComponentInstaller extends AbstractInstaller
      */
     public void setObjectName(ObjectName objectName) {
         this.objectName = objectName;
+    }
+
+    protected void initializePreferences() throws BackingStoreException {
+        PreferencesService preferencesService = getPreferencesService();
+        Preferences prefs = preferencesService.getUserPreferences(context.getComponentName());
+        prefs.put(ComponentImpl.STATE, ComponentImpl.State.Shutdown.name());
+        prefs.flush();
+    }
+
+    protected void deletePreferences() throws BackingStoreException {
+        PreferencesService preferencesService = getPreferencesService();
+        Preferences prefs = preferencesService.getUserPreferences(context.getComponentName());
+        prefs.clear();
+        prefs.flush();
+    }
+
+    private PreferencesService getPreferencesService() throws BackingStoreException {
+        PreferencesService preferencesService = null;
+        for (Bundle bundle : getBundleContext().getBundles()) {
+            if ("org.apache.servicemix.jbi.deployer".equals(bundle.getSymbolicName())) {
+                ServiceReference ref = bundle.getBundleContext().getServiceReference(PreferencesService.class.getName());
+                preferencesService = (PreferencesService) bundle.getBundleContext().getService(ref);
+                break;
+            }
+        }
+        if (preferencesService == null) {
+            throw new BackingStoreException("Unable to find bundle 'org.apache.servicemix.jbi.deployer'");
+        }
+        return preferencesService;
     }
 
 }

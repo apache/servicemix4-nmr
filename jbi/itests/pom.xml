@@ -101,6 +101,16 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.apache.servicemix.jbi</groupId>
+            <artifactId>org.apache.servicemix.jbi.management</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.kernel</groupId>
+            <artifactId>org.apache.servicemix.kernel.management</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.prefs</artifactId>
             <scope>test</scope>

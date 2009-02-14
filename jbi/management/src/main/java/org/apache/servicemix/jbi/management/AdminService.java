@@ -66,6 +66,9 @@ public class AdminService implements AdminServiceMBean, BundleContextAware {
 	}
 
 	protected ObjectName getComponentObjectName(ServiceReference ref) {
+        if (ref == null) {
+            return null;
+        }
         String name = (String) ref.getProperty(Deployer.NAME);
         return namingStrategy.createCustomComponentMBeanName(name, "LifeCycle");
     }

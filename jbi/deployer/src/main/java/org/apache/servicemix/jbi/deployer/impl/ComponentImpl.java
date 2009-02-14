@@ -49,9 +49,9 @@ public class ComponentImpl implements Component, ComponentWrapper {
 
     private static final Log LOGGER = LogFactory.getLog(ComponentImpl.class);
 
-    private static final String STATE = "state";
+    public static final String STATE = "state";
 
-    protected enum State {
+    public enum State {
         Unknown,
         Initialized,
         Started,
@@ -75,7 +75,7 @@ public class ComponentImpl implements Component, ComponentWrapper {
         this.componentDesc = componentDesc;
         this.component = new ComponentWrapper(component);
         this.prefs = prefs;
-        this.runningState = State.valueOf(this.prefs.get(STATE, (autoStart ? State.Started : State.Initialized).name()));
+        this.runningState = State.valueOf(this.prefs.get(STATE, (autoStart ? State.Started : State.Shutdown).name()));
         this.deployer = deployer;
         this.serviceUnits = new ArrayList<ServiceUnitImpl>();
     }
@@ -267,19 +267,30 @@ public class ComponentImpl implements Component, ComponentWrapper {
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
             try {
                 Thread.currentThread().setContextClassLoader(component.getClass().getClassLoader());
-                lifeCycle.init(context);
-                state = State.Initialized;
-                if (runningState == State.Started) {
-                    start();
-                    state = State.Started;
-                } else if (runningState == State.Stopped) {
-                    start();
-                    state = State.Started;
-                    stop();
-                    state = State.Stopped;
-                } else if (runningState == State.Shutdown) {
-                    shutDown();
-                    state = State.Shutdown;
+                if (runningState != State.Unknown) {
+                    if (runningState == State.Initialized) {
+                        LOGGER.warn("Illegal running state: 'Initialized'.  Defaulting to 'Shutdown'.");
+                        runningState = State.Shutdown;
+                    }
+                    if (runningState == State.Started) {
+                        lifeCycle.init(context);
+                        state = State.Initialized;
+                        start();
+                        state = State.Started;
+                    } else if (runningState == State.Stopped) {
+                        lifeCycle.init(context);
+                        state = State.Initialized;
+                        start();
+                        state = State.Started;
+                        stop();
+                        state = State.Stopped;
+                    } else if (runningState == State.Shutdown) {
+                        state = State.Shutdown;
+                    }
+                    runningState = State.Unknown;
+                } else {
+                    lifeCycle.init(context);
+                    state = State.Initialized;
                 }
                 deployer.checkPendingBundles();
             } finally {

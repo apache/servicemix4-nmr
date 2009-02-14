@@ -89,4 +89,7 @@
         <osgi:listener ref="managedJbiRegistry" bind-method="registerServiceAssembly" unbind-method="unregisterServiceAssembly" />
     </osgi:list>
 
+    <!-- Expose management service in OSGi -->
+    <osgi:service ref="adminCommandsService" interface="org.apache.servicemix.jbi.management.AdminCommandsServiceMBean" />
+
 </beans>

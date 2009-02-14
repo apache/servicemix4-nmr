@@ -29,6 +29,8 @@ Import-Package: junit.framework,
  org.apache.servicemix.nmr.core,
  org.apache.servicemix.jbi.deployer,
  org.apache.servicemix.jbi.deployer.handler,
+ org.apache.servicemix.jbi.management,
  org.apache.servicemix.kernel.testing.support,
  org.springframework.osgi.util,
- javax.jbi.component
+ javax.jbi.component,
+ javax.jbi.management
