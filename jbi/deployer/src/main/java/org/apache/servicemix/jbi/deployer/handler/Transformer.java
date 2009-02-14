@@ -87,6 +87,7 @@ public class Transformer {
         m.getMainAttributes().putValue("Bundle-Version", version);
         m.getMainAttributes().putValue("DynamicImport-Package", "javax.*,org.xml.*,org.w3c.*");
 
+        osgiBundle.getParentFile().mkdirs();
 		JarInputStream jis = new JarInputStream(new BufferedInputStream(new FileInputStream(jbiArtifact)));
 		JarOutputStream jos = new JarOutputStream(new BufferedOutputStream(new FileOutputStream(osgiBundle)), m);
 
