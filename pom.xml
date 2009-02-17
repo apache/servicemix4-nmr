@@ -472,6 +472,11 @@
           </exclusions>
       </dependency>
       <dependency>
+          <groupId>org.apache.servicemix.kernel</groupId>
+          <artifactId>org.apache.servicemix.kernel.version</artifactId>
+          <version>${pom.version}</version>
+      </dependency>
+      <dependency>
           <groupId>org.apache.servicemix</groupId>
           <artifactId>servicemix-shared</artifactId>
           <version>${servicemix.shared.version}</version>

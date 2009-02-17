@@ -209,7 +209,6 @@
                                 <artifactItem>
                                     <groupId>org.apache.servicemix.kernel</groupId>
                                     <artifactId>org.apache.servicemix.kernel.version</artifactId>
-                                    <version>${pom.version}</version>
                                     <outputDirectory>target/dependencies</outputDirectory>
                                     <destFileName>servicemix-version.jar</destFileName>
                                 </artifactItem>
