@@ -33,6 +33,7 @@
   <name>Apache ServiceMix NMR</name>
 
   <modules>
+      <module>branding</module>
       <module>nmr</module>
       <module>document</module>
       <module>jbi</module>
