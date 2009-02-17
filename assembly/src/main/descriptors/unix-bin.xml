@@ -77,6 +77,15 @@
             <directory>${basedir}/target/features-repo</directory>
             <outputDirectory>system</outputDirectory>
         </fileSet>
+  
+        <!-- Copy over jar files -->
+        <fileSet>
+            <directory>target/dependencies</directory>
+            <includes>
+                <include>servicemix-version.jar</include>
+            </includes>
+            <outputDirectory>/lib/</outputDirectory>
+        </fileSet>
 
     </fileSets>
 
