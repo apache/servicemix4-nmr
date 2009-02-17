@@ -28,69 +28,69 @@ import java.util.regex.Pattern;
 
 public class Builder {
 
-	/**
-	 * Clean up version parameters. Other builders use more fuzzy definitions of
-	 * the version syntax. This method cleans up such a version to match an OSGi
-	 * version.
-	 *
-	 * @param version
-	 * @return
-	 */
-	static Pattern	fuzzyVersion	= Pattern
-											.compile(
-													"(\\d+)(\\.(\\d+)(\\.(\\d+))?)?([^a-zA-Z0-9](.*))?",
-													Pattern.DOTALL);
-	static Pattern	fuzzyModifier	= Pattern.compile("(\\d+[.-])*(.*)",
-											Pattern.DOTALL);
+    /**
+     * Clean up version parameters. Other builders use more fuzzy definitions of
+     * the version syntax. This method cleans up such a version to match an OSGi
+     * version.
+     *
+     * @param version
+     * @return
+     */
+    static Pattern fuzzyVersion = Pattern
+            .compile(
+                    "(\\d+)(\\.(\\d+)(\\.(\\d+))?)?([^a-zA-Z0-9](.*))?",
+                    Pattern.DOTALL);
+    static Pattern fuzzyModifier = Pattern.compile("(\\d+[.-])*(.*)",
+            Pattern.DOTALL);
 
-	static Pattern nummeric		= Pattern.compile("\\d*");
+    static Pattern nummeric = Pattern.compile("\\d*");
 
-	static public String cleanupVersion(String version) {
-		Matcher m = fuzzyVersion.matcher(version);
-		if (m.matches()) {
-			StringBuffer result = new StringBuffer();
-			String d1 = m.group(1);
-			String d2 = m.group(3);
-			String d3 = m.group(5);
-			String qualifier = m.group(7);
+    static public String cleanupVersion(String version) {
+        Matcher m = fuzzyVersion.matcher(version);
+        if (m.matches()) {
+            StringBuffer result = new StringBuffer();
+            String d1 = m.group(1);
+            String d2 = m.group(3);
+            String d3 = m.group(5);
+            String qualifier = m.group(7);
 
-			if (d1 != null) {
-				result.append(d1);
-				if (d2 != null) {
-					result.append(".");
-					result.append(d2);
-					if (d3 != null) {
-						result.append(".");
-						result.append(d3);
-						if (qualifier != null) {
-							result.append(".");
-							cleanupModifier(result, qualifier);
-						}
-					} else if (qualifier != null) {
-						result.append(".0.");
-						cleanupModifier(result, qualifier);
-					}
-				} else if (qualifier != null) {
-					result.append(".0.0.");
-					cleanupModifier(result, qualifier);
-				}
-				return result.toString();
-			}
-		}
-		return version;
-	}
+            if (d1 != null) {
+                result.append(d1);
+                if (d2 != null) {
+                    result.append(".");
+                    result.append(d2);
+                    if (d3 != null) {
+                        result.append(".");
+                        result.append(d3);
+                        if (qualifier != null) {
+                            result.append(".");
+                            cleanupModifier(result, qualifier);
+                        }
+                    } else if (qualifier != null) {
+                        result.append(".0.");
+                        cleanupModifier(result, qualifier);
+                    }
+                } else if (qualifier != null) {
+                    result.append(".0.0.");
+                    cleanupModifier(result, qualifier);
+                }
+                return result.toString();
+            }
+        }
+        return version;
+    }
 
-	static void cleanupModifier(StringBuffer result, String modifier) {
-		Matcher m = fuzzyModifier.matcher(modifier);
-		if (m.matches())
-			modifier = m.group(2);
+    static void cleanupModifier(StringBuffer result, String modifier) {
+        Matcher m = fuzzyModifier.matcher(modifier);
+        if (m.matches())
+            modifier = m.group(2);
 
-		for (int i = 0; i < modifier.length(); i++) {
-			char c = modifier.charAt(i);
-			if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') ||
-					(c >= 'A' && c <= 'Z') || c == '_' || c == '-')
-				result.append(c);
-		}
-	}
+        for (int i = 0; i < modifier.length(); i++) {
+            char c = modifier.charAt(i);
+            if ((c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') ||
+                    (c >= 'A' && c <= 'Z') || c == '_' || c == '-')
+                result.append(c);
+        }
+    }
 
 }

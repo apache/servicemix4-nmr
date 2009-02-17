@@ -19,7 +19,6 @@ package org.apache.servicemix.jbi.deployer.descriptor;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -41,6 +40,7 @@ import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
 import org.xml.sax.ErrorHandler;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -60,11 +60,46 @@ public class DescriptorFactory {
      */
     public static final String DESCRIPTOR_FILE = "META-INF/jbi.xml";
 
+
+    private static final String VERSION = "version";
+    private static final String TYPE = "type";
+    private static final String COMPONENT = "component";
+    private static final String COMPONENT_CLASS_LOADER_DELEGATION = "component-class-loader-delegation";
+    private static final String BOOTSTRAP_CLASS_LOADER_DELEGATION = "bootstrap-class-loader-delegation";
+    private static final String DESCRIPTION = "description";
+    private static final String IDENTIFICATION = "identification";
+    private static final String COMPONENT_CLASS_NAME = "component-class-name";
+    private static final String COMPONENT_CLASS_PATH = "component-class-path";
+    private static final String PATH_ELEMENT = "path-element";
+    private static final String SHARED_LIBRARY = "shared-library";
+    private static final String BOOTSTRAP_CLASS_PATH = "bootstrap-class-path";
+    private static final String BOOTSTRAP_CLASS_NAME = "bootstrap-class-name";
+    private static final String CLASS_LOADER_DELEGATION = "class-loader-delegation";
+    private static final String SERVICE_ASSEMBLY = "service-assembly";
+    private static final String SERVICE_UNIT = "service-unit";
+    private static final String TARGET = "target";
+    private static final String ARTIFACTS_ZIP = "artifacts-zip";
+    private static final String COMPONENT_NAME = "component-name";
+    private static final String CONNECTIONS = "connections";
+    private static final String CONNECTION = "connection";
+    private static final String CONSUMER = "consumer";
+    private static final String PROVIDER = "provider";
+    private static final String INTERFACE_NAME = "interface-name";
+    private static final String SERVICE_NAME = "service-name";
+    private static final String ENDPOINT_NAME = "endpoint-name";
+    private static final String BINDING_COMPONENT = "binding-component";
+    private static final String SERVICES = "services";
+    private static final String PROVIDES = "provides";
+    private static final String CONSUMES = "consumes";
+    private static final String LINK_TYPE = "link-type";
+    private static final String NAME = "name";
+    private static final String JBI_DESCRIPTOR_XSD = "jbi-descriptor.xsd";
+    private static final String SHARED_LIBRARY_CLASS_PATH = "shared-library-class-path";
+
     /**
      * Build a jbi descriptor from a file archive.
-     * 
-     * @param descriptorFile
-     *            path to the jbi descriptor, or to the root directory
+     *
+     * @param descriptorFile path to the jbi descriptor, or to the root directory
      * @return the Descriptor object
      */
     public static Descriptor buildDescriptor(File descriptorFile) {
@@ -84,8 +119,7 @@ public class DescriptorFactory {
     /**
      * Build a jbi descriptor from the specified URL
      *
-     * @param url
-     *            url to the jbi descriptor
+     * @param url url to the jbi descriptor
      * @return the Descriptor object
      */
     public static Descriptor buildDescriptor(final URL url) {
@@ -100,8 +134,7 @@ public class DescriptorFactory {
     /**
      * Build a jbi descriptor from the specified stream
      *
-     * @param stream
-     *            input stream to the jbi descriptor
+     * @param stream input stream to the jbi descriptor
      * @return the Descriptor object
      */
     public static Descriptor buildDescriptor(final InputStream stream) {
@@ -119,7 +152,7 @@ public class DescriptorFactory {
      * Build a jbi descriptor from the specified binary data.
      * The descriptor is validated against the schema, but no
      * semantic validation is performed.
-     * 
+     *
      * @param bytes hold the content of the JBI descriptor xml document
      * @return the Descriptor object
      */
@@ -127,15 +160,17 @@ public class DescriptorFactory {
         try {
             // Validate descriptor
             SchemaFactory schemaFactory = SchemaFactory.newInstance(XSD_SCHEMA_LANGUAGE);
-            Schema schema = schemaFactory.newSchema(DescriptorFactory.class.getResource("jbi-descriptor.xsd"));
+            Schema schema = schemaFactory.newSchema(DescriptorFactory.class.getResource(JBI_DESCRIPTOR_XSD));
             Validator validator = schema.newValidator();
             validator.setErrorHandler(new ErrorHandler() {
                 public void warning(SAXParseException exception) throws SAXException {
                     //log.debug("Validation warning on " + url + ": " + exception);
                 }
+
                 public void error(SAXParseException exception) throws SAXException {
                     //log.info("Validation error on " + url + ": " + exception);
                 }
+
                 public void fatalError(SAXParseException exception) throws SAXException {
                     throw exception;
                 }
@@ -148,47 +183,47 @@ public class DescriptorFactory {
             Document doc = docBuilder.parse(new ByteArrayInputStream(bytes));
             Element jbi = doc.getDocumentElement();
             Descriptor desc = new Descriptor();
-            desc.setVersion(Double.parseDouble(getAttribute(jbi, "version")));
+            desc.setVersion(Double.parseDouble(getAttribute(jbi, VERSION)));
             Element child = getFirstChildElement(jbi);
-            if ("component".equals(child.getLocalName())) {
+            if (COMPONENT.equals(child.getLocalName())) {
                 ComponentDesc component = new ComponentDesc();
-                component.setType(child.getAttribute("type"));
-                component.setComponentClassLoaderDelegation(getAttribute(child, "component-class-loader-delegation"));
-                component.setBootstrapClassLoaderDelegation(getAttribute(child, "bootstrap-class-loader-delegation"));
+                component.setType(child.getAttribute(TYPE));
+                component.setComponentClassLoaderDelegation(getAttribute(child, COMPONENT_CLASS_LOADER_DELEGATION));
+                component.setBootstrapClassLoaderDelegation(getAttribute(child, BOOTSTRAP_CLASS_LOADER_DELEGATION));
                 List<SharedLibraryList> sls = new ArrayList<SharedLibraryList>();
                 DocumentFragment ext = null;
                 for (Element e = getFirstChildElement(child); e != null; e = getNextSiblingElement(e)) {
-                    if ("identification".equals(e.getLocalName())) {
+                    if (IDENTIFICATION.equals(e.getLocalName())) {
                         component.setIdentification(readIdentification(e));
-                    } else if ("component-class-name".equals(e.getLocalName())) {
+                    } else if (COMPONENT_CLASS_NAME.equals(e.getLocalName())) {
                         component.setComponentClassName(getText(e));
-                        component.setDescription(getAttribute(e, "description"));
-                    } else if ("component-class-path".equals(e.getLocalName())) {
+                        component.setDescription(getAttribute(e, DESCRIPTION));
+                    } else if (COMPONENT_CLASS_PATH.equals(e.getLocalName())) {
                         ClassPath componentClassPath = new ClassPath();
                         ArrayList<String> l = new ArrayList<String>();
                         for (Element e2 = getFirstChildElement(e); e2 != null; e2 = getNextSiblingElement(e2)) {
-                            if ("path-element".equals(e2.getLocalName())) {
+                            if (PATH_ELEMENT.equals(e2.getLocalName())) {
                                 l.add(getText(e2));
                             }
                         }
                         componentClassPath.setPathList(l);
                         component.setComponentClassPath(componentClassPath);
-                    } else if ("bootstrap-class-name".equals(e.getLocalName())) {
+                    } else if (BOOTSTRAP_CLASS_NAME.equals(e.getLocalName())) {
                         component.setBootstrapClassName(getText(e));
-                    } else if ("bootstrap-class-path".equals(e.getLocalName())) {
+                    } else if (BOOTSTRAP_CLASS_PATH.equals(e.getLocalName())) {
                         ClassPath bootstrapClassPath = new ClassPath();
                         ArrayList<String> l = new ArrayList<String>();
                         for (Element e2 = getFirstChildElement(e); e2 != null; e2 = getNextSiblingElement(e2)) {
-                            if ("path-element".equals(e2.getLocalName())) {
+                            if (PATH_ELEMENT.equals(e2.getLocalName())) {
                                 l.add(getText(e2));
                             }
                         }
                         bootstrapClassPath.setPathList(l);
                         component.setBootstrapClassPath(bootstrapClassPath);
-                    } else if ("shared-library".equals(e.getLocalName())) {
+                    } else if (SHARED_LIBRARY.equals(e.getLocalName())) {
                         SharedLibraryList sl = new SharedLibraryList();
                         sl.setName(getText(e));
-                        sl.setVersion(getAttribute(e, "version"));
+                        sl.setVersion(getAttribute(e, VERSION));
                         sls.add(sl);
                     } else {
                         if (ext == null) {
@@ -204,18 +239,18 @@ public class DescriptorFactory {
                     component.setDescriptorExtension(descriptorExtension);
                 }
                 desc.setComponent(component);
-            } else if ("shared-library".equals(child.getLocalName())) {
+            } else if (SHARED_LIBRARY.equals(child.getLocalName())) {
                 SharedLibraryDesc sharedLibrary = new SharedLibraryDesc();
-                sharedLibrary.setClassLoaderDelegation(getAttribute(child, "class-loader-delegation"));
-                sharedLibrary.setVersion(getAttribute(child, "version"));
+                sharedLibrary.setClassLoaderDelegation(getAttribute(child, CLASS_LOADER_DELEGATION));
+                sharedLibrary.setVersion(getAttribute(child, VERSION));
                 for (Element e = getFirstChildElement(child); e != null; e = getNextSiblingElement(e)) {
-                    if ("identification".equals(e.getLocalName())) {
+                    if (IDENTIFICATION.equals(e.getLocalName())) {
                         sharedLibrary.setIdentification(readIdentification(e));
-                    } else if ("shared-library-class-path".equals(e.getLocalName())) {
+                    } else if (SHARED_LIBRARY_CLASS_PATH.equals(e.getLocalName())) {
                         ClassPath sharedLibraryClassPath = new ClassPath();
                         ArrayList<String> l = new ArrayList<String>();
                         for (Element e2 = getFirstChildElement(e); e2 != null; e2 = getNextSiblingElement(e2)) {
-                            if ("path-element".equals(e2.getLocalName())) {
+                            if (PATH_ELEMENT.equals(e2.getLocalName())) {
                                 l.add(getText(e2));
                             }
                         }
@@ -224,23 +259,23 @@ public class DescriptorFactory {
                     }
                 }
                 desc.setSharedLibrary(sharedLibrary);
-            } else if ("service-assembly".equals(child.getLocalName())) {
+            } else if (SERVICE_ASSEMBLY.equals(child.getLocalName())) {
                 ServiceAssemblyDesc serviceAssembly = new ServiceAssemblyDesc();
                 ArrayList<ServiceUnitDesc> sus = new ArrayList<ServiceUnitDesc>();
                 for (Element e = getFirstChildElement(child); e != null; e = getNextSiblingElement(e)) {
-                    if ("identification".equals(e.getLocalName())) {
+                    if (IDENTIFICATION.equals(e.getLocalName())) {
                         serviceAssembly.setIdentification(readIdentification(e));
-                    } else if ("service-unit".equals(e.getLocalName())) {
+                    } else if (SERVICE_UNIT.equals(e.getLocalName())) {
                         ServiceUnitDesc su = new ServiceUnitDesc();
                         for (Element e2 = getFirstChildElement(e); e2 != null; e2 = getNextSiblingElement(e2)) {
-                            if ("identification".equals(e2.getLocalName())) {
+                            if (IDENTIFICATION.equals(e2.getLocalName())) {
                                 su.setIdentification(readIdentification(e2));
-                            } else if ("target".equals(e2.getLocalName())) {
+                            } else if (TARGET.equals(e2.getLocalName())) {
                                 Target target = new Target();
                                 for (Element e3 = getFirstChildElement(e2); e3 != null; e3 = getNextSiblingElement(e3)) {
-                                    if ("artifacts-zip".equals(e3.getLocalName())) {
+                                    if (ARTIFACTS_ZIP.equals(e3.getLocalName())) {
                                         target.setArtifactsZip(getText(e3));
-                                    } else if ("component-name".equals(e3.getLocalName())) {
+                                    } else if (COMPONENT_NAME.equals(e3.getLocalName())) {
                                         target.setComponentName(getText(e3));
                                     }
                                 }
@@ -248,23 +283,23 @@ public class DescriptorFactory {
                             }
                         }
                         sus.add(su);
-                    } else if ("connections".equals(e.getLocalName())) {
+                    } else if (CONNECTIONS.equals(e.getLocalName())) {
                         Connections connections = new Connections();
                         ArrayList<Connection> cns = new ArrayList<Connection>();
                         for (Element e2 = getFirstChildElement(e); e2 != null; e2 = getNextSiblingElement(e2)) {
-                            if ("connection".equals(e2.getLocalName())) {
+                            if (CONNECTION.equals(e2.getLocalName())) {
                                 Connection cn = new Connection();
                                 for (Element e3 = getFirstChildElement(e2); e3 != null; e3 = getNextSiblingElement(e3)) {
-                                    if ("consumer".equals(e3.getLocalName())) {
+                                    if (CONSUMER.equals(e3.getLocalName())) {
                                         Consumer consumer = new Consumer();
-                                        consumer.setInterfaceName(readAttributeQName(e3, "interface-name"));
-                                        consumer.setServiceName(readAttributeQName(e3, "service-name"));
-                                        consumer.setEndpointName(getAttribute(e3, "endpoint-name"));
+                                        consumer.setInterfaceName(readAttributeQName(e3, INTERFACE_NAME));
+                                        consumer.setServiceName(readAttributeQName(e3, SERVICE_NAME));
+                                        consumer.setEndpointName(getAttribute(e3, ENDPOINT_NAME));
                                         cn.setConsumer(consumer);
-                                    } else if ("provider".equals(e3.getLocalName())) {
+                                    } else if (PROVIDER.equals(e3.getLocalName())) {
                                         Provider provider = new Provider();
-                                        provider.setServiceName(readAttributeQName(e3, "service-name"));
-                                        provider.setEndpointName(getAttribute(e3, "endpoint-name"));
+                                        provider.setServiceName(readAttributeQName(e3, SERVICE_NAME));
+                                        provider.setEndpointName(getAttribute(e3, ENDPOINT_NAME));
                                         cn.setProvider(provider);
                                     }
                                 }
@@ -277,24 +312,24 @@ public class DescriptorFactory {
                 }
                 serviceAssembly.setServiceUnits(sus.toArray(new ServiceUnitDesc[sus.size()]));
                 desc.setServiceAssembly(serviceAssembly);
-            } else if ("services".equals(child.getLocalName())) {
+            } else if (SERVICES.equals(child.getLocalName())) {
                 Services services = new Services();
-                services.setBindingComponent(Boolean.valueOf(getAttribute(child, "binding-component")).booleanValue());
+                services.setBindingComponent(Boolean.valueOf(getAttribute(child, BINDING_COMPONENT)).booleanValue());
                 ArrayList<Provides> provides = new ArrayList<Provides>();
                 ArrayList<Consumes> consumes = new ArrayList<Consumes>();
                 for (Element e = getFirstChildElement(child); e != null; e = getNextSiblingElement(e)) {
-                    if ("provides".equals(e.getLocalName())) {
+                    if (PROVIDES.equals(e.getLocalName())) {
                         Provides p = new Provides();
-                        p.setInterfaceName(readAttributeQName(e, "interface-name"));
-                        p.setServiceName(readAttributeQName(e, "service-name"));
-                        p.setEndpointName(getAttribute(e, "endpoint-name"));
+                        p.setInterfaceName(readAttributeQName(e, INTERFACE_NAME));
+                        p.setServiceName(readAttributeQName(e, SERVICE_NAME));
+                        p.setEndpointName(getAttribute(e, ENDPOINT_NAME));
                         provides.add(p);
-                    } else if ("consumes".equals(e.getLocalName())) {
+                    } else if (CONSUMES.equals(e.getLocalName())) {
                         Consumes c = new Consumes();
-                        c.setInterfaceName(readAttributeQName(e, "interface-name"));
-                        c.setServiceName(readAttributeQName(e, "service-name"));
-                        c.setEndpointName(getAttribute(e, "endpoint-name"));
-                        c.setLinkType(getAttribute(e, "link-type"));
+                        c.setInterfaceName(readAttributeQName(e, INTERFACE_NAME));
+                        c.setServiceName(readAttributeQName(e, SERVICE_NAME));
+                        c.setEndpointName(getAttribute(e, ENDPOINT_NAME));
+                        c.setLinkType(getAttribute(e, LINK_TYPE));
                         consumes.add(c);
                     }
                 }
@@ -308,7 +343,7 @@ public class DescriptorFactory {
             throw new RuntimeException(e);
         }
     }
-    
+
     private static String getAttribute(Element e, String name) {
         if (e.hasAttribute(name)) {
             return e.getAttribute(name);
@@ -316,7 +351,7 @@ public class DescriptorFactory {
             return null;
         }
     }
-    
+
     private static QName readAttributeQName(Element e, String name) {
         String attr = getAttribute(e, name);
         if (attr != null) {
@@ -325,17 +360,17 @@ public class DescriptorFactory {
             return null;
         }
     }
-    
+
     private static String getText(Element e) {
         return getElementText(e).trim();
     }
-    
+
     private static Identification readIdentification(Element e) {
         Identification ident = new Identification();
         for (Element e2 = getFirstChildElement(e); e2 != null; e2 = getNextSiblingElement(e2)) {
-            if ("name".equals(e2.getLocalName())) {
+            if (NAME.equals(e2.getLocalName())) {
                 ident.setName(getElementText(e2));
-            } else if ("description".equals(e2.getLocalName())) {
+            } else if (DESCRIPTION.equals(e2.getLocalName())) {
                 ident.setDescription(getElementText(e2));
             }
         }
@@ -344,11 +379,9 @@ public class DescriptorFactory {
 
     /**
      * Check validity of the JBI descriptor.
-     * 
-     * @param descriptor
-     *            the descriptor to check
-     * @throws Exception
-     *             if the descriptor is not valid
+     *
+     * @param descriptor the descriptor to check
+     * @throws Exception if the descriptor is not valid
      */
     public static void checkDescriptor(Descriptor descriptor) {
         List<String> violations = new ArrayList<String>();
@@ -371,18 +404,15 @@ public class DescriptorFactory {
 
         if (violations.size() > 0) {
             throw new RuntimeException("The JBI descriptor is not valid, please correct these violations "
-                            + violations.toString());
+                    + violations.toString());
         }
     }
 
     /**
      * Checks that the component is valid
-     * 
-     * @param violations
-     *            A list of violations that the check can add to
-     * 
-     * @param component
-     *            The component descriptor that is being checked
+     *
+     * @param violations A list of violations that the check can add to
+     * @param component  The component descriptor that is being checked
      */
     private static void checkComponent(List<String> violations, ComponentDesc component) {
         if (component.getIdentification() == null) {
@@ -402,61 +432,51 @@ public class DescriptorFactory {
 
     /**
      * Checks that the service assembly is valid
-     * 
-     * @param violations
-     *            A list of violations that the check can add to
-     * 
-     * @param serviceAssembly
-     *            The service assembly descriptor that is being checked
+     *
+     * @param violations      A list of violations that the check can add to
+     * @param serviceAssembly The service assembly descriptor that is being checked
      */
     private static void checkServiceAssembly(List<String> violations, ServiceAssemblyDesc serviceAssembly) {
         if (serviceAssembly.getIdentification() == null) {
             violations.add("The service assembly has not identification");
         } else {
             if (isBlank(serviceAssembly.getIdentification().getName())) {
-               violations.add("The service assembly name is not set"); 
+                violations.add("The service assembly name is not set");
             }
         }
     }
 
     /**
      * Checks that the service unit is valid
-     * 
-     * @param violations
-     *            A list of violations that the check can add to
-     * 
-     * @param services
-     *            The service unit descriptor that is being checked
+     *
+     * @param violations A list of violations that the check can add to
+     * @param services   The service unit descriptor that is being checked
      */
     private static void checkServiceUnit(List<String> violations, Services services) {
-        // TODO Auto-generated method stub
-        
+        // TODO validate service unit
+
     }
 
     /**
      * Checks that the shared library is valid
-     * 
-     * @param violations
-     *            A list of violations that the check can add to
-     * 
-     * @param sharedLibrary
-     *            The shared library descriptor that is being checked
+     *
+     * @param violations    A list of violations that the check can add to
+     * @param sharedLibrary The shared library descriptor that is being checked
      */
     private static void checkSharedLibrary(List<String> violations, SharedLibraryDesc sharedLibrary) {
         if (sharedLibrary.getIdentification() == null) {
             violations.add("The shared library has not identification");
         } else {
             if (isBlank(sharedLibrary.getIdentification().getName())) {
-               violations.add("The shared library name is not set"); 
+                violations.add("The shared library name is not set");
             }
         }
     }
 
     /**
      * Retrieves the jbi descriptor as a string
-     * 
-     * @param descriptorFile
-     *            path to the jbi descriptor, or to the root directory
+     *
+     * @param descriptorFile path to the jbi descriptor, or to the root directory
      * @return the contents of the jbi descriptor
      */
     public static String getDescriptorAsText(File descriptorFile) {
@@ -465,11 +485,8 @@ public class DescriptorFactory {
         }
         if (descriptorFile.isFile()) {
             try {
-                ByteArrayOutputStream os = new ByteArrayOutputStream();
-                InputStream is = new FileInputStream(descriptorFile);
-                copyInputStream(is, os);
-                return os.toString();
-            } catch (Exception e) {
+                return getDescriptorAsText(descriptorFile.toURL());
+            } catch (MalformedURLException e) {
                 //log.debug("Error reading jbi descritor: " + descriptorFile, e);
             }
         }
@@ -477,8 +494,26 @@ public class DescriptorFactory {
     }
 
     /**
-     * <p>Checks if a String is whitespace, empty ("") or null.</p>
+     * Retrieves the jbi descriptor as a string
      *
+     * @param descriptorURL URL pointing to the JBI descriptor
+     * @return the contents of the jbi descriptor
+     */
+    public static String getDescriptorAsText(URL descriptorURL) {
+        try {
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            InputStream is = descriptorURL.openStream();
+            copyInputStream(is, os);
+            return os.toString();
+        } catch (Exception e) {
+            //log.debug("Error reading jbi descritor: " + descriptorFile, e);
+        }
+        return null;
+    }
+
+    /**
+     * <p>Checks if a String is whitespace, empty ("") or null.</p>
+     * <p/>
      * <pre>
      * StringUtils.isBlank(null)      = true
      * StringUtils.isBlank("")        = true
@@ -487,10 +522,10 @@ public class DescriptorFactory {
      * StringUtils.isBlank("  bob  ") = false
      * </pre>
      *
-     * @param str  the String to check, may be null
+     * @param str the String to check, may be null
      * @return <code>true</code> if the String is null, empty or whitespace
-     * 
-     * Copied from org.apache.commons.lang.StringUtils#isBlanck
+     *         <p/>
+     *         Copied from org.apache.commons.lang.StringUtils#isBlanck
      */
     private static boolean isBlank(String str) {
         int strLen;
@@ -507,7 +542,7 @@ public class DescriptorFactory {
 
     /**
      * Copy in stream to an out stream
-     * 
+     *
      * @param in
      * @param out
      * @throws IOException
@@ -536,8 +571,7 @@ public class DescriptorFactory {
             String localName = qualifiedName.substring(index + 1);
             String uri = recursiveGetAttributeValue(element, "xmlns:" + prefix);
             return new QName(uri, localName, prefix);
-        }
-        else {
+        } else {
             String uri = recursiveGetAttributeValue(element, "xmlns");
             if (uri != null) {
                 return new QName(uri, qualifiedName);
@@ -585,6 +619,7 @@ public class DescriptorFactory {
 
     /**
      * Get the first child element
+     *
      * @param parent
      * @return
      */
@@ -598,9 +633,10 @@ public class DescriptorFactory {
         }
         return null;
     }
-    
+
     /**
      * Get the next sibling element
+     *
      * @param el
      * @return
      */
@@ -612,5 +648,5 @@ public class DescriptorFactory {
         }
         return null;
     }
-    
+
 }

@@ -16,20 +16,18 @@
  */
 package org.apache.servicemix.jbi.deployer.impl;
 
-import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.List;
 
+import org.apache.servicemix.jbi.deployer.ServiceAssembly;
+import org.apache.servicemix.nmr.api.Exchange;
+import org.apache.servicemix.nmr.api.Role;
+import org.apache.servicemix.nmr.api.Status;
 import org.apache.servicemix.nmr.api.event.EndpointListener;
 import org.apache.servicemix.nmr.api.event.ExchangeListener;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
 import org.apache.servicemix.nmr.api.internal.InternalExchange;
-import org.apache.servicemix.nmr.api.Exchange;
-import org.apache.servicemix.nmr.api.Status;
-import org.apache.servicemix.nmr.api.Role;
-import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 
 /**
  * This class will listen for endpoints activated and link them to service assemblies.
@@ -43,9 +41,9 @@ public class AssemblyReferencesListener implements EndpointListener, ExchangeLis
 
     private final ThreadLocal<ServiceAssembly> assembly = new ThreadLocal<ServiceAssembly>();
     private final ConcurrentMap<InternalEndpoint, ServiceAssembly> endpoints =
-                new ConcurrentHashMap<InternalEndpoint, ServiceAssembly>();
+            new ConcurrentHashMap<InternalEndpoint, ServiceAssembly>();
     private final ConcurrentMap<ServiceAssembly, AtomicInteger> references =
-                new ConcurrentHashMap<ServiceAssembly, AtomicInteger>();
+            new ConcurrentHashMap<ServiceAssembly, AtomicInteger>();
 
     public void setAssembly(ServiceAssembly assembly) {
         this.assembly.set(assembly);
@@ -101,9 +99,9 @@ public class AssemblyReferencesListener implements EndpointListener, ExchangeLis
                 unreference(endpoints.get(ie.getSource()));
                 unreference(endpoints.get(ie.getDestination()));
             }
-        // Check if this is a new exchange
+            // Check if this is a new exchange
         } else if (exchange.getStatus() == Status.Active && exchange.getRole() == Role.Provider &&
-                    exchange.getOut(false) == null && exchange.getFault(false) == null) {
+                exchange.getOut(false) == null && exchange.getFault(false) == null) {
             if (exchange instanceof InternalExchange) {
                 // Increment reference to the destination SA
                 InternalExchange ie = (InternalExchange) exchange;
@@ -112,7 +110,7 @@ public class AssemblyReferencesListener implements EndpointListener, ExchangeLis
         }
     }
 
-    public void waitFor(ServiceAssembly assembly) throws InterruptedException{
+    public void waitFor(ServiceAssembly assembly) throws InterruptedException {
         if (assembly != null) {
             AtomicInteger count = references.get(assembly);
             if (count != null) {

@@ -28,11 +28,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 /**
- * Created by IntelliJ IDEA.
- * User: gnodet
- * Date: Nov 8, 2007
- * Time: 5:35:15 PM
- * To change this template use File | Settings | File Templates.
+ * Test JBI descriptor parsing
  */
 public class DescriptorFactoryTest {
 

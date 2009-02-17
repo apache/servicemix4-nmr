@@ -16,8 +16,6 @@
  */
 package org.apache.servicemix.jbi.deployer.descriptor;
 
-import org.apache.servicemix.jbi.deployer.descriptor.ClassPath;
-
 /**
  * The <code>&lt;jbi:component&gt;</code> element.
  */
@@ -158,6 +156,6 @@ public class ComponentDesc {
     protected boolean isSelfFirst(String text) {
         return text != null && text.equalsIgnoreCase("self-first");
     }
-    
-    
+
+
 }

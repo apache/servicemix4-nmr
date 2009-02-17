@@ -21,50 +21,49 @@ package org.apache.servicemix.jbi.deployer.descriptor;
  */
 public class ServiceAssemblyDesc {
 
-	private Connections connections = new Connections();
+    private Connections connections = new Connections();
 
-	private Identification identification;
+    private Identification identification;
 
-	private ServiceUnitDesc[] serviceUnits;
-	
-	private String state = "";
+    private ServiceUnitDesc[] serviceUnits;
 
-	public Connections getConnections() {
-		return connections;
-	}
+    private String state = "";
 
-	public Identification getIdentification() {
-		return identification;
-	}
+    public Connections getConnections() {
+        return connections;
+    }
 
-	public ServiceUnitDesc[] getServiceUnits() {
-		return serviceUnits;
-	}
+    public Identification getIdentification() {
+        return identification;
+    }
 
-	/**
-	 * @return Returns the state.
-	 */
-	public String getState() {
-		return state;
-	}
+    public ServiceUnitDesc[] getServiceUnits() {
+        return serviceUnits;
+    }
 
-	public void setConnections(Connections connections) {
-		this.connections = connections;
-	}
+    /**
+     * @return Returns the state.
+     */
+    public String getState() {
+        return state;
+    }
 
-	public void setIdentification(Identification identification) {
-		this.identification = identification;
-	}
+    public void setConnections(Connections connections) {
+        this.connections = connections;
+    }
 
-	public void setServiceUnits(ServiceUnitDesc[] serviceUnits) {
-		this.serviceUnits = serviceUnits;
-	}
+    public void setIdentification(Identification identification) {
+        this.identification = identification;
+    }
 
-	/**
-	 * @param state
-	 *            The state to set.
-	 */
-	public void setState(String state) {
-		this.state = state;
+    public void setServiceUnits(ServiceUnitDesc[] serviceUnits) {
+        this.serviceUnits = serviceUnits;
+    }
+
+    /**
+     * @param state The state to set.
+     */
+    public void setState(String state) {
+        this.state = state;
 	}
 }

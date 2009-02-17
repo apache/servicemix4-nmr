@@ -36,7 +36,6 @@
         <module>cluster</module>
         <module>deployer</module>
         <module>osgi</module>
-        <module>management</module>
         <module>commands</module>
         <module>itests</module>
     </modules>

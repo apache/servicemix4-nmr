@@ -27,56 +27,56 @@ import java.net.URLConnection;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.servicemix.jbi.deployer.impl.FileUtil;
+import org.apache.servicemix.jbi.deployer.utils.FileUtil;
 
 /**
  * A URL connection to handle the JBI to OSGi transformation
  * using a URL.
  */
 public class Connection extends URLConnection {
-	
-	private static Log logger = LogFactory.getLog(Connection.class);
-	
-	private URLHandler urlHandler;
-	
-	public Connection(URL url, URLHandler urlHandler) {
-		super(url);
-		this.urlHandler = urlHandler;
-	}
+
+    private static Log logger = LogFactory.getLog(Connection.class);
+
+    private URLHandler urlHandler;
+
+    public Connection(URL url, URLHandler urlHandler) {
+        super(url);
+        this.urlHandler = urlHandler;
+    }
 
 
     /**
      * Connect method.  Nothing to do in our case.
      */
     @Override
-	public void connect() {
-	}
+    public void connect() {
+    }
 
     /**
      * Retrieve an InputStream on the OSGi bundle.
-     * 
+     *
      * @return an InputStream used to read the transformation output.
      * @throws IOException if an error occurs when transforming the JBI artifact.
      */
     @Override
-	public InputStream getInputStream() throws IOException {
-		try {
-			InputStream targetInputStream = urlHandler.getJbiArtifactURL().openConnection().getInputStream();
-			File jbiZipFile = File.createTempFile("jbi", ".zip");
-			FileOutputStream jbiZip = new FileOutputStream(jbiZipFile);
-			
-			FileUtil.copyInputStream(targetInputStream, jbiZip);
-			jbiZip.close();
-			targetInputStream.close();
-			
-			File jbiBundle = File.createTempFile("jbi", ".jar");
-			Transformer.transformToOSGiBundle(jbiZipFile, jbiBundle);
-			return new FileInputStream(jbiBundle);
-		} catch (Exception e) {
-			logger.error("Error opening jbi protocol artifact", e);
-			throw (IOException) new IOException("Error opening jbi protocol artifact").initCause(e);
-		}
-	}
-	
+    public InputStream getInputStream() throws IOException {
+        try {
+            InputStream targetInputStream = urlHandler.getJbiArtifactURL().openConnection().getInputStream();
+            File jbiZipFile = File.createTempFile("jbi", ".zip");
+            FileOutputStream jbiZip = new FileOutputStream(jbiZipFile);
+
+            FileUtil.copyInputStream(targetInputStream, jbiZip);
+            jbiZip.close();
+            targetInputStream.close();
+
+            File jbiBundle = File.createTempFile("jbi", ".jar");
+            Transformer.transformToOSGiBundle(jbiZipFile, jbiBundle);
+            return new FileInputStream(jbiBundle);
+        } catch (Exception e) {
+            logger.error("Error opening jbi protocol artifact", e);
+            throw (IOException) new IOException("Error opening jbi protocol artifact").initCause(e);
+        }
+    }
+
 
 }

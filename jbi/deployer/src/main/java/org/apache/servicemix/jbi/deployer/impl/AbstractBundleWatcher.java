@@ -18,8 +18,6 @@ package org.apache.servicemix.jbi.deployer.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;

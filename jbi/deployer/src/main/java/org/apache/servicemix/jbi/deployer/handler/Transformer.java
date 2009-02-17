@@ -16,12 +16,12 @@
  */
 package org.apache.servicemix.jbi.deployer.handler;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
@@ -30,7 +30,7 @@ import java.util.jar.Manifest;
 
 import org.apache.servicemix.jbi.deployer.descriptor.Descriptor;
 import org.apache.servicemix.jbi.deployer.descriptor.DescriptorFactory;
-import org.apache.servicemix.jbi.deployer.impl.FileUtil;
+import org.apache.servicemix.jbi.deployer.utils.FileUtil;
 
 /**
  * Helper class to transform JBI artifacts into OSGi bundles.
@@ -47,23 +47,23 @@ public class Transformer {
      * Create an OSGi bundle from the JBI artifact.
      * The process creates the following OSGi manifest entries:
      * <ul>
-     *   <li><b><code>Bundle-SymbolicName</code></b>: the name of the JBI artifact</li>
-     *   <li><b><code>Bundle-Version</code></b>: retrieved from the <code>Implementation-Version</code> manifest entry</li>
-     *   <li><b><code>DynamicImport-Package</code></b>: javax.*,org.xml.*,org.w3c.*</li>
+     * <li><b><code>Bundle-SymbolicName</code></b>: the name of the JBI artifact</li>
+     * <li><b><code>Bundle-Version</code></b>: retrieved from the <code>Implementation-Version</code> manifest entry</li>
+     * <li><b><code>DynamicImport-Package</code></b>: javax.*,org.xml.*,org.w3c.*</li>
      * </ul>
      *
      * @param jbiArtifact the input JBI artifact.
-     * @param osgiBundle the output OSGi bundle.
+     * @param osgiBundle  the output OSGi bundle.
      * @throws Exception if an error occurs during the transformation process.
      */
     public static void transformToOSGiBundle(File jbiArtifact, File osgiBundle) throws Exception {
-    	JarFile jar = new JarFile(jbiArtifact);
+        JarFile jar = new JarFile(jbiArtifact);
         Manifest m = jar.getManifest();
         if (m == null) {
             m = new Manifest();
             m.getMainAttributes().putValue("Manifest-Version", "1.0");
         }
-        JarEntry jarEntry = jar.getJarEntry("META-INF/jbi.xml");
+        JarEntry jarEntry = jar.getJarEntry(DescriptorFactory.DESCRIPTOR_FILE);
         InputStream is = jar.getInputStream(jarEntry);
         Descriptor desc = DescriptorFactory.buildDescriptor(is);
 
@@ -78,9 +78,9 @@ public class Transformer {
         if (desc.getComponent() != null) {
             name = desc.getComponent().getIdentification().getName();
         } else if (desc.getSharedLibrary() != null) {
-        	name = desc.getSharedLibrary().getIdentification().getName();
+            name = desc.getSharedLibrary().getIdentification().getName();
         } else if (desc.getServiceAssembly() != null) {
-        	name = desc.getServiceAssembly().getIdentification().getName();
+            name = desc.getServiceAssembly().getIdentification().getName();
         }
 
         m.getMainAttributes().putValue("Bundle-SymbolicName", name);
@@ -88,29 +88,28 @@ public class Transformer {
         m.getMainAttributes().putValue("DynamicImport-Package", "javax.*,org.xml.*,org.w3c.*");
 
         osgiBundle.getParentFile().mkdirs();
-		JarInputStream jis = new JarInputStream(new BufferedInputStream(new FileInputStream(jbiArtifact)));
-		JarOutputStream jos = new JarOutputStream(new BufferedOutputStream(new FileOutputStream(osgiBundle)), m);
+        JarInputStream jis = new JarInputStream(new BufferedInputStream(new FileInputStream(jbiArtifact)));
+        JarOutputStream jos = new JarOutputStream(new BufferedOutputStream(new FileOutputStream(osgiBundle)), m);
 
-		JarEntry entry = jis.getNextJarEntry();
-		while (entry != null) {
+        JarEntry entry = jis.getNextJarEntry();
+        while (entry != null) {
             if (!"META-INF/MANIFEST.MF".equals(entry.getName())) {
                 jos.putNextEntry(entry);
                 FileUtil.copyInputStream(jis, jos);
                 jos.closeEntry();
             }
-		    entry = jis.getNextJarEntry();
-		}
+            entry = jis.getNextJarEntry();
+        }
 
-		jos.close();
-		jis.close();
+        jos.close();
+        jis.close();
     }
-    
+
     public static Descriptor getDescriptor(File jbiArtifact) throws Exception {
-    	JarFile jar = new JarFile(jbiArtifact);
-    	JarEntry jarEntry = jar.getJarEntry("META-INF/jbi.xml");
+        JarFile jar = new JarFile(jbiArtifact);
+        JarEntry jarEntry = jar.getJarEntry(DescriptorFactory.DESCRIPTOR_FILE);
         InputStream is = jar.getInputStream(jarEntry);
-        Descriptor desc = DescriptorFactory.buildDescriptor(is);
-        return desc;
+        return DescriptorFactory.buildDescriptor(is);
     }
 
 }

@@ -27,18 +27,28 @@ public interface ServiceAssembly extends LifeCycleMBean {
 
     /**
      * Retrieves the name of this service assembly
+     *
      * @return the name
      */
     String getName();
 
     /**
      * Retrieves the description of this service assembly
+     *
      * @return the description
      */
     String getDescription();
 
     /**
+     * Retrieve the JBI descriptor for this service assembly
+     *
+     * @return the JBI descriptor
+     */
+    String getDescriptor();
+
+    /**
      * Get the list of service units included in this Service Assembly
+     *
      * @return
      */
     ServiceUnit[] getServiceUnits();

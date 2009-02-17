@@ -314,11 +314,6 @@
       </dependency>
       <dependency>
           <groupId>org.apache.servicemix.jbi</groupId>
-          <artifactId>org.apache.servicemix.jbi.management</artifactId>
-          <version>${pom.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>org.apache.servicemix.jbi</groupId>
           <artifactId>org.apache.servicemix.jbi.osgi</artifactId>
           <version>${pom.version}</version>
       </dependency>
@@ -408,9 +403,14 @@
           <artifactId>geronimo-jta_1.1_spec</artifactId>
           <version>${geronimo.jta.version}</version>
       </dependency>
-	    <dependency>
+      <dependency>
           <groupId>org.apache.xbean</groupId>
           <artifactId>xbean-classloader</artifactId>
+          <version>${xbean.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.xbean</groupId>
+          <artifactId>xbean-naming</artifactId>
           <version>${xbean.version}</version>
       </dependency>
       <dependency>

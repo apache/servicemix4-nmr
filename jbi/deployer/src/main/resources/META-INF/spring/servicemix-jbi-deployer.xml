@@ -31,9 +31,12 @@
 
     <!-- JBI Deployer -->
     <bean id="deployer" class="org.apache.servicemix.jbi.deployer.impl.Deployer">
-        <property name="preferencesService" ref="preferencesService" />
         <property name="autoStart" value="true" />
         <property name="endpointListener" ref="endpointListener" />
+        <property name="environment" ref="environment" />
+        <property name="namingStrategy" ref="namingStrategy" />
+        <property name="managementAgent" ref="managementAgent" />
+        <property name="preferencesService" ref="preferencesService" />
     </bean>
 
     <!-- Endpoint listener -->
@@ -46,10 +49,6 @@
     
     <!-- JBI Handler -->
     <bean id="jbiHandler" class="org.apache.servicemix.jbi.deployer.handler.URLHandler" />
-
-    <!-- Preferences Service -->
-    <osgi:reference id="preferencesService"
-                    interface="org.osgi.service.prefs.PreferencesService" />
 
     <osgi:service ref="jbiHandler" interface="org.osgi.service.url.URLStreamHandlerService">
     	<osgi:service-properties>
@@ -66,5 +65,60 @@
             <value>org.apache.servicemix.nmr.api.event.ExchangeListener</value>
         </osgi:interfaces>
     </osgi:service>
+
+    <!-- Utilities -->
+    <bean id="namingStrategy" class="org.apache.servicemix.jbi.deployer.impl.DefaultNamingStrategy">
+        <property name="jmxDomainName" value="org.apache.servicemix" />
+    </bean>
+    <bean id="managementAgent" class="org.apache.servicemix.jbi.deployer.impl.ManagementAgent">
+        <property name="mbeanServer" ref="mbeanServer" />
+    </bean>
+
+    <!-- Services -->
+    <bean id="adminService" class="org.apache.servicemix.jbi.deployer.impl.AdminService">
+        <property name="namingStrategy" ref="namingStrategy" />
+    </bean>
+    <bean id="adminCommandsService" class="org.apache.servicemix.jbi.deployer.impl.AdminCommandsImpl">
+        <property name="deployer" ref="deployer" />
+        <property name="deploymentService" ref="deploymentService" />
+        <property name="installationService" ref="installationService" />
+    </bean>
+    <bean id="installationService" class="org.apache.servicemix.jbi.deployer.impl.InstallationService">
+        <property name="deployer" ref="deployer" />
+        <property name="managementAgent" ref="managementAgent" />
+        <property name="namingStrategy" ref="namingStrategy" />
+    </bean>
+    <bean id="deploymentService" class="org.apache.servicemix.jbi.deployer.impl.DeploymentService">
+    </bean>
+
+
+    <!-- Expose management service in OSGi -->
+    <osgi:service ref="adminCommandsService" interface="org.apache.servicemix.jbi.deployer.AdminCommands" />
+
+    <!-- Environment -->
+    <bean id="environment" class="org.apache.servicemix.jbi.runtime.impl.EnvironmentImpl">
+        <property name="transactionManagers" ref="transactionManagers" />
+        <property name="mbeanServer" ref="mbeanServer" />
+        <property name="namingContexts" ref="namingContexts" />
+    </bean>
+
+    <!-- Reference to the Transaction Manager -->
+    <osgi:list id="transactionManagers"
+               interface="javax.transaction.TransactionManager"
+               cardinality="0..N" />
+
+    <!-- Reference to the InitialContext -->
+    <osgi:list id="namingContexts"
+               interface="javax.naming.InitialContext"
+               cardinality="0..N" />
+
+    <!-- MBeanServer -->
+    <osgi:reference id="mbeanServer"
+                    interface="javax.management.MBeanServer"
+                    cardinality="1..1" />
+
+    <!-- Preferences Service -->
+    <osgi:reference id="preferencesService"
+                    interface="org.osgi.service.prefs.PreferencesService" />
 
 </beans>

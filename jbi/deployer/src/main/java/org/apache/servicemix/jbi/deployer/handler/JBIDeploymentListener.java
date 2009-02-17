@@ -34,10 +34,10 @@ import org.apache.servicemix.kernel.filemonitor.DeploymentListener;
  * without any OSGi manifest entries.
  */
 public class JBIDeploymentListener implements DeploymentListener {
-	
-	private static final Log Logger = LogFactory.getLog(JBIDeploymentListener.class);
-	
-	private Deployer deployer;
+
+    private static final Log Logger = LogFactory.getLog(JBIDeploymentListener.class);
+
+    private Deployer deployer;
 
     /**
      * Check if the file is a recognized JBI artifact that needs to be
@@ -48,66 +48,65 @@ public class JBIDeploymentListener implements DeploymentListener {
      *         should be transformed into an OSGi bundle.
      */
     public boolean canHandle(File artifact) {
-		try {
+        try {
             // Accept jars and zips
             if (!artifact.getName().endsWith(".zip") &&
-                !artifact.getName().endsWith(".jar")) {
+                    !artifact.getName().endsWith(".jar")) {
                 return false;
             }
-			JarFile jar = new JarFile(artifact);
-			JarEntry entry = jar.getJarEntry(DescriptorFactory.DESCRIPTOR_FILE);
+            JarFile jar = new JarFile(artifact);
+            JarEntry entry = jar.getJarEntry(DescriptorFactory.DESCRIPTOR_FILE);
             // Only handle JBI artifacts
             if (entry == null) {
-				return false;
-			}
+                return false;
+            }
             // Only handle non OSGi bundles
             Manifest m = jar.getManifest();
             if (m != null &&
-                m.getMainAttributes().getValue(new Attributes.Name("Bundle-SymbolicName")) != null &&
-                m.getMainAttributes().getValue(new Attributes.Name("Bundle-Version")) != null) {
+                    m.getMainAttributes().getValue(new Attributes.Name("Bundle-SymbolicName")) != null &&
+                    m.getMainAttributes().getValue(new Attributes.Name("Bundle-Version")) != null) {
                 return false;
             }
             return true;
-		} catch (Exception e) {
-			return false;
-		}
-	}
+        } catch (Exception e) {
+            return false;
+        }
+    }
 
 
     /**
      * Transform the file, which is a JBI artifact, into an OSGi bundle.
      *
      * @param artifact the file to transform.
-     * @param tmpDir the location where the file should be stored.
+     * @param tmpDir   the location where the file should be stored.
      * @return the location of the transformed OSGi bundle, or <code>null</code>
      *         if the transformation could not take place.
      */
     public File handle(File artifact, File tmpDir) {
-		try{
-			String bundleName = artifact.getName().substring(0, artifact.getName().length() -4 ) + ".jar";
-			File destFile = new File(tmpDir, bundleName);
-			if (destFile.exists()) {
-				destFile.delete();
-			}			
-			Transformer.transformToOSGiBundle(artifact, destFile);
-			return destFile;
-			
-		} catch (Exception e) {
-			Logger.error("Failed in transforming the JBI artifact to be OSGified. error is: " + e);
-			return null;
-		}
-	}
+        try {
+            String bundleName = artifact.getName().substring(0, artifact.getName().length() - 4) + ".jar";
+            File destFile = new File(tmpDir, bundleName);
+            if (destFile.exists()) {
+                destFile.delete();
+            }
+            Transformer.transformToOSGiBundle(artifact, destFile);
+            return destFile;
+
+        } catch (Exception e) {
+            Logger.error("Failed in transforming the JBI artifact to be OSGified. error is: " + e);
+            return null;
+        }
+    }
 
 
-	public void setDeployer(Deployer deployer) {
-		this.deployer = deployer;
-	}
+    public void setDeployer(Deployer deployer) {
+        this.deployer = deployer;
+    }
 
 
-	public Deployer getDeployer() {
-		return deployer;
-	}
+    public Deployer getDeployer() {
+        return deployer;
+    }
 
-    
 
 }

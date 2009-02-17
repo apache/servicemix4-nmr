@@ -85,10 +85,6 @@
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.jbi</groupId>
-            <artifactId>org.apache.servicemix.jbi.management</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.jbi</groupId>
             <artifactId>org.apache.servicemix.jbi.osgi</artifactId>
         </dependency>
         <dependency>

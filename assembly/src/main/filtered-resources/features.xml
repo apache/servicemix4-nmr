@@ -40,6 +40,5 @@
         <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.osgi/${pom.version}</bundle>
         <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.deployer/${pom.version}</bundle>
         <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.commands/${pom.version}</bundle>
-        <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.management/${pom.version}</bundle>
     </feature>
 </features>

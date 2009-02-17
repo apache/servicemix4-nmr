@@ -16,34 +16,45 @@
  */
 package org.apache.servicemix.jbi.deployer;
 
-import javax.jbi.management.ComponentLifeCycleMBean;
 import javax.jbi.JBIException;
+import javax.jbi.management.ComponentLifeCycleMBean;
 
 /**
- * Represents a JBI component.
+ * This interface represents a JBI Component and will be registered in
+ * the OSGi registry
  */
 public interface Component extends ComponentLifeCycleMBean {
 
     /**
      * Retrieves the name of this service assembly
+     *
      * @return the name
      */
     String getName();
 
     /**
      * Retrieves the description of this service assembly
+     *
      * @return the description
      */
     String getDescription();
 
     /**
+     * Return the type of this component (service-engine or binding-component)
+     *
+     * @return the type
+     */
+    String getType();
+
+    /**
      * Access to the JBI component
+     *
      * @return
      */
     javax.jbi.component.Component getComponent();
 
     /**
-     * Retrieve the ServiceUnits deployed on this component 
+     * Retrieve the ServiceUnits deployed on this component
      */
     ServiceUnit[] getServiceUnits();
 

@@ -17,15 +17,9 @@
 package org.apache.servicemix.jbi.deployer.impl;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URL;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Dictionary;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -34,46 +28,53 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jbi.JBIException;
 import javax.jbi.management.LifeCycleMBean;
+import javax.management.StandardMBean;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.deployer.Component;
+import org.apache.servicemix.jbi.deployer.DeployedAssembly;
+import org.apache.servicemix.jbi.deployer.NamingStrategy;
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
 import org.apache.servicemix.jbi.deployer.SharedLibrary;
-import org.apache.servicemix.jbi.deployer.DeployedAssembly;
+import org.apache.servicemix.jbi.deployer.artifacts.ComponentImpl;
+import org.apache.servicemix.jbi.deployer.artifacts.ServiceAssemblyImpl;
+import org.apache.servicemix.jbi.deployer.artifacts.ServiceUnitImpl;
+import org.apache.servicemix.jbi.deployer.artifacts.SharedLibraryImpl;
 import org.apache.servicemix.jbi.deployer.descriptor.ComponentDesc;
 import org.apache.servicemix.jbi.deployer.descriptor.Descriptor;
 import org.apache.servicemix.jbi.deployer.descriptor.DescriptorFactory;
+import org.apache.servicemix.jbi.deployer.descriptor.Identification;
 import org.apache.servicemix.jbi.deployer.descriptor.ServiceAssemblyDesc;
 import org.apache.servicemix.jbi.deployer.descriptor.ServiceUnitDesc;
 import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryDesc;
 import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryList;
-import org.apache.servicemix.jbi.deployer.descriptor.Identification;
 import org.apache.servicemix.jbi.deployer.descriptor.Target;
+import org.apache.servicemix.jbi.deployer.utils.FileUtil;
+import org.apache.servicemix.jbi.deployer.utils.QueryUtils;
 import org.apache.servicemix.jbi.runtime.ComponentWrapper;
+import org.apache.servicemix.jbi.runtime.Environment;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.ServiceReference;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.prefs.Preferences;
 import org.osgi.service.prefs.PreferencesService;
 import org.osgi.util.tracker.ServiceTracker;
-import org.springframework.osgi.util.BundleDelegatingClassLoader;
 import org.springframework.osgi.util.OsgiStringUtils;
 
 /**
  * Deployer for JBI artifacts
- *
  */
 public class Deployer extends AbstractBundleWatcher {
 
     public static final String NAME = "NAME";
     public static final String TYPE = "TYPE";
+    public static final String TYPE_SERVICE_ENGINE = "service-engine";
+    public static final String TYPE_BINDING_COMPONENT = "binding-component";
 
     private static final Log LOGGER = LogFactory.getLog(Deployer.class);
-
-    private static final String JBI_DESCRIPTOR = "META-INF/jbi.xml";
 
     private Map<String, SharedLibraryImpl> sharedLibraries;
 
@@ -98,7 +99,20 @@ public class Deployer extends AbstractBundleWatcher {
     private ServiceTracker deployedAssembliesTracker;
     private AssemblyReferencesListener endpointListener;
 
-    public Deployer() throws JBIException{
+    private ThreadLocal<ComponentInstaller> componentInstaller = new ThreadLocal<ComponentInstaller>();
+
+    private NamingStrategy namingStrategy;
+    private ManagementAgent managementAgent;
+
+    private Runnable checkPendingBundlesCallback;
+    private Environment environment;
+
+    public Deployer() throws JBIException {
+        checkPendingBundlesCallback = new Runnable() {
+            public void run() {
+                checkPendingBundles();
+            }
+        };
         sharedLibraries = new ConcurrentHashMap<String, SharedLibraryImpl>();
         serviceAssemblies = new ConcurrentHashMap<String, ServiceAssemblyImpl>();
         components = new ConcurrentHashMap<String, ComponentImpl>();
@@ -132,6 +146,30 @@ public class Deployer extends AbstractBundleWatcher {
 
     public AssemblyReferencesListener getEndpointListener() {
         return endpointListener;
+    }
+
+    public NamingStrategy getNamingStrategy() {
+        return namingStrategy;
+    }
+
+    public void setNamingStrategy(NamingStrategy namingStrategy) {
+        this.namingStrategy = namingStrategy;
+    }
+
+    public ManagementAgent getManagementAgent() {
+        return managementAgent;
+    }
+
+    public void setManagementAgent(ManagementAgent managementAgent) {
+        this.managementAgent = managementAgent;
+    }
+
+    public ComponentInstaller getComponentInstaller() {
+        return componentInstaller.get();
+    }
+
+    public void setComponentInstaller(ComponentInstaller installer) {
+        componentInstaller.set(installer);
     }
 
     @Override
@@ -176,7 +214,7 @@ public class Deployer extends AbstractBundleWatcher {
     @Override
     protected boolean match(Bundle bundle) {
         LOGGER.debug("Checking bundle: '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "'");
-        URL url = bundle.getResource(JBI_DESCRIPTOR);
+        URL url = bundle.getResource(DescriptorFactory.DESCRIPTOR_FILE);
         if (url == null) {
             LOGGER.debug("Bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' does not contain any JBI descriptor.");
             return false;
@@ -189,7 +227,7 @@ public class Deployer extends AbstractBundleWatcher {
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-            URL url = bundle.getResource(JBI_DESCRIPTOR);
+            URL url = bundle.getResource(DescriptorFactory.DESCRIPTOR_FILE);
             Descriptor descriptor = DescriptorFactory.buildDescriptor(url);
             DescriptorFactory.checkDescriptor(descriptor);
             if (descriptor.getComponent() != null) {
@@ -217,16 +255,16 @@ public class Deployer extends AbstractBundleWatcher {
         pendingBundles.remove(bundle);
         List<ServiceRegistration> registrations = services.remove(bundle);
         if (registrations != null) {
-        	for (ServiceRegistration reg : registrations) {
+            for (ServiceRegistration reg : registrations) {
                 try {
-                	reg.unregister();
+                    reg.unregister();
                 } catch (IllegalStateException e) {
                     // Ignore
                 }
             }
         }
         try {
-            URL url = bundle.getResource(JBI_DESCRIPTOR);
+            URL url = bundle.getResource(DescriptorFactory.DESCRIPTOR_FILE);
             Descriptor descriptor = DescriptorFactory.buildDescriptor(url);
             if (descriptor.getComponent() != null) {
                 uninstallComponent(descriptor.getComponent(), bundle);
@@ -240,30 +278,33 @@ public class Deployer extends AbstractBundleWatcher {
         }
     }
 
-    protected void installComponent(ComponentDesc componentDesc, Bundle bundle) throws Exception {
+    protected void installComponent(final ComponentDesc componentDesc, Bundle bundle) throws Exception {
         LOGGER.info("Deploying bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' as a JBI component");
-        // Check requirements
-        if (componentDesc.getSharedLibraries() != null) {
-            for (SharedLibraryList sl : componentDesc.getSharedLibraries()) {
-                if (sharedLibraries.get(sl.getName()) == null) {
-                    throw new PendingException(bundle, "SharedLibrary not installed: " + sl.getName());
+        // If an installer has been registered, this means that we are using JMX or ant tasks to deploy the JBI artifact.
+        // In such a case, let the installer do the work.
+        // Else, the bundle has been deployed through the deploy folder or the command line or any other
+        // non JBI way, which means we need to create an installer and install the component now.
+        if (getComponentInstaller() == null) {
+            // Check requirements
+            if (componentDesc.getSharedLibraries() != null) {
+                for (SharedLibraryList sl : componentDesc.getSharedLibraries()) {
+                    if (sharedLibraries.get(sl.getName()) == null) {
+                        throw new PendingException(bundle, "SharedLibrary not installed: " + sl.getName());
+                    }
                 }
             }
+            ComponentInstaller installer = new ComponentInstaller(this, componentDesc, null);
+            installer.setAutoStart(true);
+            installer.setBundle(bundle);
+            installer.init();
+            installer.install();
         }
+    }
+
+    public Component registerComponent(Bundle bundle, ComponentDesc componentDesc, javax.jbi.component.Component innerComponent) throws Exception {
         String name = componentDesc.getIdentification().getName();
-        // Create component class loader
-        ClassLoader classLoader = createComponentClassLoader(componentDesc, bundle);
-        Thread.currentThread().setContextClassLoader(classLoader);
-        // Extract component (needed to feed the installRoot)
-        // Few components actually use this, but Ode is one of them
-        File installRoot = new File(System.getProperty("servicemix.base"), "data/jbi/" + name + "/install");
-        installRoot.mkdirs();
-        extractBundle(installRoot, bundle, "/");
-        // Instanciate component
         Preferences prefs = preferencesService.getUserPreferences(name);
-        Class clazz = classLoader.loadClass(componentDesc.getComponentClassName());
-        javax.jbi.component.Component innerComponent = (javax.jbi.component.Component) clazz.newInstance();
-        ComponentImpl component = new ComponentImpl(componentDesc, innerComponent, prefs, autoStart, this);
+        ComponentImpl component = new ComponentImpl(componentDesc, innerComponent, prefs, autoStart, checkPendingBundlesCallback);
         components.put(name, component);
         // populate props from the component meta-data
         Dictionary<String, String> props = new Hashtable<String, String>();
@@ -274,35 +315,18 @@ public class Deployer extends AbstractBundleWatcher {
         registerService(bundle, Component.class.getName(), component, props);
         registerService(bundle, ComponentWrapper.class.getName(), component, props);
         registerService(bundle, javax.jbi.component.Component.class.getName(), innerComponent, props);
-    }
-
-    private void extractBundle(File installRoot, Bundle bundle, String path) throws IOException {
-        Enumeration e = bundle.getEntryPaths(path);
-        while (e != null && e.hasMoreElements()) {
-            String entry = (String) e.nextElement();
-            File fout = new File(installRoot, entry);
-            if (entry.endsWith("/")) {
-                fout.mkdirs();
-                extractBundle(installRoot, bundle, entry);
-            } else {
-                InputStream in = bundle.getEntry(entry).openStream();
-                OutputStream out = new FileOutputStream(fout);
-                try {
-                    FileUtil.copyInputStream(in, out);
-                } finally {
-                    in.close();
-                    out.close();
-                }
-            }
-        }
+        getManagementAgent().register(new StandardMBean(component, Component.class),
+                                      getNamingStrategy().getObjectName(component));
+        return component;
     }
 
     protected void deployServiceAssembly(ServiceAssemblyDesc serviceAssembyDesc, Bundle bundle) throws Exception {
+        // TODO: use servce assembly installer
         LOGGER.info("Deploying bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' as a JBI service assembly");
         // Check requirements
         for (ServiceUnitDesc sud : serviceAssembyDesc.getServiceUnits()) {
             String componentName = sud.getTarget().getComponentName();
-            ComponentImpl component = components.get(componentName);
+            Component component = QueryUtils.getComponent(getBundleContext(), componentName);
             if (component == null) {
                 throw new PendingException(bundle, "Component not installed: " + componentName);
             }
@@ -357,10 +381,10 @@ public class Deployer extends AbstractBundleWatcher {
 
     }
 
-    protected void registerSA(ServiceAssemblyDesc serviceAssembyDesc, Bundle bundle, List<ServiceUnitImpl> sus) throws JBIException {
+    protected void registerSA(ServiceAssemblyDesc serviceAssembyDesc, Bundle bundle, List<ServiceUnitImpl> sus) throws Exception {
         // Now create the SA and initialize it
         Preferences prefs = preferencesService.getUserPreferences(serviceAssembyDesc.getIdentification().getName());
-        ServiceAssemblyImpl sa = new ServiceAssemblyImpl(serviceAssembyDesc, sus, prefs, endpointListener, autoStart);
+        ServiceAssemblyImpl sa = new ServiceAssemblyImpl(bundle, serviceAssembyDesc, sus, prefs, endpointListener, autoStart);
         sa.init();
         serviceAssemblies.put(sa.getName(), sa);
         // populate props from the component meta-data
@@ -369,9 +393,12 @@ public class Deployer extends AbstractBundleWatcher {
         // register the service assembly in the OSGi registry
         LOGGER.debug("Registering JBI service assembly");
         registerService(bundle, ServiceAssembly.class.getName(), sa, props);
+        getManagementAgent().register(new StandardMBean(sa, ServiceAssembly.class),
+                getNamingStrategy().getObjectName(sa));
     }
 
-    protected void installSharedLibrary(SharedLibraryDesc sharedLibraryDesc, Bundle bundle) {
+    protected void installSharedLibrary(SharedLibraryDesc sharedLibraryDesc, Bundle bundle) throws Exception {
+        // TODO: use shared library installer
         LOGGER.info("Deploying bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' as a JBI shared library");
         SharedLibraryImpl sl = new SharedLibraryImpl(sharedLibraryDesc, bundle);
         sharedLibraries.put(sl.getName(), sl);
@@ -380,6 +407,8 @@ public class Deployer extends AbstractBundleWatcher {
         props.put(NAME, sharedLibraryDesc.getIdentification().getName());
         LOGGER.debug("Registering JBI Shared Library");
         registerService(bundle, SharedLibrary.class.getName(), sl, props);
+        getManagementAgent().register(new StandardMBean(sl, SharedLibrary.class),
+                getNamingStrategy().getObjectName(sl));
         // Check pending bundles
         checkPendingBundles();
     }
@@ -401,6 +430,7 @@ public class Deployer extends AbstractBundleWatcher {
             FileUtil.deleteFile(file);
         }
     }
+
     protected void undeployServiceAssembly(ServiceAssemblyDesc serviceAssembyDesc, Bundle bundle) throws Exception {
         String name = serviceAssembyDesc.getIdentification().getName();
         unregisterSA(name);
@@ -434,7 +464,7 @@ public class Deployer extends AbstractBundleWatcher {
             componentDesc.setIdentification(new Identification());
             componentDesc.getIdentification().setName(name);
             componentDesc.setType(type);
-            ComponentImpl wrapper = new ComponentImpl(componentDesc, component, prefs, autoStart, this);
+            ComponentImpl wrapper = new ComponentImpl(componentDesc, component, prefs, autoStart, checkPendingBundlesCallback);
             wrappedComponents.put(name, true);
             components.put(name, wrapper);
             Dictionary<String, String> props = new Hashtable<String, String>();
@@ -456,11 +486,11 @@ public class Deployer extends AbstractBundleWatcher {
                     pendingBundles.remove(reference.getBundle());
                     List<ServiceRegistration> registrations = services.remove(reference.getBundle());
                     if (registrations != null) {
-                    	for (ServiceRegistration reg : registrations) {
+                        for (ServiceRegistration reg : registrations) {
                             try {
-                            	reg.unregister();
+                                reg.unregister();
                             } catch (IllegalStateException e) {
-                            	e.printStackTrace();
+                                e.printStackTrace();
                                 // Ignore
                             }
                         }
@@ -495,58 +525,6 @@ public class Deployer extends AbstractBundleWatcher {
         registrations.add(reg);
     }
 
-    protected ClassLoader createComponentClassLoader(ComponentDesc component, Bundle bundle) {
-        // Create parents classloaders
-        ClassLoader[] parents;
-        if (component.getSharedLibraries() != null) {
-            parents = new ClassLoader[component.getSharedLibraries().length + 2];
-            for (int i = 0; i < component.getSharedLibraries().length; i++) {
-                parents[i + 2] = getSharedLibraryClassLoader(component.getSharedLibraries()[i]);
-            }
-        } else {
-            parents = new ClassLoader[2];
-        }
-        parents[0] = BundleDelegatingClassLoader.createBundleClassLoaderFor(getBundleContext().getBundle(0));
-        parents[1] = BundleDelegatingClassLoader.createBundleClassLoaderFor(bundle, getClass().getClassLoader());
-
-        // Create urls
-        String[] classPathNames = component.getComponentClassPath().getPathElements();
-        URL[] urls = new URL[classPathNames.length];
-        for (int i = 0; i < classPathNames.length; i++) {
-            urls[i] = bundle.getResource(classPathNames[i]);
-            if (urls[i] == null) {
-                throw new IllegalArgumentException("SharedLibrary classpath entry not found: '" +  classPathNames[i] + "'");
-            }
-            Enumeration en = bundle.findEntries(classPathNames[i], null, false);
-            if (en != null && en.hasMoreElements()) {
-                try {
-                    urls[i] = new URL(urls[i].toString() + "/");
-                } catch (MalformedURLException e) {
-                    // Ignore
-                }
-            }
-        }
-
-        // Create classloader
-        return new OsgiMultiParentClassLoader(
-                        bundle,
-                        component.getIdentification().getName(),
-                        urls,
-                        parents,
-                        component.isComponentClassLoaderDelegationSelfFirst(),
-                        new String[] {"javax.xml.bind"},
-                        new String[] {"java.", "javax." });
-    }
-
-    protected ClassLoader getSharedLibraryClassLoader(SharedLibraryList sharedLibraryList) {
-        SharedLibraryImpl sl = sharedLibraries.get(sharedLibraryList.getName());
-        if (sl != null) {
-            return sl.getClassLoader();
-        } else {
-            throw new IllegalStateException("SharedLibrary not installed: " + sharedLibraryList.getName());
-        }
-    }
-
     public void registerDeployedServiceAssembly(ServiceReference serviceReference, DeployedAssembly assembly) {
         try {
             assembly.deploy();
@@ -576,17 +554,24 @@ public class Deployer extends AbstractBundleWatcher {
             LOGGER.error("Error unregistering deployed service assembly", e);
         }
     }
-    
+
     public Set<String> getInstalledComponents() {
-    	return this.components.keySet();
-    }
-    
-    public Set<String> getInstalledSharedLibararies() {
-    	return this.sharedLibraries.keySet();
-    }
-    
-    public Set<String> getDeployServiceAssemblies() {
-    	return this.serviceAssemblies.keySet();
+        return this.components.keySet();
     }
 
+    public Set<String> getInstalledSharedLibararies() {
+        return this.sharedLibraries.keySet();
+    }
+
+    public Set<String> getDeployServiceAssemblies() {
+        return this.serviceAssemblies.keySet();
+    }
+
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
+    }
+
+    public Environment getEnvironment() {
+        return environment;
+    }
 }
