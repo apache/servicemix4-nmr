@@ -86,6 +86,16 @@
             </includes>
             <outputDirectory>/lib/</outputDirectory>
         </fileSet>
+         
+        <!-- Copy over the examples -->
+        <fileSet>
+            <directory>../examples</directory>
+            <outputDirectory>/examples/</outputDirectory>
+            <lineEnding>unix</lineEnding>
+            <excludes>
+                <exclude>**/target/**</exclude>
+            </excludes>
+        </fileSet>
 
     </fileSets>
 

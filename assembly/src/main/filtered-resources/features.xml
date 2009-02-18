@@ -41,4 +41,8 @@
         <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.deployer/${pom.version}</bundle>
         <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.commands/${pom.version}</bundle>
     </feature>
+    <feature name="examples-nmr" version="${version}">
+        <bundle>mvn:org.apache.servicemix.nmr.examples/org.apache.servicemix.nmr.examples.nmr.endpoint/${pom.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.nmr.examples/org.apache.servicemix.nmr.examples.nmr.client/${pom.version}</bundle>
+    </feature>
 </features>
