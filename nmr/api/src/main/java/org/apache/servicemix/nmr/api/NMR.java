@@ -49,6 +49,13 @@ public interface NMR {
      * @return the flow registry
      */
     FlowRegistry getFlowRegistry();
+    
+    /**
+     * Access the wire registry
+     * 
+     * @return the wire registry
+     */
+    WireRegistry getWireRegistry();
 
     /**
      * Create a channel to interact with the NMR without exposing an endpoint.

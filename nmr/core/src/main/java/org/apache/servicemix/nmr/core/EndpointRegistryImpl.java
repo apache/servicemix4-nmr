@@ -202,9 +202,9 @@ public class EndpointRegistryImpl implements EndpointRegistry {
      */
     protected Map<String, ?> handleWiring(Map<String, ?> properties) {
         //check for wires on this Map
-        for (Map<String, ?> key : wires.keySet()) {
-            if (ServiceHelper.equals(properties, key)) {
-                return wires.get(key).getTo();
+        for (Wire wire : nmr.getWireRegistry().getServices()) {
+            if (ServiceHelper.equals(properties, wire.getFrom())) {
+                return wire.getTo();
             }
         }
         //no wires registered, just returning the Map itself 

@@ -94,13 +94,5 @@ public class RegistryWrapper implements EndpointRegistry {
 
     public Set<Endpoint> getServices() {
         return registry.getServices();
-    }
-    
-    public void register(Wire wire) {
-        registry.register(wire);
-    }
-    
-    public void unregister(Wire wire) {
-        registry.unregister(wire);
-    }
+    }    
 }

@@ -89,20 +89,5 @@ public interface EndpointRegistry extends ServiceRegistry<Endpoint> {
      */
     Reference lookup(String filter);
 
-    /**
-     * Register a {@link Wire}.  This will allow you to access an existing endpoint through the wire's from address as well.
-     * 
-     * @param wire the wire to be registered 
-     */
-    void register(Wire wire);
-    
-    /**
-     * Unregister an existing {@link Wire} from the registry.  After calling this method, the registry will no longer take the
-     * wire into account when resolving endpoints.
-     * 
-     * @param wire the wire to be unregistered
-     */
-    void unregister(Wire wire);
-
 }
 

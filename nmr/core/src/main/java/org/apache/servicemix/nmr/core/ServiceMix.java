@@ -19,6 +19,7 @@ package org.apache.servicemix.nmr.core;
 import org.apache.servicemix.nmr.api.Channel;
 import org.apache.servicemix.nmr.api.EndpointRegistry;
 import org.apache.servicemix.nmr.api.NMR;
+import org.apache.servicemix.nmr.api.WireRegistry;
 import org.apache.servicemix.nmr.api.event.ListenerRegistry;
 import org.apache.servicemix.nmr.api.internal.Flow;
 import org.apache.servicemix.nmr.api.internal.FlowRegistry;
@@ -32,6 +33,7 @@ public class ServiceMix implements NMR {
     private EndpointRegistry endpoints;
     private ListenerRegistry listeners;
     private FlowRegistry flows;
+    private WireRegistry wires;
 
     /**
      * Initialize ServiceMix
@@ -49,7 +51,9 @@ public class ServiceMix implements NMR {
             flows = new FlowRegistryImpl();
             flows.register(new StraightThroughFlow(), ServiceHelper.createMap(Flow.ID, StraightThroughFlow.class.getName()));
         }
-
+        if (wires == null) {
+            wires = new WireRegistryImpl();
+        }
     }
 
     /**
@@ -113,5 +117,21 @@ public class ServiceMix implements NMR {
      */
     public Channel createChannel() {
         return new ClientChannel(this);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public WireRegistry getWireRegistry() {
+        return wires;
+    }
+
+    /**
+     * Set the wire registry
+     * 
+     * @param wires the wire registry
+     */
+    public void setWireRegistry(WireRegistry wires) {
+        this.wires = wires;
     }
 }

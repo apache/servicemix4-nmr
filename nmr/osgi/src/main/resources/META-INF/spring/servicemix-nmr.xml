@@ -34,6 +34,7 @@
         <property name="endpointRegistry" ref="endpointRegistry" />
         <property name="listenerRegistry" ref="listenerRegistry" />
         <property name="flowRegistry" ref="flowRegistry" />
+        <property name="wireRegistry" ref="wireRegistry" />
     </bean>
     <osgi:service ref="servicemix">
         <osgi:interfaces>
@@ -75,6 +76,14 @@
                interface="org.apache.servicemix.nmr.api.Endpoint"
                cardinality="0..N">
         <osgi:listener ref="endpointRegistry" bind-method="register" unbind-method="unregister" />
+    </osgi:list>
+    
+    <!-- Wire registry and service tracker -->
+    <bean id="wireRegistry" class="org.apache.servicemix.nmr.core.WireRegistryImpl"/>
+    <osgi:list id="wires"
+               interface="org.apache.servicemix.nmr.api.Wire"
+               cardinality="0..N">
+        <osgi:listener ref="wireRegistry" bind-method="register" unbind-method="unregister" />
     </osgi:list>
 
     <!-- AuthorizationService -->

@@ -19,6 +19,7 @@ package org.apache.servicemix.jbi.osgi;
 import org.apache.servicemix.nmr.api.Channel;
 import org.apache.servicemix.nmr.api.EndpointRegistry;
 import org.apache.servicemix.nmr.api.NMR;
+import org.apache.servicemix.nmr.api.WireRegistry;
 import org.apache.servicemix.nmr.api.event.ListenerRegistry;
 import org.apache.servicemix.nmr.api.internal.FlowRegistry;
 import org.osgi.framework.BundleContext;
@@ -65,6 +66,10 @@ public class NMRWrapper implements NMR, BundleContextAware, InitializingBean {
 
     public FlowRegistry getFlowRegistry() {
         return nmr.getFlowRegistry();
+    }
+    
+    public WireRegistry getWireRegistry() {
+        return nmr.getWireRegistry();
     }
 
     public Channel createChannel() {
