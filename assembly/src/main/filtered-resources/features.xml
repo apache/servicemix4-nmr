@@ -32,10 +32,12 @@
         <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.javamail-api-1.4/${servicemix.specs.version}</bundle>
         <bundle>mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimo.jta.version}</bundle>
         <bundle>mvn:org.apache.xbean/xbean-classloader/${xbean.version}</bundle>
+        <bundle>mvn:org.apache.xbean/xbean-naming/${xbean.version}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.woodstox/${woodstox.version}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.wsdl4j/${wsdl4j.version}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.ant/${ant.version}</bundle>
         <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jbi-api-1.0/${servicemix.specs.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.naming/org.apache.servicemix.naming/${pom.version}</bundle>
         <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.runtime/${pom.version}</bundle>
         <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.osgi/${pom.version}</bundle>
         <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.deployer/${pom.version}</bundle>

@@ -48,6 +48,10 @@
             <artifactId>org.apache.servicemix.document</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.servicemix.naming</groupId>
+            <artifactId>org.apache.servicemix.naming</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>
             <artifactId>org.apache.servicemix.nmr.api</artifactId>
         </dependency>

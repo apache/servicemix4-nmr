@@ -36,6 +36,7 @@
       <module>branding</module>
       <module>nmr</module>
       <module>document</module>
+      <module>naming</module>
       <module>jbi</module>
       <module>bundle</module>
       <module>assembly</module>
@@ -269,6 +270,11 @@
           <artifactId>org.apache.servicemix.document</artifactId>
           <version>${pom.version}</version>
       </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.naming</groupId>
+            <artifactId>org.apache.servicemix.naming</artifactId>
+            <version>${pom.version}</version>
+        </dependency>
       <dependency>
           <groupId>org.apache.servicemix.nmr</groupId>
           <artifactId>org.apache.servicemix.nmr.api</artifactId>
@@ -390,6 +396,11 @@
           <artifactId>org.apache.felix.framework</artifactId>
           <version>${felix.framework.version}</version>
       </dependency>
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <version>${felix.compendium.version}</version>
+        </dependency>
       <dependency>
           <groupId>org.apache.servicemix.specs</groupId>
           <artifactId>org.apache.servicemix.specs.activation-api-1.1</artifactId>

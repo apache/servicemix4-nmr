@@ -99,7 +99,7 @@
     <bean id="environment" class="org.apache.servicemix.jbi.runtime.impl.EnvironmentImpl">
         <property name="transactionManagers" ref="transactionManagers" />
         <property name="mbeanServer" ref="mbeanServer" />
-        <property name="namingContexts" ref="namingContexts" />
+        <property name="namingContext" ref="namingContext" />
     </bean>
 
     <!-- Reference to the Transaction Manager -->
@@ -107,10 +107,10 @@
                interface="javax.transaction.TransactionManager"
                cardinality="0..N" />
 
-    <!-- Reference to the InitialContext -->
-    <osgi:list id="namingContexts"
-               interface="javax.naming.InitialContext"
-               cardinality="0..N" />
+    <!-- The InitialContext -->
+    <bean id="namingContext" class="javax.naming.InitialContext">
+        <constructor-arg><null/></constructor-arg>
+    </bean>
 
     <!-- MBeanServer -->
     <osgi:reference id="mbeanServer"

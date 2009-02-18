@@ -66,6 +66,7 @@ public class InstallationContextImpl implements InstallationContext, ComponentCo
                                    NamingStrategy namingStrategy,
                                    ManagementAgent managementAgent) {
         this.descriptor = descriptor;
+        this.environment = environment;
         this.namingStrategy = namingStrategy;
         this.managementAgent = managementAgent;
         if (descriptor.getComponentClassPath() != null

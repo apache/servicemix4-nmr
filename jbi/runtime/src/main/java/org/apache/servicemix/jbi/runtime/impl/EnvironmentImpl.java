@@ -44,7 +44,7 @@ public class EnvironmentImpl implements Environment {
         return null;
     }
 
-    public void setMBeanServer(MBeanServer mbeanServer) {
+    public void setMbeanServer(MBeanServer mbeanServer) {
         this.mbeanServer = mbeanServer;
     }
 
