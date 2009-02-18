@@ -30,7 +30,8 @@ from OSGI service.
 
 Quick steps to install the sample
 ---------------------------------
-
+cd this example folder
+mvn install
 Launch the ServiceMix Kernel by running
   bin/servicemix
 in the root dir of this distribution.
