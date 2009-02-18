@@ -63,6 +63,7 @@
                             javax.management,
                             javax.naming,
                             javax.transaction,
+                            org.apache.geronimo.transaction.manager;resolution:=optional,
                             org.apache.servicemix.document,
                             org.apache.servicemix.nmr.api,
                             org.apache.servicemix.jbi.runtime,

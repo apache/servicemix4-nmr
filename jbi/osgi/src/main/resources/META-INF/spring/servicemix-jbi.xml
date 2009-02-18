@@ -72,7 +72,8 @@
     <!-- Reference to the Transaction Manager -->
     <osgi:list id="transactionManagers"
                interface="javax.transaction.TransactionManager"
-               cardinality="0..N" />
+               cardinality="0..N"
+               greedy-proxying="true" />
 
     <!-- Reference to the JMX server -->
     <osgi:list id="mbeanServers"

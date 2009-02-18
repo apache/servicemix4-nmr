@@ -105,7 +105,8 @@
     <!-- Reference to the Transaction Manager -->
     <osgi:list id="transactionManagers"
                interface="javax.transaction.TransactionManager"
-               cardinality="0..N" />
+               cardinality="0..N"
+               greedy-proxying="true" />
 
     <!-- The InitialContext -->
     <bean id="namingContext" class="javax.naming.InitialContext">

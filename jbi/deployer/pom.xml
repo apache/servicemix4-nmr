@@ -77,7 +77,11 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Import-Package>javax.transaction,*</Import-Package>
+                        <Import-Package>
+                            javax.transaction,
+                            org.apache.geronimo.transaction.manager;resolution:=optional,
+                            *
+                        </Import-Package>
                         <Export-Package>org.apache.servicemix.jbi.deployer*,org.apache.servicemix.jbi.management*</Export-Package>
                         <Spring-Context>*;publish-context:=false;create-asynchronously:=false</Spring-Context>
                     </instructions>
