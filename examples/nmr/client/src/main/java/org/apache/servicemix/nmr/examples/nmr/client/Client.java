@@ -23,6 +23,7 @@ import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.nmr.api.Pattern;
+import org.apache.servicemix.nmr.api.Status;
 import org.apache.servicemix.nmr.api.service.ServiceHelper;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -67,6 +68,8 @@ public class Client implements InitializingBean, DisposableBean {
         	        e.getIn().setBody("Hello");
                 	client.sendSync(e);
 	                LOG.info("Response from Endpoint " + e.getOut().getBody());
+                        e.setStatus(Status.Done);
+                        client.send(e);                        
                     }
                 } catch (Exception e) {
                     e.printStackTrace();

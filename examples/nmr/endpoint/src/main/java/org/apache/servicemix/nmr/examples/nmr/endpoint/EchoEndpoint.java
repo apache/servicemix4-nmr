@@ -27,10 +27,11 @@ public class EchoEndpoint implements Endpoint {
     private static final transient Log LOG = LogFactory.getLog(EchoEndpoint.class);
     private Channel channel;
     public void process(Exchange exchange) {
- 	LOG.info("Received in EchoEndpoint: " + exchange.getIn().getBody());
-	exchange.getOut().setBody("Echo" + exchange.getIn().getBody(), String.class);
-	exchange.setStatus(Status.Done);
-        channel.send(exchange);
+        if (exchange.getStatus().equals(Status.Active)) {
+   	    LOG.info("Received in EchoEndpoint: " + exchange.getIn().getBody());
+	    exchange.getOut().setBody("Echo" + exchange.getIn().getBody(), String.class);
+            channel.send(exchange);
+        }
     }
 
     public void setChannel(Channel channel) {
