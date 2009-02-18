@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.MalformedURLException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -37,11 +38,11 @@ public class Connection extends URLConnection {
 
     private static Log logger = LogFactory.getLog(Connection.class);
 
-    private URLHandler urlHandler;
+    private final Parser parser;
 
-    public Connection(URL url, URLHandler urlHandler) {
+    public Connection(URL url) throws MalformedURLException {
         super(url);
-        this.urlHandler = urlHandler;
+        this.parser = new Parser(url.getPath());
     }
 
 
@@ -61,7 +62,7 @@ public class Connection extends URLConnection {
     @Override
     public InputStream getInputStream() throws IOException {
         try {
-            InputStream targetInputStream = urlHandler.getJbiArtifactURL().openConnection().getInputStream();
+            InputStream targetInputStream = parser.getJbiJarURL().openConnection().getInputStream();
             File jbiZipFile = File.createTempFile("jbi", ".zip");
             FileOutputStream jbiZip = new FileOutputStream(jbiZipFile);
 
@@ -70,7 +71,7 @@ public class Connection extends URLConnection {
             targetInputStream.close();
 
             File jbiBundle = File.createTempFile("jbi", ".jar");
-            Transformer.transformToOSGiBundle(jbiZipFile, jbiBundle);
+            Transformer.transformToOSGiBundle(jbiZipFile, jbiBundle, parser.getJbiProperties());
             return new FileInputStream(jbiBundle);
         } catch (Exception e) {
             logger.error("Error opening jbi protocol artifact", e);

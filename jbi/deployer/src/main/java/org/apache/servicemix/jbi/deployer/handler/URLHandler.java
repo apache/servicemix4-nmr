@@ -32,12 +32,6 @@ import org.osgi.service.url.AbstractURLStreamHandlerService;
  */
 public class URLHandler extends AbstractURLStreamHandlerService {
 
-    private static Log logger = LogFactory.getLog(URLHandler.class);
-
-    private static String SYNTAX = "jbi: jbi-jar-uri";
-
-    private URL jbiArtifactURL;
-
     /**
      * Open the connection for the given URL.
      *
@@ -47,17 +41,7 @@ public class URLHandler extends AbstractURLStreamHandlerService {
      */
     @Override
     public URLConnection openConnection(URL url) throws IOException {
-        if (url.getPath() == null || url.getPath().trim().length() == 0) {
-            throw new MalformedURLException("Path can not be null or empty. Syntax: " + SYNTAX);
-        }
-        jbiArtifactURL = new URL(url.getPath());
-
-        logger.debug("JBI artifact URL is: [" + jbiArtifactURL + "]");
-        return new Connection(url, this);
-    }
-
-    public URL getJbiArtifactURL() {
-        return jbiArtifactURL;
+        return new Connection(url);
     }
 
 }

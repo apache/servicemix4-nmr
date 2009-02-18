@@ -27,6 +27,8 @@ import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
+import java.util.Properties;
+import java.util.Enumeration;
 
 import org.apache.servicemix.jbi.deployer.descriptor.Descriptor;
 import org.apache.servicemix.jbi.deployer.descriptor.DescriptorFactory;
@@ -57,6 +59,23 @@ public class Transformer {
      * @throws Exception if an error occurs during the transformation process.
      */
     public static void transformToOSGiBundle(File jbiArtifact, File osgiBundle) throws Exception {
+        transformToOSGiBundle(jbiArtifact, osgiBundle, null);
+    }
+
+    /**
+     * Create an OSGi bundle from the JBI artifact.
+     * The process creates the following OSGi manifest entries:
+     * <ul>
+     * <li><b><code>Bundle-SymbolicName</code></b>: the name of the JBI artifact</li>
+     * <li><b><code>Bundle-Version</code></b>: retrieved from the <code>Implementation-Version</code> manifest entry</li>
+     * <li><b><code>DynamicImport-Package</code></b>: javax.*,org.xml.*,org.w3c.*</li>
+     * </ul>
+     *
+     * @param jbiArtifact the input JBI artifact.
+     * @param osgiBundle  the output OSGi bundle.
+     * @throws Exception if an error occurs during the transformation process.
+     */
+    public static void transformToOSGiBundle(File jbiArtifact, File osgiBundle, Properties properties) throws Exception {
         JarFile jar = new JarFile(jbiArtifact);
         Manifest m = jar.getManifest();
         if (m == null) {
@@ -86,6 +105,15 @@ public class Transformer {
         m.getMainAttributes().putValue("Bundle-SymbolicName", name);
         m.getMainAttributes().putValue("Bundle-Version", version);
         m.getMainAttributes().putValue("DynamicImport-Package", "javax.*,org.xml.*,org.w3c.*");
+
+        if (properties != null) {
+            Enumeration en = properties.propertyNames();
+            while (en.hasMoreElements()) {
+                String k = (String) en.nextElement();
+                String v = properties.getProperty(k);
+                m.getMainAttributes().putValue(k, v);
+            }
+        }
 
         osgiBundle.getParentFile().mkdirs();
         JarInputStream jis = new JarInputStream(new BufferedInputStream(new FileInputStream(jbiArtifact)));
