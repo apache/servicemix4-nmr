@@ -40,6 +40,7 @@ import org.apache.servicemix.jbi.deployer.descriptor.ComponentDesc;
 import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryList;
 import org.apache.servicemix.jbi.deployer.utils.FileUtil;
 import org.apache.servicemix.jbi.deployer.utils.QueryUtils;
+import org.apache.xbean.classloader.MultiParentClassLoader;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 import org.osgi.service.prefs.BackingStoreException;
@@ -211,39 +212,35 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
         if (sharedLibs != null) {
             parents = new ClassLoader[sharedLibs.length + 2];
             for (int i = 0; i < sharedLibs.length; i++) {
-                parents[i + 2] = getSharedLibraryClassLoader(sharedLibs[i].getName());
+                parents[i] = getSharedLibraryClassLoader(sharedLibs[i].getName());
             }
         } else {
             parents = new ClassLoader[2];
         }
-        parents[0] = BundleDelegatingClassLoader.createBundleClassLoaderFor(getBundleContext().getBundle(0));
-        parents[1] = BundleDelegatingClassLoader.createBundleClassLoaderFor(bundle, getClass().getClassLoader());
+        parents[parents.length - 2] = BundleDelegatingClassLoader.createBundleClassLoaderFor(bundle, getClass().getClassLoader());
+        parents[parents.length - 1] = BundleDelegatingClassLoader.createBundleClassLoaderFor(getBundleContext().getBundle(0));
 
         // Create urls
         URL[] urls = new URL[classPathNames.length];
         for (int i = 0; i < classPathNames.length; i++) {
-            urls[i] = bundle.getResource(classPathNames[i]);
-            if (urls[i] == null) {
-                throw new IllegalArgumentException("SharedLibrary classpath entry not found: '" + classPathNames[i] + "'");
+            File f = new File(installRoot, classPathNames[i]);
+            if (!f.isFile()) {
+                throw new IllegalArgumentException("Component classpath entry not found: '" + classPathNames[i] + "'");
             }
-            Enumeration en = bundle.findEntries(classPathNames[i], null, false);
-            if (en != null && en.hasMoreElements()) {
-                try {
-                    urls[i] = new URL(urls[i].toString() + "/");
-                } catch (MalformedURLException e) {
-                    // Ignore
-                }
+            try {
+                urls[i] = f.getCanonicalFile().toURL();
+            } catch (IOException e) {
+                throw new IllegalArgumentException("Component classpath entry not found: '" + classPathNames[i] + "'");
             }
         }
 
         // Create classloader
-        return new OsgiMultiParentClassLoader(
-                bundle,
+        return new MultiParentClassLoader(
                 name,
                 urls,
                 parents,
                 !parentFirst,
-                new String[]{"javax.xml.bind"},
+                new String[0],
                 new String[]{"java.", "javax."});
     }
 
