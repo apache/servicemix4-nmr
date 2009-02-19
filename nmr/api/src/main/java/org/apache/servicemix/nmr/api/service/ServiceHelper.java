@@ -33,46 +33,46 @@ public final class ServiceHelper {
     public static Map<String, Object> createMap(String... data) {
         Map<String, Object> props = new HashMap<String, Object>();
         for (int i = 0; i < data.length / 2; i++) {
-            props.put(data[i*2], data[i*2+1]);
+            props.put(data[i * 2], data[i * 2 + 1]);
         }
         return props;
     }
 
     /**
-     * Creates a {@link Wire} instance
-     * 
-     * @param from the 'from' end of the wire
-     * @param to the 'to' end for the wire (i.e. the target endpoint)
-     * @return the wire instance
-     */
-    public static Wire createWire(final Map<String, Object> from, final Map<String, Object> to) {
-        return new Wire() {
-            public Map<String, ?> getFrom() {
-                return from;
-            }
-            public Map<String, ?> getTo() {
-                return to;
-            }
-            @Override
-            public String toString() {
-                return "Wire[" + from + " -> " + to + "]";
-            }
-        };
-    }
-    
-    /**
-     * Check if two endpoint propery maps are equal.  This will check both maps for equal sizes, keys and values.
-     * If either map is <code>null</code>, it will return <code>false</code>.
+     * Check if two endpoint propery maps are equal. This will check both maps for equal sizes, keys and values. If either map is
+     * <code>null</code>, it will return <code>false</code>.
      * 
      * @param first the first endpoint property map
      * @param second the second endpoint property map
-     * @return <code>true</code> if the endpoint maps are equal, <code>false</code> if it 
+     * @return <code>true</code> if the endpoint maps are equal, <code>false</code> if it
      */
     public static boolean equals(Map<String, ?> first, Map<String, ?> second) {
+        return doMatch(first, second, true);
+    }
+
+    /**
+     * Check if two endpoint propery maps match. If will return <code>true</code> if, for every key in the first map, there's a matching key
+     * and value in the second map. If either map is <code>null</code>, it will return <code>false</code>.
+     * 
+     * Compared to the {@link ServiceHelper#equals(Map, Map)} method, this will allow for the second Map to contain more information than
+     * the first Map and still be considered a match
+     * 
+     * @param first the first endpoint property map
+     * @param second the second endpoint property map
+     * @return <code>true</code> if the endpoint maps are equal, <code>false</code> if it
+     */
+    public static boolean matches(Map<String, ?> first, Map<String, ?> second) {
+        return doMatch(first, second, false);
+    }
+
+    /*
+     * Shared implementation for equals and matches
+     */
+    private static boolean doMatch(Map<String, ?> first, Map<String, ?> second, boolean equal) {
         if (first == null || second == null) {
             return false;
         }
-        if (first.size() != second.size()) {
+        if (equal && first.size() != second.size()) {
             return false;
         }
         for (Entry<String, ?> entry : first.entrySet()) {
@@ -84,5 +84,22 @@ public final class ServiceHelper {
             }
         }
         return true;
+    }
+
+    /**
+     * Creates a {@link Wire} instance
+     * 
+     * @param to the target for the wire
+     * @return the wire object
+     */
+    public static Wire createWire(final Map<String, ?> from, final Map<String, Object> to) {
+        return new Wire() {
+            public Map<String, ?> getFrom() {
+                return from;
+            }
+            public Map<String, ?> getTo() {
+                return to;
+            }
+        };
     }
 }

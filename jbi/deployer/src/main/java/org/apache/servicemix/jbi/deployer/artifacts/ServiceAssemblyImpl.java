@@ -19,14 +19,22 @@ package org.apache.servicemix.jbi.deployer.artifacts;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.jbi.JBIException;
+import javax.xml.namespace.QName;
 
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
+import org.apache.servicemix.jbi.deployer.descriptor.Connection;
 import org.apache.servicemix.jbi.deployer.descriptor.DescriptorFactory;
+import org.apache.servicemix.jbi.deployer.descriptor.Provider;
 import org.apache.servicemix.jbi.deployer.descriptor.ServiceAssemblyDesc;
 import org.apache.servicemix.jbi.deployer.impl.AssemblyReferencesListener;
+import org.apache.servicemix.nmr.api.Endpoint;
+import org.apache.servicemix.nmr.api.Wire;
+import org.apache.servicemix.nmr.api.service.ServiceHelper;
+import org.apache.servicemix.nmr.core.util.MapToDictionary;
 import org.osgi.framework.Bundle;
 import org.osgi.service.prefs.Preferences;
 
@@ -105,6 +113,7 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
             if (state == State.Shutdown) {
                 transition(State.Initialized);
             }
+            startConnections();
             transition(State.Started);
             if (persist) {
                 saveState();
@@ -130,6 +139,7 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
             if (state == State.Started) {
                 transition(State.Stopped);
             }
+            stopConnections();
             if (persist) {
                 saveState();
             }
@@ -214,5 +224,31 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
                 break;
         }
     }
-
+    
+    private void startConnections() {
+        if (serviceAssemblyDesc.getConnections() != null && serviceAssemblyDesc.getConnections().getConnections() != null) {
+            for (Connection connection : serviceAssemblyDesc.getConnections().getConnections()) {
+                Wire wire = connection.getWire();
+                registerWire(wire, wire.getFrom());
+            }
+        }
+    }
+    
+    private void stopConnections() {
+        if (serviceAssemblyDesc.getConnections() != null && serviceAssemblyDesc.getConnections().getConnections() != null) {
+            for (Connection connection : serviceAssemblyDesc.getConnections().getConnections()) {
+                Wire wire = connection.getWire();
+                unregisterWire(wire, wire.getFrom());
+            }
+        }
+    }
+    
+    protected void registerWire(Wire wire, Map<String, ?> from) {
+        bundle.getBundleContext().registerService(Wire.class.getName(), 
+                                                  wire, new MapToDictionary(from));
+    }
+    
+    protected void unregisterWire(Wire wire, Map<String, ?> from) {
+        
+    }
 }

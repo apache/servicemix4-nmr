@@ -36,14 +36,13 @@ import org.apache.servicemix.nmr.api.ServiceMixException;
 import org.apache.servicemix.nmr.api.Wire;
 import org.apache.servicemix.nmr.api.event.EndpointListener;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
-import org.apache.servicemix.nmr.api.service.ServiceHelper;
 import org.apache.servicemix.nmr.api.service.ServiceRegistry;
 import org.apache.servicemix.nmr.core.util.Filter;
 import org.apache.servicemix.nmr.core.util.MapToDictionary;
 
 /**
  * Implementation of {@link EndpointRegistry} interface that defines
- * methods to register, undergister and query endpoints.
+ * methods to register, unregister and query endpoints.
  *
  * @version $Revision: $
  * @since 4.0
@@ -55,7 +54,6 @@ public class EndpointRegistryImpl implements EndpointRegistry {
     private Map<InternalEndpoint, Endpoint> wrappers = new ConcurrentHashMap<InternalEndpoint, Endpoint>();
     private Map<DynamicReferenceImpl, Boolean> references = new WeakHashMap<DynamicReferenceImpl, Boolean>();
     private ServiceRegistry<InternalEndpoint> registry;
-    private Map<Map<String, ?>, Wire> wires = new ConcurrentHashMap<Map<String,?>, Wire>();
 
     public EndpointRegistryImpl() {
     }
@@ -193,22 +191,20 @@ public class EndpointRegistryImpl implements EndpointRegistry {
     }
 
     /**
-     * Helper method that checks if this map represents the from end of a registered {@link Wire}
-     * and returns the {@link Wire}s to properties map if it does.  If no matching {@link Wire} was found,
-     * it will just return the original map.  
+     * Helper method that checks if this map represents the from end of a registered {@link Wire} and returns the {@link Wire}s to
+     * properties map if it does. If no matching {@link Wire} was found, it will just return the original map.
      * 
      * @param properties the original properties
      * @return the target endpoint if there is a registered {@link Wire} or the original properties
      */
     protected Map<String, ?> handleWiring(Map<String, ?> properties) {
-        //check for wires on this Map
-        for (Wire wire : nmr.getWireRegistry().getServices()) {
-            if (ServiceHelper.equals(properties, wire.getFrom())) {
-                return wire.getTo();
-            }
+        // check for wires on this Map
+        Wire wire = nmr.getWireRegistry().getWire(properties);
+        if (wire == null) {
+            return properties;
+        } else {
+            return wire.getTo();
         }
-        //no wires registered, just returning the Map itself 
-        return properties;
     }
 
     /**
@@ -304,13 +300,5 @@ public class EndpointRegistryImpl implements EndpointRegistry {
             }
         }
         return endpoints;
-    }
-
-    public void register(Wire wire) {
-        wires.put(wire.getFrom(), wire);
-    }
-
-    public void unregister(Wire wire) {
-        wires.remove(wire);
     }
 }

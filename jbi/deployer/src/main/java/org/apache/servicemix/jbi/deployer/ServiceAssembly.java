@@ -19,6 +19,9 @@ package org.apache.servicemix.jbi.deployer;
 import javax.jbi.JBIException;
 import javax.jbi.management.LifeCycleMBean;
 
+import org.apache.servicemix.jbi.deployer.descriptor.Provider;
+import org.apache.servicemix.nmr.api.Wire;
+
 /**
  * This interface represents a JBI Service Assembly and will be registered
  * in the OSGi registry
@@ -59,4 +62,5 @@ public interface ServiceAssembly extends LifeCycleMBean {
      * @throws JBIException
      */
     void forceShutDown() throws JBIException;
+
 }

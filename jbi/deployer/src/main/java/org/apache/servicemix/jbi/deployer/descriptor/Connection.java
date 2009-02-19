@@ -16,12 +16,16 @@
  */
 package org.apache.servicemix.jbi.deployer.descriptor;
 
+import org.apache.servicemix.nmr.api.Wire;
+import org.apache.servicemix.nmr.api.service.ServiceHelper;
+
 /**
  * The <code>&lt;jbi:connection&gt;</code> element.
  */
 public class Connection {
     private Consumer consumer;
     private Provider provider;
+    private Wire wire;
 
     public Consumer getConsumer() {
         return consumer;
@@ -37,5 +41,12 @@ public class Connection {
 
     public void setProvider(Provider provider) {
         this.provider = provider;
+    }
+
+    public Wire getWire() {
+        if (wire == null) {
+            wire = ServiceHelper.createWire(consumer.toMap(), provider.toMap());
+        } 
+        return wire;
     }
 }

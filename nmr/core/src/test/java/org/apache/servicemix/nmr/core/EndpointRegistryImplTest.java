@@ -166,7 +166,7 @@ public class EndpointRegistryImplTest {
     private Endpoint createWiredEndpoint(Map<String, Object> from, Map<String, Object> to) {
         final Endpoint endpoint = new DummyEndpoint();
         registry.register(endpoint, to);
-        nmr.getWireRegistry().register(ServiceHelper.createWire(from, to), null);
+        nmr.getWireRegistry().register(ServiceHelper.createWire(from, to));
         return endpoint;
     }
 

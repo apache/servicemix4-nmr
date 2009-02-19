@@ -16,11 +16,36 @@
  */
 package org.apache.servicemix.nmr.api;
 
+import java.util.Map;
+
 import org.apache.servicemix.nmr.api.service.ServiceRegistry;
 
 /**
  * This registry is used to register/unregister {@link Wire}s.
  */
 public interface WireRegistry extends ServiceRegistry<Wire> {
-    
+
+    /**
+     * Get the wire that matches the given properties
+     * 
+     * @param properties the wire's properties
+     * @return the wire or <code>null</code> if there's no wire to match this property set
+     */
+    public Wire getWire(Map<String, ?> properties);
+
+    /**
+     * Convenience method for registering a wire without having to specify the wire's properties. The wire will be registered using
+     * the from properties map.
+     * 
+     * @param wire the wire to be registered
+     */
+    public void register(Wire wire);
+
+    /**
+     * Convenience method for unregistering a wire without having to specify the wire's properties. The wire will be unregistered
+     * using the from properties map.
+     * 
+     * @param wire the wire to be unregistered
+     */
+    public void unregister(Wire wire);
 }

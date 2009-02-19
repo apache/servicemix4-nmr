@@ -16,7 +16,12 @@
  */
 package org.apache.servicemix.jbi.deployer.descriptor;
 
+import java.util.Map;
+
 import javax.xml.namespace.QName;
+
+import org.apache.servicemix.nmr.api.Endpoint;
+import org.apache.servicemix.nmr.api.service.ServiceHelper;
 
 /**
  * The <code>&lt;jbi:consumer&gt;</code> element.
@@ -48,5 +53,14 @@ public class Consumer {
 
     public void setEndpointName(String endpointName) {
         this.endpointName = endpointName;
+    }
+
+    public Map<String, ?> toMap() {
+        if (getInterfaceName() == null) {
+            return ServiceHelper.createMap(Endpoint.SERVICE_NAME, getServiceName().toString(),
+                                           Endpoint.ENDPOINT_NAME, getEndpointName());
+        } else {
+            return ServiceHelper.createMap(Endpoint.INTERFACE_NAME, getInterfaceName().toString());
+        }
     }
 }

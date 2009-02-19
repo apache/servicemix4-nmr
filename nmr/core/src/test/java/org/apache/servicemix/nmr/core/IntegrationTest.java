@@ -60,7 +60,7 @@ public class IntegrationTest {
         Map<String, Object> wire = ServiceHelper.createMap(Endpoint.NAME, "wire");
         //register the endpoint and a wire to the endpoint
         nmr.getEndpointRegistry().register(endpoint, target);
-        nmr.getWireRegistry().register(ServiceHelper.createWire(wire, target), null);
+        nmr.getWireRegistry().register(ServiceHelper.createWire(wire, target));
         
         Channel client = nmr.createChannel();
         Exchange e = client.createExchange(Pattern.InOnly);

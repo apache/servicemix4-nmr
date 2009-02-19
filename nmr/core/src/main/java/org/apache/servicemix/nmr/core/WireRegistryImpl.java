@@ -16,12 +16,32 @@
  */
 package org.apache.servicemix.nmr.core;
 
+import java.util.Map;
+
 import org.apache.servicemix.nmr.api.Wire;
 import org.apache.servicemix.nmr.api.WireRegistry;
+import org.apache.servicemix.nmr.api.service.ServiceHelper;
 
 /**
  * Default implementation for a {@link WireRegistry}
  */
 public class WireRegistryImpl extends ServiceRegistryImpl<Wire> implements WireRegistry {
 
+    public Wire getWire(Map<String, ?> properties) {
+        for (Wire wire : getServices()) {
+            //TODO: we are using matches here instead of equals, so we should find a way to deal with multiple wires
+            if (ServiceHelper.matches(properties, getProperties(wire))) {
+                return wire;
+            }
+        }
+        return null;
+    }
+
+    public void register(Wire wire) {
+        register(wire, wire.getFrom());
+    }
+
+    public void unregister(Wire wire) {
+        unregister(wire, wire.getFrom());
+    }
 }

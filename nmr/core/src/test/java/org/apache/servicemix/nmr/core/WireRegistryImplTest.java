@@ -23,6 +23,7 @@ import junit.framework.TestCase;
 
 import org.apache.servicemix.nmr.api.Wire;
 import org.apache.servicemix.nmr.api.WireRegistry;
+import org.apache.servicemix.nmr.api.service.ServiceHelper;
 
 /**
  * Test cases for {@link WireRegistryImpl}
@@ -40,7 +41,27 @@ public class WireRegistryImplTest extends TestCase {
         assertEquals(1, registry.getServices().size());
         assertEquals(properties, registry.getProperties(wire));
         
+        assertSame(wire, registry.getWire(properties));
+        
         registry.unregister(wire, properties);
+        assertEquals(0, registry.getServices().size());
+        assertEquals(null, registry.getProperties(wire));
+    }
+    
+    public void testBasicRegistryBehaviorWithConvenienceMethods() {
+        Map<String, Object> from = new HashMap<String, Object>();
+        from.put("wire-length", 12);
+        from.put("wire-type", "coton");
+        Wire wire = ServiceHelper.createWire(from, ServiceHelper.createMap("wire-usage", "knitting"));
+        
+        WireRegistry registry = new WireRegistryImpl();
+        registry.register(wire);
+        assertEquals(1, registry.getServices().size());
+        assertEquals(from, registry.getProperties(wire));
+        
+        assertSame(wire, registry.getWire(from));
+        
+        registry.unregister(wire);
         assertEquals(0, registry.getServices().size());
         assertEquals(null, registry.getProperties(wire));
     }

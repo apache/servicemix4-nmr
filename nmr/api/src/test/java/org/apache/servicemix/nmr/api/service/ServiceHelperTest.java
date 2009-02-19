@@ -28,7 +28,7 @@ import junit.framework.TestCase;
  * Test cases for {@link ServiceHelper}
  */
 public class ServiceHelperTest extends TestCase {
-    
+       
     @Test
     public void testCreateWire() throws Exception {
         Map<String, Object> from = ServiceHelper.createMap(Endpoint.SERVICE_NAME, "test:service",
@@ -52,10 +52,11 @@ public class ServiceHelperTest extends TestCase {
     public void testEqualsSameSize() throws Exception {
         Map<String, Object> first = ServiceHelper.createMap(Endpoint.SERVICE_NAME, "test:service",
                                                             Endpoint.ENDPOINT_NAME, "endpoint");
-        Map<String, Object> second = ServiceHelper.createMap(Endpoint.SERVICE_NAME, "test:wired-service",
+        Map<String, Object> second = ServiceHelper.createMap(Endpoint.SERVICE_NAME, "test:service",
                                                              Endpoint.ENDPOINT_NAME, "endpoint",
                                                              Endpoint.INTERFACE_NAME, "test:interface");
-        assertFalse("Maps with different sizes shouldn't match", ServiceHelper.equals(first, second));
+        assertFalse("Maps with different sizes shouldn't be equal", ServiceHelper.equals(first, second));
+        assertTrue("Maps with different sizes but the same values should match", ServiceHelper.matches(first, second));
     }
     
     @Test
@@ -64,7 +65,8 @@ public class ServiceHelperTest extends TestCase {
                                                             Endpoint.ENDPOINT_NAME, "endpoint");
         Map<String, Object> second = ServiceHelper.createMap(Endpoint.SERVICE_NAME, "test:wired-service",
                                                              Endpoint.INTERFACE_NAME, "test:interface");
-        assertFalse("Maps with different keys shouldn't match", ServiceHelper.equals(first, second));
+        assertFalse("Maps with different values shouldn't be equal", ServiceHelper.equals(first, second));
+        assertFalse("Maps with different values shouldn't match", ServiceHelper.matches(first, second));
     }
 
     @Test

@@ -140,5 +140,8 @@ public class DescriptorFactoryTest {
         buffer.append("]");
         return buffer.toString();
     }
-
+    
+    public Descriptor createTestDescriptor(String xmlfile) {
+        return DescriptorFactory.buildDescriptor(getClass().getResource(xmlfile));
+    }
 }
