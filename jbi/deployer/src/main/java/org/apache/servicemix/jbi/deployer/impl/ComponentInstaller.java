@@ -224,7 +224,7 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
         URL[] urls = new URL[classPathNames.length];
         for (int i = 0; i < classPathNames.length; i++) {
             File f = new File(installRoot, classPathNames[i]);
-            if (!f.isFile()) {
+            if (!f.exists()) {
                 throw new IllegalArgumentException("Component classpath entry not found: '" + classPathNames[i] + "'");
             }
             try {
