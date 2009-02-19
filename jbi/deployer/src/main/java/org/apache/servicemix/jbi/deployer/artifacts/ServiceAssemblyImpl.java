@@ -86,8 +86,6 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
             } else if (runningState == State.Stopped) {
                 transition(State.Started);
                 transition(State.Stopped);
-            } else if (runningState == State.Shutdown) {
-                transition(State.Shutdown);
             }
         } finally {
             listener.setAssembly(null);
