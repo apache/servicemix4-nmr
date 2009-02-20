@@ -19,23 +19,14 @@ package org.apache.servicemix.naming;
 import java.util.Hashtable;
 
 import javax.naming.spi.InitialContextFactory;
-import javax.naming.spi.NamingManager;
 import javax.naming.Context;
 import javax.naming.NamingException;
-import javax.naming.Name;
-import javax.naming.NameClassPair;
-import javax.naming.NamingEnumeration;
-import javax.naming.Binding;
-import javax.naming.NameParser;
-import javax.naming.InitialContext;
-
-import org.apache.xbean.naming.context.ContextFlyweight;
 
 /**
+ * A wrapper around an InitialContextFactory used to ensure the InitialContext returned by
+ * the factory is correctly wrapped to allow access to the OSGi context and other URL contexts. 
  */
 public class InitialContextFactoryWrapper implements InitialContextFactory {
-
-    public static final String OSGI_SCHEME = "osgi";
 
     private final InitialContextFactory delegate;
     private final Context osgiContext;
@@ -46,61 +37,7 @@ public class InitialContextFactoryWrapper implements InitialContextFactory {
     }
 
     public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
-        return new ContextWrapper(delegate.getInitialContext(environment), osgiContext, environment);
+        return new InitialContextWrapper(delegate.getInitialContext(environment), osgiContext, environment);
     }
 
-    public static class ContextWrapper extends InitialContext {
-
-        private final Context delegate;
-        private final Context osgiContext;
-
-        public ContextWrapper(Context delegate, Context osgiContext, Hashtable<?, ?> environment) throws NamingException {
-            super(environment);
-            this.delegate = delegate;
-            this.osgiContext = osgiContext;
-        }
-
-        protected Context getDefaultInitCtx() throws NamingException {
-            return delegate;
-        }
-
-        protected Context getURLOrDefaultInitCtx(String name) throws NamingException {
-            String scheme = getURLScheme(name);
-            if (OSGI_SCHEME.equals(scheme)) {
-                return osgiContext;
-            } else if (scheme != null) {
-                Context ctx = NamingManager.getURLContext(scheme, delegate.getEnvironment());
-                if (ctx != null) {
-                    return ctx;
-                }
-            }
-            return delegate;
-        }
-
-        protected Context getURLOrDefaultInitCtx(Name name) throws NamingException {
-            if (name.size() > 0) {
-                String first = name.get(0);
-                String scheme = getURLScheme(first);
-                if (OSGI_SCHEME.equals(scheme)) {
-                    return osgiContext;
-                } else if (scheme != null) {
-                    Context ctx = NamingManager.getURLContext(scheme, delegate.getEnvironment());
-                    if (ctx != null) {
-                        return ctx;
-                    }
-                }
-            }
-            return delegate;
-        }
-
-        private static String getURLScheme(String str) {
-            int colon_posn = str.indexOf(':');
-            int slash_posn = str.indexOf('/');
-            if (colon_posn > 0 && (slash_posn == -1 || colon_posn < slash_posn)) {
-                return str.substring(0, colon_posn);
-            }
-            return null;
-        }
-
-    }
 }

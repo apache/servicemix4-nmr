@@ -29,7 +29,8 @@ import org.springframework.util.ClassUtils;
 import org.osgi.framework.BundleContext;
 
 /**
- *
+ * A read-only JNDI context that allows access to OSGi services in the registry.
+ * The result of a lookup will be a proxy to the filtered OSGi service.
  */
 public class OSGiContext extends ImmutableContext implements BundleContextAware {
 
@@ -37,7 +38,7 @@ public class OSGiContext extends ImmutableContext implements BundleContextAware 
     private BundleContext bundleContext;
 
     public OSGiContext() throws NamingException {
-        super(Collections.EMPTY_MAP);
+        super(Collections.<String, Object>emptyMap());
     }
 
     public BundleContext getBundleContext() {
@@ -73,7 +74,7 @@ public class OSGiContext extends ImmutableContext implements BundleContextAware 
     public class OSGiServicesContext extends ImmutableContext {
 
         public OSGiServicesContext() throws NamingException {
-            super(Collections.EMPTY_MAP);
+            super(Collections.<String, Object>emptyMap());
         }
 
         @Override

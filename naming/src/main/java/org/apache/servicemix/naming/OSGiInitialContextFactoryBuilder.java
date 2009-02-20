@@ -34,6 +34,8 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.util.Assert;
 
 /**
+ * An InitialContextFactoryBuilder which delegates to any InitialContextFactoryBuilder found
+ * in the OSGi registry. 
  */
 public class OSGiInitialContextFactoryBuilder implements InitialContextFactoryBuilder, BundleContextAware,
                                                          InitializingBean, DisposableBean {
