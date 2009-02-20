@@ -22,12 +22,20 @@ import javax.naming.spi.InitialContextFactory;
 import javax.naming.spi.NamingManager;
 import javax.naming.Context;
 import javax.naming.NamingException;
+import javax.naming.Name;
+import javax.naming.NameClassPair;
+import javax.naming.NamingEnumeration;
+import javax.naming.Binding;
+import javax.naming.NameParser;
+import javax.naming.InitialContext;
 
 import org.apache.xbean.naming.context.ContextFlyweight;
 
 /**
  */
 public class InitialContextFactoryWrapper implements InitialContextFactory {
+
+    public static final String OSGI_SCHEME = "osgi";
 
     private final InitialContextFactory delegate;
     private final Context osgiContext;
@@ -38,40 +46,60 @@ public class InitialContextFactoryWrapper implements InitialContextFactory {
     }
 
     public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
-        return new ContextWrapper(delegate.getInitialContext(environment));
+        return new ContextWrapper(delegate.getInitialContext(environment), osgiContext, environment);
     }
 
-    public class ContextWrapper extends ContextFlyweight {
+    public static class ContextWrapper extends InitialContext {
 
         private final Context delegate;
+        private final Context osgiContext;
 
-        public ContextWrapper(Context delegate) {
+        public ContextWrapper(Context delegate, Context osgiContext, Hashtable<?, ?> environment) throws NamingException {
+            super(environment);
             this.delegate = delegate;
+            this.osgiContext = osgiContext;
         }
 
-        protected Context getContext() throws NamingException {
+        protected Context getDefaultInitCtx() throws NamingException {
             return delegate;
         }
 
-        public Object lookup(String name) throws NamingException {
-            if (name == null || name.length() == 0) {
-                return this;
-            } 
-            
-            if (name.startsWith("osgi:")) {
-                return osgiContext.lookup(name);
-            }
-            
-            int sep = name.indexOf(':');
-            if (sep >=0 ) {
-                String scheme = name.substring(0, sep);  
-                Context ctx = NamingManager.getURLContext(scheme, getContext().getEnvironment());
+        protected Context getURLOrDefaultInitCtx(String name) throws NamingException {
+            String scheme = getURLScheme(name);
+            if (OSGI_SCHEME.equals(scheme)) {
+                return osgiContext;
+            } else if (scheme != null) {
+                Context ctx = NamingManager.getURLContext(scheme, delegate.getEnvironment());
                 if (ctx != null) {
-                    return ctx.lookup(name);
-                }                    
-            }            
-            
-            return delegate.lookup(name);
+                    return ctx;
+                }
+            }
+            return delegate;
+        }
+
+        protected Context getURLOrDefaultInitCtx(Name name) throws NamingException {
+            if (name.size() > 0) {
+                String first = name.get(0);
+                String scheme = getURLScheme(first);
+                if (OSGI_SCHEME.equals(scheme)) {
+                    return osgiContext;
+                } else if (scheme != null) {
+                    Context ctx = NamingManager.getURLContext(scheme, delegate.getEnvironment());
+                    if (ctx != null) {
+                        return ctx;
+                    }
+                }
+            }
+            return delegate;
+        }
+
+        private static String getURLScheme(String str) {
+            int colon_posn = str.indexOf(':');
+            int slash_posn = str.indexOf('/');
+            if (colon_posn > 0 && (slash_posn == -1 || colon_posn < slash_posn)) {
+                return str.substring(0, colon_posn);
+            }
+            return null;
         }
 
     }
