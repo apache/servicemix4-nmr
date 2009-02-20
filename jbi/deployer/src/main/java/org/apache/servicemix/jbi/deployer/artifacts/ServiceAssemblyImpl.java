@@ -18,24 +18,22 @@ package org.apache.servicemix.jbi.deployer.artifacts;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.jbi.JBIException;
-import javax.xml.namespace.QName;
 
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
 import org.apache.servicemix.jbi.deployer.descriptor.Connection;
 import org.apache.servicemix.jbi.deployer.descriptor.DescriptorFactory;
-import org.apache.servicemix.jbi.deployer.descriptor.Provider;
 import org.apache.servicemix.jbi.deployer.descriptor.ServiceAssemblyDesc;
 import org.apache.servicemix.jbi.deployer.impl.AssemblyReferencesListener;
-import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.Wire;
-import org.apache.servicemix.nmr.api.service.ServiceHelper;
 import org.apache.servicemix.nmr.core.util.MapToDictionary;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.prefs.Preferences;
 
 /**
@@ -72,6 +70,9 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
     private final List<ServiceUnitImpl> serviceUnits;
 
     private final AssemblyReferencesListener listener;
+
+    // map of wires and the matching OSGi ServiceRegistration
+    private Map<Wire, ServiceRegistration> wires = new HashMap<Wire, ServiceRegistration>();
 
     public ServiceAssemblyImpl(Bundle bundle,
                                ServiceAssemblyDesc serviceAssemblyDesc,
@@ -256,26 +257,19 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
         if (serviceAssemblyDesc.getConnections() != null && serviceAssemblyDesc.getConnections().getConnections() != null) {
             for (Connection connection : serviceAssemblyDesc.getConnections().getConnections()) {
                 Wire wire = connection.getWire();
-                registerWire(wire, wire.getFrom());
+                wires.put(wire, registerWire(wire));
             }
         }
     }
     
     private void stopConnections() {
-        if (serviceAssemblyDesc.getConnections() != null && serviceAssemblyDesc.getConnections().getConnections() != null) {
-            for (Connection connection : serviceAssemblyDesc.getConnections().getConnections()) {
-                Wire wire = connection.getWire();
-                unregisterWire(wire, wire.getFrom());
-            }
+        for (Wire wire : wires.keySet()) {
+            wires.get(wire).unregister();
         }
     }
     
-    protected void registerWire(Wire wire, Map<String, ?> from) {
-        bundle.getBundleContext().registerService(Wire.class.getName(), 
-                                                  wire, new MapToDictionary(from));
-    }
-    
-    protected void unregisterWire(Wire wire, Map<String, ?> from) {
-        // TODO
+    protected ServiceRegistration registerWire(Wire wire) {
+        return bundle.getBundleContext().registerService(Wire.class.getName(), 
+                                                         wire, new MapToDictionary(wire.getFrom()));
     }
 }

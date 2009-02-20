@@ -33,6 +33,7 @@ import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.junit.Before;
 import org.junit.Test;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.prefs.Preferences;
 
 /**
@@ -59,21 +60,25 @@ public class ServiceAssemblyImplTest {
             one(prefs).put("state", State.Stopped.name());
             one(prefs).flush();
         }});
-        final List<Wire> wires = new LinkedList<Wire>();
+        final List<ServiceRegistration> wires = new LinkedList<ServiceRegistration>();
         ServiceAssembly sa = new ServiceAssemblyImpl(null, descriptor, new ArrayList<ServiceUnitImpl>(), prefs, new AssemblyReferencesListener(), false) {
             @Override
-            protected void registerWire(Wire wire, Map<String, ?> from) {
-                wires.add(wire);
-            }
-            @Override
-            protected void unregisterWire(Wire wire, Map<String, ?> from) {
-                wires.remove(wire);
+            protected ServiceRegistration registerWire(Wire wire) {
+                ServiceRegistration registration = mockery.mock(ServiceRegistration.class, wire.getFrom().toString());
+                wires.add(registration);
+                return registration;
             }
         };
         sa.start();
         assertEquals(2, wires.size());
         
+        // ServiceRegistrations should be unregistered when the SA is stopped
+        for (final ServiceRegistration registration : wires) {
+            mockery.checking(new Expectations() {{
+                one(registration).unregister();
+            }});
+        }
         sa.stop();
-        assertEquals(0, wires.size());
+        mockery.assertIsSatisfied();
     }
 }
