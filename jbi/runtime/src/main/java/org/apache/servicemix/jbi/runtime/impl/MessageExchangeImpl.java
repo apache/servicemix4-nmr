@@ -18,6 +18,8 @@ package org.apache.servicemix.jbi.runtime.impl;
 
 import java.net.URI;
 import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.jbi.messaging.ExchangeStatus;
 import javax.jbi.messaging.Fault;
@@ -30,6 +32,7 @@ import javax.xml.namespace.QName;
 import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.Message;
 import org.apache.servicemix.nmr.api.Status;
+import org.apache.servicemix.nmr.api.Pattern;
 import org.apache.servicemix.nmr.core.MessageImpl;
 
 /**
@@ -47,6 +50,17 @@ public class MessageExchangeImpl implements MessageExchange  {
     public static final String OUT = "out";
     public static final String FAULT = "fault";
 
+    private static final Map<Pattern, URI> MEP_URIS;
+
+    static {
+        MEP_URIS = new HashMap<Pattern, URI>();
+        for (Pattern mep : Pattern.values()) {
+            String uri = mep.getWsdlUri();
+            String name = uri.substring(uri.lastIndexOf('/') + 1);
+            MEP_URIS.put(mep, URI.create("http://www.w3.org/2004/08/wsdl/" + name));
+        }
+    }
+
     private final Exchange exchange;
     private ExchangeStatus previousStatus;
 
@@ -63,7 +77,7 @@ public class MessageExchangeImpl implements MessageExchange  {
     }
 
     public URI getPattern() {
-        return URI.create(exchange.getPattern().getWsdlUri());
+        return MEP_URIS.get(exchange.getPattern());
     }
 
     public MessageExchange.Role getRole() {
