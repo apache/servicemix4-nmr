@@ -54,9 +54,10 @@ public class InitialContextFactoryWrapper implements InitialContextFactory {
         }
 
         public Object lookup(String name) throws NamingException {
-            if (name.length() == 0) {
+            if (name == null || name.length() == 0) {
                 return this;
-            }
+            } 
+            
             if (name.startsWith("osgi:")) {
                 return osgiContext.lookup(name);
             }
