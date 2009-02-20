@@ -19,6 +19,7 @@ package org.apache.servicemix.naming;
 import java.util.Hashtable;
 
 import javax.naming.spi.InitialContextFactory;
+import javax.naming.spi.NamingManager;
 import javax.naming.Context;
 import javax.naming.NamingException;
 
@@ -59,6 +60,16 @@ public class InitialContextFactoryWrapper implements InitialContextFactory {
             if (name.startsWith("osgi:")) {
                 return osgiContext.lookup(name);
             }
+            
+            int sep = name.indexOf(':');
+            if (sep >=0 ) {
+                String scheme = name.substring(0, sep);  
+                Context ctx = NamingManager.getURLContext(scheme, getContext().getEnvironment());
+                if (ctx != null) {
+                    return ctx.lookup(name);
+                }                    
+            }            
+            
             return delegate.lookup(name);
         }
 
