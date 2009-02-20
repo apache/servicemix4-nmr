@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.jbi.JBIException;
 import javax.jbi.management.LifeCycleMBean;
 import javax.management.StandardMBean;
 
@@ -32,51 +31,32 @@ import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
 import org.apache.servicemix.jbi.deployer.SharedLibrary;
-import org.apache.servicemix.jbi.deployer.artifacts.ComponentImpl;
-import org.apache.servicemix.jbi.deployer.artifacts.ServiceAssemblyImpl;
-import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryList;
 import org.apache.servicemix.jbi.deployer.utils.ManagementSupport;
-import org.apache.servicemix.jbi.deployer.utils.QueryUtils;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.springframework.osgi.context.BundleContextAware;
-import org.springframework.util.StringUtils;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.util.StringUtils;
 
-public class AdminCommandsImpl implements AdminCommands, BundleContextAware, InitializingBean {
+public class AdminCommandsImpl implements AdminCommands, InitializingBean, DisposableBean {
 
     private Deployer deployer;
     private InstallationService installationService;
-    private BundleContext bundleContext;
     private DeploymentService deploymentService;
 
-
-    protected interface ComponentCallback {
-        void doWithComponent(Component component) throws JBIException;
-    }
-
-    protected void executeWithComponent(String name, ComponentCallback callback) throws JBIException {
-        Component component = QueryUtils.getComponent(bundleContext, name);
-        if (component == null) {
-            throw new JBIException("Component '" + name + "' not found");
-        }
-        callback.doWithComponent(component);
-    }
 
     /**
      * Install a JBI component (a Service Engine or Binding Component)
      *
-     * @param fileName jbi component archive to install
+     * @param file jbi component archive to install
      * @param props    installation properties
      * @return
      */
-    public String installComponent(String fileName, Properties props, boolean deferException) throws Exception {
+    public String installComponent(String file, Properties props, boolean deferException) throws Exception {
         // TODO: handle deferException
         try {
-            getInstallationService().install(fileName, props, false);
-            return ManagementSupport.createSuccessMessage("installComponent", fileName);
+            getInstallationService().install(file, props, false);
+            return ManagementSupport.createSuccessMessage("installComponent", file);
         } catch (Exception e) {
-            throw ManagementSupport.failure("installComponent", fileName, e);
+            throw ManagementSupport.failure("installComponent", file, e);
         }
     }
 
@@ -90,30 +70,11 @@ public class AdminCommandsImpl implements AdminCommands, BundleContextAware, Ini
      */
     public String uninstallComponent(final String name) throws Exception {
         try {
-            executeWithComponent(name, new ComponentCallback() {
-                public void doWithComponent(Component comp) throws JBIException {
-                    try {
-                        if (comp == null) {
-                            throw ManagementSupport.failure("uninstallComponent", "Component '" + name + "' is not installed.");
-                        }
-                        if (!comp.getCurrentState().equals(LifeCycleMBean.SHUTDOWN)) {
-                            throw ManagementSupport.failure("uninstallComponent", "Component '" + name + "' is not shut down.");
-                        }
-                        boolean success = installationService.unloadInstaller(name, true);
-                        if (!success) {
-                            throw new RuntimeException();
-                        }
-                    } catch (Exception e) {
-                        throw new JBIException(e);
-                    }
-
-                }
-            });
+            installationService.unloadInstaller(name, true);
+            return ManagementSupport.createSuccessMessage("uninstallComponent", name);
         } catch (Exception e) {
             throw ManagementSupport.failure("uninstallComponent", name, e);
         }
-        return ManagementSupport.createSuccessMessage("uninstallComponent",
-                name);
     }
 
     /**
@@ -125,7 +86,8 @@ public class AdminCommandsImpl implements AdminCommands, BundleContextAware, Ini
     public String installSharedLibrary(String file, boolean deferException) throws Exception {
         // TODO: handle deferException
         try {
-            return installationService.installSharedLibrary(file);
+            installationService.installSharedLibrary(file);
+            return ManagementSupport.createSuccessMessage("installSharedLibrary", file);
         } catch (Exception e) {
             throw ManagementSupport.failure("installSharedLibrary", file, e);
         }
@@ -139,34 +101,8 @@ public class AdminCommandsImpl implements AdminCommands, BundleContextAware, Ini
      */
     public String uninstallSharedLibrary(String name) throws Exception {
         try {
-            //Check that the library is installed
-            boolean isInstalled = getDeployer().getInstalledSharedLibararies().contains(name);
-            if (!isInstalled) {
-                throw ManagementSupport.failure("uninstallSharedLibrary", "Shared library '" + name + "' is not installed.");
-            }
-            // Check that it is not used by a running component
-            ServiceReference[] refs = QueryUtils.getComponentsServiceReferences(bundleContext, null);
-
-            for (ServiceReference ref : refs) {
-                ComponentImpl component = (ComponentImpl) getBundleContext().getService(ref);
-                if (!component.getCurrentState().equalsIgnoreCase(LifeCycleMBean.SHUTDOWN)) {
-                    SharedLibraryList[] sls = component.getSharedLibraries();
-                    if (sls != null) {
-                        for (SharedLibraryList sl : sls) {
-                            if (name.equals(sl.getName())) {
-                                throw ManagementSupport.failure("uninstallSharedLibrary", "Shared library '" + name
-                                        + "' is used by component '" + component.getName() + "'.");
-                            }
-                        }
-                    }
-                }
-            }
-            boolean success = getInstallationService().uninstallSharedLibrary(name);
-            if (success) {
-                return ManagementSupport.createSuccessMessage("uninstallSharedLibrary", name);
-            } else {
-                throw ManagementSupport.failure("uninstallSharedLibrary", name);
-            }
+            getInstallationService().doUninstallSharedLibrary(name);
+            return ManagementSupport.createSuccessMessage("uninstallSharedLibrary", name);
         } catch (Throwable e) {
             throw ManagementSupport.failure("uninstallSharedLibrary", name, e);
         }
@@ -179,13 +115,13 @@ public class AdminCommandsImpl implements AdminCommands, BundleContextAware, Ini
      * @return
      */
     public String startComponent(String name) throws Exception {
+        Component component = deployer.getComponent(name);
+        if (component == null) {
+            throw ManagementSupport.failure("start", "Component does not exist: " + name);
+        }
         try {
-            executeWithComponent(name, new ComponentCallback() {
-                public void doWithComponent(Component component) throws JBIException {
-                    component.start();
-                }
-            });
-            return ManagementSupport.createSuccessMessage("startComponent", name);
+            component.start();
+            return ManagementSupport.createSuccessMessage("Component started", name);
         } catch (Throwable e) {
             throw ManagementSupport.failure("startComponent", name, e);
         }
@@ -198,13 +134,13 @@ public class AdminCommandsImpl implements AdminCommands, BundleContextAware, Ini
      * @return
      */
     public String stopComponent(String name) throws Exception {
+        Component component = deployer.getComponent(name);
+        if (component == null) {
+            throw ManagementSupport.failure("stop", "Component does not exist: " + name);
+        }
         try {
-            executeWithComponent(name, new ComponentCallback() {
-                public void doWithComponent(Component component) throws JBIException {
-                    component.stop();
-                }
-            });
-            return ManagementSupport.createSuccessMessage("stopComponent", name);
+            component.stop();
+            return ManagementSupport.createSuccessMessage("Component stopped", name);
         } catch (Throwable e) {
             throw ManagementSupport.failure("stopComponent", name, e);
         }
@@ -217,13 +153,13 @@ public class AdminCommandsImpl implements AdminCommands, BundleContextAware, Ini
      * @return
      */
     public String shutdownComponent(String name) throws Exception {
+        Component component = deployer.getComponent(name);
+        if (component == null) {
+            throw ManagementSupport.failure("shutdown", "Component does not exist: " + name);
+        }
         try {
-            executeWithComponent(name, new ComponentCallback() {
-                public void doWithComponent(Component component) throws JBIException {
-                    component.shutDown();
-                }
-            });
-            return ManagementSupport.createSuccessMessage("shutdownComponent", name);
+            component.shutDown();
+            return ManagementSupport.createSuccessMessage("Component shut down", name);
         } catch (Throwable e) {
             throw ManagementSupport.failure("shutdownComponent", name, e);
         }
@@ -252,7 +188,12 @@ public class AdminCommandsImpl implements AdminCommands, BundleContextAware, Ini
      * @return
      */
     public String undeployServiceAssembly(String name) throws Exception {
+        ServiceAssembly sa = deployer.getServiceAssembly(name);
+        if (sa == null) {
+            throw ManagementSupport.failure("start", "Service assembly does not exist: " + name);
+        }
         try {
+            // TODO: refactor
             return getDeploymentService().undeploy(name);
         } catch (Throwable e) {
             throw ManagementSupport.failure("undeployServiceAssembly", name, e);
@@ -266,8 +207,13 @@ public class AdminCommandsImpl implements AdminCommands, BundleContextAware, Ini
      * @return
      */
     public String startServiceAssembly(String name) throws Exception {
+        ServiceAssembly sa = deployer.getServiceAssembly(name);
+        if (sa == null) {
+            throw ManagementSupport.failure("start", "Service assembly does not exist: " + name);
+        }
         try {
-            return getDeploymentService().start(name);
+            sa.start();
+            return ManagementSupport.createSuccessMessage("Service assembly started", name);
         } catch (Throwable e) {
             throw ManagementSupport.failure("startServiceAssembly", name, e);
         }
@@ -280,8 +226,13 @@ public class AdminCommandsImpl implements AdminCommands, BundleContextAware, Ini
      * @return
      */
     public String stopServiceAssembly(String name) throws Exception {
+        ServiceAssembly sa = deployer.getServiceAssembly(name);
+        if (sa == null) {
+            throw ManagementSupport.failure("stop", "Service assembly does not exist: " + name);
+        }
         try {
-            return getDeploymentService().stop(name);
+            sa.stop();
+            return ManagementSupport.createSuccessMessage("Service assembly stopped", name);
         } catch (Throwable e) {
             throw ManagementSupport.failure("stopServiceAssembly", name, e);
         }
@@ -294,8 +245,13 @@ public class AdminCommandsImpl implements AdminCommands, BundleContextAware, Ini
      * @return
      */
     public String shutdownServiceAssembly(String name) throws Exception {
+        ServiceAssembly sa = deployer.getServiceAssembly(name);
+        if (sa == null) {
+            throw ManagementSupport.failure("shutdown", "Service assembly does not exist: " + name);
+        }
         try {
-            return getDeploymentService().shutDown(name);
+            sa.shutDown();
+            return ManagementSupport.createSuccessMessage("Service assembly shut down", name);
         } catch (Throwable e) {
             throw ManagementSupport.failure("shutdownServiceAssembly", name, e);
         }
@@ -328,43 +284,43 @@ public class AdminCommandsImpl implements AdminCommands, BundleContextAware, Ini
             throw ManagementSupport.failure("listComponents", "Required state '" + requiredState + "' is not a valid state.");
         }
         // Get components
-        String filter = null;
-        if (excludeSEs && !excludeBCs) {
-            filter = "(" + Deployer.TYPE + "=" + Deployer.TYPE_BINDING_COMPONENT + ")";
-        }
-        if (excludeBCs && !excludeSEs) {
-            filter = "(" + Deployer.TYPE + "=" + Deployer.TYPE_SERVICE_ENGINE + ")";
-        }
-        ServiceReference[] refs = QueryUtils.getComponentsServiceReferences(bundleContext, filter);
-        if (excludeBCs && excludeSEs) {
-            refs = new ServiceReference[0];
-        }
         List<Component> components = new ArrayList<Component>();
-        for (ServiceReference ref : refs) {
-            Component component = (Component) getBundleContext().getService(ref);
-
+        for (Component component : deployer.getComponents().values()) {
+            // Check type
+            if (excludeSEs && Deployer.TYPE_SERVICE_ENGINE.equals(component.getType())) {
+                continue;
+            }
+            // Check type
+            if (excludeBCs && Deployer.TYPE_BINDING_COMPONENT.equals(component.getType())) {
+                continue;
+            }
             // Check status
             if (requiredState != null && requiredState.length() > 0 && !requiredState.equalsIgnoreCase(component.getCurrentState())) {
                 continue;
             }
             // Check shared library
-            // TODO: check component dependency on SL
-            if (sharedLibraryName != null && sharedLibraryName.length() > 0
-                    && !getInstallationService().containsSharedLibrary(sharedLibraryName)) {
-                continue;
-            }
-            // Check deployed service assembly
-            if (serviceAssemblyName != null && serviceAssemblyName.length() > 0) {
-                ComponentImpl compImpl = (ComponentImpl) component;
-                Set<ServiceAssemblyImpl> saImpls = compImpl.getServiceAssemblies();
-                boolean found = false;
-                for (ServiceAssemblyImpl sa : saImpls) {
-                    if (serviceAssemblyName.equals(sa.getName())) {
-                        found = true;
+            if (StringUtils.hasLength(sharedLibraryName)) {
+                boolean match = false;
+                for (SharedLibrary lib : component.getSharedLibraries()) {
+                    if (sharedLibraryName.equals(lib.getName())) {
+                        match = true;
                         break;
                     }
                 }
-                if (!found) {
+                if (!match) {
+                    continue;
+                }
+            }
+            // Check deployed service assembly
+            if (StringUtils.hasLength(serviceAssemblyName)) {
+                boolean match = false;
+                for (ServiceUnit su : component.getServiceUnits()) {
+                    if (serviceAssemblyName.equals(su.getServiceAssembly().getName())) {
+                        match = true;
+                        break;
+                    }
+                }
+                if (!match) {
                     continue;
                 }
             }
@@ -399,43 +355,28 @@ public class AdminCommandsImpl implements AdminCommands, BundleContextAware, Ini
      * @return
      */
     public String listSharedLibraries(String componentName, String sharedLibraryName) throws Exception {
-        Set<String> libs = new HashSet<String>();
+        Set<SharedLibrary> libs = new HashSet<SharedLibrary>();
         if (sharedLibraryName != null && sharedLibraryName.length() > 0) {
-            if (getDeployer().getInstalledSharedLibararies().contains(sharedLibraryName)) {
-                libs.add(sharedLibraryName);
+            SharedLibrary lib = getDeployer().getSharedLibrary(sharedLibraryName);
+            if (lib != null) {
+                libs.add(lib);
             }
         } else if (componentName != null && componentName.length() > 0) {
-            ServiceReference ref = QueryUtils.getComponentServiceReference(bundleContext, "(" + Deployer.NAME + "=" + componentName + ")");
-            if (ref == null) {
-                throw new JBIException("Component '" + componentName + "' not found");
-            }
-            ComponentImpl component = (ComponentImpl) bundleContext.getService(ref);
-            for (SharedLibraryList sl : component.getSharedLibraries()) {
-                libs.add(sl.getName());
+            Component component = deployer.getComponent(componentName);
+            if (component != null) {
+                for (SharedLibrary lib : component.getSharedLibraries()) {
+                    libs.add(lib);
+                }
             }
         } else {
-            libs = getDeployer().getInstalledSharedLibararies();
+            libs.addAll(getDeployer().getSharedLibraries().values());
         }
         StringBuffer buffer = new StringBuffer();
         buffer.append("<?xml version='1.0'?>\n");
         buffer.append("<component-info-list xmlns='http://java.sun.com/xml/ns/jbi/component-info-list' version='1.0'>\n");
-        for (String sl : libs) {
-            buffer.append("  <component-info type='shared-library' name='").append(sl).append("' state='Started'>");
-            buffer.append("    <description>");
-
-            String desc = null;
-            ServiceReference ref = QueryUtils.getSharedLibraryServiceReference(bundleContext, "(" + Deployer.NAME + "=" + sl + ")");
-            if (ref != null) {
-                SharedLibrary sharedLib = (SharedLibrary) getBundleContext().getService(ref);
-                if (sharedLib != null) {
-                    desc = sharedLib.getDescription();
-                    getBundleContext().ungetService(ref);
-                }
-            }
-            if (desc != null) {
-                buffer.append(desc);
-            }
-            buffer.append("</description>\n");
+        for (SharedLibrary sl : libs) {
+            buffer.append("  <component-info type='shared-library' name='").append(sl.getName()).append("' state='Started'>\n");
+            buffer.append("    <description>").append(sl.getDescription()).append("</description>\n");
             buffer.append("  </component-info>\n");
         }
         buffer.append("</component-info-list>");
@@ -454,10 +395,9 @@ public class AdminCommandsImpl implements AdminCommands, BundleContextAware, Ini
         List<ServiceAssembly> assemblies = new ArrayList<ServiceAssembly>();
         Component component = null;
         if (StringUtils.hasLength(componentName)) {
-            component = QueryUtils.getComponent(bundleContext, componentName);
+            component = deployer.getComponent(componentName);
         }
-        for (ServiceReference ref : QueryUtils.getServiceAssembliesServiceReferences(bundleContext, null)) {
-            ServiceAssembly sa = (ServiceAssembly) bundleContext.getService(ref);
+        for (ServiceAssembly sa : deployer.getServiceAssemblies().values()) {
             boolean match = true;
             if (StringUtils.hasLength(serviceAssemblyName)) {
                 match = serviceAssemblyName.equals(sa.getName());
@@ -508,12 +448,8 @@ public class AdminCommandsImpl implements AdminCommands, BundleContextAware, Ini
                                                deployer.getNamingStrategy().getObjectName(this));
     }
 
-    public void setBundleContext(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
-    }
-
-    public BundleContext getBundleContext() {
-        return bundleContext;
+    public void destroy() throws Exception {
+        deployer.getManagementAgent().unregister(deployer.getNamingStrategy().getObjectName(this));
     }
 
     public void setInstallationService(InstallationService installationService) {

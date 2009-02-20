@@ -29,7 +29,6 @@ public class AbstractLifecycleJbiArtifact {
 
     public enum State {
         Unknown,
-        Initialized,
         Started,
         Stopped,
         Shutdown,
@@ -51,7 +50,6 @@ public class AbstractLifecycleJbiArtifact {
                 return LifeCycleMBean.STARTED;
             case Stopped:
                 return LifeCycleMBean.STOPPED;
-            case Initialized:
             case Shutdown:
                 return LifeCycleMBean.SHUTDOWN;
             default:

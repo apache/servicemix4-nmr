@@ -34,17 +34,23 @@ import org.apache.servicemix.jbi.deployer.descriptor.ServiceAssemblyDesc;
 import org.apache.servicemix.jbi.deployer.descriptor.ServiceUnitDesc;
 import org.apache.servicemix.jbi.deployer.handler.Transformer;
 import org.apache.servicemix.jbi.deployer.utils.ManagementSupport;
-import org.apache.servicemix.jbi.deployer.utils.QueryUtils;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 import org.springframework.osgi.context.BundleContextAware;
 
 public class DeploymentService implements DeploymentServiceMBean, BundleContextAware {
 
     private static final Log LOG = LogFactory.getLog(DeploymentService.class);
 
+    private Deployer deployer;
     private BundleContext bundleContext;
+
+    public Deployer getDeployer() {
+        return deployer;
+    }
+
+    public void setDeployer(Deployer deployer) {
+        this.deployer = deployer;
+    }
 
     public BundleContext getBundleContext() {
         return bundleContext;
@@ -70,6 +76,7 @@ public class DeploymentService implements DeploymentServiceMBean, BundleContextA
                 if (root == null) {
                     throw ManagementSupport.failure("deploy", "Unable to find jbi descriptor: " + saZipURL);
                 }
+                // TODO: Move the following code in the installer
                 DescriptorFactory.checkDescriptor(root);
                 ServiceAssemblyDesc sa = root.getServiceAssembly();
                 if (sa == null) {
@@ -78,13 +85,14 @@ public class DeploymentService implements DeploymentServiceMBean, BundleContextA
                 checkSus(sa.getServiceUnits());
                 String name = sa.getIdentification().getName();
                 LOG.info("Deploy ServiceAssembly " + name);
-                ServiceAssemblyInstaller saInstaller = new ServiceAssemblyInstaller(bundleContext, name);
-                saInstaller.deploy(saZipURL);
+                ServiceAssemblyInstaller installer = new ServiceAssemblyInstaller(deployer, root, jarfile);
+                installer.installBundle();
+                installer.init();
+                installer.install();
                 return ManagementSupport.createSuccessMessage("deploy SA", name);
             } else {
                 throw new RuntimeException("location for deployment SA: " + saZipURL + " isn't a valid file");
             }
-
         } catch (Exception e) {
             LOG.error("Error deploying service assembly", e);
             throw e;
@@ -96,7 +104,7 @@ public class DeploymentService implements DeploymentServiceMBean, BundleContextA
             for (int i = 0; i < sus.length; i++) {
                 String suName = sus[i].getIdentification().getName();
                 String componentName = sus[i].getTarget().getComponentName();
-                Component component = QueryUtils.getComponent(bundleContext, componentName);
+                Component component = deployer.getComponent(componentName);
                 if (component == null) {
                     throw ManagementSupport.failure("deploy", "Target component " + componentName
                             + " for service unit " + suName + " is not installed");
@@ -119,38 +127,21 @@ public class DeploymentService implements DeploymentServiceMBean, BundleContextA
     }
 
     public String undeploy(String saName) throws Exception {
-        if (saName == null) {
-            throw ManagementSupport.failure("undeploy", "SA name must not be null");
-        }
-        ServiceReference ref = QueryUtils.getServiceAssemblyServiceReference(bundleContext, "(" + Deployer.NAME + "=" + saName + ")");
-        if (ref == null) {
+        ServiceAssembly assembly = deployer.getServiceAssembly(saName);
+        if (assembly == null) {
             throw ManagementSupport.failure("undeploy", "SA has not been deployed: " + saName);
         }
-        Bundle bundle = ref.getBundle();
-        ServiceAssembly sa = (ServiceAssembly) bundleContext.getService(ref);
-
-
-        String state = sa.getCurrentState();
-        if (!LifeCycleMBean.SHUTDOWN.equals(state)) {
-            throw ManagementSupport.failure("undeploy", "SA must be shut down: " + saName);
+        AbstractInstaller installer = deployer.getInstaller(assembly);
+        if (installer == null) {
+            throw ManagementSupport.failure("undeploy", "Could not find service assembly installer: " + saName);
         }
-        try {
-            // TODO: shutdown sa before uninstalling bundle
-            if (bundle != null) {
-                bundle.stop();
-                bundle.uninstall();
-                return ManagementSupport.createSuccessMessage("undeploy service assembly successfully", saName);
-            }
-
-        } catch (Exception e) {
-            LOG.info("Unable to undeploy assembly", e);
-            throw e;
-        }
-        return "failed to undeploy service assembly" + saName;
+        installer.uninstall(false);
+        return ManagementSupport.createSuccessMessage("undeploy", "Service assembly " + saName + " undeployed");
     }
 
     public String[] getDeployedServiceUnitList(String componentName) throws Exception {
-        Component component = QueryUtils.getComponent(bundleContext, componentName);
+        Component component = deployer.getComponent(componentName);
+
         ServiceUnit[] serviceUnits = component.getServiceUnits();
         String[] sus = new String[serviceUnits.length];
         for (int i = 0; i < serviceUnits.length; i++) {
@@ -160,21 +151,17 @@ public class DeploymentService implements DeploymentServiceMBean, BundleContextA
     }
 
     public String[] getDeployedServiceAssemblies() throws Exception {
-        ServiceAssembly[] assemblies = QueryUtils.getAllServiceAssemblies(bundleContext);
-        String[] sas = new String[assemblies.length];
-        for (int i = 0; i < assemblies.length; i++) {
-            sas[i] = assemblies[i].getName();
-        }
-        return sas;
+        Set<String> sas = deployer.getServiceAssemblies().keySet();
+        return sas.toArray(new String[sas.size()]);
     }
 
     public String getServiceAssemblyDescriptor(String saName) throws Exception {
-        ServiceAssembly sa = QueryUtils.getServiceAssembly(bundleContext, saName);
+        ServiceAssembly sa = deployer.getServiceAssembly(saName);
         return sa != null ? sa.getDescriptor() : null;
     }
 
     public boolean canDeployToComponent(String componentName) {
-        Component component = QueryUtils.getComponent(bundleContext, componentName);
+        Component component = deployer.getComponent(componentName);
         return component != null
                 && LifeCycleMBean.STARTED.equals(component.getCurrentState())
                 && component.getComponent().getServiceUnitManager() != null;
@@ -182,12 +169,9 @@ public class DeploymentService implements DeploymentServiceMBean, BundleContextA
 
     public String start(String serviceAssemblyName) throws Exception {
         try {
-            if (serviceAssemblyName == null) {
-                throw ManagementSupport.failure("start", "SA name must not be null");
-            }
-            ServiceAssembly sa = QueryUtils.getServiceAssembly(bundleContext, serviceAssemblyName);
+            ServiceAssembly sa = deployer.getServiceAssembly(serviceAssemblyName);
             if (sa == null) {
-                throw ManagementSupport.failure("start", "SA has not exist: " + serviceAssemblyName);
+                throw ManagementSupport.failure("start", "SA does not exist: " + serviceAssemblyName);
             }
             sa.start();
             return ManagementSupport.createSuccessMessage("start service assembly successfully", serviceAssemblyName);
@@ -199,12 +183,9 @@ public class DeploymentService implements DeploymentServiceMBean, BundleContextA
 
     public String stop(String serviceAssemblyName) throws Exception {
         try {
-            if (serviceAssemblyName == null) {
-                throw ManagementSupport.failure("stop", "SA name must not be null");
-            }
-            ServiceAssembly sa = QueryUtils.getServiceAssembly(bundleContext, serviceAssemblyName);
+            ServiceAssembly sa = deployer.getServiceAssembly(serviceAssemblyName);
             if (sa == null) {
-                throw ManagementSupport.failure("stop", "SA has not exist: " + serviceAssemblyName);
+                throw ManagementSupport.failure("stop", "SA does not exist: " + serviceAssemblyName);
             }
             sa.stop();
             return ManagementSupport.createSuccessMessage("stop service assembly successfully", serviceAssemblyName);
@@ -216,12 +197,9 @@ public class DeploymentService implements DeploymentServiceMBean, BundleContextA
 
     public String shutDown(String serviceAssemblyName) throws Exception {
         try {
-            if (serviceAssemblyName == null) {
-                throw ManagementSupport.failure("shutdown", "SA name must not be null");
-            }
-            ServiceAssembly sa = QueryUtils.getServiceAssembly(bundleContext, serviceAssemblyName);
+            ServiceAssembly sa = deployer.getServiceAssembly(serviceAssemblyName);
             if (sa == null) {
-                throw ManagementSupport.failure("shutdown", "SA has not exist: " + serviceAssemblyName);
+                throw ManagementSupport.failure("shutdown", "SA does not exist: " + serviceAssemblyName);
             }
             sa.shutDown();
             return ManagementSupport.createSuccessMessage("shutdown service assembly successfully", serviceAssemblyName);
@@ -233,12 +211,9 @@ public class DeploymentService implements DeploymentServiceMBean, BundleContextA
 
     public String getState(String serviceAssemblyName) throws Exception {
         try {
-            if (serviceAssemblyName == null) {
-                throw ManagementSupport.failure("getState", "SA name must not be null");
-            }
-            ServiceAssembly sa = QueryUtils.getServiceAssembly(bundleContext, serviceAssemblyName);
+            ServiceAssembly sa = deployer.getServiceAssembly(serviceAssemblyName);
             if (sa == null) {
-                throw ManagementSupport.failure("getState", "SA has not exist: " + serviceAssemblyName);
+                throw ManagementSupport.failure("getState", "SA does not exist: " + serviceAssemblyName);
             }
             return sa.getCurrentState();
         } catch (Exception e) {
@@ -257,9 +232,7 @@ public class DeploymentService implements DeploymentServiceMBean, BundleContextA
         String[] result;
         // iterate through the service assemblies
         Set<String> tmpList = new HashSet<String>();
-        ServiceReference[] serviceRefs = QueryUtils.getServiceAssembliesServiceReferences(getBundleContext(), null);
-        for (ServiceReference ref : serviceRefs) {
-            ServiceAssembly sa = (ServiceAssembly) getBundleContext().getService(ref);
+        for (ServiceAssembly sa : deployer.getServiceAssemblies().values()) {
             for (ServiceUnit su : sa.getServiceUnits()) {
                 if (su.getComponent().getName().equals(componentName)) {
                     tmpList.add(sa.getName());
@@ -275,9 +248,7 @@ public class DeploymentService implements DeploymentServiceMBean, BundleContextA
         String[] result;
         // iterate through the service assembilies
         Set<String> tmpList = new HashSet<String>();
-        ServiceReference[] serviceRefs = QueryUtils.getServiceAssembliesServiceReferences(getBundleContext(), null);
-        for (ServiceReference ref : serviceRefs) {
-            ServiceAssembly sa = (ServiceAssembly) getBundleContext().getService(ref);
+        for (ServiceAssembly sa : deployer.getServiceAssemblies().values()) {
             for (ServiceUnit su : sa.getServiceUnits()) {
                 if (su.getComponent().getName().equals(componentName)) {
                     tmpList.add(su.getName());
@@ -293,7 +264,7 @@ public class DeploymentService implements DeploymentServiceMBean, BundleContextA
         String[] result;
         // iterate through the service assembilies
         Set<String> tmpList = new HashSet<String>();
-        ServiceAssembly sa = QueryUtils.getServiceAssembly(getBundleContext(), saName);
+        ServiceAssembly sa = deployer.getServiceAssembly(saName);
         if (sa != null) {
             for (ServiceUnit su : sa.getServiceUnits()) {
                 if (su.getComponent().getName().equals(saName)) {
@@ -314,22 +285,17 @@ public class DeploymentService implements DeploymentServiceMBean, BundleContextA
      * @return boolean value indicating whether the SU is currently deployed.
      */
     public boolean isDeployedServiceUnit(String componentName, String suName) {
-        boolean result = false;
-        ServiceReference[] serviceRefs = QueryUtils.getServiceAssembliesServiceReferences(getBundleContext(), null);
-        for (ServiceReference ref : serviceRefs) {
-            ServiceAssembly sa = (ServiceAssembly) getBundleContext().getService(ref);
+        for (ServiceAssembly sa : deployer.getServiceAssemblies().values()) {
             ServiceUnit[] sus = sa.getServiceUnits();
             if (sus != null) {
-                for (int i = 0; i < sus.length; i++) {
-                    if (sus[i].getComponent().getName().equals(componentName)
-                            && sus[i].getName().equals(suName)) {
-                        result = true;
-                        break;
+                for (ServiceUnit su : sus) {
+                    if (su.getComponent().getName().equals(componentName) && su.getName().equals(suName)) {
+                        return true;
                     }
                 }
             }
         }
-        return result;
+        return false;
     }
 
 }

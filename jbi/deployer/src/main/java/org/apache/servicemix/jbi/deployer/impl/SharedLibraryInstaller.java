@@ -16,42 +16,113 @@
  */
 package org.apache.servicemix.jbi.deployer.impl;
 
-import javax.jbi.JBIException;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
+import javax.jbi.JBIException;
+import javax.management.ObjectName;
+
+import org.apache.servicemix.jbi.deployer.Component;
+import org.apache.servicemix.jbi.deployer.SharedLibrary;
+import org.apache.servicemix.jbi.deployer.descriptor.ClassPath;
+import org.apache.servicemix.jbi.deployer.descriptor.Descriptor;
+import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryDesc;
+import org.apache.servicemix.jbi.deployer.utils.FileUtil;
+import org.apache.servicemix.jbi.deployer.utils.ManagementSupport;
+import org.apache.xbean.classloader.MultiParentClassLoader;
+import org.osgi.service.prefs.BackingStoreException;
+import org.springframework.osgi.util.BundleDelegatingClassLoader;
 
 public class SharedLibraryInstaller extends AbstractInstaller {
 
-    private String name;
-
-    public SharedLibraryInstaller(BundleContext bundleContext, String name) {
-        this.bundleContext = bundleContext;
-        this.name = name;
+    public SharedLibraryInstaller(Deployer deployer, Descriptor descriptor, File jbiArtifact) {
+        super(deployer, descriptor, jbiArtifact);
+        installRoot = new File(System.getProperty("servicemix.base"), "data/jbi/" + getName() + "/install");
+        installRoot.mkdirs();
     }
 
     public String getName() {
-        return name;
+        return descriptor.getSharedLibrary().getIdentification().getName();
     }
 
-    public void install(String filename) {
-        deployFile(filename);
+    public ObjectName install() throws JBIException {
+        try {
+            SharedLibrary sl = deployer.registerSharedLibrary(bundle, descriptor.getSharedLibrary(), createClassLoader());
+            return deployer.getNamingStrategy().getObjectName(sl);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            throw new JBIException(e);
+        }
     }
 
     public void uninstall() throws javax.jbi.JBIException {
         try {
-            Bundle bundle = getBundle();
-
-            if (bundle == null) {
-                LOGGER.warn("Could not find Bundle for shared lib: " + name);
-            } else {
-                bundle.stop();
-                bundle.uninstall();
-            }
-        } catch (BundleException e) {
-            LOGGER.error("failed to uninstall shared lib: " + name, e);
+            uninstall(false);
+        } catch (JBIException e) {
+            throw e;
+        } catch (Exception e) {
             throw new JBIException(e);
         }
+    }
+
+    public void uninstall(boolean force) throws Exception {
+        SharedLibrary library = deployer.getSharedLibrary(getName());
+        if (library == null && !force) {
+            throw ManagementSupport.failure("uninstallSharedLibrary", "SharedLibrary '" + getName() + "' is not installed.");
+        }
+        // Check that it is not used by a running component
+        if (library.getComponents().length > 0 && !force) {
+            StringBuilder sb = new StringBuilder();
+            for (Component comp : library.getComponents()) {
+                if (sb.length() > 0) {
+                    sb.append(", ");
+                }
+                sb.append(comp.getName());
+            }
+            throw ManagementSupport.failure("uninstallSharedLibrary", "Shared library " + getName() + " is in use by components " + sb.toString());
+        }
+        // Unregister library
+        deployer.unregisterSharedLibrary(library);
+        // Remove preferences
+        try {
+            deletePreferences();
+        } catch (BackingStoreException e) {
+            LOGGER.warn("Error cleaning persistent state for component: " + getName(), e);
+        }
+        // Uninstall bundle
+        uninstallBundle();
+        // Remove files
+        FileUtil.deleteFile(installRoot);
+    }
+
+    protected ClassLoader createClassLoader() {
+        SharedLibraryDesc library = descriptor.getSharedLibrary();
+        // Make the current ClassLoader the parent
+        ClassLoader parent = BundleDelegatingClassLoader.createBundleClassLoaderFor(bundle, getClass().getClassLoader());
+        boolean parentFirst = library.isParentFirstClassLoaderDelegation();
+        ClassPath cp = library.getSharedLibraryClassPath();
+        String[] classPathNames = cp.getPathElements();
+        List<URL> urls = new ArrayList<URL>();
+        for (String classPathName : classPathNames) {
+            File f = new File(installRoot, classPathName);
+            if (!f.exists()) {
+                LOGGER.warn("Shared library classpath entry not found: '" + classPathName + "'");
+            }
+            try {
+                urls.add(f.getCanonicalFile().toURL());
+            } catch (IOException e) {
+                throw new IllegalArgumentException("Shared library classpath entry not found: '" + classPathName + "'");
+            }
+        }
+        return new MultiParentClassLoader(
+                library.getIdentification().getName(),
+                urls.toArray(new URL[urls.size()]),
+                parent,
+                !parentFirst,
+                new String[0],
+                new String[]{"java.", "javax."});
     }
 }

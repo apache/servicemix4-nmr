@@ -52,8 +52,8 @@ public class ServiceAssemblyImplTest {
         ServiceAssemblyDesc descriptor = DescriptorFactory.buildDescriptor(DescriptorFactory.class.getResource("serviceAssembly.xml")).getServiceAssembly();
         final Preferences prefs = mockery.mock(Preferences.class);
         mockery.checking(new Expectations() {{
-            one(prefs).get("state", State.Initialized.name());
-                will(returnValue(State.Initialized.name()));
+            one(prefs).get("state", State.Shutdown.name());
+                will(returnValue(State.Shutdown.name()));
             one(prefs).put("state", State.Started.name());
             one(prefs).flush();
             one(prefs).put("state", State.Stopped.name());

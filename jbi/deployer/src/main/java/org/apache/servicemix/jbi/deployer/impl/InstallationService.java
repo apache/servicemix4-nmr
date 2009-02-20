@@ -17,41 +17,25 @@
 package org.apache.servicemix.jbi.deployer.impl;
 
 import java.io.File;
-import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jbi.management.DeploymentException;
 import javax.jbi.management.InstallationServiceMBean;
-import javax.management.Attribute;
-import javax.management.JMException;
-import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.servicemix.jbi.deployer.NamingStrategy;
+import org.apache.servicemix.jbi.deployer.SharedLibrary;
+import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.descriptor.Descriptor;
 import org.apache.servicemix.jbi.deployer.handler.Transformer;
-import org.apache.servicemix.jbi.deployer.utils.QueryUtils;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.ServiceReference;
-import org.osgi.framework.BundleContext;
-import org.springframework.osgi.context.BundleContextAware;
+import org.apache.servicemix.jbi.deployer.utils.ManagementSupport;
 
-public class InstallationService implements InstallationServiceMBean, BundleContextAware {
+public class InstallationService implements InstallationServiceMBean {
 
     private static final Log LOG = LogFactory.getLog(InstallationService.class);
 
-    private Map<String, ComponentInstaller> componentInstallers = new ConcurrentHashMap<String, ComponentInstaller>();
-
-    private Map<String, SharedLibraryInstaller> sharedLibinstallers = new ConcurrentHashMap<String, SharedLibraryInstaller>();
-
     private Deployer deployer;
-    private BundleContext bundleContext;
-
-    private NamingStrategy namingStrategy;
-    private ManagementAgent managementAgent;
 
     /**
      * Load the installer for a new component from a component installation
@@ -93,7 +77,7 @@ public class InstallationService implements InstallationServiceMBean, BundleCont
      */
     public ObjectName loadInstaller(String componentName) {
         try {
-            ComponentInstaller installer = componentInstallers.get(componentName);
+            ComponentInstaller installer = getComponentInstaller(componentName);
             if (installer != null) {
                 installer.register();
             }
@@ -117,8 +101,7 @@ public class InstallationService implements InstallationServiceMBean, BundleCont
     public boolean unloadInstaller(String componentName, boolean isToBeDeleted) {
         boolean result = false;
         try {
-            ComponentInstaller installer = isToBeDeleted ? componentInstallers.remove(componentName)
-                                                         : componentInstallers.get(componentName);
+            ComponentInstaller installer = getComponentInstaller(componentName);
             if (installer != null) {
                 installer.unregister();
                 if (isToBeDeleted) {
@@ -133,6 +116,11 @@ public class InstallationService implements InstallationServiceMBean, BundleCont
         return result;
     }
 
+    protected ComponentInstaller getComponentInstaller(String name) {
+        Component component = deployer.getComponent(name);
+        return (ComponentInstaller) deployer.getInstaller(component);
+    }
+
     /**
      * Install a shared library jar.
      *
@@ -140,47 +128,13 @@ public class InstallationService implements InstallationServiceMBean, BundleCont
      * @return the name of the shared library loaded from aSharedLibURI.
      */
     public String installSharedLibrary(String location) {
-        File jarfile = new File(location);
-        String slName = null;
         try {
-            if (jarfile.exists()) {
-                Descriptor desc;
-                try {
-                    desc = Transformer.getDescriptor(jarfile);
-                } catch (Exception e) {
-                    LOG.error("install sharedLib failed", e);
-                    throw new DeploymentException("install sharedLib failed", e);
-                }
-                if (desc != null) {
-                    if (desc.getSharedLibrary() == null) {
-                        throw new DeploymentException("JBI descriptor is not a sharedLib descriptor");
-                    }
-                    slName = desc.getSharedLibrary().getIdentification().getName();
-                    LOG.info("Install ShareLib " + slName);
-                    if (sharedLibinstallers.containsKey(slName)) {
-                        ServiceReference ref = QueryUtils.getSharedLibraryServiceReference(bundleContext, "(" + Deployer.NAME + "=" + slName + ")");
-                        if (ref == null) {
-                            //the Shared lib bundle uninstalled from console using osgi/uninstall
-                            sharedLibinstallers.remove(slName);
-                        } else {
-                            throw new DeploymentException("ShareLib " + slName + " is already installed");
-                        }
-                    }
-                    SharedLibraryInstaller slInstaller = new SharedLibraryInstaller(bundleContext, slName);
-                    slInstaller.install(location);
-                    sharedLibinstallers.put(slName, slInstaller);
-
-                    return slName;
-                } else {
-                    throw new DeploymentException("Could not find JBI descriptor");
-                }
-            } else {
-                throw new DeploymentException("Could not find sharedLib");
-            }
+            return doInstallSharedLibrary(location);
+        } catch (DeploymentException e) {
+            throw new RuntimeException(e.getMessage());
         } catch (Exception e) {
-            LOG.error("install SharedLib failed", e);
+            throw ManagementSupport.failure("installSharedibrary", location, e);
         }
-        return slName;
     }
 
     /**
@@ -191,62 +145,11 @@ public class InstallationService implements InstallationServiceMBean, BundleCont
      * @return - true iff the uninstall was successful.
      */
     public boolean uninstallSharedLibrary(String aSharedLibName) {
-        boolean result = false;
         try {
-            SharedLibraryInstaller installer = sharedLibinstallers.remove(aSharedLibName);
-            result = installer != null;
-            if (result) {
-                //the SL installed from Mbean
-                installer.uninstall();
-
-            } else {
-                //the SL not installed from Mbeans, so check the SL bundle directly
-                ServiceReference ref = QueryUtils.getSharedLibraryServiceReference(bundleContext, "(" + Deployer.NAME + "=" + aSharedLibName + ")");
-                if (ref != null) {
-                    Bundle bundle = ref.getBundle();
-                    if (bundle != null) {
-                        bundle.stop();
-                        bundle.uninstall();
-                        result = true;
-                    }
-                }
-            }
+            doUninstallSharedLibrary(aSharedLibName);
+            return true;
         } catch (Exception e) {
-            String errStr = "Problem uninstall SL: " + aSharedLibName;
-            LOG.error(errStr, e);
-        } finally {
-        }
-        return result;
-    }
-
-    protected ComponentInstaller doLoadNewInstaller(String installJarURL, boolean autoStart) throws Exception {
-        File jarfile = new File(installJarURL);
-        if (jarfile.exists()) {
-            Descriptor desc = Transformer.getDescriptor(jarfile);
-            if (desc != null && desc.getComponent() != null) {
-                String componentName = desc.getComponent().getIdentification().getName();
-                if (!componentInstallers.containsKey(componentName)) {
-                    ComponentInstaller installer;
-                    try {
-                        installer = new ComponentInstaller(deployer, desc.getComponent(), jarfile);
-                        deployer.setComponentInstaller(installer);
-                        installer.deployBundle();
-                        installer.setAutoStart(autoStart);
-                        installer.init();
-                        installer.register();
-                        componentInstallers.put(componentName, installer);
-                        return installer;
-                    } finally {
-                        deployer.setComponentInstaller(null);
-                    }
-                } else {
-                    throw new RuntimeException("An installer already exists for " + componentName);
-                }
-            } else {
-                throw new RuntimeException("Could not find Component from: " + installJarURL);
-            }
-        } else {
-            throw new RuntimeException("location: " + installJarURL + " isn't valid");
+            return false;
         }
     }
 
@@ -258,45 +161,75 @@ public class InstallationService implements InstallationServiceMBean, BundleCont
      * @param autoStart
      * @throws DeploymentException
      */
-    public void install(String location, Properties props, boolean autoStart) throws DeploymentException {
-        ComponentInstaller installer = null;
-        boolean success = false;
+    public void install(String location, Properties props, boolean autoStart) throws Exception {
+        ComponentInstaller installer = doLoadNewInstaller(location, autoStart);
         try {
-            installer = doLoadNewInstaller(location, autoStart);
-            if (props != null && props.size() > 0) {
-                ObjectName on = installer.getInstallerConfigurationMBean();
-                if (on == null) {
-                    LOG.warn("Could not find installation configuration MBean. Installation properties will be ignored.");
-                } else {
-                    MBeanServer mbs = getManagementAgent().getMbeanServer();
-                    for (Object o : props.keySet()) {
-                        String key = (String) o;
-                        String val = props.getProperty(key);
-                        try {
-                            mbs.setAttribute(on, new Attribute(key, val));
-                        } catch (JMException e) {
-                            throw new DeploymentException("Could not set installation property: (" + key + " = " + val, e);
-                        }
-                    }
-                }
-            }
+            installer.configure(props);
             installer.install();
-            success = true;
         } catch (Exception e) {
-            throw new DeploymentException(e);
-        } finally {
-            if (installer != null) {
-                unloadInstaller(installer.getName(), !success);
-            }
+            installer.uninstall(true);
+            throw e;
         }
     }
 
-    public void setNamingStrategy(NamingStrategy namingStrategy) {
-        this.namingStrategy = namingStrategy;
+    public String doInstallSharedLibrary(String location) throws Exception {
+        File jarfile = new File(location);
+        if (jarfile.exists()) {
+            Descriptor desc = Transformer.getDescriptor(jarfile);
+            if (desc.getSharedLibrary() == null) {
+                throw new DeploymentException("JBI descriptor is not a shared library descriptor");
+            }
+            String slName = desc.getSharedLibrary().getIdentification().getName();
+            LOG.info("Installing shared library " + slName);
+            if (deployer.getSharedLibrary(slName) != null) {
+                throw new DeploymentException("ShareLib " + slName + " is already installed");
+            }
+            SharedLibraryInstaller installer = new SharedLibraryInstaller(deployer, desc, jarfile);
+            installer.installBundle();
+            installer.init();
+            installer.install();
+            return slName;
+        } else {
+            throw new Exception("Unable to find shared library " + location);
+        }
     }
 
-    public NamingStrategy getNamingStrategy() {
-        return namingStrategy;
+    public void doUninstallSharedLibrary(String aSharedLibName) throws Exception {
+        SharedLibrary library = deployer.getSharedLibrary(aSharedLibName);
+        if (library == null) {
+            throw ManagementSupport.failure("uninstall", "Shared library has not been installed: " + aSharedLibName);
+        }
+        AbstractInstaller installer = deployer.getInstaller(library);
+        if (installer == null) {
+            throw ManagementSupport.failure("uninstall", "Could not find shared library installer: " + aSharedLibName);
+        }
+        installer.uninstall(false);
+    }
+
+    protected ComponentInstaller doLoadNewInstaller(String location, boolean autoStart) throws Exception {
+        File jarfile = new File(location);
+        if (jarfile.exists()) {
+            Descriptor desc = Transformer.getDescriptor(jarfile);
+            if (desc.getComponent() != null) {
+                String componentName = desc.getComponent().getIdentification().getName();
+                ComponentInstaller installer = getComponentInstaller(componentName);
+                if (installer == null) {
+                    installer = new ComponentInstaller(deployer, desc, jarfile);
+                    installer.installBundle();
+                    installer.setAutoStart(autoStart);
+                    installer.init();
+                    installer.register();
+                    return installer;
+                    // TODO: if something goes wrong, we need to clean up what has been done so far
+                } else {
+                    throw new Exception("An installer already exists for " + componentName);
+                }
+            } else {
+                throw new Exception("JBI descriptor is not a component descriptor");
+            }
+        } else {
+            throw new Exception("Unable to find component " + location);
+        }
     }
 
     public Deployer getDeployer() {
@@ -305,27 +238,6 @@ public class InstallationService implements InstallationServiceMBean, BundleCont
 
     public void setDeployer(Deployer deployer) {
         this.deployer = deployer;
-    }
-
-    public void setManagementAgent(ManagementAgent managementAgent) {
-        this.managementAgent = managementAgent;
-    }
-
-    public ManagementAgent getManagementAgent() {
-        return managementAgent;
-    }
-
-    public BundleContext getBundleContext() {
-        return bundleContext;
-    }
-
-    public void setBundleContext(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
-    }
-
-    public boolean containsSharedLibrary(String sharedLibraryName) {
-        // TODO: remove this method
-        return sharedLibinstallers.containsKey(sharedLibraryName);
     }
 
 }

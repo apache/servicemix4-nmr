@@ -24,16 +24,10 @@ import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import org.apache.servicemix.jbi.deployer.Component;
-import org.apache.servicemix.jbi.deployer.ServiceAssembly;
-import org.apache.servicemix.jbi.deployer.ServiceUnit;
-import org.apache.servicemix.jbi.deployer.utils.QueryUtils;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.springframework.osgi.context.BundleContextAware;
 
 /**
  */
-public class AdminService implements AdminServiceMBean, BundleContextAware {
+public class AdminService implements AdminServiceMBean {
 
     public static final String DEFAULT_NAME = "ServiceMix4";
 
@@ -43,17 +37,16 @@ public class AdminService implements AdminServiceMBean, BundleContextAware {
 
     public static final int DEFAULT_CONNECTOR_PORT = 1099;
 
-    private BundleContext bundleContext;
+    private Deployer deployer;
     private DefaultNamingStrategy namingStrategy;
 
-    public BundleContext getBundleContext() {
-        return bundleContext;
+    public Deployer getDeployer() {
+        return deployer;
     }
 
-    public void setBundleContext(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
+    public void setDeployer(Deployer deployer) {
+        this.deployer = deployer;
     }
-
 
     public void setNamingStrategy(DefaultNamingStrategy namingStrategy) {
         this.namingStrategy = namingStrategy;
@@ -64,38 +57,40 @@ public class AdminService implements AdminServiceMBean, BundleContextAware {
     }
 
     public ObjectName[] getBindingComponents() {
-        String filter = "(" + Deployer.TYPE + "=" + Deployer.TYPE_BINDING_COMPONENT + ")";
-        Component[] components = QueryUtils.getComponents(getBundleContext(), filter);
-        ObjectName[] names = new ObjectName[components.length];
-        for (int i = 0; i < components.length; i++) {
-            try {
-                names[i] = namingStrategy.getObjectName(components[i]);
-            } catch (MalformedObjectNameException e) {
+        Set<ObjectName> names = new HashSet<ObjectName>();
+        for (Component component : deployer.getComponents().values()) {
+            if (Deployer.TYPE_BINDING_COMPONENT.equals(component.getType())) {
+                try {
+                    names.add(namingStrategy.getObjectName(component));
+                } catch (MalformedObjectNameException e) {
+                }
             }
         }
-        return names;
+        return names.toArray(new ObjectName[names.size()]);
     }
 
     public ObjectName getComponentByName(String name) {
-        Component component = QueryUtils.getComponent(bundleContext, name);
-        try {
-            return namingStrategy.getObjectName(component);
-        } catch (MalformedObjectNameException e) {
-            return null;
-        }
-    }
-
-    public ObjectName[] getEngineComponents() {
-        String filter = "(" + Deployer.TYPE + "=" + Deployer.TYPE_SERVICE_ENGINE + ")";
-        Component[] components = QueryUtils.getComponents(getBundleContext(), filter);
-        ObjectName[] names = new ObjectName[components.length];
-        for (int i = 0; i < components.length; i++) {
+        Component component = deployer.getComponent(name);
+        if (component != null) {
             try {
-                names[i] = namingStrategy.getObjectName(components[i]);
+                return namingStrategy.getObjectName(component);
             } catch (MalformedObjectNameException e) {
             }
         }
-        return names;
+        return null;
+    }
+
+    public ObjectName[] getEngineComponents() {
+        Set<ObjectName> names = new HashSet<ObjectName>();
+        for (Component component : deployer.getComponents().values()) {
+            if (Deployer.TYPE_SERVICE_ENGINE.equals(component.getType())) {
+                try {
+                    names.add(namingStrategy.getObjectName(component));
+                } catch (MalformedObjectNameException e) {
+                }
+            }
+        }
+        return names.toArray(new ObjectName[names.size()]);
     }
 
     public String getSystemInfo() {
@@ -103,104 +98,23 @@ public class AdminService implements AdminServiceMBean, BundleContextAware {
     }
 
     public ObjectName getSystemService(String serviceName) {
+        // TODO
         return null;
     }
 
     public ObjectName[] getSystemServices() {
+        // TODO
         return new ObjectName[0];
     }
 
     public boolean isBinding(String componentName) {
-        return QueryUtils.isBinding(getBundleContext(), componentName);
+        Component component = deployer.getComponent(componentName);
+        return component != null && Deployer.TYPE_BINDING_COMPONENT.equals(component.getType());
     }
 
     public boolean isEngine(String componentName) {
-        return QueryUtils.isEngine(getBundleContext(), componentName);
-    }
-
-    /**
-     * Returns a list of Service Assemblies that contain SUs for the given component.
-     *
-     * @param componentName name of the component.
-     * @return list of Service Assembly names.
-     */
-    public String[] getDeployedServiceAssembliesForComponent(String componentName) {
-        String[] result;
-        // iterate through the service assemblies
-        Set<String> tmpList = new HashSet<String>();
-        ServiceReference[] serviceRefs = QueryUtils.getServiceAssembliesServiceReferences(getBundleContext(), null);
-        for (ServiceReference ref : serviceRefs) {
-            ServiceAssembly sa = (ServiceAssembly) getBundleContext().getService(ref);
-            for (ServiceUnit su : sa.getServiceUnits()) {
-                if (su.getComponent().getName().equals(componentName)) {
-                    tmpList.add(sa.getName());
-                }
-            }
-        }
-        result = new String[tmpList.size()];
-        tmpList.toArray(result);
-        return result;
-    }
-
-    public String[] getDeployedServiceUnitsForComponent(String componentName) {
-        String[] result;
-        // iterate through the service assembiliessalc
-        Set<String> tmpList = new HashSet<String>();
-        ServiceReference[] serviceRefs = QueryUtils.getServiceAssembliesServiceReferences(getBundleContext(), null);
-        for (ServiceReference ref : serviceRefs) {
-            ServiceAssembly sa = (ServiceAssembly) getBundleContext().getService(ref);
-            for (ServiceUnit su : sa.getServiceUnits()) {
-                if (su.getComponent().getName().equals(componentName)) {
-                    tmpList.add(su.getName());
-                }
-            }
-        }
-        result = new String[tmpList.size()];
-        tmpList.toArray(result);
-        return result;
-    }
-
-    public String[] getComponentsForDeployedServiceAssembly(String saName) {
-        String[] result;
-        // iterate through the service assembiliessalc
-        Set<String> tmpList = new HashSet<String>();
-        ServiceAssembly sa = QueryUtils.getServiceAssembly(getBundleContext(), saName);
-        if (sa != null) {
-            for (ServiceUnit su : sa.getServiceUnits()) {
-                if (su.getComponent().getName().equals(saName)) {
-                    tmpList.add(su.getComponent().getName());
-                }
-            }
-        }
-        result = new String[tmpList.size()];
-        tmpList.toArray(result);
-        return result;
-    }
-
-    /**
-     * Returns a boolean value indicating whether the SU is currently deployed.
-     *
-     * @param componentName - name of component.
-     * @param suName        - name of the Service Unit.
-     * @return boolean value indicating whether the SU is currently deployed.
-     */
-    public boolean isDeployedServiceUnit(String componentName, String suName) {
-        boolean result = false;
-        ServiceReference[] serviceRefs = QueryUtils.getServiceAssembliesServiceReferences(getBundleContext(), null);
-        for (ServiceReference ref : serviceRefs) {
-            ServiceAssembly sa = (ServiceAssembly) getBundleContext().getService(ref);
-            ServiceUnit[] sus = sa.getServiceUnits();
-            if (sus != null) {
-                for (int i = 0; i < sus.length; i++) {
-                    if (sus[i].getComponent().getName().equals(componentName)
-                            && sus[i].getName().equals(suName)) {
-                        result = true;
-                        break;
-                    }
-                }
-            }
-        }
-        return result;
+        Component component = deployer.getComponent(componentName);
+        return component != null && Deployer.TYPE_SERVICE_ENGINE.equals(component.getType());
     }
 
 }

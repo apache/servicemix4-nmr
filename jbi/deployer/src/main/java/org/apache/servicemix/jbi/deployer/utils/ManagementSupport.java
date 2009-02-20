@@ -146,26 +146,26 @@ public final class ManagementSupport {
         }
     }
 
-    public static Exception failure(String task, String info) throws Exception {
+    public static RuntimeException failure(String task, String info) {
         return failure(task, info, null, null);
     }
 
-    public static Exception failure(String task, List componentResults) throws Exception {
+    public static RuntimeException failure(String task, List componentResults) {
         return failure(task, null, null, componentResults);
     }
 
-    public static Exception failure(String task, String info, Throwable t) throws Exception {
+    public static RuntimeException failure(String task, String info, Throwable t) {
         return failure(task, info, t, null);
     }
 
-    public static Exception failure(String task, String info, Throwable t, List<Element> componentResults) throws Exception {
+    public static RuntimeException failure(String task, String info, Throwable t, List<Element> componentResults) {
         ManagementSupport.Message msg = new ManagementSupport.Message();
         msg.setTask(task);
         msg.setResult(FAILED);
         msg.setType(ERROR);
         msg.setException(t);
         msg.setMessage(info);
-        return new Exception(ManagementSupport.createFrameworkMessage(msg, componentResults));
+        return new RuntimeException(ManagementSupport.createFrameworkMessage(msg, componentResults));
     }
 
     public static String createSuccessMessage(String task) {

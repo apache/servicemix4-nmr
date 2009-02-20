@@ -19,16 +19,24 @@ package org.apache.servicemix.jbi.deployer.impl;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Enumeration;
+
+import javax.jbi.JBIException;
+import javax.management.ObjectName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.deployer.artifacts.AbstractLifecycleJbiArtifact;
+import org.apache.servicemix.jbi.deployer.descriptor.Descriptor;
 import org.apache.servicemix.jbi.deployer.handler.Transformer;
+import org.apache.servicemix.jbi.deployer.utils.FileUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
+import org.osgi.framework.BundleException;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 import org.osgi.service.prefs.PreferencesService;
@@ -37,9 +45,19 @@ public abstract class AbstractInstaller {
 
     protected final Log LOGGER = LogFactory.getLog(getClass());
 
-    protected BundleContext bundleContext;
+    protected Deployer deployer;
+    protected Descriptor descriptor;
     protected Bundle bundle;
-    private boolean autoStart = false;
+    protected boolean autoStart = false;
+    protected File jbiArtifact;
+    protected File installRoot;
+    protected boolean uninstallFromOsgi;
+
+    protected AbstractInstaller(Deployer deployer, Descriptor descriptor, File jbiArtifact) {
+        this.deployer = deployer;
+        this.descriptor = descriptor;
+        this.jbiArtifact = jbiArtifact;
+    }
 
     public void setBundle(Bundle bundle) {
         this.bundle = bundle;
@@ -49,25 +67,30 @@ public abstract class AbstractInstaller {
         return bundle;
     }
 
-    public void setBundleContext(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
-    }
-
-    public BundleContext getBundleContext() {
-        return bundleContext;
+    protected BundleContext getBundleContext() {
+        return deployer.getBundleContext();
     }
 
     public abstract String getName();
 
-    public synchronized void deployFile(String filename) {
+    public void init() throws Exception {
+        extractBundle(installRoot, getBundle(), "/");
+    }
+
+    public abstract ObjectName install() throws JBIException;
+
+    public abstract void uninstall(boolean force) throws Exception;
+
+    public void installBundle() throws Exception {
         InputStream is = null;
         try {
-            File artifact = new File(filename);
+            deployer.setJmxManaged(this);
+            File artifact = new File(jbiArtifact.getCanonicalPath());
             String bundleName = artifact.getName().substring(0, artifact.getName().length() - 4) + ".jar";
             File osgi = new File(getGenerateDir(), bundleName);
             Transformer.transformToOSGiBundle(artifact, osgi);
             is = new BufferedInputStream(new FileInputStream(osgi));
-            bundle = bundleContext.installBundle(artifact.getCanonicalFile().toURI().toString(), is);
+            bundle = getBundleContext().installBundle(artifact.getCanonicalFile().toURI().toString(), is);
             bundle.start();
         } catch (Exception e) {
             if (is != null) {
@@ -77,7 +100,20 @@ public abstract class AbstractInstaller {
                     LOGGER.info("Failed to close stream. " + io, io);
                 }
             }
-            LOGGER.info("Failed to process: " + filename + ". Reason: " + e, e);
+            throw e;
+        } finally {
+            deployer.setJmxManaged(null);
+        }
+    }
+
+    protected void uninstallBundle() throws BundleException {
+        if (bundle != null && bundle.getState() != Bundle.UNINSTALLED && !uninstallFromOsgi) {
+            try {
+                deployer.setJmxManaged(this);
+                bundle.uninstall();
+            } finally {
+                deployer.setJmxManaged(null);
+            }
         }
     }
 
@@ -87,7 +123,7 @@ public abstract class AbstractInstaller {
     }
 
     protected void initializePreferences() throws BackingStoreException {
-        PreferencesService preferencesService = getPreferencesService();
+        PreferencesService preferencesService = deployer.getPreferencesService();
         Preferences prefs = preferencesService.getUserPreferences(getName());
         prefs.put(AbstractLifecycleJbiArtifact.STATE, isAutoStart()
                         ? AbstractLifecycleJbiArtifact.State.Started.name()
@@ -96,19 +132,10 @@ public abstract class AbstractInstaller {
     }
 
     protected void deletePreferences() throws BackingStoreException {
-        PreferencesService preferencesService = getPreferencesService();
+        PreferencesService preferencesService = deployer.getPreferencesService();
         Preferences prefs = preferencesService.getUserPreferences(getName());
         prefs.clear();
         prefs.flush();
-    }
-
-    private PreferencesService getPreferencesService() throws BackingStoreException {
-        ServiceReference ref = getBundleContext().getServiceReference(PreferencesService.class.getName());
-        PreferencesService preferencesService = (PreferencesService) getBundleContext().getService(ref);
-        if (preferencesService == null) {
-            throw new BackingStoreException("Unable to find bundle 'org.apache.servicemix.jbi.deployer'");
-        }
-        return preferencesService;
     }
 
     public boolean isAutoStart() {
@@ -118,4 +145,34 @@ public abstract class AbstractInstaller {
     public void setAutoStart(boolean autoStart) {
         this.autoStart = autoStart;
     }
+
+    public boolean isUninstallFromOsgi() {
+        return uninstallFromOsgi;
+    }
+
+    public void setUninstallFromOsgi(boolean uninstallFromOsgi) {
+        this.uninstallFromOsgi = uninstallFromOsgi;
+    }
+
+    protected void extractBundle(File installRoot, Bundle bundle, String path) throws IOException {
+        Enumeration e = bundle.getEntryPaths(path);
+        while (e != null && e.hasMoreElements()) {
+            String entry = (String) e.nextElement();
+            File fout = new File(installRoot, entry);
+            if (entry.endsWith("/")) {
+                fout.mkdirs();
+                extractBundle(installRoot, bundle, entry);
+            } else {
+                InputStream in = bundle.getEntry(entry).openStream();
+                OutputStream out = new FileOutputStream(fout);
+                try {
+                    FileUtil.copyInputStream(in, out);
+                } finally {
+                    in.close();
+                    out.close();
+                }
+            }
+        }
+    }
+
 }

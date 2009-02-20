@@ -60,6 +60,11 @@ public class ServiceUnitImpl implements ServiceUnit {
         return serviceUnitDesc.getIdentification().getDescription();
     }
 
+    public String getDescriptor() {
+        // TODO: implement this
+        throw new UnsupportedOperationException();
+    }
+
     public String getComponentName() {
         return serviceUnitDesc.getTarget().getComponentName();
     }
@@ -85,31 +90,67 @@ public class ServiceUnitImpl implements ServiceUnit {
     }
 
     public void deploy() throws JBIException {
-        component.getComponent().getServiceUnitManager().deploy(getName(), getRootDir() != null ? getRootDir().getAbsolutePath() : null);
+        ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(component.getComponent().getClass().getClassLoader());
+            component.getComponent().getServiceUnitManager().deploy(getName(), getRootDir() != null ? getRootDir().getAbsolutePath() : null);
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldCl);
+        }
         component.addServiceUnit(this);
     }
 
     public void init() throws JBIException {
-        component.getComponent().getServiceUnitManager().init(getName(), getRootDir() != null ? getRootDir().getAbsolutePath() : null);
+        ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(component.getComponent().getClass().getClassLoader());
+            component.getComponent().getServiceUnitManager().init(getName(), getRootDir() != null ? getRootDir().getAbsolutePath() : null);
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldCl);
+        }
     }
 
     public void start() throws JBIException {
         checkComponentStarted("start");
-        component.getComponent().getServiceUnitManager().start(getName());
+        ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(component.getComponent().getClass().getClassLoader());
+            component.getComponent().getServiceUnitManager().start(getName());
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldCl);
+        }
     }
 
     public void stop() throws JBIException {
         checkComponentStarted("stop");
-        component.getComponent().getServiceUnitManager().stop(getName());
+        ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(component.getComponent().getClass().getClassLoader());
+            component.getComponent().getServiceUnitManager().stop(getName());
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldCl);
+        }
     }
 
     public void shutdown() throws JBIException {
         checkComponentStartedOrStopped("shutDown");
-        component.getComponent().getServiceUnitManager().shutDown(getName());
+        ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(component.getComponent().getClass().getClassLoader());
+            component.getComponent().getServiceUnitManager().shutDown(getName());
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldCl);
+        }
     }
 
     public void undeploy() throws JBIException {
-        component.getComponent().getServiceUnitManager().undeploy(getName(), getRootDir() != null ? getRootDir().getAbsolutePath() : null);
+        ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(component.getComponent().getClass().getClassLoader());
+            component.getComponent().getServiceUnitManager().undeploy(getName(), getRootDir() != null ? getRootDir().getAbsolutePath() : null);
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldCl);
+        }
         component.removeServiceUnit(this);
     }
 

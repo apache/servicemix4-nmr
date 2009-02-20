@@ -37,6 +37,13 @@ public interface SharedLibrary {
     String getDescription();
 
     /**
+     * Retrieve the JBI descriptor for this service assembly
+     *
+     * @return the JBI descriptor
+     */
+    String getDescriptor();
+
+    /**
      * Retrieves the version of this shared library
      *
      * @return the version
@@ -49,5 +56,12 @@ public interface SharedLibrary {
      * @return a new classloader
      */
     ClassLoader getClassLoader();
+
+    /**
+     * Retrieve a list of components using this shared library
+     *
+     * @return
+     */
+    Component[] getComponents();
 
 }

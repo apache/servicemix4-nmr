@@ -18,12 +18,9 @@
 package org.apache.servicemix.jbi.deployer.handler;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.osgi.service.url.AbstractURLStreamHandlerService;
 
 /**

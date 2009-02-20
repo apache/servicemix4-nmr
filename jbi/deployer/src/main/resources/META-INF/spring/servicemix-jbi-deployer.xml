@@ -85,10 +85,9 @@
     </bean>
     <bean id="installationService" class="org.apache.servicemix.jbi.deployer.impl.InstallationService">
         <property name="deployer" ref="deployer" />
-        <property name="managementAgent" ref="managementAgent" />
-        <property name="namingStrategy" ref="namingStrategy" />
     </bean>
     <bean id="deploymentService" class="org.apache.servicemix.jbi.deployer.impl.DeploymentService">
+        <property name="deployer" ref="deployer" />
     </bean>
 
 

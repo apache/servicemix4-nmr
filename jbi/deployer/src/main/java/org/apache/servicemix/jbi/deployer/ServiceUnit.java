@@ -37,6 +37,13 @@ public interface ServiceUnit {
     String getDescription();
 
     /**
+     * Retrieve the JBI descriptor for this service assembly
+     *
+     * @return the JBI descriptor
+     */
+    String getDescriptor();
+
+    /**
      * Get the ServiceAssembly to which this ServiceUnit belongs
      *
      * @return

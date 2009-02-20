@@ -16,6 +16,7 @@
  */
 package org.apache.servicemix.jbi.deployer.artifacts;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -34,31 +35,39 @@ import org.w3c.dom.DocumentFragment;
 
 import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
+import org.apache.servicemix.jbi.deployer.SharedLibrary;
 import org.apache.servicemix.jbi.deployer.descriptor.ComponentDesc;
-import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryList;
+import org.apache.servicemix.jbi.deployer.descriptor.DescriptorFactory;
 import org.apache.servicemix.jbi.runtime.ComponentWrapper;
+import org.osgi.framework.Bundle;
 import org.osgi.service.prefs.Preferences;
 
 /**
  */
 public class ComponentImpl extends AbstractLifecycleJbiArtifact implements Component, ComponentWrapper {
 
+    private Bundle bundle;
     private ComponentDesc componentDesc;
     private javax.jbi.component.Component component;
     private List<ServiceUnitImpl> serviceUnits;
     private Runnable callback;
+    private SharedLibrary[] sharedLibraries;
 
-    public ComponentImpl(ComponentDesc componentDesc,
+    public ComponentImpl(Bundle bundle,
+                         ComponentDesc componentDesc,
                          javax.jbi.component.Component component,
                          Preferences prefs,
                          boolean autoStart,
-                         Runnable callback) {
+                         Runnable callback,
+                         SharedLibrary[] sharedLibraries) {
+        this.bundle = bundle;
         this.componentDesc = componentDesc;
         this.component = new ComponentWrapper(component);
         this.prefs = prefs;
         this.runningState = State.valueOf(this.prefs.get(STATE, (autoStart ? State.Started : State.Shutdown).name()));
         this.callback = callback;
         this.serviceUnits = new ArrayList<ServiceUnitImpl>();
+        this.sharedLibraries = sharedLibraries;
     }
 
     public void addServiceUnit(ServiceUnitImpl serviceUnit) {
@@ -67,6 +76,10 @@ public class ComponentImpl extends AbstractLifecycleJbiArtifact implements Compo
 
     public void removeServiceUnit(ServiceUnitImpl serviceUnit) {
         serviceUnits.remove(serviceUnit);
+    }
+
+    public Bundle getBundle() {
+        return bundle;
     }
 
     public ServiceUnit[] getServiceUnits() {
@@ -79,6 +92,11 @@ public class ComponentImpl extends AbstractLifecycleJbiArtifact implements Compo
 
     public String getDescription() {
         return componentDesc.getIdentification().getDescription();
+    }
+
+    public String getDescriptor() {
+        URL url = bundle.getResource(DescriptorFactory.DESCRIPTOR_FILE);
+        return DescriptorFactory.getDescriptorAsText(url);
     }
 
     public String getType() {
@@ -123,8 +141,8 @@ public class ComponentImpl extends AbstractLifecycleJbiArtifact implements Compo
         return sas;
     }
 
-    public SharedLibraryList[] getSharedLibraries() {
-        return componentDesc.getSharedLibraries();
+    public SharedLibrary[] getSharedLibraries() {
+        return sharedLibraries;
     }
 
     public void stop(boolean saveState) throws JBIException {
@@ -161,8 +179,7 @@ public class ComponentImpl extends AbstractLifecycleJbiArtifact implements Compo
         if (state == State.Stopped) {
             // Shutdown deployed SAs
             for (ServiceAssemblyImpl sa : getServiceAssemblies()) {
-                if (sa.getState() == ServiceAssemblyImpl.State.Stopped
-                        || sa.getState() == ServiceAssemblyImpl.State.Initialized) {
+                if (sa.getState() == ServiceAssemblyImpl.State.Stopped) {
                     sa.shutDown(false, force);
                 }
             }
@@ -226,20 +243,13 @@ public class ComponentImpl extends AbstractLifecycleJbiArtifact implements Compo
             try {
                 Thread.currentThread().setContextClassLoader(component.getClass().getClassLoader());
                 if (runningState != State.Unknown) {
-                    if (runningState == State.Initialized) {
-                        LOGGER.warn("Illegal running state: 'Initialized'.  Defaulting to 'Shutdown'.");
-                        runningState = State.Shutdown;
-                    }
                     if (runningState == State.Started) {
                         lifeCycle.init(context);
-                        state = State.Initialized;
                         start();
                         state = State.Started;
                     } else if (runningState == State.Stopped) {
                         lifeCycle.init(context);
-                        state = State.Initialized;
                         start();
-                        state = State.Started;
                         stop();
                         state = State.Stopped;
                     } else if (runningState == State.Shutdown) {
@@ -248,7 +258,7 @@ public class ComponentImpl extends AbstractLifecycleJbiArtifact implements Compo
                     runningState = State.Unknown;
                 } else {
                     lifeCycle.init(context);
-                    state = State.Initialized;
+                    state = State.Shutdown;
                 }
                 if (callback != null) {
                     callback.run();

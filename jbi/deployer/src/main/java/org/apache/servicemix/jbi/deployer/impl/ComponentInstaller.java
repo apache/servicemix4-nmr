@@ -17,56 +17,52 @@
 package org.apache.servicemix.jbi.deployer.impl;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Enumeration;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 
 import javax.jbi.JBIException;
 import javax.jbi.component.Bootstrap;
 import javax.jbi.management.DeploymentException;
 import javax.jbi.management.InstallerMBean;
+import javax.jbi.management.LifeCycleMBean;
+import javax.management.Attribute;
 import javax.management.JMException;
+import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.management.StandardMBean;
 
 import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.SharedLibrary;
-import org.apache.servicemix.jbi.deployer.classloader.OsgiMultiParentClassLoader;
 import org.apache.servicemix.jbi.deployer.descriptor.ComponentDesc;
+import org.apache.servicemix.jbi.deployer.descriptor.Descriptor;
 import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryList;
 import org.apache.servicemix.jbi.deployer.utils.FileUtil;
-import org.apache.servicemix.jbi.deployer.utils.QueryUtils;
+import org.apache.servicemix.jbi.deployer.utils.ManagementSupport;
 import org.apache.xbean.classloader.MultiParentClassLoader;
 import org.osgi.framework.Bundle;
-import org.osgi.framework.BundleException;
 import org.osgi.service.prefs.BackingStoreException;
 import org.springframework.osgi.util.BundleDelegatingClassLoader;
 
 public class ComponentInstaller extends AbstractInstaller implements InstallerMBean {
 
-    private final Deployer deployer;
-    private final InstallationContextImpl installationContext;
-    private final File jbiArtifact;
-    private final File installRoot;
+    private InstallationContextImpl installationContext;
     private ObjectName objectName;
     private ObjectName extensionMBeanName;
-
     private boolean initialized;
     private Bootstrap bootstrap;
 
 
-    public ComponentInstaller(Deployer deployer, ComponentDesc componentDesc, File jbiArtifact) throws Exception {
-        this.deployer = deployer;
-        this.bundleContext = deployer.getBundleContext();
-        this.installationContext = new InstallationContextImpl(componentDesc, deployer.getEnvironment(),
+    public ComponentInstaller(Deployer deployer, Descriptor descriptor, File jbiArtifact) throws Exception {
+        super(deployer, descriptor, jbiArtifact);
+        this.installRoot = new File(System.getProperty("servicemix.base"), "data/jbi/" + getName() + "/install");
+        this.installRoot.mkdirs();
+        this.installationContext = new InstallationContextImpl(descriptor.getComponent(), deployer.getEnvironment(),
                                                                deployer.getNamingStrategy(), deployer.getManagementAgent());
-        this.jbiArtifact = jbiArtifact;
-        installRoot = new File(System.getProperty("servicemix.base"), "data/jbi/" + installationContext.getComponentName() + "/install");
-        installRoot.mkdirs();
         this.installationContext.setInstallRoot(installRoot);
     }
 
@@ -87,10 +83,22 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
         deployer.getManagementAgent().unregister(getObjectName());
     }
 
+    public String getName() {
+        return descriptor.getComponent().getIdentification().getName();
+    }
+
     public void init() throws Exception {
-        // Extract component (needed to feed the installRoot)
-        // Few components actually use this, but Ode is one of them
-        extractBundle(installRoot, getBundle(), "/");
+        // Check requirements
+        if (descriptor.getComponent().getSharedLibraries() != null) {
+            for (SharedLibraryList sl : descriptor.getComponent().getSharedLibraries()) {
+                if (deployer.getSharedLibrary(sl.getName()) == null) {
+                    throw new PendingException(bundle, "SharedLibrary not installed: " + sl.getName());
+                }
+            }
+        }
+        // Extract bundle
+        super.init();
+        // Init bootstrap
         initBootstrap();
     }
 
@@ -112,7 +120,7 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
                 try {
                     initializePreferences();
                 } catch (BackingStoreException e) {
-                    LOGGER.warn("Error initializing persistent state for component: " + installationContext.getComponentName(), e);
+                    LOGGER.warn("Error initializing persistent state for component: " + getName(), e);
                 }
                 ObjectName name = initComponent();
                 cleanUpBootstrap();
@@ -126,10 +134,6 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
             LOGGER.error(e.getMessage());
             throw new JBIException(e);
         }
-    }
-
-    public void deployBundle() throws Exception {
-        deployFile(jbiArtifact.getCanonicalPath());
     }
 
 
@@ -148,31 +152,57 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
      * @throws javax.jbi.JBIException if the uninstallation fails.
      */
     public void uninstall() throws javax.jbi.JBIException {
-        // TODO: check component status
-        // TODO: we should always uninstall the bundle
-        // the component must not be started and not have any SUs deployed
-        if (!isInstalled()) {
-            throw new DeploymentException("Component is not installed");
-        }
-        String componentName = installationContext.getComponentName();
         try {
-            Bundle bundle = getBundle();
-
-            if (bundle == null) {
-                LOGGER.warn("Could not find Bundle for component: " + componentName);
-            } else {
-                bundle.stop();
-                bundle.uninstall();
-                try {
-                    deletePreferences();
-                } catch (BackingStoreException e) {
-                    LOGGER.warn("Error cleaning persistent state for component: " + componentName, e);
-                }
-            }
-        } catch (BundleException e) {
-            LOGGER.error("failed to uninstall component: " + componentName, e);
+            uninstall(false);
+        } catch (JBIException e) {
+            throw e;
+        } catch (Exception e) {
             throw new JBIException(e);
         }
+    }
+
+    public void uninstall(boolean force) throws Exception {
+        Component comp = deployer.getComponent(getName());
+        if (comp == null && !force) {
+            throw ManagementSupport.failure("uninstallComponent", "Component '" + getName() + "' is not installed.");
+        }
+        // Check component state is shutdown
+        if (comp != null && !LifeCycleMBean.SHUTDOWN.equals(comp.getCurrentState())) {
+            if (!force) {
+                throw ManagementSupport.failure("uninstallComponent", "Component '" + getName() + "' is not shut down.");
+            }
+            if (LifeCycleMBean.STARTED.equals(comp.getCurrentState())) {
+                comp.stop();
+            }
+            if (LifeCycleMBean.STOPPED.equals(comp.getCurrentState())) {
+                comp.shutDown();
+            }
+        }
+        // TODO: if there is any SA deployed onto this component, undeploy the SA and put it in a pending state
+        // Bootstrap stuff
+        try {
+            initBootstrap();
+            bootstrap.init(this.installationContext);
+            bootstrap.getExtensionMBeanName();
+            bootstrap.onUninstall();
+            cleanUpBootstrap();
+            installationContext.setInstall(true);
+        } catch (Exception e) {
+            cleanUpBootstrap();
+            throw e;
+        }
+        // Unregister component
+        deployer.unregisterComponent(comp);
+        // Remove preferences
+        try {
+            deletePreferences();
+        } catch (BackingStoreException e) {
+            LOGGER.warn("Error cleaning persistent state for component: " + getName(), e);
+        }
+        // Uninstall bundle
+        uninstallBundle();
+        // Remove files
+        FileUtil.deleteFile(installRoot);
     }
 
     /**
@@ -202,17 +232,13 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
         this.objectName = objectName;
     }
 
-    public String getName() {
-        return installationContext.getComponentName();
-    }
-
-    protected ClassLoader createClassLoader(Bundle bundle, String name, String[] classPathNames, boolean parentFirst, SharedLibraryList[] sharedLibs) {
+    protected ClassLoader createClassLoader(Bundle bundle, String name, String[] classPathNames, boolean parentFirst, SharedLibrary[] sharedLibs) {
         // Create parents classloaders
         ClassLoader[] parents;
         if (sharedLibs != null) {
             parents = new ClassLoader[sharedLibs.length + 2];
             for (int i = 0; i < sharedLibs.length; i++) {
-                parents[i] = getSharedLibraryClassLoader(sharedLibs[i].getName());
+                parents[i] = sharedLibs[i].getClassLoader();
             }
         } else {
             parents = new ClassLoader[2];
@@ -221,14 +247,14 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
         parents[parents.length - 1] = BundleDelegatingClassLoader.createBundleClassLoaderFor(getBundleContext().getBundle(0));
 
         // Create urls
-        URL[] urls = new URL[classPathNames.length];
+        List<URL> urls = new ArrayList<URL>();
         for (int i = 0; i < classPathNames.length; i++) {
             File f = new File(installRoot, classPathNames[i]);
             if (!f.exists()) {
-                throw new IllegalArgumentException("Component classpath entry not found: '" + classPathNames[i] + "'");
+                LOGGER.warn("Component classpath entry not found: '" + classPathNames[i] + "'");
             }
             try {
-                urls[i] = f.getCanonicalFile().toURL();
+                urls.add(f.getCanonicalFile().toURL());
             } catch (IOException e) {
                 throw new IllegalArgumentException("Component classpath entry not found: '" + classPathNames[i] + "'");
             }
@@ -237,19 +263,11 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
         // Create classloader
         return new MultiParentClassLoader(
                 name,
-                urls,
+                urls.toArray(new URL[urls.size()]),
                 parents,
                 !parentFirst,
                 new String[0],
                 new String[]{"java.", "javax."});
-    }
-
-    private ClassLoader getSharedLibraryClassLoader(String name) {
-        SharedLibrary sa = QueryUtils.getSharedLibrary(getBundleContext(), name);
-        if (sa != null) {
-            return sa.getClassLoader();
-        }
-        throw new IllegalStateException("Unable to retrieve class loader for shared library: " + name);
     }
 
     private void initBootstrap() throws DeploymentException {
@@ -329,43 +347,52 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {
             ComponentDesc componentDesc = installationContext.getDescriptor();
+            Set<SharedLibrary> libs = new HashSet<SharedLibrary>();
+            if (componentDesc.getSharedLibraries() != null) {
+                for (SharedLibraryList sll : componentDesc.getSharedLibraries()) {
+                    SharedLibrary lib = deployer.getSharedLibrary(sll.getName());
+                    if (lib == null) {
+                        // TODO: throw exception here
+                    } else {
+                        libs.add(lib);
+                    }
+                }
+            }
+            SharedLibrary[] aLibs = libs.toArray(new SharedLibrary[libs.size()]);
+
             ClassLoader classLoader = createClassLoader(
                     getBundle(),
                     componentDesc.getIdentification().getName(),
                     (String[]) installationContext.getClassPathElements().toArray(new String[installationContext.getClassPathElements().size()]),
                     componentDesc.isComponentClassLoaderDelegationParentFirst(),
-                    componentDesc.getSharedLibraries());
+                    aLibs);
             Thread.currentThread().setContextClassLoader(classLoader);
             Class clazz = classLoader.loadClass(componentDesc.getComponentClassName());
             javax.jbi.component.Component innerComponent = (javax.jbi.component.Component) clazz.newInstance();
-            Component component = deployer.registerComponent(getBundle(), componentDesc, innerComponent);
-            ObjectName name = deployer.getNamingStrategy().getObjectName(component);
-            deployer.getManagementAgent().register(new StandardMBean(component, Component.class), name, true);
-            return name;
+            Component component = deployer.registerComponent(getBundle(), componentDesc, innerComponent, aLibs);
+            return deployer.getNamingStrategy().getObjectName(component);
         } finally {
             Thread.currentThread().setContextClassLoader(oldCl);
         }
     }
 
-    private void extractBundle(File installRoot, Bundle bundle, String path) throws IOException {
-        Enumeration e = bundle.getEntryPaths(path);
-        while (e != null && e.hasMoreElements()) {
-            String entry = (String) e.nextElement();
-            File fout = new File(installRoot, entry);
-            if (entry.endsWith("/")) {
-                fout.mkdirs();
-                extractBundle(installRoot, bundle, entry);
+    public void configure(Properties props) throws Exception {
+        if (props != null && props.size() > 0) {
+            ObjectName on = getInstallerConfigurationMBean();
+            if (on == null) {
+                LOGGER.warn("Could not find installation configuration MBean. Installation properties will be ignored.");
             } else {
-                InputStream in = bundle.getEntry(entry).openStream();
-                OutputStream out = new FileOutputStream(fout);
-                try {
-                    FileUtil.copyInputStream(in, out);
-                } finally {
-                    in.close();
-                    out.close();
+                MBeanServer mbs = deployer.getManagementAgent().getMbeanServer();
+                for (Object o : props.keySet()) {
+                    String key = (String) o;
+                    String val = props.getProperty(key);
+                    try {
+                        mbs.setAttribute(on, new Attribute(key, val));
+                    } catch (JMException e) {
+                        throw new DeploymentException("Could not set installation property: (" + key + " = " + val, e);
+                    }
                 }
             }
         }
     }
-
 }

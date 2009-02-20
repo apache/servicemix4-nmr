@@ -40,6 +40,13 @@ public interface Component extends ComponentLifeCycleMBean {
     String getDescription();
 
     /**
+     * Retrieve the JBI descriptor for this service assembly
+     *
+     * @return the JBI descriptor
+     */
+    String getDescriptor();
+
+    /**
      * Return the type of this component (service-engine or binding-component)
      *
      * @return the type
@@ -57,6 +64,11 @@ public interface Component extends ComponentLifeCycleMBean {
      * Retrieve the ServiceUnits deployed on this component
      */
     ServiceUnit[] getServiceUnits();
+
+    /**
+     * Retrieve the Shared Libraries used by this component
+     */
+    SharedLibrary[] getSharedLibraries();
 
     /**
      * Force a shutdown of this component

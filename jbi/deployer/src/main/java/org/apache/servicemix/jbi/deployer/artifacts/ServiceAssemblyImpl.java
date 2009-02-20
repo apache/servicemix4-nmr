@@ -43,6 +43,28 @@ import org.osgi.service.prefs.Preferences;
  */
 public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements ServiceAssembly {
 
+    private enum Action {
+        Init,
+        Start,
+        Stop,
+        Shutdown;
+
+        public Action reverse() {
+            switch (this) {
+                case Init:
+                    return Shutdown;
+                case Start:
+                    return Stop;
+                case Stop:
+                    return Start;
+                case Shutdown:
+                    return Init;
+                default:
+                    throw new IllegalStateException();
+            }
+        }
+    }
+
     private final Bundle bundle;
 
     private final ServiceAssemblyDesc serviceAssemblyDesc;
@@ -62,10 +84,14 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
         this.serviceUnits = serviceUnits;
         this.prefs = prefs;
         this.listener = listener;
-        this.runningState = State.valueOf(this.prefs.get(STATE, (autoStart ? State.Started : State.Initialized).name()));
+        this.runningState = State.valueOf(this.prefs.get(STATE, (autoStart ? State.Started : State.Shutdown).name()));
         for (ServiceUnitImpl su : serviceUnits) {
             su.setServiceAssemblyImpl(this);
         }
+    }
+
+    public Bundle getBundle() {
+        return bundle;
     }
 
     public String getName() {
@@ -88,12 +114,13 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
     public synchronized void init() throws JBIException {
         listener.setAssembly(this);
         try {
-            transition(State.Initialized);
             if (runningState == State.Started) {
-                transition(State.Started);
+                transition(Action.Init, State.Stopped);
+                transition(Action.Start, State.Started);
             } else if (runningState == State.Stopped) {
-                transition(State.Started);
-                transition(State.Stopped);
+                transition(Action.Init, State.Stopped);
+            } else if (runningState == State.Shutdown) {
+                state = State.Shutdown;
             }
         } finally {
             listener.setAssembly(null);
@@ -111,10 +138,10 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
                 return;
             }
             if (state == State.Shutdown) {
-                transition(State.Initialized);
+                transition(Action.Init, State.Stopped);
             }
             startConnections();
-            transition(State.Started);
+            transition(Action.Start, State.Started);
             if (persist) {
                 saveState();
             }
@@ -134,10 +161,10 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
                 return;
             }
             if (state == State.Shutdown) {
-                transition(State.Initialized);
+                transition(Action.Init, State.Stopped);
             }
             if (state == State.Started) {
-                transition(State.Stopped);
+                transition(Action.Stop,  State.Stopped);
             }
             stopConnections();
             if (persist) {
@@ -163,7 +190,7 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
                 return;
             }
             if (state == State.Started) {
-                transition(State.Stopped);
+                transition(Action.Stop, State.Stopped);
             }
             if (!force) {
                 for (; ;) {
@@ -174,7 +201,7 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
                     }
                 }
             }
-            transition(State.Shutdown);
+            transition(Action.Shutdown, State.Shutdown);
             if (persist) {
                 saveState();
             }
@@ -184,19 +211,19 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
         }
     }
 
-    protected void transition(State to) throws JBIException {
+    protected void transition(Action action, State to) throws JBIException {
         LOGGER.info("Changing SA state to " + to);
         State from = state;
         List<ServiceUnitImpl> success = new ArrayList<ServiceUnitImpl>();
         for (ServiceUnitImpl su : serviceUnits) {
             try {
-                changeState(su, to);
+                changeState(su, action);
                 success.add(su);
             } catch (JBIException e) {
                 if (from != State.Unknown) {
                     for (ServiceUnitImpl su2 : success) {
                         try {
-                            changeState(su2, from);
+                            changeState(su2, action.reverse());
                         } catch (JBIException e2) {
                             // Ignore
                         }
@@ -208,15 +235,15 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
         state = to;
     }
 
-    protected void changeState(ServiceUnitImpl su, State state) throws JBIException {
-        switch (state) {
-            case Initialized:
+    protected void changeState(ServiceUnitImpl su, Action action) throws JBIException {
+        switch (action) {
+            case Init:
                 su.init();
                 break;
-            case Started:
+            case Start:
                 su.start();
                 break;
-            case Stopped:
+            case Stop:
                 su.stop();
                 break;
             case Shutdown:
@@ -249,6 +276,6 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
     }
     
     protected void unregisterWire(Wire wire, Map<String, ?> from) {
-        
+        // TODO
     }
 }

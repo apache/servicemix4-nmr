@@ -16,15 +16,15 @@
  */
 package org.apache.servicemix.jbi.deployer.handler;
 
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-import java.util.Properties;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLDecoder;
+import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Parser for jbi: protocol URL.
