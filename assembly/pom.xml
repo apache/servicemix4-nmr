@@ -211,8 +211,8 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>org.apache.servicemix.kernel</groupId>
-                                    <artifactId>org.apache.servicemix.kernel.version</artifactId>
+                                    <groupId>org.apache.servicemix.nmr</groupId>
+                                    <artifactId>org.apache.servicemix.nmr.branding</artifactId>
                                     <outputDirectory>target/dependencies</outputDirectory>
                                     <destFileName>servicemix-version.jar</destFileName>
                                 </artifactItem>
