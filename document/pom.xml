@@ -66,6 +66,7 @@
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Export-Package>${pom.artifactId},${pom.artifactId}.factory</Export-Package>
                         <Private-Package>${pom.artifactId}.impl</Private-Package>
+                        <Spring-Context>*;publish-context:=false;create-asynchronously:=true</Spring-Context>
                     </instructions>
                 </configuration>
             </plugin>

@@ -92,11 +92,7 @@ public class ManagementTest extends AbstractIntegrationTest {
             System.err.println(res);
             fail("Call should have failed: " + res);
         } catch (Throwable t) {
-            if (t.getCause() instanceof DeploymentException) {
-                System.err.println(t.getCause().getMessage());
-            } else {
-                t.printStackTrace();
-            }
+            // Expected
         }
 
         System.err.println(admin.installSharedLibrary(smxShared, false));
@@ -107,11 +103,7 @@ public class ManagementTest extends AbstractIntegrationTest {
             System.err.println(res);
             fail("Call should have failed: " + res);
         } catch (Throwable t) {
-            if (t.getCause() instanceof DeploymentException) {
-                System.err.println(t.getCause().getMessage());
-            } else {
-                t.printStackTrace();
-            }
+            // Expected
         }
 
         System.err.println(admin.uninstallComponent("servicemix-jsr181"));

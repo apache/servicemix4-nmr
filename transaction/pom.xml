@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <!--
@@ -26,31 +27,39 @@
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.apache.servicemix.naming</groupId>
-    <artifactId>org.apache.servicemix.naming</artifactId>
+    <groupId>org.apache.servicemix.transaction</groupId>
+    <artifactId>org.apache.servicemix.transaction</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache ServiceMix Naming</name>
+    <name>Apache ServiceMix Transaction</name> 
 
     <dependencies>
         <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jta_1.1_spec</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
+            <groupId>org.apache.geronimo.components</groupId>
+            <artifactId>geronimo-transaction</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.components</groupId>
+            <artifactId>geronimo-connector</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.jencks</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.howl</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.osgi</groupId>
             <artifactId>spring-osgi-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.xbean</groupId>
-            <artifactId>xbean-naming</artifactId>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
@@ -58,13 +67,8 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.servicemix.kernel.testing</groupId>
-            <artifactId>org.apache.servicemix.kernel.testing.support</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -77,26 +81,20 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>${pom.artifactId}*</Export-Package>
-                        <DynamicImport-Package>*</DynamicImport-Package>
-                        <Spring-Context>*;publish-context:=false;create-asynchronously:=true</Spring-Context>
+                        <Import-Package>
+                            javax.transaction,
+                            org.apache.geronimo.transaction.manager,
+                            org.springframework.transaction,
+                            org.jencks.factory
+                        </Import-Package>
+                        <Export-Package>
+                        </Export-Package>
+                        <Spring-Context>*;publish-context:=false</Spring-Context>
                     </instructions>
                 </configuration>
             </plugin>
-            <!-- generate dependencies versions -->
-            <plugin>
-                <groupId>org.apache.servicemix.tooling</groupId>
-                <artifactId>depends-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>generate-depends-file</id>
-                        <goals>
-                            <goal>generate-depends-file</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
+
 
 </project>

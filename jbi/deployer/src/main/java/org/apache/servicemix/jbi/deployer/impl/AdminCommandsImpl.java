@@ -73,7 +73,7 @@ public class AdminCommandsImpl implements AdminCommands, InitializingBean, Dispo
             if (installationService.unloadInstaller(name, true)) {
             	return ManagementSupport.createSuccessMessage("uninstallComponent", name);
             }
-            throw new RuntimeException();
+            throw ManagementSupport.failure("uninstallComponent", name);
         } catch (Exception e) {
             throw ManagementSupport.failure("uninstallComponent", name, e);
         }

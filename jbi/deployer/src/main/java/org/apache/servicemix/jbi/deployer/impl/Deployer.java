@@ -76,9 +76,6 @@ public class Deployer extends AbstractBundleWatcher {
     private final Map<String, ServiceAssemblyImpl> serviceAssemblies = new ConcurrentHashMap<String, ServiceAssemblyImpl>();
 
     private final Map<Bundle, AbstractInstaller> installers = new ConcurrentHashMap<Bundle, AbstractInstaller>();
-//    private final Map<String, SharedLibraryInstaller> sharedLibrariesInstallers = new ConcurrentHashMap<String, SharedLibraryInstaller>();
-//    private final Map<String, ComponentInstaller> componentsInstallers = new ConcurrentHashMap<String, ComponentInstaller>();
-//    private final Map<String, ServiceAssemblyInstaller> serviceAssembliesInstallers = new ConcurrentHashMap<String, ServiceAssemblyInstaller>();
 
     private final ThreadLocal<AbstractInstaller> jmxManaged = new ThreadLocal<AbstractInstaller>();
 
@@ -99,7 +96,6 @@ public class Deployer extends AbstractBundleWatcher {
     private ServiceTracker deployedAssembliesTracker;
 
     private AssemblyReferencesListener endpointListener;
-
 
     // Helper beans
     private NamingStrategy namingStrategy;
@@ -347,15 +343,16 @@ public class Deployer extends AbstractBundleWatcher {
         props.put(TYPE, componentDesc.getType());
         // register the component in the OSGi registry
         LOGGER.debug("Registering JBI component");
-        registerService(bundle, Component.class.getName(), component, props);
-        registerService(bundle, ComponentWrapper.class.getName(), component, props);
+        registerService(bundle, new String[] { Component.class.getName(), ComponentWrapper.class.getName() },
+                        component, props);
+        components.put(name, component);
+        // Now, register the inner component
         registerService(bundle, javax.jbi.component.Component.class.getName(), innerComponent, props);
         getManagementAgent().register(new StandardMBean(component, Component.class),
                                       getNamingStrategy().getObjectName(component));
         for (SharedLibrary lib : sharedLibraries) {
             ((SharedLibraryImpl) lib).addComponent(component);
         }
-        components.put(name, component);
         return component;
     }
 
@@ -442,8 +439,8 @@ public class Deployer extends AbstractBundleWatcher {
             Dictionary<String, String> props = new Hashtable<String, String>();
             props.put(NAME, name);
             props.put(TYPE, componentDesc.getType());
-            registerService(reference.getBundle(), Component.class.getName(), wrapper, props);
-            registerService(reference.getBundle(), ComponentWrapper.class.getName(), wrapper, props);
+            registerService(reference.getBundle(), new String[] { Component.class.getName(), ComponentWrapper.class.getName() },
+                            wrapper, props);
         }
     }
 
@@ -527,6 +524,10 @@ public class Deployer extends AbstractBundleWatcher {
      * @param props
      */
     protected void registerService(Bundle bundle, String clazz, Object service, Dictionary props) {
+        registerService(bundle, new String[] { clazz }, service,  props);
+    }
+
+    protected void registerService(Bundle bundle, String[] clazz, Object service, Dictionary props) {
         BundleContext context = bundle.getBundleContext() != null ? bundle.getBundleContext() : getBundleContext();
         ServiceRegistration reg = context.registerService(clazz, service, props);
         List<ServiceRegistration> registrations = services.get(bundle);

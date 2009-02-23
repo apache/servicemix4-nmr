@@ -352,7 +352,7 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
                 for (SharedLibraryList sll : componentDesc.getSharedLibraries()) {
                     SharedLibrary lib = deployer.getSharedLibrary(sll.getName());
                     if (lib == null) {
-                        // TODO: throw exception here
+                        // TODO: throw exception here ?
                     } else {
                         libs.add(lib);
                     }

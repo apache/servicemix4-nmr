@@ -34,9 +34,10 @@
 
   <modules>
       <module>branding</module>
-      <module>nmr</module>
       <module>document</module>
       <module>naming</module>
+      <module>transaction</module>
+      <module>nmr</module>
       <module>jbi</module>
       <module>bundle</module>
       <module>assembly</module>
@@ -76,10 +77,14 @@
       <felix.compendium.version>1.2.0</felix.compendium.version>
       <felix.bundlerepository.version>1.2.0</felix.bundlerepository.version>
       <felix.prefs.version>1.0.2</felix.prefs.version>
+      <geronimo.connector.version>2.2-r634076</geronimo.connector.version>
+      <geronimo.j2ee.connector.version>2.0.0</geronimo.j2ee.connector.version>
       <geronimo.jms.version>1.1.1</geronimo.jms.version>
       <geronimo.jta.version>1.1.1</geronimo.jta.version>
       <geronimo.servlet.version>1.1.2</geronimo.servlet.version>
       <geronimo.stax.version>1.0.1</geronimo.stax.version>
+      <geronimo.transaction.version>2.2-r634076</geronimo.transaction.version>
+      <howl.version>1.0.1-1_1</howl.version>
       <jencks.version>2.1_1</jencks.version>
       <jline.version>0.9.94</jline.version>
       <jmock.version>2.5.1</jmock.version>
@@ -174,6 +179,11 @@
           <groupId>junit</groupId>
           <artifactId>junit</artifactId>
           <version>4.4</version>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.bundles</groupId>
+          <artifactId>org.apache.servicemix.bundles.junit</artifactId>
           <scope>test</scope>
       </dependency>
   </dependencies>
@@ -619,6 +629,36 @@
           <groupId>org.jmock</groupId>
           <artifactId>jmock</artifactId>
           <version>${jmock.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.geronimo.components</groupId>
+          <artifactId>geronimo-transaction</artifactId>
+          <version>${geronimo.transaction.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.geronimo.components</groupId>
+          <artifactId>geronimo-connector</artifactId>
+          <version>${geronimo.connector.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.bundles</groupId>
+          <artifactId>org.apache.servicemix.bundles.jencks</artifactId>
+          <version>${jencks.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.bundles</groupId>
+          <artifactId>org.apache.servicemix.bundles.howl</artifactId>
+          <version>${howl.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.springframework.osgi</groupId>
+          <artifactId>spring-osgi-core</artifactId>
+          <version>${spring.osgi.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-tx</artifactId>
+          <version>${spring.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
