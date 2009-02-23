@@ -77,7 +77,6 @@
       <felix.compendium.version>1.2.0</felix.compendium.version>
       <felix.bundlerepository.version>1.2.0</felix.bundlerepository.version>
       <felix.prefs.version>1.0.2</felix.prefs.version>
-      <geronimo.connector.version>2.2-r634076</geronimo.connector.version>
       <geronimo.j2ee.connector.version>2.0.0</geronimo.j2ee.connector.version>
       <geronimo.jms.version>1.1.1</geronimo.jms.version>
       <geronimo.jta.version>1.1.1</geronimo.jta.version>
@@ -634,16 +633,6 @@
           <groupId>org.apache.geronimo.components</groupId>
           <artifactId>geronimo-transaction</artifactId>
           <version>${geronimo.transaction.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>org.apache.geronimo.components</groupId>
-          <artifactId>geronimo-connector</artifactId>
-          <version>${geronimo.connector.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>org.apache.servicemix.bundles</groupId>
-          <artifactId>org.apache.servicemix.bundles.jencks</artifactId>
-          <version>${jencks.version}</version>
       </dependency>
       <dependency>
           <groupId>org.apache.servicemix.bundles</groupId>

@@ -79,7 +79,7 @@
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Export-Package>${pom.artifactId}*</Export-Package>
                         <DynamicImport-Package>*</DynamicImport-Package>
-                        <Spring-Context>*;publish-context:=false;create-asynchronously:=true</Spring-Context>
+                        <Spring-Context>*;publish-context:=false</Spring-Context>
                     </instructions>
                 </configuration>
             </plugin>
