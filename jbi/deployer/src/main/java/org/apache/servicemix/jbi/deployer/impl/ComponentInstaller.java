@@ -347,7 +347,7 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {
             ComponentDesc componentDesc = installationContext.getDescriptor();
-            Set<SharedLibrary> libs = new HashSet<SharedLibrary>();
+            List<SharedLibrary> libs = new ArrayList<SharedLibrary>();
             if (componentDesc.getSharedLibraries() != null) {
                 for (SharedLibraryList sll : componentDesc.getSharedLibraries()) {
                     SharedLibrary lib = deployer.getSharedLibrary(sll.getName());
