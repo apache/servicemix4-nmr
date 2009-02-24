@@ -320,12 +320,24 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         ComponentDesc descriptor = installationContext.getDescriptor();
         try {
+            List<SharedLibrary> libs = new ArrayList<SharedLibrary>();
+            if (descriptor.getSharedLibraries() != null) {
+                for (SharedLibraryList sll : descriptor.getSharedLibraries()) {
+                    SharedLibrary lib = deployer.getSharedLibrary(sll.getName());
+                    if (lib == null) {
+                        // TODO: throw exception here ?
+                    } else {
+                        libs.add(lib);
+                    }
+                }
+            }
+            SharedLibrary[] aLibs = libs.toArray(new SharedLibrary[libs.size()]);
             ClassLoader cl = createClassLoader(
                     getBundle(),
                     installationContext.getInstallRoot(),
                     descriptor.getBootstrapClassPath().getPathElements(),
                     descriptor.isBootstrapClassLoaderDelegationParentFirst(),
-                    null);
+                    aLibs);
             Thread.currentThread().setContextClassLoader(cl);
             Class bootstrapClass = cl.loadClass(descriptor.getBootstrapClassName());
             return (Bootstrap) bootstrapClass.newInstance();
