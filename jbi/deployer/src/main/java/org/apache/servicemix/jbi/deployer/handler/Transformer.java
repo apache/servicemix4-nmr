@@ -122,7 +122,8 @@ public class Transformer {
         JarEntry entry = jis.getNextJarEntry();
         while (entry != null) {
             if (!"META-INF/MANIFEST.MF".equals(entry.getName())) {
-                jos.putNextEntry(entry);
+                JarEntry newEntry = new JarEntry(entry.getName());
+                jos.putNextEntry(newEntry);
                 FileUtil.copyInputStream(jis, jos);
                 jos.closeEntry();
             }
