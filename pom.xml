@@ -133,7 +133,7 @@
        </repository>
        <!-- Apache snapshot -->
        <repository>
-           <id>apache.snapshots</id>
+           <id>apache-snapshots</id>
            <name>Apache Snapshot repository</name>
            <url>http://people.apache.org/repo/m2-snapshot-repository</url>
            <releases>
