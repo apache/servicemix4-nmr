@@ -32,13 +32,6 @@
     <name>Apache ServiceMix JBI Integration Tests</name>
 
     <dependencies>
-        <!-- put this dependency to avoid a classloader problem
-             when running junit tests -->
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.framework</artifactId>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.apache.servicemix.kernel</groupId>
             <artifactId>org.apache.servicemix.kernel.main</artifactId>
