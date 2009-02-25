@@ -38,8 +38,8 @@ import org.springframework.osgi.util.BundleDelegatingClassLoader;
 
 public class SharedLibraryInstaller extends AbstractInstaller {
 
-    public SharedLibraryInstaller(Deployer deployer, Descriptor descriptor, File jbiArtifact) {
-        super(deployer, descriptor, jbiArtifact);
+    public SharedLibraryInstaller(Deployer deployer, Descriptor descriptor, File jbiArtifact, boolean autoStart) {
+        super(deployer, descriptor, jbiArtifact, autoStart);
         installRoot = new File(System.getProperty("servicemix.base"), "data/jbi/" + getName() + "/install");
         installRoot.mkdirs();
     }
@@ -68,7 +68,14 @@ public class SharedLibraryInstaller extends AbstractInstaller {
         }
     }
 
+    public void stop(boolean force) throws Exception {
+        // Nothing to do for shared libraries
+    }
+
     public void uninstall(boolean force) throws Exception {
+        // Shut down
+        stop(force);
+        // Retrieve shared library
         SharedLibrary library = deployer.getSharedLibrary(getName());
         if (library == null && !force) {
             throw ManagementSupport.failure("uninstallSharedLibrary", "SharedLibrary '" + getName() + "' is not installed.");

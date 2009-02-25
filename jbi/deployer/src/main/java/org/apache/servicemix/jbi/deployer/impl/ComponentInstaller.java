@@ -38,6 +38,7 @@ import javax.management.StandardMBean;
 
 import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.SharedLibrary;
+import org.apache.servicemix.jbi.deployer.artifacts.ComponentImpl;
 import org.apache.servicemix.jbi.deployer.descriptor.ComponentDesc;
 import org.apache.servicemix.jbi.deployer.descriptor.Descriptor;
 import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryList;
@@ -57,8 +58,8 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
     private Bootstrap bootstrap;
 
 
-    public ComponentInstaller(Deployer deployer, Descriptor descriptor, File jbiArtifact) throws Exception {
-        super(deployer, descriptor, jbiArtifact);
+    public ComponentInstaller(Deployer deployer, Descriptor descriptor, File jbiArtifact, boolean autoStart) throws Exception {
+        super(deployer, descriptor, jbiArtifact, autoStart);
         this.installRoot = new File(System.getProperty("servicemix.base"), "data/jbi/" + getName() + "/install");
         this.installRoot.mkdirs();
         this.installationContext = new InstallationContextImpl(descriptor.getComponent(), deployer.getEnvironment(),
@@ -99,7 +100,9 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
         // Extract bundle
         super.init();
         // Init bootstrap
-        initBootstrap();
+        if (isModified) {
+            initBootstrap();
+        }
     }
 
     /**
@@ -114,21 +117,20 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
             if (isInstalled()) {
                 throw new DeploymentException("Component is already installed");
             }
-            initBootstrap();
-            bootstrap.onInstall();
-            try {
+            if (isModified) {
+                initBootstrap();
+                bootstrap.onInstall();
                 try {
-                    initializePreferences();
-                } catch (BackingStoreException e) {
-                    LOGGER.warn("Error initializing persistent state for component: " + getName(), e);
+                    ObjectName name = initComponent();
+                    cleanUpBootstrap();
+                    installationContext.setInstall(false);
+                    return name;
+                } catch (Exception e) {
+                    cleanUpBootstrap();
+                    throw e;
                 }
-                ObjectName name = initComponent();
-                cleanUpBootstrap();
-                installationContext.setInstall(false);
-                return name;
-            } catch (Exception e) {
-                cleanUpBootstrap();
-                throw e;
+            } else {
+                return initComponent();
             }
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
@@ -161,8 +163,8 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
         }
     }
 
-    public void uninstall(boolean force) throws Exception {
-        Component comp = deployer.getComponent(getName());
+    public void stop(boolean force) throws Exception {
+        ComponentImpl comp = deployer.getComponent(getName());
         if (comp == null && !force) {
             throw ManagementSupport.failure("uninstallComponent", "Component '" + getName() + "' is not installed.");
         }
@@ -172,11 +174,21 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
                 throw ManagementSupport.failure("uninstallComponent", "Component '" + getName() + "' is not shut down.");
             }
             if (LifeCycleMBean.STARTED.equals(comp.getCurrentState())) {
-                comp.stop();
+                comp.stop(false);
             }
             if (LifeCycleMBean.STOPPED.equals(comp.getCurrentState())) {
-                comp.shutDown();
+                comp.shutDown(false, force);
             }
+        }
+    }
+
+    public void uninstall(boolean force) throws Exception {
+        // Shutdown component
+        stop(force);
+        // Retrieve component
+        Component comp = deployer.getComponent(getName());
+        if (comp == null && !force) {
+            throw ManagementSupport.failure("uninstallComponent", "Component '" + getName() + "' is not installed.");
         }
         // TODO: if there is any SA deployed onto this component, undeploy the SA and put it in a pending state
         // Bootstrap stuff

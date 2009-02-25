@@ -184,7 +184,7 @@ public class InstallationService implements InstallationServiceMBean {
             if (deployer.getSharedLibrary(slName) != null) {
                 throw new DeploymentException("ShareLib " + slName + " is already installed");
             }
-            SharedLibraryInstaller installer = new SharedLibraryInstaller(deployer, desc, jarfile);
+            SharedLibraryInstaller installer = new SharedLibraryInstaller(deployer, desc, jarfile, false);
             installer.installBundle();
             installer.init();
             installer.install();
@@ -214,9 +214,8 @@ public class InstallationService implements InstallationServiceMBean {
                 String componentName = desc.getComponent().getIdentification().getName();
                 ComponentInstaller installer = getComponentInstaller(componentName);
                 if (installer == null) {
-                    installer = new ComponentInstaller(deployer, desc, jarfile);
+                    installer = new ComponentInstaller(deployer, desc, jarfile, autoStart);
                     installer.installBundle();
-                    installer.setAutoStart(autoStart);
                     installer.init();
                     installer.register();
                     return installer;

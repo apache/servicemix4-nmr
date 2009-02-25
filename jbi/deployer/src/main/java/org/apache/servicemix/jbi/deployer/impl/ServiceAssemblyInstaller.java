@@ -40,8 +40,8 @@ import org.osgi.service.prefs.BackingStoreException;
 
 public class ServiceAssemblyInstaller extends AbstractInstaller {
 
-    public ServiceAssemblyInstaller(Deployer deployer, Descriptor descriptor, File jbiArtifact) {
-        super(deployer, descriptor, jbiArtifact);
+    public ServiceAssemblyInstaller(Deployer deployer, Descriptor descriptor, File jbiArtifact, boolean autoStart) {
+        super(deployer, descriptor, jbiArtifact, autoStart);
         this.installRoot = new File(System.getProperty("servicemix.base"), "data/jbi/" + getName() + "/install");
         this.installRoot.mkdirs();
     }
@@ -68,11 +68,6 @@ public class ServiceAssemblyInstaller extends AbstractInstaller {
 
     public ObjectName install() throws JBIException {
         try {
-            try {
-                initializePreferences();
-            } catch (BackingStoreException e) {
-                LOGGER.warn("Error initializing persistent state for service assembly: " + getName(), e);
-            }
             List<ServiceUnitImpl> sus = deploySUs();
             ServiceAssembly sa = deployer.registerServiceAssembly(bundle, descriptor.getServiceAssembly(), sus);
             return deployer.getNamingStrategy().getObjectName(sa);
@@ -82,7 +77,7 @@ public class ServiceAssemblyInstaller extends AbstractInstaller {
         }
     }
 
-    public void uninstall(boolean force) throws Exception {
+    public void stop(boolean force) throws Exception {
         ServiceAssembly assembly = deployer.getServiceAssembly(getName());
         if (assembly == null && !force) {
             throw ManagementSupport.failure("undeployServiceAssembly", "ServiceAssembly '" + getName() + "' is not deployed.");
@@ -98,6 +93,16 @@ public class ServiceAssemblyInstaller extends AbstractInstaller {
             if (LifeCycleMBean.STOPPED.equals(assembly.getCurrentState())) {
                 assembly.shutDown();
             }
+        }
+    }
+
+    public void uninstall(boolean force) throws Exception {
+        // Shutdown SA
+        stop(force);
+        // Retrieve SA
+        ServiceAssembly assembly = deployer.getServiceAssembly(getName());
+        if (assembly == null && !force) {
+            throw ManagementSupport.failure("undeployServiceAssembly", "ServiceAssembly '" + getName() + "' is not deployed.");
         }
         // Undeploy SUs
         for (ServiceUnit su : assembly.getServiceUnits()) {
@@ -140,7 +145,9 @@ public class ServiceAssemblyInstaller extends AbstractInstaller {
             ServiceUnitImpl su = deployer.createServiceUnit(sud, suRootDir, component);
             try {
                 LOGGER.debug("Deploying SU " + su.getName());
-                su.deploy();
+                if (isModified) {
+                    su.deploy();
+                }
                 // Add it to the list
                 sus.add(su);
             } catch (Exception e) {

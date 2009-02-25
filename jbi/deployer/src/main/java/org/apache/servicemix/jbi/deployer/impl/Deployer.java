@@ -23,6 +23,8 @@ import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jbi.JBIException;
@@ -54,15 +56,20 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.framework.SynchronousBundleListener;
+import org.osgi.framework.BundleEvent;
 import org.osgi.service.prefs.Preferences;
 import org.osgi.service.prefs.PreferencesService;
 import org.osgi.util.tracker.ServiceTracker;
 import org.springframework.osgi.util.OsgiStringUtils;
+import org.springframework.osgi.context.BundleContextAware;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.DisposableBean;
 
 /**
  * Deployer for JBI artifacts
  */
-public class Deployer extends AbstractBundleWatcher {
+public class Deployer implements BundleContextAware, InitializingBean, DisposableBean, SynchronousBundleListener {
 
     public static final String NAME = "NAME";
     public static final String TYPE = "TYPE";
@@ -70,6 +77,9 @@ public class Deployer extends AbstractBundleWatcher {
     public static final String TYPE_BINDING_COMPONENT = "binding-component";
 
     private static final Log LOGGER = LogFactory.getLog(Deployer.class);
+
+    private BundleContext bundleContext;
+    private final Set<Bundle> bundles = new HashSet<Bundle>();
 
     private final Map<String, SharedLibraryImpl> sharedLibraries = new ConcurrentHashMap<String, SharedLibraryImpl>();
     private final Map<String, ComponentImpl> components = new ConcurrentHashMap<String, ComponentImpl>();
@@ -113,6 +123,14 @@ public class Deployer extends AbstractBundleWatcher {
         // TODO: control that using properties
         jbiRootDir = new File(System.getProperty("servicemix.base"), "data/jbi");
         jbiRootDir.mkdirs();
+    }
+
+    public BundleContext getBundleContext() {
+        return bundleContext;
+    }
+
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
     }
 
     public PreferencesService getPreferencesService() {
@@ -195,11 +213,16 @@ public class Deployer extends AbstractBundleWatcher {
         return name != null ? serviceAssemblies.get(name) : null;
     }
 
-    @Override
     public void afterPropertiesSet() throws Exception {
-        super.afterPropertiesSet();
+        // Track bundles
+        bundleContext.addBundleListener(this);
+        for (Bundle bundle : bundleContext.getBundles()) {
+            if (bundle.getState() == Bundle.ACTIVE) {
+                bundleChanged(new BundleEvent(BundleEvent.STARTED, bundle));
+            }
+        }
         // Track deployed components
-        deployedComponentsTracker = new ServiceTracker(getBundleContext(), javax.jbi.component.Component.class.getName(), null) {
+        deployedComponentsTracker = new ServiceTracker(bundleContext, javax.jbi.component.Component.class.getName(), null) {
             public Object addingService(ServiceReference serviceReference) {
                 Object o = super.addingService(serviceReference);
                 registerDeployedComponent(serviceReference, (javax.jbi.component.Component) o);
@@ -213,7 +236,7 @@ public class Deployer extends AbstractBundleWatcher {
         };
         deployedComponentsTracker.open();
         // Track deployed service assemblies
-        deployedAssembliesTracker = new ServiceTracker(getBundleContext(), DeployedAssembly.class.getName(), null) {
+        deployedAssembliesTracker = new ServiceTracker(bundleContext, DeployedAssembly.class.getName(), null) {
             public Object addingService(ServiceReference serviceReference) {
                 Object o = super.addingService(serviceReference);
                 registerDeployedServiceAssembly(serviceReference, (DeployedAssembly) o);
@@ -228,14 +251,36 @@ public class Deployer extends AbstractBundleWatcher {
         deployedAssembliesTracker.open();
     }
 
-    @Override
-    public void destroy() throws Exception {
+    public synchronized void destroy() throws Exception {
+        for (Bundle bundle : bundles) {
+            bundleChanged(new BundleEvent(BundleEvent.STOPPING, bundle));
+        }
         deployedComponentsTracker.close();
         deployedAssembliesTracker.close();
-        super.destroy();
+        bundleContext.removeBundleListener(this);
     }
 
-    @Override
+    public synchronized void bundleChanged(BundleEvent event) {
+        switch (event.getType()) {
+            case BundleEvent.STARTED:
+                if (match(event.getBundle())) {
+                    bundles.add(event.getBundle());
+                    onBundleStarted(event.getBundle());
+                }
+                break;
+            case BundleEvent.STOPPING:
+                if (bundles.contains(event.getBundle())) {
+                    onBundleStopping(event.getBundle());
+                }
+                break;
+            case BundleEvent.UNINSTALLED:
+                if (bundles.remove(event.getBundle())) {
+                    onBundleUninstalled(event.getBundle());
+                }
+                break;
+        }
+    }
+
     protected boolean match(Bundle bundle) {
         LOGGER.debug("Checking bundle: '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "'");
         URL url = bundle.getResource(DescriptorFactory.DESCRIPTOR_FILE);
@@ -252,8 +297,7 @@ public class Deployer extends AbstractBundleWatcher {
      *
      * @param bundle
      */
-    @Override
-    protected void register(Bundle bundle) {
+    protected void onBundleStarted(Bundle bundle) {
         // If an installer has been registered, this means that we are using JMX or ant tasks to deploy the JBI artifact.
         // In such a case, let the installer do the work.
         // Else, the bundle has been deployed through the deploy folder or the command line or any other
@@ -270,17 +314,16 @@ public class Deployer extends AbstractBundleWatcher {
                 DescriptorFactory.checkDescriptor(descriptor);
                 if (descriptor.getSharedLibrary() != null) {
                     LOGGER.info("Deploying bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' as a JBI shared library");
-                    installer = new SharedLibraryInstaller(this, descriptor, null);
+                    installer = new SharedLibraryInstaller(this, descriptor, null, true);
                 } else if (descriptor.getComponent() != null) {
                     LOGGER.info("Deploying bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' as a JBI component");
-                    installer = new ComponentInstaller(this, descriptor, null);
+                    installer = new ComponentInstaller(this, descriptor, null, true);
                 } else if (descriptor.getServiceAssembly() != null) {
                     LOGGER.info("Deploying bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' as a JBI service assembly");
-                    installer = new ServiceAssemblyInstaller(this, descriptor, null);
+                    installer = new ServiceAssemblyInstaller(this, descriptor, null, true);
                 } else {
                     throw new IllegalStateException("Unrecognized JBI descriptor: " + url);
                 }
-                installer.setAutoStart(true);
                 installer.setBundle(bundle);
                 installer.init();
                 installer.install();
@@ -296,8 +339,22 @@ public class Deployer extends AbstractBundleWatcher {
         }
     }
 
-    @Override
-    protected void unregister(Bundle bundle) {
+    protected void onBundleStopping(Bundle bundle) {
+        AbstractInstaller installer = getJmxManaged();
+        if (installer == null) {
+            installer = installers.get(bundle);
+            if (installer != null) {
+                try {
+                    installer.stop(true);
+                } catch (Exception e) {
+                    LOGGER.warn("Error shutting down JBI artifact", e);
+                }
+            }
+        }
+        unregisterServices(bundle);
+    }
+
+    protected void onBundleUninstalled(Bundle bundle) {
         AbstractInstaller installer = getJmxManaged();
         if (installer == null) {
             installer = installers.get(bundle);
@@ -311,7 +368,6 @@ public class Deployer extends AbstractBundleWatcher {
             }
         }
         pendingBundles.remove(bundle);
-        unregisterServices(bundle);
     }
 
     public ServiceUnitImpl createServiceUnit(ServiceUnitDesc sud, File suRootDir, ComponentImpl component) {
@@ -510,10 +566,17 @@ public class Deployer extends AbstractBundleWatcher {
             // Synchronous call because if using a separate thread
             // we run into deadlocks
             for (Bundle bundle : pending) {
-                register(bundle);
+                onBundleStarted(bundle);
             }
         }
     }
+
+    //===============================================================================
+    //
+    //   OSGi Services registrations
+    //
+    //===============================================================================
+
 
     /**
      * Register and keep track of an OSGi service

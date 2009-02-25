@@ -85,7 +85,7 @@ public class DeploymentService implements DeploymentServiceMBean, BundleContextA
                 checkSus(sa.getServiceUnits());
                 String name = sa.getIdentification().getName();
                 LOG.info("Deploy ServiceAssembly " + name);
-                ServiceAssemblyInstaller installer = new ServiceAssemblyInstaller(deployer, root, jarfile);
+                ServiceAssemblyInstaller installer = new ServiceAssemblyInstaller(deployer, root, jarfile, false);
                 installer.installBundle();
                 installer.init();
                 installer.install();

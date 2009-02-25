@@ -43,6 +43,8 @@ import org.osgi.service.prefs.PreferencesService;
 
 public abstract class AbstractInstaller {
 
+    public static final String LAST_INSTALL = "jbi.deployer.install";
+
     protected final Log LOGGER = LogFactory.getLog(getClass());
 
     protected Deployer deployer;
@@ -52,11 +54,13 @@ public abstract class AbstractInstaller {
     protected File jbiArtifact;
     protected File installRoot;
     protected boolean uninstallFromOsgi;
+    protected boolean isModified;
 
-    protected AbstractInstaller(Deployer deployer, Descriptor descriptor, File jbiArtifact) {
+    protected AbstractInstaller(Deployer deployer, Descriptor descriptor, File jbiArtifact, boolean autoStart) {
         this.deployer = deployer;
         this.descriptor = descriptor;
         this.jbiArtifact = jbiArtifact;
+        this.autoStart = autoStart;
     }
 
     public void setBundle(Bundle bundle) {
@@ -74,10 +78,23 @@ public abstract class AbstractInstaller {
     public abstract String getName();
 
     public void init() throws Exception {
-        extractBundle(installRoot, getBundle(), "/");
+        Preferences prefs = getPreferences();
+        long lastInstall = prefs.getLong(LAST_INSTALL, 0);
+        isModified = lastInstall == 0 || getBundle().getLastModified() > lastInstall;
+        if (isModified) {
+            extractBundle(installRoot, getBundle(), "/");
+            lastInstall = getBundle().getLastModified();
+            prefs.put(AbstractLifecycleJbiArtifact.STATE, isAutoStart()
+                            ? AbstractLifecycleJbiArtifact.State.Started.name()
+                            : AbstractLifecycleJbiArtifact.State.Shutdown.name());
+        }
+        prefs.putLong(LAST_INSTALL, lastInstall);
+        prefs.flush();
     }
 
     public abstract ObjectName install() throws JBIException;
+
+    public abstract void stop(boolean force) throws Exception;
 
     public abstract void uninstall(boolean force) throws Exception;
 
@@ -122,18 +139,12 @@ public abstract class AbstractInstaller {
         return new File(base, "data/generated-bundles");
     }
 
-    protected void initializePreferences() throws BackingStoreException {
-        PreferencesService preferencesService = deployer.getPreferencesService();
-        Preferences prefs = preferencesService.getUserPreferences(getName());
-        prefs.put(AbstractLifecycleJbiArtifact.STATE, isAutoStart()
-                        ? AbstractLifecycleJbiArtifact.State.Started.name()
-                        : AbstractLifecycleJbiArtifact.State.Shutdown.name());
-        prefs.flush();
+    protected Preferences getPreferences() {
+        return deployer.getPreferencesService().getUserPreferences(getName());
     }
 
     protected void deletePreferences() throws BackingStoreException {
-        PreferencesService preferencesService = deployer.getPreferencesService();
-        Preferences prefs = preferencesService.getUserPreferences(getName());
+        Preferences prefs = getPreferences();
         prefs.clear();
         prefs.flush();
     }

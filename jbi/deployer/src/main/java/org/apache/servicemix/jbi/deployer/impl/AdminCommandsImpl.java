@@ -195,7 +195,6 @@ public class AdminCommandsImpl implements AdminCommands, InitializingBean, Dispo
             throw ManagementSupport.failure("start", "Service assembly does not exist: " + name);
         }
         try {
-            // TODO: refactor
             return getDeploymentService().undeploy(name);
         } catch (Throwable e) {
             throw ManagementSupport.failure("undeployServiceAssembly", name, e);
