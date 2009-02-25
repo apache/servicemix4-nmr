@@ -24,7 +24,7 @@ import org.apache.servicemix.nmr.api.service.ServiceHelper;
  * Represents a wire to an endpoint.  It provides a means of linking another set of endpoint properties to an existing endpoint.
  * 
  * A wire can be created using {@link ServiceHelper#createWire(Map, Map)} and needs to be registered in the
- * {@link EndpointRegistry} to take effect.  
+ * {@link WireRegistry} to take effect.  
  * 
  * A wire allows you to link one 
  */
