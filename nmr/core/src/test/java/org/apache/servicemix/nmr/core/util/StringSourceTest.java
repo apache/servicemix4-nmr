@@ -23,15 +23,10 @@ import java.io.ObjectInputStream;
 
 import javax.xml.transform.Source;
 
-import org.junit.Test;
+import junit.framework.TestCase;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+public class StringSourceTest extends TestCase {
 
-public class StringSourceTest {
-
-    @Test
     public void testSerialize() throws Exception {
         Source src = new StringSource("<hello/>");
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

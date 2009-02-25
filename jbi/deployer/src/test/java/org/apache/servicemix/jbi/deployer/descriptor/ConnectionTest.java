@@ -16,8 +16,6 @@
  */
 package org.apache.servicemix.jbi.deployer.descriptor;
 
-import static org.junit.Assert.*;
-
 import java.util.Map;
 
 import javax.xml.namespace.QName;
@@ -25,12 +23,12 @@ import javax.xml.namespace.QName;
 import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.Wire;
 import org.apache.servicemix.nmr.api.service.ServiceHelper;
-import org.junit.Test;
+import junit.framework.TestCase;
 
 /**
  * Test case for {@link Connection}
  */
-public class ConnectionTest {
+public class ConnectionTest extends TestCase {
     
     private static final String CONSUMER_ENDPOINT = "consumer-endpoint";
     private static final QName CONSUMER_INTERFACE = new QName("urn:test:consumer", "consumer-inferface");
@@ -38,8 +36,7 @@ public class ConnectionTest {
     private static final String PROVIDER_ENDPOINT = "provider-endpoint";
     private static final QName PROVIDER_SERVICE = new QName("urn:test:provider", "provider-service");
     
-    @Test
-    public void wireOnInterface() throws Exception {
+    public void testWireOnInterface() throws Exception {
         Connection connection = new Connection();
         Consumer consumer = new Consumer();
         consumer.setInterfaceName(CONSUMER_INTERFACE);
@@ -54,8 +51,7 @@ public class ConnectionTest {
         assertWireToEnd(wire);
     }
 
-    @Test
-    public void wireOnServiceAndEndpoint() throws Exception {
+    public void testWireOnServiceAndEndpoint() throws Exception {
         Connection connection = new Connection();
         Consumer consumer = new Consumer();
         consumer.setServiceName(CONSUMER_SERVICE);

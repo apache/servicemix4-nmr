@@ -27,16 +27,10 @@ import java.util.Map;
 import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.Message;
 import org.apache.servicemix.nmr.api.Pattern;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
+import junit.framework.TestCase;
 
-public class MessageImplTest {
+public class MessageImplTest extends TestCase {
 
-    @Test
     public void testBody() {
         Message msg = new MessageImpl();
         assertNull(msg.getBody());
@@ -48,7 +42,6 @@ public class MessageImplTest {
         assertTrue(msg.getBody() instanceof byte[]);
     }
 
-    @Test
     public void testConvertWithoutCamel() throws Exception {
         final URLClassLoader c = (URLClassLoader) getClass().getClassLoader();
         ClassLoader cl = new URLClassLoader(c.getURLs(), null) {
@@ -68,7 +61,6 @@ public class MessageImplTest {
         assertNull(msg.getBody(byte[].class));
     }
 
-    @Test
     public void testHeaders() {
         Message msg = new MessageImpl();
         assertNotNull(msg.getHeaders());
@@ -99,7 +91,6 @@ public class MessageImplTest {
         assertNotNull(msg.getHeader("name"));
     }
 
-    @Test
     public void testContentType() {
         Message msg = new MessageImpl();
         assertNull(msg.getContentType());
@@ -107,7 +98,6 @@ public class MessageImplTest {
         assertEquals("type", msg.getContentType());
     }
 
-    @Test
     public void testContentEncoding() {
         Message msg = new MessageImpl();
         assertNull(msg.getContentEncoding());
@@ -115,7 +105,6 @@ public class MessageImplTest {
         assertEquals("enc", msg.getContentEncoding());
     }
 
-    @Test
     public void testAttachments() {
         Message msg = new MessageImpl();
         assertNull(msg.getAttachment("id"));
@@ -129,7 +118,6 @@ public class MessageImplTest {
         assertTrue(msg.getAttachments().isEmpty());
     }
 
-    @Test
     public void testCopy() {
         Message msg = new MessageImpl();
         Message cpy = msg.copy();
@@ -144,7 +132,6 @@ public class MessageImplTest {
         assertNotNull(cpy.getAttachment("id"));
     }
 
-    @Test
     public void testWrite() throws Exception {
         Message msg = new MessageImpl();
         msg.setHeader("header", "value");
@@ -160,7 +147,6 @@ public class MessageImplTest {
         assertNotNull(cpy.getAttachment("id"));
     }
 
-    @Test
     public void testDisplay() {
         Message msg = new MessageImpl();
         msg.toString();

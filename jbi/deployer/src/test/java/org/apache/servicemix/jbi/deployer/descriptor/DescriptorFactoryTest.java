@@ -22,17 +22,13 @@ import javax.xml.namespace.QName;
 
 import org.w3c.dom.DocumentFragment;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
+import junit.framework.TestCase;
 
 /**
  * Test JBI descriptor parsing
  */
-public class DescriptorFactoryTest {
+public class DescriptorFactoryTest extends TestCase {
 
-    @Test
     public void testServiceUnit() throws Exception {
         Descriptor root = DescriptorFactory.buildDescriptor(getClass().getResource("serviceUnit.xml"));
         assertNotNull("Unable to parse descriptor", root);
@@ -43,7 +39,6 @@ public class DescriptorFactoryTest {
         assertEquals("consumes size", 1, consumes.length);
     }
 
-    @Test
     public void testSharedLibrary() throws Exception {
         Descriptor root = DescriptorFactory.buildDescriptor(getClass().getResource("sharedLibrary.xml"));
         assertNotNull("Unable to parse descriptor", root);
@@ -54,7 +49,6 @@ public class DescriptorFactoryTest {
         assertEquals("getDescription", "This is a test shared library.", identification.getDescription());
     }
 
-    @Test
     public void testServiceAssembly() throws Exception {
         Descriptor root = DescriptorFactory.buildDescriptor(getClass().getResource("serviceAssembly.xml"));
         assertNotNull("Unable to parse descriptor", root);
@@ -92,7 +86,6 @@ public class DescriptorFactoryTest {
         assertEquals("getConsumer().getServiceName() for 0", new QName("urn:csi", "csi-service"), connections[0].getConsumer().getServiceName());
     }
 
-    @Test
     public void testComponent() throws Exception {
         Descriptor root = DescriptorFactory.buildDescriptor(getClass().getResource("component.xml"));
         assertNotNull("Unable to parse descriptor", root);

@@ -18,19 +18,13 @@ package org.apache.servicemix.nmr.core.util;
 
 import java.util.Dictionary;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import org.junit.Test;
+import junit.framework.TestCase;
 
-public class MapToDictionaryTest {
+public class MapToDictionaryTest extends TestCase {
 
-    @Test
     public void testConstructorWithNullArgument() {
         try {
             new MapToDictionary(null);
@@ -44,8 +38,7 @@ public class MapToDictionaryTest {
         }
     }
 
-    @Test
-    public void test() {
+    public void testMap() {
         Map<Integer, Boolean> map = new TreeMap<Integer, Boolean>();
         map.put(3, true);
         map.put(5, false);

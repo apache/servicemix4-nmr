@@ -35,13 +35,10 @@ import org.apache.servicemix.nmr.api.Pattern;
 import org.apache.servicemix.nmr.api.Status;
 import org.apache.servicemix.nmr.api.service.ServiceHelper;
 import org.apache.servicemix.nmr.core.ServiceMix;
-import org.junit.Test;
+import junit.framework.TestCase;
 
-import static org.junit.Assert.assertEquals;
+public class IntegrationTest extends TestCase {
 
-public class IntegrationTest {
-
-    @Test
     public void testJbiComponent() throws Exception {
         ServiceMix smx = new ServiceMix();
         smx.init();

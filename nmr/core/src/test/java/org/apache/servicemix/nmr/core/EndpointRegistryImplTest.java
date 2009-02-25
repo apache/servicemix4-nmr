@@ -31,17 +31,13 @@ import org.apache.servicemix.nmr.api.Reference;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
 import org.apache.servicemix.nmr.api.event.EndpointListener;
 import org.apache.servicemix.nmr.api.service.ServiceHelper;
-import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.Ignore;
+import junit.framework.TestCase;
 
-public class EndpointRegistryImplTest {
+public class EndpointRegistryImplTest extends TestCase {
 
     private NMR nmr;
     private EndpointRegistry registry;
 
-    @Before
     public void setUp() {
         ServiceMix smx = new ServiceMix();
         smx.init();
@@ -51,7 +47,6 @@ public class EndpointRegistryImplTest {
         assertSame(nmr, ((EndpointRegistryImpl) registry).getNmr());
     }
 
-    @Test
     public void testRegistryConstructor() {
         EndpointRegistryImpl reg = new EndpointRegistryImpl();
         try {
@@ -64,7 +59,6 @@ public class EndpointRegistryImplTest {
         reg.init();
     }
 
-    @Test
     public void testRegisterUnregister() throws Exception {
         Endpoint endpoint = new DummyEndpoint();
         Reference ref = registry.lookup(ServiceHelper.createMap(Endpoint.NAME, "id"));
@@ -81,7 +75,6 @@ public class EndpointRegistryImplTest {
         assertFalse(r.choose().iterator().hasNext());
     }
 
-    @Test
     public void testLdapFilter() throws Exception {
         System.setProperty("org.osgi.vendor.framework", "org.apache.servicemix.nmr.core");
 
@@ -100,7 +93,6 @@ public class EndpointRegistryImplTest {
         assertFalse(r.choose().iterator().hasNext());
     }
 
-    @Test
     public void testEndpointListener() throws Exception {
         final CountDownLatch regLatch = new CountDownLatch(1);
         final CountDownLatch unregLatch = new CountDownLatch(1);
@@ -119,7 +111,6 @@ public class EndpointRegistryImplTest {
         assertTrue(unregLatch.await(1, TimeUnit.SECONDS));
     }
     
-    @Test
     public void testHandleWiring() throws Exception {
         final Map<String, Object> from = ServiceHelper.createMap(Endpoint.SERVICE_NAME, "test:wired-service",
                                                                  Endpoint.ENDPOINT_NAME, "endpoint");
@@ -141,7 +132,6 @@ public class EndpointRegistryImplTest {
         assertEquals(endpoint, ((InternalEndpoint) result.get(0)).getEndpoint());
     }
     
-    @Test
     public void testEndpointWiringOnLookup() throws Exception {
         final Map<String, Object> from = ServiceHelper.createMap(Endpoint.SERVICE_NAME, "test:wired-service",
                                                                  Endpoint.ENDPOINT_NAME, "endpoint");

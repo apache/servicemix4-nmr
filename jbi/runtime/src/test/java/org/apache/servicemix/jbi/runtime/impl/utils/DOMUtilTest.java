@@ -23,19 +23,15 @@ import javax.xml.namespace.QName;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import org.junit.Test;
+import junit.framework.TestCase;
 
-public class DOMUtilTest {
+public class DOMUtilTest extends TestCase {
 
-    @Test
     public void testNewDoc() throws Exception  {
         Document doc = DOMUtil.newDocument();
         assertNotNull(doc);
     }
 
-    @Test
     public void testDoc() throws Exception {
         String xml = "<root><hello>world</hello></root>";
         Document doc = DOMUtil.parseDocument(new ByteArrayInputStream(xml.getBytes()));

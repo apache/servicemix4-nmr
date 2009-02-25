@@ -20,13 +20,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import org.junit.Test;
+import junit.framework.TestCase;
 
-public class FilterIteratorTest {
+public class FilterIteratorTest extends TestCase {
 
-    @Test
     public void test() {
         List<Integer> l = Arrays.asList(new Integer[] { 1, 2, 3 });
         FilterIterator<Integer> it = new FilterIterator<Integer>(l.iterator(), new Filter<Integer>() {

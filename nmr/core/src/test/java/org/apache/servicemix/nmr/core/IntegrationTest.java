@@ -20,26 +20,21 @@ import java.util.Map;
 
 import org.apache.servicemix.nmr.api.*;
 import org.apache.servicemix.nmr.api.service.ServiceHelper;
-import org.apache.servicemix.nmr.core.ServiceMix;
-import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
+import junit.framework.TestCase;
 
 /**
  * Integration test
  */
-public class IntegrationTest {
+public class IntegrationTest extends TestCase {
 
     private NMR nmr;
 
-    @Before
     public void setUp() {
         ServiceMix smx = new ServiceMix();
         smx.init();
         nmr = smx;
     }
 
-    @Test
     public void testSendExchangeToEndpointUsingClient() throws Exception {
         MyEndpoint endpoint = new MyEndpoint();
         nmr.getEndpointRegistry().register(endpoint, ServiceHelper.createMap(Endpoint.NAME, "id"));
@@ -53,7 +48,6 @@ public class IntegrationTest {
         assertEquals(Status.Done, e.getStatus());
     }
     
-    @Test
     public void testSendExchangeToWiredEndpointUsingClient() throws Exception {
         MyEndpoint endpoint = new MyEndpoint();
         Map<String, Object> target = ServiceHelper.createMap(Endpoint.NAME, "id");

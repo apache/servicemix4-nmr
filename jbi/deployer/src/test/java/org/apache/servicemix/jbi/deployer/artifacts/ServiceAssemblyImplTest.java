@@ -16,12 +16,9 @@
  */
 package org.apache.servicemix.jbi.deployer.artifacts;
 
-import static org.junit.Assert.*;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.artifacts.AbstractLifecycleJbiArtifact.State;
@@ -31,24 +28,21 @@ import org.apache.servicemix.jbi.deployer.impl.AssemblyReferencesListener;
 import org.apache.servicemix.nmr.api.Wire;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
-import org.junit.Before;
-import org.junit.Test;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.prefs.Preferences;
+import junit.framework.TestCase;
 
 /**
  * Test cases for {@link ServiceAssemblyImpl}
  */
-public class ServiceAssemblyImplTest {
+public class ServiceAssemblyImplTest extends TestCase {
     
     private Mockery mockery;
 
-    @Before
-    public void setup() {
+    public void setUp() {
         mockery = new Mockery();
     }
     
-    @Test
     public void testWiringOnServiceAssemblyConnections() throws Exception {
         ServiceAssemblyDesc descriptor = DescriptorFactory.buildDescriptor(DescriptorFactory.class.getResource("serviceAssembly.xml")).getServiceAssembly();
         final Preferences prefs = mockery.mock(Preferences.class);

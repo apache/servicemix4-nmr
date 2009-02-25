@@ -16,19 +16,16 @@
  */
 package org.apache.servicemix.nmr.api;
 
-import static junit.framework.Assert.assertNotNull;
-
-import org.junit.Test;
+import junit.framework.TestCase;
 
 /**
  * MessageExchange pattern compatibility test
  *
  * @author Volodymyr Zhabiuk
  */
-public class MEPCompatibilityTest {
+public class MEPCompatibilityTest extends TestCase {
 
-    @Test
-	public void inOptOutCompatibilityTest() {
+	public void testInOptOutCompatibility() {
 		assertNotNull(Pattern.fromWsdlUri("http://www.w3.org/2004/08/wsdl/in-opt-out"));
 	}
 

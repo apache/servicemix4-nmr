@@ -175,12 +175,6 @@
 
   <dependencies>
       <dependency>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-          <version>4.4</version>
-          <scope>test</scope>
-      </dependency>
-      <dependency>
           <groupId>org.apache.servicemix.bundles</groupId>
           <artifactId>org.apache.servicemix.bundles.junit</artifactId>
           <scope>test</scope>
@@ -229,11 +223,6 @@
           <groupId>log4j</groupId>
           <artifactId>log4j</artifactId>
           <version>${log4j.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>jline</groupId>
-          <artifactId>jline</artifactId>
-          <version>${jline.version}</version>
       </dependency>
       <dependency>
           <groupId>commons-logging</groupId>
@@ -406,11 +395,21 @@
           <artifactId>org.apache.felix.framework</artifactId>
           <version>${felix.framework.version}</version>
       </dependency>
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <version>${felix.compendium.version}</version>
-        </dependency>
+      <dependency>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>org.osgi.compendium</artifactId>
+          <version>${felix.compendium.version}</version>
+          <exclusions>
+              <exclusion>
+                  <groupId>org.apache.felix</groupId>
+                  <artifactId>org.osgi.foundation</artifactId>
+              </exclusion>
+              <exclusion>
+                  <groupId>org.apache.felix</groupId>
+                  <artifactId>javax.servlet</artifactId>
+              </exclusion>
+          </exclusions>
+      </dependency>
       <dependency>
           <groupId>org.apache.servicemix.specs</groupId>
           <artifactId>org.apache.servicemix.specs.activation-api-1.1</artifactId>

@@ -31,18 +31,11 @@ import org.apache.servicemix.nmr.api.Message;
 import org.apache.servicemix.nmr.api.Pattern;
 import org.apache.servicemix.nmr.api.Status;
 import org.apache.servicemix.nmr.api.Type;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import org.junit.Test;
+import junit.framework.TestCase;
 
 
-public class ExchangeImplTest {
+public class ExchangeImplTest extends TestCase {
 
-    @Test
     public void testWrite() throws Exception {
         Exchange e = new ExchangeImpl(Pattern.InOnly);
         e.setOperation(new QName("op"));
@@ -69,7 +62,6 @@ public class ExchangeImplTest {
         assertNotNull(cpy.getIn().getAttachment("id"));
     }
 
-    @Test
     public void testConvertWithoutCamel() throws Exception {
         final URLClassLoader c = (URLClassLoader) getClass().getClassLoader();
         ClassLoader cl = new URLClassLoader(c.getURLs(), null) {
@@ -89,7 +81,6 @@ public class ExchangeImplTest {
         assertNull(e.getProperty("key", byte[].class));
     }
 
-    @Test
     public void testCopy() {
         Exchange e = new ExchangeImpl(Pattern.InOut);
         Exchange cpy = e.copy();
@@ -107,7 +98,6 @@ public class ExchangeImplTest {
         assertNotNull(cpy.getIn(false));
     }
 
-    @Test
     public void testMessages() {
         Exchange e = new ExchangeImpl(Pattern.InOut);
         assertNull(e.getMessage(Type.In, false));
@@ -127,7 +117,6 @@ public class ExchangeImplTest {
         e.setMessage(Type.Fault, null);
     }
 
-    @Test
     public void testError() {
         Exchange e = new ExchangeImpl(Pattern.InOnly);
         assertNull(e.getError());
@@ -137,7 +126,6 @@ public class ExchangeImplTest {
         assertEquals(Status.Error, e.getStatus());
     }
 
-    @Test
     public void testProperties() {
         Exchange e = new ExchangeImpl(Pattern.InOnly);
         assertNotNull(e.getProperties());
@@ -169,7 +157,6 @@ public class ExchangeImplTest {
         assertNotNull(e.getProperty("name"));
     }
 
-    @Test
     public void testDisplay() {
         Exchange e = new ExchangeImpl(Pattern.InOut);
         e.toString();
@@ -181,7 +168,6 @@ public class ExchangeImplTest {
         e.toString();
     }
 
-    @Test
     public void testLocks() {
         ExchangeImpl e = new ExchangeImpl(Pattern.InOut);
         assertNull(e.getConsumerLock(false));
@@ -190,7 +176,6 @@ public class ExchangeImplTest {
         assertNotNull(e.getProviderLock(true));
     }
 
-    @Test
 	public void testInOnly() {
 		Exchange e = new ExchangeImpl(Pattern.InOnly);
 		assertNotNull(e.getIn());
@@ -198,7 +183,6 @@ public class ExchangeImplTest {
 		assertNull(e.getFault());
 	}
 
-	@Test
 	public void testRobustInOnly() {
 		Exchange e = new ExchangeImpl(Pattern.RobustInOnly);
 		assertNotNull(e.getIn());
@@ -206,7 +190,6 @@ public class ExchangeImplTest {
 		assertNotNull(e.getFault());
 	}
 
-	@Test
 	public void testInOut() {
 		Exchange e = new ExchangeImpl(Pattern.InOut);
 		assertNotNull(e.getIn());
@@ -214,7 +197,6 @@ public class ExchangeImplTest {
 		assertNotNull(e.getFault());
 	}
 
-	@Test
 	public void testInOptionalOut() {
 		Exchange e = new ExchangeImpl(Pattern.InOptionalOut);
 		assertNotNull(e.getIn());

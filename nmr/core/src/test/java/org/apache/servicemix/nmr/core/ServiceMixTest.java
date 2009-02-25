@@ -17,15 +17,13 @@
 package org.apache.servicemix.nmr.core;
 
 import org.apache.servicemix.nmr.api.WireRegistry;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import junit.framework.TestCase;
 
 /**
  * Test cases for {@link ServiceMix}
  */
-public class ServiceMixTest {
+public class ServiceMixTest extends TestCase {
     
-    @Test
     public void testInit() {
         ServiceMix servicemix = new ServiceMix();
         servicemix.init();
@@ -35,7 +33,6 @@ public class ServiceMixTest {
         assertNotNull(servicemix.getWireRegistry());
     }
     
-    @Test
     public void testSetWireRegistry() {
         ServiceMix servicemix = new ServiceMix();
         WireRegistry registry = new WireRegistryImpl();

@@ -20,7 +20,6 @@ import java.util.Map;
 
 import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.Wire;
-import org.junit.Test;
 
 import junit.framework.TestCase;
 
@@ -29,7 +28,6 @@ import junit.framework.TestCase;
  */
 public class ServiceHelperTest extends TestCase {
        
-    @Test
     public void testCreateWire() throws Exception {
         Map<String, Object> from = ServiceHelper.createMap(Endpoint.SERVICE_NAME, "test:service",
                                                            Endpoint.ENDPOINT_NAME, "endpoint");
@@ -40,7 +38,6 @@ public class ServiceHelperTest extends TestCase {
         assertEquals(to, wire.getTo());
     }
 
-    @Test
     public void testEqualsHandleNull() throws Exception {
         Map<String, Object> map = ServiceHelper.createMap(Endpoint.SERVICE_NAME, "test:service",
                                                             Endpoint.ENDPOINT_NAME, "endpoint");
@@ -48,7 +45,6 @@ public class ServiceHelperTest extends TestCase {
         assertFalse("Should always return false when either one is null", ServiceHelper.equals(map, null));
     }
     
-    @Test
     public void testEqualsSameSize() throws Exception {
         Map<String, Object> first = ServiceHelper.createMap(Endpoint.SERVICE_NAME, "test:service",
                                                             Endpoint.ENDPOINT_NAME, "endpoint");
@@ -59,7 +55,6 @@ public class ServiceHelperTest extends TestCase {
         assertTrue("Maps with different sizes but the same values should match", ServiceHelper.matches(first, second));
     }
     
-    @Test
     public void testEqualsSameKeys() throws Exception {
         Map<String, Object> first = ServiceHelper.createMap(Endpoint.SERVICE_NAME, "test:service",
                                                             Endpoint.ENDPOINT_NAME, "endpoint");
@@ -69,7 +64,6 @@ public class ServiceHelperTest extends TestCase {
         assertFalse("Maps with different values shouldn't match", ServiceHelper.matches(first, second));
     }
 
-    @Test
     public void testEqualsSameValues() throws Exception {
         Map<String, Object> first = ServiceHelper.createMap(Endpoint.SERVICE_NAME, "test:service",
                                                             Endpoint.ENDPOINT_NAME, "endpoint");
@@ -78,7 +72,6 @@ public class ServiceHelperTest extends TestCase {
         assertFalse("Maps with different values for the same key shouldn't match", ServiceHelper.equals(first, second));
     }
     
-    @Test
     public void testEquals() throws Exception {
         Map<String, Object> first = ServiceHelper.createMap(Endpoint.SERVICE_NAME, "test:service",
                                                             Endpoint.ENDPOINT_NAME, "endpoint");
