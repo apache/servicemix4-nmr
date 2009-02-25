@@ -40,5 +40,15 @@ public interface ExchangeListener extends Listener {
      * @param exchange the delivered exchange
      */
     void exchangeDelivered(Exchange exchange);
+
+    /**
+     * Method called when an exchange resulted in an exception to be
+     * thrown and the exchange not delivered.  This can happen if no
+     * endpoint can be found for the target or if something else bad
+     * happen.
+     *
+     * @param exchange the exchange that failed
+     */
+    void exchangeFailed(Exchange exchange);
     
 }

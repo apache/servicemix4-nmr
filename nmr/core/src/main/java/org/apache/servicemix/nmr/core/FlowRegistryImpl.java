@@ -69,6 +69,7 @@ public class FlowRegistryImpl extends ServiceRegistryImpl<Flow> implements FlowR
         if (exchange.getRole() == Role.Consumer) {
             if (exchange.getDestination() == null) {
                 InternalReference target = (InternalReference) exchange.getTarget();
+                // TODO: possible NPE on target should be avoided
                 assert target != null;
                 boolean match = false;
                 boolean securityMatch = false;

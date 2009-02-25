@@ -110,6 +110,15 @@ public class AssemblyReferencesListener implements EndpointListener, ExchangeLis
         }
     }
 
+    public void exchangeFailed(Exchange exchange) {
+        if (exchange instanceof InternalExchange) {
+            InternalExchange ie = (InternalExchange) exchange;
+            // Decrement references to source and destination SA
+            unreference(endpoints.get(ie.getSource()));
+            unreference(endpoints.get(ie.getDestination()));
+        }
+    }
+
     public void waitFor(ServiceAssembly assembly) throws InterruptedException {
         if (assembly != null) {
             AtomicInteger count = references.get(assembly);

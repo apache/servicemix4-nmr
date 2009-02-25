@@ -58,6 +58,13 @@ public class ExchangeCompletedListener extends Assert implements ExchangeListene
         }
     }
 
+    public void exchangeFailed(Exchange exchange) {
+        synchronized (exchanges) {
+            exchanges.put(exchange.getId(), exchange);
+            exchanges.notifyAll();
+        }
+    }
+
     public void assertExchangeCompleted() throws Exception {
         long start = System.currentTimeMillis();
         Exchange active = null;

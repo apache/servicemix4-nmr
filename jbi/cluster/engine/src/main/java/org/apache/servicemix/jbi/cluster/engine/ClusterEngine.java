@@ -422,6 +422,9 @@ public class ClusterEngine extends ServiceRegistryImpl<ClusterRegistration>
     public void exchangeDelivered(Exchange exchange) {
     }
 
+    public void exchangeFailed(Exchange exchange) {
+    }
+
     public void invalidateSelector() {
         selector = null;
         if (pool != null) {

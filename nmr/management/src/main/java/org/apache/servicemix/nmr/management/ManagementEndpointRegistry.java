@@ -132,6 +132,9 @@ public class ManagementEndpointRegistry implements ExchangeListener, Initializin
         }
     }
 
+    public void exchangeFailed(Exchange exchange) {
+    }
+
     public void afterPropertiesSet() throws Exception {
         if (managementAgent == null) {
             throw new IllegalArgumentException("managementAgent must not be null");

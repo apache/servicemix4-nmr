@@ -17,7 +17,6 @@
 package org.apache.servicemix.nmr.core;
 
 import java.util.Map;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -33,7 +32,6 @@ import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.nmr.api.Pattern;
 import org.apache.servicemix.nmr.api.Role;
-import org.apache.servicemix.nmr.api.Status;
 import org.apache.servicemix.nmr.api.event.ExchangeListener;
 import org.apache.servicemix.nmr.api.internal.InternalChannel;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
@@ -129,8 +127,8 @@ public class ChannelImpl implements InternalChannel {
         InternalExchange e = (InternalExchange) exchange;
         Semaphore lock = e.getRole() == Role.Consumer ? e.getConsumerLock(true)
                 : e.getProviderLock(true);
+        dispatch(e);
         try {
-            dispatch(e);
             if (timeout > 0) {
                 if (!lock.tryAcquire(timeout, TimeUnit.MILLISECONDS)) {
                     throw new TimeoutException();
@@ -141,11 +139,15 @@ public class ChannelImpl implements InternalChannel {
             e.setRole(e.getRole() == Role.Consumer ? Role.Provider : Role.Consumer);
         } catch (InterruptedException ex) {
             exchange.setError(ex);
-            exchange.setStatus(Status.Error);
+            for (ExchangeListener l : nmr.getListenerRegistry().getListeners(ExchangeListener.class)) {
+                l.exchangeFailed(exchange);
+            }
             return false;
         } catch (TimeoutException ex) {
             exchange.setError(new AbortedException(ex));
-            exchange.setStatus(Status.Error);
+            for (ExchangeListener l : nmr.getListenerRegistry().getListeners(ExchangeListener.class)) {
+                l.exchangeFailed(exchange);
+            }
             return false;
         }
         return true;
@@ -183,6 +185,10 @@ public class ChannelImpl implements InternalChannel {
         Semaphore lock = exchange.getRole() == Role.Provider ? exchange.getConsumerLock(false)
                 : exchange.getProviderLock(false);
         if (lock != null) {
+            // Call listeners
+            for (ExchangeListener l : nmr.getListenerRegistry().getListeners(ExchangeListener.class)) {
+                l.exchangeDelivered(exchange);
+            }
             lock.release();
             return;
         }
@@ -253,6 +259,14 @@ public class ChannelImpl implements InternalChannel {
             l.exchangeSent(exchange);
         }
         // Dispatch in NMR
-        nmr.getFlowRegistry().dispatch(exchange);
+        try {
+            nmr.getFlowRegistry().dispatch(exchange);
+        } catch (RuntimeException t) {
+            exchange.setError(t);
+            for (ExchangeListener l : nmr.getListenerRegistry().getListeners(ExchangeListener.class)) {
+                l.exchangeFailed(exchange);
+            }
+            throw t;
+        }
     }
 }
