@@ -87,7 +87,6 @@
       <howl.version>1.0.1-1_1</howl.version>
       <jencks.version>2.1_1</jencks.version>
       <jline.version>0.9.94</jline.version>
-      <jmock.version>2.5.1</jmock.version>
       <junit.version>3.8.2_1</junit.version>
       <log4j.version>1.2.14</log4j.version>
       <pax.logging.version>1.1.1</pax.logging.version>
@@ -623,11 +622,6 @@
           <artifactId>apache-servicemix-kernel</artifactId>
           <version>${servicemix.kernel.version}</version>
           <type>tar.gz</type>
-      </dependency>
-      <dependency>
-          <groupId>org.jmock</groupId>
-          <artifactId>jmock</artifactId>
-          <version>${jmock.version}</version>
       </dependency>
       <dependency>
           <groupId>org.apache.geronimo.components</groupId>

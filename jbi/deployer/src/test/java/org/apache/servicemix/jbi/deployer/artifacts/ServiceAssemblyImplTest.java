@@ -16,6 +16,8 @@
  */
 package org.apache.servicemix.jbi.deployer.artifacts;
 
+import static org.easymock.EasyMock.*;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,8 +28,6 @@ import org.apache.servicemix.jbi.deployer.descriptor.DescriptorFactory;
 import org.apache.servicemix.jbi.deployer.descriptor.ServiceAssemblyDesc;
 import org.apache.servicemix.jbi.deployer.impl.AssemblyReferencesListener;
 import org.apache.servicemix.nmr.api.Wire;
-import org.jmock.Expectations;
-import org.jmock.Mockery;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.prefs.Preferences;
 import junit.framework.TestCase;
@@ -36,29 +36,22 @@ import junit.framework.TestCase;
  * Test cases for {@link ServiceAssemblyImpl}
  */
 public class ServiceAssemblyImplTest extends TestCase {
-    
-    private Mockery mockery;
-
-    public void setUp() {
-        mockery = new Mockery();
-    }
-    
+        
     public void testWiringOnServiceAssemblyConnections() throws Exception {
         ServiceAssemblyDesc descriptor = DescriptorFactory.buildDescriptor(DescriptorFactory.class.getResource("serviceAssembly.xml")).getServiceAssembly();
-        final Preferences prefs = mockery.mock(Preferences.class);
-        mockery.checking(new Expectations() {{
-            one(prefs).get("state", State.Shutdown.name());
-                will(returnValue(State.Shutdown.name()));
-            one(prefs).put("state", State.Started.name());
-            one(prefs).flush();
-            one(prefs).put("state", State.Stopped.name());
-            one(prefs).flush();
-        }});
+        final Preferences prefs = createMock(Preferences.class);
+        expect(prefs.get("state", State.Shutdown.name())).andReturn(State.Shutdown.name());
+        prefs.put("state", State.Started.name());
+        prefs.flush();
+        prefs.put("state", State.Stopped.name());
+        prefs.flush();
+        replay(prefs);
+
         final List<ServiceRegistration> wires = new LinkedList<ServiceRegistration>();
         ServiceAssembly sa = new ServiceAssemblyImpl(null, descriptor, new ArrayList<ServiceUnitImpl>(), prefs, new AssemblyReferencesListener(), false) {
             @Override
             protected ServiceRegistration registerWire(Wire wire) {
-                ServiceRegistration registration = mockery.mock(ServiceRegistration.class, wire.getFrom().toString());
+                ServiceRegistration registration = createMock(ServiceRegistration.class);
                 wires.add(registration);
                 return registration;
             }
@@ -68,11 +61,9 @@ public class ServiceAssemblyImplTest extends TestCase {
         
         // ServiceRegistrations should be unregistered when the SA is stopped
         for (final ServiceRegistration registration : wires) {
-            mockery.checking(new Expectations() {{
-                one(registration).unregister();
-            }});
+            registration.unregister();
+            replay(registration);
         }
         sa.stop();
-        mockery.assertIsSatisfied();
     }
 }
