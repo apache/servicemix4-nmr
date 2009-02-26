@@ -103,13 +103,15 @@ public class OSGiInitialContextFactoryBuilder implements InitialContextFactoryBu
             factory = factoryBuilder.createInitialContextFactory(env);
         }
         if (factory == null && env != null) {
-            String className = env != null ? (String) env.get(Context.INITIAL_CONTEXT_FACTORY) : null;
-            try {
-                factory = (InitialContextFactory) Class.forName(className).newInstance();
-            } catch (Exception e) {
-                NoInitialContextException ne = new NoInitialContextException("Cannot instantiate class: " + className);
-                ne.setRootCause(e);
-                throw ne;
+            String className = (String) env.get(Context.INITIAL_CONTEXT_FACTORY);
+            if (className != null) {
+                try {
+                    factory = (InitialContextFactory) Class.forName(className).newInstance();
+                } catch (Exception e) {
+                    NoInitialContextException ne = new NoInitialContextException("Cannot instantiate class: " + className);
+                    ne.setRootCause(e);
+                    throw ne;
+                }
             }
         }
         if (factory == null) {
