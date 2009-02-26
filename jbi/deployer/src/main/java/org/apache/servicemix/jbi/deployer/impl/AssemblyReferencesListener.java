@@ -85,7 +85,7 @@ public class AssemblyReferencesListener implements EndpointListener, ExchangeLis
             if (exchange instanceof InternalExchange) {
                 // Increment reference to the source SA
                 InternalExchange ie = (InternalExchange) exchange;
-                reference(endpoints.get(ie.getSource()));
+                reference(ie.getSource());
             }
         }
     }
@@ -96,8 +96,8 @@ public class AssemblyReferencesListener implements EndpointListener, ExchangeLis
             if (exchange instanceof InternalExchange) {
                 InternalExchange ie = (InternalExchange) exchange;
                 // Decrement references to source and destination SA
-                unreference(endpoints.get(ie.getSource()));
-                unreference(endpoints.get(ie.getDestination()));
+                unreference(ie.getSource());
+                unreference(ie.getDestination());
             }
             // Check if this is a new exchange
         } else if (exchange.getStatus() == Status.Active && exchange.getRole() == Role.Provider &&
@@ -105,7 +105,7 @@ public class AssemblyReferencesListener implements EndpointListener, ExchangeLis
             if (exchange instanceof InternalExchange) {
                 // Increment reference to the destination SA
                 InternalExchange ie = (InternalExchange) exchange;
-                reference(endpoints.get(ie.getDestination()));
+                reference(ie.getDestination());
             }
         }
     }
@@ -114,8 +114,8 @@ public class AssemblyReferencesListener implements EndpointListener, ExchangeLis
         if (exchange instanceof InternalExchange) {
             InternalExchange ie = (InternalExchange) exchange;
             // Decrement references to source and destination SA
-            unreference(endpoints.get(ie.getSource()));
-            unreference(endpoints.get(ie.getDestination()));
+            unreference(ie.getSource());
+            unreference(ie.getDestination());
         }
     }
 
@@ -131,6 +131,18 @@ public class AssemblyReferencesListener implements EndpointListener, ExchangeLis
                     }
                 }
             }
+        }
+    }
+
+    private void reference(InternalEndpoint endpoint) {
+        if (endpoint != null) {
+            reference(endpoints.get(endpoint));
+        }
+    }
+
+    private void unreference(InternalEndpoint endpoint) {
+        if (endpoint != null) {
+            unreference(endpoints.get(endpoint));
         }
     }
 
