@@ -21,8 +21,13 @@ import static org.easymock.EasyMock.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Collections;
+
+import javax.jbi.JBIException;
 
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
+import org.apache.servicemix.jbi.deployer.Component;
+import org.apache.servicemix.jbi.deployer.ServiceUnit;
 import org.apache.servicemix.jbi.deployer.artifacts.AbstractLifecycleJbiArtifact.State;
 import org.apache.servicemix.jbi.deployer.descriptor.DescriptorFactory;
 import org.apache.servicemix.jbi.deployer.descriptor.ServiceAssemblyDesc;
@@ -36,7 +41,27 @@ import junit.framework.TestCase;
  * Test cases for {@link ServiceAssemblyImpl}
  */
 public class ServiceAssemblyImplTest extends TestCase {
+
+    public void testStartAssemblyWithStoppedComponents() throws Exception {
+        ServiceAssemblyDesc descriptor = DescriptorFactory.buildDescriptor(DescriptorFactory.class.getResource("serviceAssembly.xml")).getServiceAssembly();
+        final Preferences prefs = createMock(Preferences.class);
+        expect(prefs.get("state", State.Shutdown.name())).andReturn(State.Shutdown.name()).anyTimes();
+        replay(prefs);
+
+        ComponentImpl comp = new ComponentImpl(null, null, null, prefs, false, null, null);
+        comp.state = State.Shutdown;
+        ServiceUnitImpl su = new ServiceUnitImpl(descriptor.getServiceUnits()[0], null, comp);
+        ServiceAssemblyImpl sa = new ServiceAssemblyImpl(null, descriptor, Collections.singletonList(su), prefs, new AssemblyReferencesListener(), false);
+        sa.state = State.Shutdown;
         
+        try {
+            sa.start();
+            fail("Exception should have been thrown");
+        } catch (JBIException e) {
+            // ok
+        }
+    }
+    
     public void testWiringOnServiceAssemblyConnections() throws Exception {
         ServiceAssemblyDesc descriptor = DescriptorFactory.buildDescriptor(DescriptorFactory.class.getResource("serviceAssembly.xml")).getServiceAssembly();
         final Preferences prefs = createMock(Preferences.class);
