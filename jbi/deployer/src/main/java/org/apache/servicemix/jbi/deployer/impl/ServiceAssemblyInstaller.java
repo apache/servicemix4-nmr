@@ -30,6 +30,7 @@ import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
 import org.apache.servicemix.jbi.deployer.artifacts.ComponentImpl;
 import org.apache.servicemix.jbi.deployer.artifacts.ServiceUnitImpl;
+import org.apache.servicemix.jbi.deployer.artifacts.ServiceAssemblyImpl;
 import org.apache.servicemix.jbi.deployer.descriptor.Descriptor;
 import org.apache.servicemix.jbi.deployer.descriptor.ServiceUnitDesc;
 import org.apache.servicemix.jbi.deployer.utils.FileUtil;
@@ -78,7 +79,7 @@ public class ServiceAssemblyInstaller extends AbstractInstaller {
     }
 
     public void stop(boolean force) throws Exception {
-        ServiceAssembly assembly = deployer.getServiceAssembly(getName());
+        ServiceAssemblyImpl assembly = deployer.getServiceAssembly(getName());
         if (assembly == null && !force) {
             throw ManagementSupport.failure("undeployServiceAssembly", "ServiceAssembly '" + getName() + "' is not deployed.");
         }
@@ -88,10 +89,10 @@ public class ServiceAssemblyInstaller extends AbstractInstaller {
                 throw ManagementSupport.failure("undeployServiceAssembly", "ServiceAssembly '" + getName() + "' is not shut down.");
             }
             if (LifeCycleMBean.STARTED.equals(assembly.getCurrentState())) {
-                assembly.stop();
+                assembly.stop(false);
             }
             if (LifeCycleMBean.STOPPED.equals(assembly.getCurrentState())) {
-                assembly.shutDown();
+                assembly.shutDown(false, force);
             }
         }
     }
@@ -125,15 +126,16 @@ public class ServiceAssemblyInstaller extends AbstractInstaller {
     protected List<ServiceUnitImpl> deploySUs() throws Exception {
         // Create the SA directory
         File saDir = new File(installRoot.getParent(), "sus");
-        FileUtil.deleteFile(saDir);
-        FileUtil.buildDirectory(saDir);
+        if (isModified) {
+            FileUtil.deleteFile(saDir);
+            FileUtil.buildDirectory(saDir);
+        }
         // Iterate each SU and deploy it
         List<ServiceUnitImpl> sus = new ArrayList<ServiceUnitImpl>();
         Exception failure = null;
         for (ServiceUnitDesc sud : descriptor.getServiceAssembly().getServiceUnits()) {
             // Create directory for this SU
             File suRootDir = new File(saDir, sud.getIdentification().getName());
-            suRootDir.mkdirs();
             // Unpack it
             String zip = sud.getTarget().getArtifactsZip();
             URL zipUrl = bundle.getResource(zip);
