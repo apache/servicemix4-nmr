@@ -48,8 +48,8 @@
         <!-- Put this dependency before the following one to avoid a classloader problem
              when running junit tests -->
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.framework</artifactId>
+            <groupId>org.apache.servicemix.kernel</groupId>
+            <artifactId>org.apache.servicemix.kernel.main</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
