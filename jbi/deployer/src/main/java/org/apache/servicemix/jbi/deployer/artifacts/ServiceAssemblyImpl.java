@@ -23,9 +23,11 @@ import java.util.List;
 import java.util.Map;
 
 import javax.jbi.JBIException;
+import javax.jbi.management.LifeCycleMBean;
 
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
+import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.descriptor.Connection;
 import org.apache.servicemix.jbi.deployer.descriptor.DescriptorFactory;
 import org.apache.servicemix.jbi.deployer.descriptor.ServiceAssemblyDesc;
@@ -113,6 +115,7 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
     }
 
     public synchronized void init() throws JBIException {
+        checkComponentsStarted();
         listener.setAssembly(this);
         try {
             if (runningState == State.Started) {
@@ -133,6 +136,7 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
     }
 
     public synchronized void start(boolean persist) throws JBIException {
+        checkComponentsStarted();
         listener.setAssembly(this);
         try {
             if (state == State.Started) {
@@ -209,6 +213,21 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
         } finally {
             listener.setAssembly(null);
             listener.forget(this);
+        }
+    }
+
+    protected void checkComponentsStarted() throws JBIException {
+        StringBuilder sb = new StringBuilder();
+        for (ServiceUnitImpl su : serviceUnits) {
+            if (!LifeCycleMBean.STARTED.equals(su.getComponent().getCurrentState())) {
+                if (sb.length() > 0) {
+                    sb.append(", ");
+                }
+                sb.append(su.getComponentName());
+            }
+        }
+        if (sb.length() > 0) {
+            throw new JBIException("Components are not started: " + sb.toString());
         }
     }
 
