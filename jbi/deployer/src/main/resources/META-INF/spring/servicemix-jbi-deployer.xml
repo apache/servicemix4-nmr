@@ -90,7 +90,7 @@
 
 
     <!-- Expose management service in OSGi -->
-    <osgi:service ref="adminCommandsService" interface="org.apache.servicemix.jbi.deployer.AdminCommands" />
+    <osgi:service ref="adminCommandsService" interface="org.apache.servicemix.jbi.deployer.AdminCommandsService" />
 
     <!-- Environment -->
     <bean id="environment" class="org.apache.servicemix.jbi.runtime.impl.EnvironmentImpl">

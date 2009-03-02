@@ -29,7 +29,7 @@ import org.apache.servicemix.jbi.deployer.Component;
  */
 public class AdminService implements AdminServiceMBean {
 
-    public static final String DEFAULT_NAME = "ServiceMix4";
+    public static final String DEFAULT_NAME = "ServiceMix";
 
     public static final String DEFAULT_DOMAIN = "org.apache.servicemix";
 

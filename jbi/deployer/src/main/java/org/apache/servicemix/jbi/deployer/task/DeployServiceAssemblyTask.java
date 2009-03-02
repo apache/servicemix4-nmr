@@ -18,7 +18,7 @@ package org.apache.servicemix.jbi.deployer.task;
 
 import java.io.File;
 
-import org.apache.servicemix.jbi.deployer.AdminCommands;
+import org.apache.servicemix.jbi.deployer.AdminCommandsService;
 import org.apache.tools.ant.BuildException;
 
 /**
@@ -59,7 +59,7 @@ public class DeployServiceAssemblyTask extends JbiTask {
      *
      * @throws BuildException
      */
-    public void doExecute(AdminCommands acs) throws Exception {
+    public void doExecute(AdminCommandsService acs) throws Exception {
         if (file == null) {
             throw new BuildException("null file - file should be an archive");
         }

@@ -21,7 +21,7 @@ import java.util.Properties;
 /**
  * Provides a simple interface to access ServiceMix administration commands.
  */
-public interface AdminCommands {
+public interface AdminCommandsService {
 
     String installComponent(String file, Properties properties, boolean deferException) throws Exception;
 
@@ -49,6 +49,7 @@ public interface AdminCommands {
 
     String listComponents(boolean excludeSEs,
                           boolean excludeBCs,
+                          boolean excludePojos,
                           String requiredState,
                           String sharedLibraryName,
                           String serviceAssemblyName) throws Exception;

@@ -16,7 +16,7 @@
  */
 package org.apache.servicemix.jbi.deployer.task;
 
-import org.apache.servicemix.jbi.deployer.AdminCommands;
+import org.apache.servicemix.jbi.deployer.AdminCommandsService;
 import org.apache.tools.ant.BuildException;
 
 /**
@@ -47,7 +47,7 @@ public class StartServiceAssemblyTask extends JbiTask {
      *
      * @throws BuildException
      */
-    public void doExecute(AdminCommands acs) throws Exception {
+    public void doExecute(AdminCommandsService acs) throws Exception {
         if (name == null) {
             throw new BuildException("null service assembly name");
         }

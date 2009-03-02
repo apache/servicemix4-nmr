@@ -29,7 +29,7 @@ public interface NamingStrategy {
 
     ObjectName getObjectName(ServiceAssembly serviceAssembly) throws MalformedObjectNameException;
 
-    ObjectName getObjectName(AdminCommands adminCommandsService) throws MalformedObjectNameException;
+    ObjectName getObjectName(AdminCommandsService adminCommandsService) throws MalformedObjectNameException;
 
     ObjectName createCustomComponentMBeanName(String type, String name);
 

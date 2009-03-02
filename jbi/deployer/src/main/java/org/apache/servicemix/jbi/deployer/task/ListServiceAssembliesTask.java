@@ -16,7 +16,7 @@
  */
 package org.apache.servicemix.jbi.deployer.task;
 
-import org.apache.servicemix.jbi.deployer.AdminCommands;
+import org.apache.servicemix.jbi.deployer.AdminCommandsService;
 import org.apache.tools.ant.Project;
 
 /**
@@ -95,7 +95,7 @@ public class ListServiceAssembliesTask extends JbiTask {
      *
      * @throws BuildException
      */
-    public void doExecute(AdminCommands acs) throws Exception {
+    public void doExecute(AdminCommandsService acs) throws Exception {
         String result = acs.listServiceAssemblies(getState(), getComponentName(), getServiceAssemblyName());
         if (xmlOutput != null) {
             getProject().setProperty(xmlOutput, result);

@@ -26,7 +26,7 @@ import java.util.Set;
 import javax.jbi.management.LifeCycleMBean;
 import javax.management.StandardMBean;
 
-import org.apache.servicemix.jbi.deployer.AdminCommands;
+import org.apache.servicemix.jbi.deployer.AdminCommandsService;
 import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
@@ -36,7 +36,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.StringUtils;
 
-public class AdminCommandsImpl implements AdminCommands, InitializingBean, DisposableBean {
+public class AdminCommandsImpl implements AdminCommandsService, InitializingBean, DisposableBean {
 
     private Deployer deployer;
     private InstallationService installationService;
@@ -53,7 +53,7 @@ public class AdminCommandsImpl implements AdminCommands, InitializingBean, Dispo
     public String installComponent(String file, Properties props, boolean deferException) throws Exception {
         // TODO: handle deferException
         try {
-            getInstallationService().install(file, props, false);
+            getInstallationService().install(file, props, true);
             return ManagementSupport.createSuccessMessage("installComponent", file);
         } catch (Exception e) {
             throw ManagementSupport.failure("installComponent", file, e);
@@ -176,7 +176,7 @@ public class AdminCommandsImpl implements AdminCommands, InitializingBean, Dispo
     public String deployServiceAssembly(String file, boolean deferException) throws Exception {
         // TODO: handle deferException
         try {
-            return deploymentService.deploy(file);
+            return deploymentService.deploy(file, true);
         } catch (Throwable e) {
             throw ManagementSupport.failure("deployServiceAssembly", file, e);
         }
@@ -274,7 +274,7 @@ public class AdminCommandsImpl implements AdminCommands, InitializingBean, Dispo
      * @param serviceAssemblyName
      * @return list of components in an XML blob
      */
-    public String listComponents(boolean excludeSEs, boolean excludeBCs, String requiredState,
+    public String listComponents(boolean excludeSEs, boolean excludeBCs, boolean excludePojos, String requiredState,
                                  String sharedLibraryName, String serviceAssemblyName) throws Exception {
         //validate requiredState
         if (requiredState != null && requiredState.length() > 0
@@ -445,7 +445,7 @@ public class AdminCommandsImpl implements AdminCommands, InitializingBean, Dispo
     }
 
     public void afterPropertiesSet() throws Exception {
-        deployer.getManagementAgent().register(new StandardMBean(this, AdminCommands.class),
+        deployer.getManagementAgent().register(new StandardMBean(this, AdminCommandsService.class),
                                                deployer.getNamingStrategy().getObjectName(this));
     }
 

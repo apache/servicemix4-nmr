@@ -61,6 +61,10 @@ public class DeploymentService implements DeploymentServiceMBean, BundleContextA
     }
 
     public String deploy(String saZipURL) throws Exception {
+        return deploy(saZipURL, false);
+    }
+
+    public String deploy(String saZipURL, boolean autoStart) throws Exception {
         try {
             if (saZipURL == null) {
                 throw ManagementSupport.failure("deploy", "saZipURL must not be null");
@@ -85,7 +89,7 @@ public class DeploymentService implements DeploymentServiceMBean, BundleContextA
                 checkSus(sa.getServiceUnits());
                 String name = sa.getIdentification().getName();
                 LOG.info("Deploy ServiceAssembly " + name);
-                ServiceAssemblyInstaller installer = new ServiceAssemblyInstaller(deployer, root, jarfile, false);
+                ServiceAssemblyInstaller installer = new ServiceAssemblyInstaller(deployer, root, jarfile, autoStart);
                 installer.installBundle();
                 installer.init();
                 installer.install();

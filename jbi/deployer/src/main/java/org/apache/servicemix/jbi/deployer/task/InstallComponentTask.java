@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 
-import org.apache.servicemix.jbi.deployer.AdminCommands;
+import org.apache.servicemix.jbi.deployer.AdminCommandsService;
 import org.apache.tools.ant.BuildException;
 
 /**
@@ -86,7 +86,7 @@ public class InstallComponentTask extends JbiTask {
      *
      * @throws BuildException
      */
-    public void doExecute(AdminCommands acs) throws Exception {
+    public void doExecute(AdminCommandsService acs) throws Exception {
         if (file == null) {
             throw new BuildException("null file - file should be an archive");
         }

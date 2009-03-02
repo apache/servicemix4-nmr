@@ -16,7 +16,7 @@
  */
 package org.apache.servicemix.jbi.deployer.task;
 
-import org.apache.servicemix.jbi.deployer.AdminCommands;
+import org.apache.servicemix.jbi.deployer.AdminCommandsService;
 import org.apache.tools.ant.Project;
 
 /**
@@ -111,8 +111,8 @@ public class ListBindingComponentsTask extends JbiTask {
      *
      * @throws BuildException
      */
-    public void doExecute(AdminCommands acs) throws Exception {
-        String result = acs.listComponents(true, false, getState(), getSharedLibraryName(), getServiceAssemblyName());
+    public void doExecute(AdminCommandsService acs) throws Exception {
+        String result = acs.listComponents(true, false, false, getState(), getSharedLibraryName(), getServiceAssemblyName());
         if (xmlOutput != null) {
             getProject().setProperty(xmlOutput, result);
         }

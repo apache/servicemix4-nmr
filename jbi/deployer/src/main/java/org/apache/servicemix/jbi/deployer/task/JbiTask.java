@@ -27,7 +27,7 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
-import org.apache.servicemix.jbi.deployer.AdminCommands;
+import org.apache.servicemix.jbi.deployer.AdminCommandsService;
 import org.apache.servicemix.jbi.deployer.impl.AdminService;
 import org.apache.servicemix.jbi.deployer.impl.DefaultNamingStrategy;
 import org.apache.tools.ant.BuildException;
@@ -115,12 +115,12 @@ public abstract class JbiTask extends Task {
      * @return the main administration service MBean
      * @throws IOException
      */
-    public AdminCommands getAdminCommandsService() throws IOException {
+    public AdminCommandsService getAdminCommandsService() throws IOException {
         ObjectName objectName = DefaultNamingStrategy.getSystemObjectName(jmxDomainName, containerName,
-                AdminCommands.class);
-        return (AdminCommands) MBeanServerInvocationHandler.newProxyInstance(
+                AdminCommandsService.class);
+        return (AdminCommandsService) MBeanServerInvocationHandler.newProxyInstance(
                 jmxConnector.getMBeanServerConnection(), objectName,
-                AdminCommands.class, true);
+                AdminCommandsService.class, true);
     }
 
     /**
@@ -255,7 +255,7 @@ public abstract class JbiTask extends Task {
      * @throws BuildException
      */
     public void execute() throws BuildException {
-        AdminCommands acs;
+        AdminCommandsService acs;
         try {
             log("Retrieving remote admin interface", Project.MSG_DEBUG);
             connect();
@@ -281,6 +281,6 @@ public abstract class JbiTask extends Task {
         }
     }
 
-    protected abstract void doExecute(AdminCommands acs) throws Exception;
+    protected abstract void doExecute(AdminCommandsService acs) throws Exception;
 
 }

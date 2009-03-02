@@ -16,10 +16,8 @@
  */
 package org.apache.servicemix.jbi.itests;
 
-import javax.jbi.management.DeploymentException;
-
 import org.apache.servicemix.kernel.testing.support.AbstractIntegrationTest;
-import org.apache.servicemix.jbi.deployer.AdminCommands;
+import org.apache.servicemix.jbi.deployer.AdminCommandsService;
 
 public class ManagementTest extends AbstractIntegrationTest {
 
@@ -85,7 +83,7 @@ public class ManagementTest extends AbstractIntegrationTest {
                                             getBundleVersion("org.apache.servicemix.samples.wsdl-first", "wsdl-first-sa"),
                                             null, "zip").getPath();
 
-        AdminCommands admin = getAdminCommands();
+        AdminCommandsService admin = getAdminCommands();
 
         try {
             String res = admin.installComponent(smxJsr181, null, false);
@@ -135,8 +133,8 @@ public class ManagementTest extends AbstractIntegrationTest {
         System.err.println(admin.uninstallSharedLibrary("servicemix-shared"));
     }
 
-    protected AdminCommands getAdminCommands() {
-        return getOsgiService(AdminCommands.class);
+    protected AdminCommandsService getAdminCommands() {
+        return getOsgiService(AdminCommandsService.class);
     }
 
 }

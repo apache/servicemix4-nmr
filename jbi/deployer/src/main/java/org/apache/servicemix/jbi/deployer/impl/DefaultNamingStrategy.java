@@ -24,7 +24,7 @@ import javax.management.ObjectName;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.servicemix.jbi.deployer.AdminCommands;
+import org.apache.servicemix.jbi.deployer.AdminCommandsService;
 import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.NamingStrategy;
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
@@ -67,8 +67,8 @@ public class DefaultNamingStrategy implements NamingStrategy {
                 "Name=" + sanitize(serviceAssembly.getName()));
     }
 
-    public ObjectName getObjectName(AdminCommands adminCommandsService) throws MalformedObjectNameException {
-        return getSystemObjectName(jmxDomainName, AdminService.DEFAULT_NAME, AdminCommands.class);
+    public ObjectName getObjectName(AdminCommandsService adminCommandsService) throws MalformedObjectNameException {
+        return getSystemObjectName(jmxDomainName, AdminService.DEFAULT_NAME, AdminCommandsService.class);
     }
 
 
