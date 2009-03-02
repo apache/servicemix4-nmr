@@ -128,7 +128,9 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
                     throw new DeploymentException("Component is already installed");
                 }
                 initBootstrap();
-                bootstrap.onInstall();
+                if (bootstrap != null) {
+                    bootstrap.onInstall();
+                }
                 try {
                     ObjectName name = initComponent();
                     cleanUpBootstrap();
