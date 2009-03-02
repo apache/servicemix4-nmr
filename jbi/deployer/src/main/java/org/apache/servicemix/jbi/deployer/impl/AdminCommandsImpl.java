@@ -53,7 +53,7 @@ public class AdminCommandsImpl implements AdminCommandsService, InitializingBean
     public String installComponent(String file, Properties props, boolean deferException) throws Exception {
         // TODO: handle deferException
         try {
-            getInstallationService().install(file, props, true);
+            getInstallationService().install(file, props, deferException);
             return ManagementSupport.createSuccessMessage("installComponent", file);
         } catch (Exception e) {
             throw ManagementSupport.failure("installComponent", file, e);
@@ -176,7 +176,7 @@ public class AdminCommandsImpl implements AdminCommandsService, InitializingBean
     public String deployServiceAssembly(String file, boolean deferException) throws Exception {
         // TODO: handle deferException
         try {
-            return deploymentService.deploy(file, true);
+            return deploymentService.deploy(file, deferException);
         } catch (Throwable e) {
             throw ManagementSupport.failure("deployServiceAssembly", file, e);
         }
