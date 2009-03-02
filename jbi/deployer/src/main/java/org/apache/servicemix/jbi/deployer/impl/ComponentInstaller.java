@@ -56,6 +56,7 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
     private ObjectName extensionMBeanName;
     private boolean initialized;
     private Bootstrap bootstrap;
+    private javax.jbi.component.Component innerComponent;
 
 
     public ComponentInstaller(Deployer deployer, Descriptor descriptor, File jbiArtifact, boolean autoStart) throws Exception {
@@ -88,6 +89,14 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
         return descriptor.getComponent().getIdentification().getName();
     }
 
+    public javax.jbi.component.Component getInnerComponent() {
+        return innerComponent;
+    }
+
+    public void setInnerComponent(javax.jbi.component.Component innerComponent) {
+        this.innerComponent = innerComponent;
+    }
+
     public void init() throws Exception {
         // Check requirements
         if (descriptor.getComponent().getSharedLibraries() != null) {
@@ -114,10 +123,10 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
      */
     public ObjectName install() throws JBIException {
         try {
-            if (isInstalled()) {
-                throw new DeploymentException("Component is already installed");
-            }
             if (isModified) {
+                if (isInstalled()) {
+                    throw new DeploymentException("Component is already installed");
+                }
                 initBootstrap();
                 bootstrap.onInstall();
                 try {
@@ -186,22 +195,24 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
         // Shutdown component
         stop(force);
         // Retrieve component
-        Component comp = deployer.getComponent(getName());
+        ComponentImpl comp = deployer.getComponent(getName());
         if (comp == null && !force) {
             throw ManagementSupport.failure("uninstallComponent", "Component '" + getName() + "' is not installed.");
         }
         // TODO: if there is any SA deployed onto this component, undeploy the SA and put it in a pending state
         // Bootstrap stuff
-        try {
-            initBootstrap();
-            bootstrap.init(this.installationContext);
-            bootstrap.getExtensionMBeanName();
-            bootstrap.onUninstall();
-            cleanUpBootstrap();
-            installationContext.setInstall(true);
-        } catch (Exception e) {
-            cleanUpBootstrap();
-            throw e;
+        if (hasBootstrap()) {
+            try {
+                initBootstrap();
+                bootstrap.init(this.installationContext);
+                bootstrap.getExtensionMBeanName();
+                bootstrap.onUninstall();
+                cleanUpBootstrap();
+                installationContext.setInstall(true);
+            } catch (Exception e) {
+                cleanUpBootstrap();
+                throw e;
+            }
         }
         // Unregister component
         deployer.unregisterComponent(comp);
@@ -283,6 +294,9 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
     }
 
     private void initBootstrap() throws DeploymentException {
+        if (!hasBootstrap()) {
+            return;
+        }
         try {
             if (!initialized) {
                 // Unregister a previously registered extension mbean,
@@ -315,17 +329,24 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
     }
 
     protected void cleanUpBootstrap() throws DeploymentException {
-        ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
-        try {
-            Thread.currentThread().setContextClassLoader(bootstrap.getClass().getClassLoader());
-            bootstrap.cleanUp();
-        } catch (JBIException e) {
-            LOGGER.error("Could not initialize bootstrap", e);
-            throw new DeploymentException(e);
-        } finally {
-            initialized = false;
-            Thread.currentThread().setContextClassLoader(oldCl);
+        if (bootstrap != null) {
+            ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
+            try {
+                Thread.currentThread().setContextClassLoader(bootstrap.getClass().getClassLoader());
+                bootstrap.cleanUp();
+            } catch (JBIException e) {
+                LOGGER.error("Could not initialize bootstrap", e);
+                throw new DeploymentException(e);
+            } finally {
+                initialized = false;
+                Thread.currentThread().setContextClassLoader(oldCl);
+            }
         }
+    }
+
+    private boolean hasBootstrap() {
+        ComponentDesc descriptor = installationContext.getDescriptor();
+        return descriptor.getBootstrapClassName() != null;
     }
 
     private Bootstrap createBootstrap() throws DeploymentException {
@@ -356,36 +377,38 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
     }
 
     private ObjectName initComponent() throws Exception {
-        ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
-        try {
-            ComponentDesc componentDesc = installationContext.getDescriptor();
-            List<SharedLibrary> libs = new ArrayList<SharedLibrary>();
-            if (componentDesc.getSharedLibraries() != null) {
-                for (SharedLibraryList sll : componentDesc.getSharedLibraries()) {
-                    SharedLibrary lib = deployer.getSharedLibrary(sll.getName());
-                    if (lib == null) {
-                        // TODO: throw exception here ?
-                    } else {
-                        libs.add(lib);
-                    }
+        ComponentDesc componentDesc = installationContext.getDescriptor();
+        List<SharedLibrary> libs = new ArrayList<SharedLibrary>();
+        if (componentDesc.getSharedLibraries() != null) {
+            for (SharedLibraryList sll : componentDesc.getSharedLibraries()) {
+                SharedLibrary lib = deployer.getSharedLibrary(sll.getName());
+                if (lib == null) {
+                    // TODO: throw exception here ?
+                } else {
+                    libs.add(lib);
                 }
             }
-            SharedLibrary[] aLibs = libs.toArray(new SharedLibrary[libs.size()]);
+        }
+        SharedLibrary[] aLibs = libs.toArray(new SharedLibrary[libs.size()]);
 
+        if (innerComponent == null) {
             ClassLoader classLoader = createClassLoader(
                     getBundle(),
                     componentDesc.getIdentification().getName(),
                     (String[]) installationContext.getClassPathElements().toArray(new String[installationContext.getClassPathElements().size()]),
                     componentDesc.isComponentClassLoaderDelegationParentFirst(),
                     aLibs);
-            Thread.currentThread().setContextClassLoader(classLoader);
-            Class clazz = classLoader.loadClass(componentDesc.getComponentClassName());
-            javax.jbi.component.Component innerComponent = (javax.jbi.component.Component) clazz.newInstance();
-            Component component = deployer.registerComponent(getBundle(), componentDesc, innerComponent, aLibs);
-            return deployer.getNamingStrategy().getObjectName(component);
-        } finally {
-            Thread.currentThread().setContextClassLoader(oldCl);
+            ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
+            try {
+                Thread.currentThread().setContextClassLoader(classLoader);
+                Class clazz = classLoader.loadClass(componentDesc.getComponentClassName());
+                innerComponent = (javax.jbi.component.Component) clazz.newInstance();
+            } finally {
+                Thread.currentThread().setContextClassLoader(oldCl);
+            }
         }
+        Component component = deployer.registerComponent(getBundle(), componentDesc, innerComponent, aLibs);
+        return deployer.getNamingStrategy().getObjectName(component);
     }
 
     public void configure(Properties props) throws Exception {

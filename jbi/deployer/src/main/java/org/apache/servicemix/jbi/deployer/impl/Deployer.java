@@ -37,11 +37,15 @@ import org.apache.servicemix.jbi.deployer.DeployedAssembly;
 import org.apache.servicemix.jbi.deployer.NamingStrategy;
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.SharedLibrary;
+import org.apache.servicemix.jbi.deployer.ServiceUnit;
+import org.apache.servicemix.jbi.deployer.events.LifeCycleListener;
+import org.apache.servicemix.jbi.deployer.events.LifeCycleEvent;
 import org.apache.servicemix.jbi.deployer.artifacts.AbstractLifecycleJbiArtifact;
 import org.apache.servicemix.jbi.deployer.artifacts.ComponentImpl;
 import org.apache.servicemix.jbi.deployer.artifacts.ServiceAssemblyImpl;
 import org.apache.servicemix.jbi.deployer.artifacts.ServiceUnitImpl;
 import org.apache.servicemix.jbi.deployer.artifacts.SharedLibraryImpl;
+import org.apache.servicemix.jbi.deployer.artifacts.AssemblyReferencesListener;
 import org.apache.servicemix.jbi.deployer.descriptor.ComponentDesc;
 import org.apache.servicemix.jbi.deployer.descriptor.Descriptor;
 import org.apache.servicemix.jbi.deployer.descriptor.DescriptorFactory;
@@ -52,6 +56,8 @@ import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryDesc;
 import org.apache.servicemix.jbi.deployer.descriptor.Target;
 import org.apache.servicemix.jbi.runtime.ComponentWrapper;
 import org.apache.servicemix.jbi.runtime.Environment;
+import org.apache.servicemix.nmr.api.event.ListenerRegistry;
+import org.apache.servicemix.nmr.core.ListenerRegistryImpl;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -69,7 +75,7 @@ import org.springframework.beans.factory.DisposableBean;
 /**
  * Deployer for JBI artifacts
  */
-public class Deployer implements BundleContextAware, InitializingBean, DisposableBean, SynchronousBundleListener {
+public class Deployer implements BundleContextAware, InitializingBean, DisposableBean, SynchronousBundleListener, LifeCycleListener {
 
     public static final String NAME = "NAME";
     public static final String TYPE = "TYPE";
@@ -93,7 +99,7 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
 
     private final Map<Bundle, List<ServiceRegistration>> services = new ConcurrentHashMap<Bundle, List<ServiceRegistration>>();
 
-    private final List<Bundle> pendingBundles = new ArrayList<Bundle>();
+    private final Set<AbstractInstaller> pendingInstallers = new HashSet<AbstractInstaller>();
 
     private File jbiRootDir;
 
@@ -112,17 +118,15 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
     private ManagementAgent managementAgent;
     private Environment environment;
 
-    private Runnable checkPendingBundlesCallback;
+    private ListenerRegistry listenerRegistry;
 
     public Deployer() throws JBIException {
-        checkPendingBundlesCallback = new Runnable() {
-            public void run() {
-                checkPendingBundles();
-            }
-        };
         // TODO: control that using properties
         jbiRootDir = new File(System.getProperty("servicemix.base"), "data/jbi");
         jbiRootDir.mkdirs();
+        // Create listener registry
+        listenerRegistry = new ListenerRegistryImpl();
+        listenerRegistry.register(this, null);
     }
 
     public BundleContext getBundleContext() {
@@ -309,28 +313,38 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
             try {
                 Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-                URL url = bundle.getResource(DescriptorFactory.DESCRIPTOR_FILE);
-                Descriptor descriptor = DescriptorFactory.buildDescriptor(url);
-                DescriptorFactory.checkDescriptor(descriptor);
-                if (descriptor.getSharedLibrary() != null) {
-                    LOGGER.info("Deploying bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' as a JBI shared library");
-                    installer = new SharedLibraryInstaller(this, descriptor, null, true);
-                } else if (descriptor.getComponent() != null) {
-                    LOGGER.info("Deploying bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' as a JBI component");
-                    installer = new ComponentInstaller(this, descriptor, null, true);
-                } else if (descriptor.getServiceAssembly() != null) {
-                    LOGGER.info("Deploying bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' as a JBI service assembly");
-                    installer = new ServiceAssemblyInstaller(this, descriptor, null, true);
-                } else {
-                    throw new IllegalStateException("Unrecognized JBI descriptor: " + url);
+
+                // Check if there is an already existing installer
+                // This is certainly the case when a bundle has been stopped and is restarted.
+                installer = installers.get(bundle);
+                if (installer == null) {
+                    URL url = bundle.getResource(DescriptorFactory.DESCRIPTOR_FILE);
+                    Descriptor descriptor = DescriptorFactory.buildDescriptor(url);
+                    DescriptorFactory.checkDescriptor(descriptor);
+                    if (descriptor.getSharedLibrary() != null) {
+                        LOGGER.info("Deploying bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' as a JBI shared library");
+                        installer = new SharedLibraryInstaller(this, descriptor, null, true);
+                    } else if (descriptor.getComponent() != null) {
+                        LOGGER.info("Deploying bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' as a JBI component");
+                        installer = new ComponentInstaller(this, descriptor, null, true);
+                    } else if (descriptor.getServiceAssembly() != null) {
+                        LOGGER.info("Deploying bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' as a JBI service assembly");
+                        installer = new ServiceAssemblyInstaller(this, descriptor, null, true);
+                    } else {
+                        throw new IllegalStateException("Unrecognized JBI descriptor: " + url);
+                    }
+                    installer.setBundle(bundle);
+                    installers.put(bundle, installer);
                 }
-                installer.setBundle(bundle);
-                installer.init();
-                installer.install();
-                installers.put(bundle, installer);
-            } catch (PendingException e) {
-                pendingBundles.add(e.getBundle());
-                LOGGER.warn("Requirements not met for JBI artifact in bundle " + OsgiStringUtils.nullSafeNameAndSymName(bundle) + ". Installation pending. " + e);
+
+                // TODO: handle the case where the bundle is restarted: i.e. the artifact is already installed
+                try {
+                    installer.init();
+                    installer.install();
+                } catch (PendingException e) {
+                    pendingInstallers.add(installer);
+                    LOGGER.warn("Requirements not met for JBI artifact in bundle " + OsgiStringUtils.nullSafeNameAndSymName(bundle) + ". Installation pending. " + e);
+                }
             } catch (Exception e) {
                 LOGGER.error("Error handling bundle start event", e);
             } finally {
@@ -357,17 +371,20 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
     protected void onBundleUninstalled(Bundle bundle) {
         AbstractInstaller installer = getJmxManaged();
         if (installer == null) {
-            installer = installers.get(bundle);
+            installer = installers.remove(bundle);
             if (installer != null) {
                 try {
+                    pendingInstallers.remove(installer);
                     installer.setUninstallFromOsgi(true);
                     installer.uninstall(true);
+
                 } catch (Exception e) {
                     LOGGER.warn("Error uninstalling JBI artifact", e);
                 }
             }
+        } else {
+            installers.remove(bundle);
         }
-        pendingBundles.remove(bundle);
     }
 
     public ServiceUnitImpl createServiceUnit(ServiceUnitDesc sud, File suRootDir, ComponentImpl component) {
@@ -385,30 +402,31 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
         registerService(bundle, SharedLibrary.class.getName(), sl, props);
         getManagementAgent().register(new StandardMBean(sl, SharedLibrary.class), getNamingStrategy().getObjectName(sl));
         // Check pending bundles
-        checkPendingBundles();
+        checkPendingInstallers();
         return sl;
     }
 
     public Component registerComponent(Bundle bundle, ComponentDesc componentDesc, javax.jbi.component.Component innerComponent, SharedLibrary[] sharedLibraries) throws Exception {
         String name = componentDesc.getIdentification().getName();
         Preferences prefs = preferencesService.getUserPreferences(name);
-        ComponentImpl component = new ComponentImpl(bundle, componentDesc, innerComponent, prefs, autoStart, checkPendingBundlesCallback, sharedLibraries);
+        ComponentImpl component = new ComponentImpl(bundle, componentDesc, innerComponent, prefs, autoStart, sharedLibraries);
+        component.setListenerRegistry(listenerRegistry);
         // populate props from the component meta-data
         Dictionary<String, String> props = new Hashtable<String, String>();
         props.put(NAME, name);
         props.put(TYPE, componentDesc.getType());
+        for (SharedLibrary lib : sharedLibraries) {
+            ((SharedLibraryImpl) lib).addComponent(component);
+        }
+        components.put(name, component);
         // register the component in the OSGi registry
         LOGGER.debug("Registering JBI component");
         registerService(bundle, new String[] { Component.class.getName(), ComponentWrapper.class.getName() },
                         component, props);
-        components.put(name, component);
         // Now, register the inner component
         registerService(bundle, javax.jbi.component.Component.class.getName(), innerComponent, props);
         getManagementAgent().register(new StandardMBean(component, Component.class),
                                       getNamingStrategy().getObjectName(component));
-        for (SharedLibrary lib : sharedLibraries) {
-            ((SharedLibraryImpl) lib).addComponent(component);
-        }
         return component;
     }
 
@@ -416,6 +434,7 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
         // Now create the SA and initialize it
         Preferences prefs = preferencesService.getUserPreferences(serviceAssemblyDesc.getIdentification().getName());
         ServiceAssemblyImpl sa = new ServiceAssemblyImpl(bundle, serviceAssemblyDesc, sus, prefs, endpointListener, autoStart);
+        sa.setListenerRegistry(listenerRegistry);
         sa.init();
         serviceAssemblies.put(sa.getName(), sa);
         // populate props from the component meta-data
@@ -428,8 +447,35 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
         return sa;
     }
 
-    protected void unregisterComponent(Component component) {
+    protected void unregisterComponent(ComponentImpl component) {
         if (component != null) {
+            try {
+                component.stop(false);
+                component.shutDown(false, true);
+                // TODO: Undeploy SAs and put their bundles in the pending state
+                // Undeploy SAs
+                Set<ServiceAssemblyImpl> sas = new HashSet<ServiceAssemblyImpl>();
+                for (ServiceUnit su : component.getServiceUnits()) {
+                    sas.add((ServiceAssemblyImpl) su.getServiceAssembly());
+                }
+                for (ServiceAssemblyImpl sa : sas) {
+                    Bundle bundle = sa.getBundle();
+                    ServiceAssemblyInstaller installer = (ServiceAssemblyInstaller) installers.get(bundle);
+                    if (installer != null) {
+                        try {
+                            installer.stop(true);
+                            unregisterServiceAssembly(sa);
+                            pendingAssemblies.remove(sa);
+                            pendingInstallers.add(installer);
+                        } catch (Exception e) {
+                            LOGGER.warn("Error uninstalling service assembly", e);
+                        }
+                    }
+                }
+                unregisterServices(component.getBundle());
+            } catch (JBIException e) {
+                LOGGER.warn("Error when shutting down component", e);
+            }
             for (SharedLibrary lib : component.getSharedLibraries()) {
                 ((SharedLibraryImpl) lib).removeComponent(component);
             }
@@ -437,14 +483,19 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
         }
     }
 
-    protected void unregisterServiceAssembly(ServiceAssembly assembly) {
+    protected void unregisterServiceAssembly(ServiceAssemblyImpl assembly) {
         if (assembly != null) {
             serviceAssemblies.remove(assembly.getName());
+            unregisterServices(assembly.getBundle());
+            for (ServiceUnitImpl su : assembly.getServiceUnitsList()) {
+                su.getComponentImpl().removeServiceUnit(su);
+            }
         }
     }
 
     protected void unregisterSharedLibrary(SharedLibrary library) {
         if (library != null) {
+            // TODO: shutdown all components
             sharedLibraries.remove(library.getName());
         }
     }
@@ -462,6 +513,79 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
         return null;
     }
 
+    //===============================================================================
+    //
+    //   Pending artifacts support
+    //
+    //===============================================================================
+
+    protected void checkPendingInstallers() {
+        if (!pendingInstallers.isEmpty()) {
+            final List<AbstractInstaller> pending = new ArrayList<AbstractInstaller>(pendingInstallers);
+            pendingInstallers.clear();
+            // Synchronous call because if using a separate thread
+            // we run into deadlocks
+            for (AbstractInstaller installer : pending) {
+                try {
+                    installer.init();
+                    installer.install();
+                    installers.put(installer.getBundle(), installer);
+                } catch (PendingException e) {
+                    pendingInstallers.add(installer);
+                } catch (Exception e) {
+                    LOGGER.warn("Error installing JBI artifact", e);
+                }
+            }
+        }
+    }
+
+    private Set<ServiceAssemblyImpl> pendingAssemblies = new HashSet<ServiceAssemblyImpl>();
+
+    protected void checkPendingAssemblies() {
+        List<ServiceAssemblyImpl> sas = new ArrayList<ServiceAssemblyImpl>(pendingAssemblies);
+        pendingAssemblies.clear();
+        for (ServiceAssemblyImpl sa : sas) {
+            try {
+                sa.init();
+            } catch (JBIException e) {
+                pendingAssemblies.add(sa);
+            }
+        }
+    }
+
+    public void lifeCycleChanged(LifeCycleEvent event) throws JBIException {
+        if (event.getLifeCycleMBean() instanceof ComponentImpl) {
+            ComponentImpl comp = (ComponentImpl) event.getLifeCycleMBean();
+            switch (event.getType()) {
+                case Stopping:
+                    if (comp.getState() == AbstractLifecycleJbiArtifact.State.Started) {
+                        // Stop deployed SAs
+                        for (ServiceAssemblyImpl sa : comp.getServiceAssemblies()) {
+                            if (sa.getState() == ServiceAssemblyImpl.State.Started) {
+                                sa.stop(false);
+                                pendingAssemblies.add(sa);
+                            }
+                        }
+                    }
+                    break;
+                case ShuttingDown:
+                    if (comp.getState() == AbstractLifecycleJbiArtifact.State.Stopped) {
+                        // Shutdown deployed SAs
+                        for (ServiceAssemblyImpl sa : comp.getServiceAssemblies()) {
+                            if (sa.getState() == ServiceAssemblyImpl.State.Stopped) {
+                                sa.shutDown(false, event.isForced());
+                                pendingAssemblies.add(sa);
+                            }
+                        }
+                    }
+                    break;
+                case Started:
+                    checkPendingInstallers();
+                    checkPendingAssemblies();
+                    break;
+            }
+        }
+    }
 
     //===============================================================================
     //
@@ -484,40 +608,46 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
         String name = (String) reference.getProperty(NAME);
         if (name != null && !components.containsKey(name)) {
             String type = (String) reference.getProperty(TYPE);
-            Preferences prefs = preferencesService.getUserPreferences(name);
+            Descriptor descriptor = new Descriptor();
             ComponentDesc componentDesc = new ComponentDesc();
             componentDesc.setIdentification(new Identification());
             componentDesc.getIdentification().setName(name);
             componentDesc.setType(type);
-            ComponentImpl wrapper = new ComponentImpl(reference.getBundle(), componentDesc, component, prefs, autoStart, checkPendingBundlesCallback, new SharedLibrary[0]);
-            wrappedComponents.put(name, true);
-            components.put(name, wrapper);
-            Dictionary<String, String> props = new Hashtable<String, String>();
-            props.put(NAME, name);
-            props.put(TYPE, componentDesc.getType());
-            registerService(reference.getBundle(), new String[] { Component.class.getName(), ComponentWrapper.class.getName() },
-                            wrapper, props);
+            descriptor.setComponent(componentDesc);
+
+            try {
+                ComponentInstaller installer = new ComponentInstaller(this, descriptor, null, autoStart);
+                installer.setBundle(reference.getBundle());
+                installer.setInnerComponent(component);
+                installer.init();
+                installer.install();
+                bundles.add(reference.getBundle());
+            } catch (Exception e) {
+                LOGGER.warn("Error registering deployed component", e);
+            }
+
+//            Preferences prefs = preferencesService.getUserPreferences(name);
+//            ComponentImpl wrapper = new ComponentImpl(reference.getBundle(), componentDesc, component, prefs, autoStart, new SharedLibrary[0]);
+//            wrapper.setListenerRegistry(listenerRegistry);
+//            wrappedComponents.put(name, true);
+//            components.put(name, wrapper);
+//            Dictionary<String, String> props = new Hashtable<String, String>();
+//            props.put(NAME, name);
+//            props.put(TYPE, componentDesc.getType());
+//            registerService(reference.getBundle(), new String[] { Component.class.getName(), ComponentWrapper.class.getName() },
+//                            wrapper, props);
         }
     }
 
     protected void unregisterDeployedComponent(ServiceReference reference, javax.jbi.component.Component component) {
         String name = (String) reference.getProperty(NAME);
-        if (name != null && Boolean.TRUE.equals(wrappedComponents.remove(name))) {
-            ComponentImpl ci = components.remove(name);
-            if (ci != null) {
-                try {
-                    ci.stop(false);
-                    ci.shutDown(false, false);
-                    pendingBundles.remove(reference.getBundle());
-                    unregisterServices(reference.getBundle());
-                } catch (JBIException e) {
-                    LOGGER.warn("Error when shutting down component", e);
-                }
-            }
+        if (name != null) {
+            wrappedComponents.remove(name);
+            unregisterComponent(getComponent(name));
         }
     }
 
-    public void registerDeployedServiceAssembly(ServiceReference serviceReference, DeployedAssembly assembly) {
+    public void registerDeployedServiceAssembly(ServiceReference reference, DeployedAssembly assembly) {
         try {
             assembly.deploy();
             ServiceAssemblyDesc desc = new ServiceAssemblyDesc();
@@ -533,13 +663,14 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
                 ServiceUnitImpl su = createServiceUnit(suDesc, null, components.get(unit.getValue()));
                 sus.add(su);
             }
-            registerServiceAssembly(serviceReference.getBundle(), desc, sus);
+            registerServiceAssembly(reference.getBundle(), desc, sus);
+            bundles.add(reference.getBundle());
         } catch (Exception e) {
             LOGGER.error("Error registering deployed service assembly", e);
         }
     }
 
-    public void unregisterDeployedServiceAssembly(ServiceReference serviceReference, DeployedAssembly assembly) {
+    public void unregisterDeployedServiceAssembly(ServiceReference reference, DeployedAssembly assembly) {
         // TODO: what to do here ? we should not uninstall the bundle as it's managed externally
         // TODO: but we should maybe stop / shut it down
         ServiceAssemblyImpl sa = getServiceAssembly(assembly.getName());
@@ -555,18 +686,6 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
                 LOGGER.error("Error unregistering deployed service assembly", e);
             } finally {
                 unregisterServiceAssembly(sa);
-            }
-        }
-    }
-
-    protected void checkPendingBundles() {
-        if (!pendingBundles.isEmpty()) {
-            final List<Bundle> pending = new ArrayList<Bundle>(pendingBundles);
-            pendingBundles.clear();
-            // Synchronous call because if using a separate thread
-            // we run into deadlocks
-            for (Bundle bundle : pending) {
-                onBundleStarted(bundle);
             }
         }
     }
@@ -610,6 +729,7 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
                 try {
                     reg.unregister();
                 } catch (IllegalStateException e) {
+                    // Ignore
                 }
             }
         }

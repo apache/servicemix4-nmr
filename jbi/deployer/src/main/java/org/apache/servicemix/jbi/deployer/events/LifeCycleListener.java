@@ -14,16 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicemix.nmr.api.event;
+package org.apache.servicemix.jbi.deployer.events;
 
-import java.util.EventListener;
+import javax.jbi.JBIException;
+
+import org.apache.servicemix.nmr.api.event.Listener;
 
 /**
- *
- * Marker interface for all listeners that can be registered.
- *
- * @version $Revision: $
- * @since 4.0
  */
-public interface Listener extends EventListener {
+public interface LifeCycleListener extends Listener {
+
+    void lifeCycleChanged(LifeCycleEvent event) throws JBIException;
+
 }

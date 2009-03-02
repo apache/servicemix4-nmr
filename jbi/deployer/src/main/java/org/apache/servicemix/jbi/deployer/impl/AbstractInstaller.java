@@ -39,8 +39,13 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
-import org.osgi.service.prefs.PreferencesService;
 
+/**
+ * Installers are used to controll the installation / deployment process of JBI artifacts
+ * and manage the installed OSGi bundle.
+ *
+ * TODO: refactor the use of installRoot and reuse the Deployer#jbiRootDir
+ */
 public abstract class AbstractInstaller {
 
     public static final String LAST_INSTALL = "jbi.deployer.install";

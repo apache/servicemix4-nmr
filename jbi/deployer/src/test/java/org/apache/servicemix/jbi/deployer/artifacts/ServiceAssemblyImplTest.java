@@ -26,12 +26,10 @@ import java.util.Collections;
 import javax.jbi.JBIException;
 
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
-import org.apache.servicemix.jbi.deployer.Component;
-import org.apache.servicemix.jbi.deployer.ServiceUnit;
 import org.apache.servicemix.jbi.deployer.artifacts.AbstractLifecycleJbiArtifact.State;
 import org.apache.servicemix.jbi.deployer.descriptor.DescriptorFactory;
 import org.apache.servicemix.jbi.deployer.descriptor.ServiceAssemblyDesc;
-import org.apache.servicemix.jbi.deployer.impl.AssemblyReferencesListener;
+import org.apache.servicemix.jbi.deployer.artifacts.AssemblyReferencesListener;
 import org.apache.servicemix.nmr.api.Wire;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.prefs.Preferences;
@@ -48,7 +46,7 @@ public class ServiceAssemblyImplTest extends TestCase {
         expect(prefs.get("state", State.Shutdown.name())).andReturn(State.Shutdown.name()).anyTimes();
         replay(prefs);
 
-        ComponentImpl comp = new ComponentImpl(null, null, null, prefs, false, null, null);
+        ComponentImpl comp = new ComponentImpl(null, null, null, prefs, false, null);
         comp.state = State.Shutdown;
         ServiceUnitImpl su = new ServiceUnitImpl(descriptor.getServiceUnits()[0], null, comp);
         ServiceAssemblyImpl sa = new ServiceAssemblyImpl(null, descriptor, Collections.singletonList(su), prefs, new AssemblyReferencesListener(), false);

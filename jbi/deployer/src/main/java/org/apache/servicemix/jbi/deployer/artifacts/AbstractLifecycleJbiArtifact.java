@@ -17,13 +17,17 @@
 package org.apache.servicemix.jbi.deployer.artifacts;
 
 import javax.jbi.management.LifeCycleMBean;
+import javax.jbi.JBIException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.servicemix.nmr.api.event.ListenerRegistry;
+import org.apache.servicemix.jbi.deployer.events.LifeCycleEvent;
+import org.apache.servicemix.jbi.deployer.events.LifeCycleListener;
 import org.osgi.service.prefs.BackingStoreException;
 import org.osgi.service.prefs.Preferences;
 
-public class AbstractLifecycleJbiArtifact {
+public abstract class AbstractLifecycleJbiArtifact implements LifeCycleMBean {
 
     public static final String STATE = "state";
 
@@ -39,9 +43,22 @@ public class AbstractLifecycleJbiArtifact {
     protected State state = State.Unknown;
     protected Preferences prefs;
     protected State runningState;
+    protected ListenerRegistry listenerRegistry;
 
     public State getState() {
         return state;
+    }
+
+    public State getRunningState() {
+        return runningState;
+    }
+
+    public ListenerRegistry getListenerRegistry() {
+        return listenerRegistry;
+    }
+
+    public void setListenerRegistry(ListenerRegistry listenerRegistry) {
+        this.listenerRegistry = listenerRegistry;
     }
 
     public String getCurrentState() {
@@ -57,12 +74,33 @@ public class AbstractLifecycleJbiArtifact {
         }
     }
 
+    protected State loadState(State def) {
+        return State.valueOf(this.prefs.get(STATE, def.name()));
+    }
+
     protected void saveState() {
         this.prefs.put(STATE, state.name());
         try {
             this.prefs.flush();
         } catch (BackingStoreException e) {
             LOGGER.warn("Unable to persist state", e);
+        }
+        this.runningState = state;
+    }
+
+    protected void fireEvent(LifeCycleEvent.LifeCycleEventType type) throws JBIException {
+        fireEvent(type, false);
+    }
+
+    protected void fireEvent(LifeCycleEvent.LifeCycleEventType type, boolean force) throws JBIException {
+        if (listenerRegistry != null) {
+            LifeCycleEvent event = null;
+            for (LifeCycleListener listener : listenerRegistry.getListeners(LifeCycleListener.class)) {
+                if (event == null) {
+                    event = new LifeCycleEvent(type, this, force);
+                }
+                listener.lifeCycleChanged(event);
+            }
         }
     }
 

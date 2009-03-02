@@ -27,11 +27,11 @@ import javax.jbi.management.LifeCycleMBean;
 
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
-import org.apache.servicemix.jbi.deployer.Component;
+import org.apache.servicemix.jbi.deployer.events.LifeCycleEvent;
 import org.apache.servicemix.jbi.deployer.descriptor.Connection;
 import org.apache.servicemix.jbi.deployer.descriptor.DescriptorFactory;
 import org.apache.servicemix.jbi.deployer.descriptor.ServiceAssemblyDesc;
-import org.apache.servicemix.jbi.deployer.impl.AssemblyReferencesListener;
+import org.apache.servicemix.jbi.deployer.artifacts.AssemblyReferencesListener;
 import org.apache.servicemix.nmr.api.Wire;
 import org.apache.servicemix.nmr.core.util.MapToDictionary;
 import org.osgi.framework.Bundle;
@@ -87,7 +87,7 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
         this.serviceUnits = serviceUnits;
         this.prefs = prefs;
         this.listener = listener;
-        this.runningState = State.valueOf(this.prefs.get(STATE, (autoStart ? State.Started : State.Shutdown).name()));
+        this.runningState = loadState(autoStart ? State.Started : State.Shutdown);
         for (ServiceUnitImpl su : serviceUnits) {
             su.setServiceAssemblyImpl(this);
         }
@@ -114,6 +114,10 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
         return serviceUnits.toArray(new ServiceUnit[serviceUnits.size()]);
     }
 
+    public List<ServiceUnitImpl> getServiceUnitsList() {
+        return serviceUnits;
+    }
+
     public synchronized void init() throws JBIException {
         checkComponentsStarted();
         listener.setAssembly(this);
@@ -124,6 +128,8 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
             } else if (runningState == State.Stopped) {
                 transition(Action.Init, State.Stopped);
             } else if (runningState == State.Shutdown) {
+                transition(Action.Init, State.Stopped);
+                transition(Action.Shutdown, State.Shutdown);
                 state = State.Shutdown;
             }
         } finally {
@@ -145,11 +151,13 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
             if (state == State.Shutdown) {
                 transition(Action.Init, State.Stopped);
             }
+            fireEvent(LifeCycleEvent.LifeCycleEventType.Starting);
             startConnections();
             transition(Action.Start, State.Started);
             if (persist) {
                 saveState();
             }
+            fireEvent(LifeCycleEvent.LifeCycleEventType.Started);
         } finally {
             listener.setAssembly(null);
         }
@@ -165,6 +173,7 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
             if (state == State.Stopped) {
                 return;
             }
+            fireEvent(LifeCycleEvent.LifeCycleEventType.Stopping);
             if (state == State.Shutdown) {
                 transition(Action.Init, State.Stopped);
             }
@@ -175,6 +184,7 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
             if (persist) {
                 saveState();
             }
+            fireEvent(LifeCycleEvent.LifeCycleEventType.Stopped);
         } finally {
             listener.setAssembly(null);
         }
@@ -197,6 +207,7 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
             if (state == State.Started) {
                 transition(Action.Stop, State.Stopped);
             }
+            fireEvent(LifeCycleEvent.LifeCycleEventType.ShuttingDown);
             if (!force) {
                 for (; ;) {
                     try {
@@ -210,6 +221,7 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
             if (persist) {
                 saveState();
             }
+            fireEvent(LifeCycleEvent.LifeCycleEventType.ShutDown);
         } finally {
             listener.setAssembly(null);
             listener.forget(this);

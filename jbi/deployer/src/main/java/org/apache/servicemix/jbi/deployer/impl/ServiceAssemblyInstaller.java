@@ -101,13 +101,13 @@ public class ServiceAssemblyInstaller extends AbstractInstaller {
         // Shutdown SA
         stop(force);
         // Retrieve SA
-        ServiceAssembly assembly = deployer.getServiceAssembly(getName());
+        ServiceAssemblyImpl assembly = deployer.getServiceAssembly(getName());
         if (assembly == null && !force) {
             throw ManagementSupport.failure("undeployServiceAssembly", "ServiceAssembly '" + getName() + "' is not deployed.");
         }
         // Undeploy SUs
-        for (ServiceUnit su : assembly.getServiceUnits()) {
-            ((ServiceUnitImpl) su).undeploy();
+        for (ServiceUnitImpl su : assembly.getServiceUnitsList()) {
+            su.undeploy();
         }
         // Unregister assembly
         deployer.unregisterServiceAssembly(assembly);
@@ -137,9 +137,11 @@ public class ServiceAssemblyInstaller extends AbstractInstaller {
             // Create directory for this SU
             File suRootDir = new File(saDir, sud.getIdentification().getName());
             // Unpack it
-            String zip = sud.getTarget().getArtifactsZip();
-            URL zipUrl = bundle.getResource(zip);
-            FileUtil.unpackArchive(zipUrl, suRootDir);
+            if (isModified) {
+                String zip = sud.getTarget().getArtifactsZip();
+                URL zipUrl = bundle.getResource(zip);
+                FileUtil.unpackArchive(zipUrl, suRootDir);
+            }
             // Find component
             String componentName = sud.getTarget().getComponentName();
             ComponentImpl component = deployer.getComponent(componentName);

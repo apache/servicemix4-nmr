@@ -85,6 +85,10 @@ public class ServiceUnitImpl implements ServiceUnit {
         return component;
     }
 
+    public ComponentImpl getComponentImpl() {
+        return component;
+    }
+
     public File getRootDir() {
         return rootDir;
     }
@@ -108,6 +112,7 @@ public class ServiceUnitImpl implements ServiceUnit {
         } finally {
             Thread.currentThread().setContextClassLoader(oldCl);
         }
+        component.addServiceUnit(this);
     }
 
     public void start() throws JBIException {

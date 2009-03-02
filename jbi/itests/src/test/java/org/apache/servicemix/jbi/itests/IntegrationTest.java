@@ -27,6 +27,7 @@ import java.net.URLConnection;
 import java.net.HttpURLConnection;
 
 import javax.jbi.component.Component;
+import javax.jbi.management.LifeCycleMBean;
 
 import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.kernel.testing.support.AbstractIntegrationTest;
@@ -166,6 +167,39 @@ public class IntegrationTest extends AbstractIntegrationTest {
         saBundle.uninstall();
         //sa.stop();
         //sa.shutDown();
+    }
+
+    public void testJbiLifecycle() throws Exception {
+        Bundle smxShared = installJbiBundle("org.apache.servicemix", "servicemix-shared", "installer", "zip");
+        Bundle smxJsr181 = installJbiBundle("org.apache.servicemix", "servicemix-jsr181", "installer", "zip");
+        Bundle smxHttp = installJbiBundle("org.apache.servicemix", "servicemix-http", "installer", "zip");
+
+        Bundle saBundle = installJbiBundle("org.apache.servicemix.samples.wsdl-first", "wsdl-first-sa", null, "zip");
+        System.out.println("Waiting for JBI Service Assembly");
+        ServiceAssembly sa = getOsgiService(ServiceAssembly.class);
+        assertNotNull(sa);
+        assertEquals(LifeCycleMBean.STARTED, sa.getCurrentState());
+
+        saBundle.stop();
+
+        saBundle.start();
+        sa = getOsgiService(ServiceAssembly.class);
+        assertNotNull(sa);
+        assertEquals(LifeCycleMBean.STARTED, sa.getCurrentState());
+
+        smxHttp.stop();
+        try {
+            getOsgiService(ServiceAssembly.class, 1);
+            fail("ServiceAssembly OSGi service should have been unregistered");
+        } catch (RuntimeException e) {
+            // Ignore
+        }
+
+        smxHttp.start();
+        sa = getOsgiService(ServiceAssembly.class);
+        assertNotNull(sa);
+        assertEquals(LifeCycleMBean.STARTED, sa.getCurrentState());
+
     }
 
     protected Bundle installJbiBundle(String groupId, String artifactId, String classifier, String type) throws BundleException {

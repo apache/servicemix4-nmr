@@ -17,9 +17,7 @@
 package org.apache.servicemix.jbi.deployer.artifacts;
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.jbi.JBIException;
@@ -36,6 +34,7 @@ import org.w3c.dom.DocumentFragment;
 import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
 import org.apache.servicemix.jbi.deployer.SharedLibrary;
+import org.apache.servicemix.jbi.deployer.events.LifeCycleEvent;
 import org.apache.servicemix.jbi.deployer.descriptor.ComponentDesc;
 import org.apache.servicemix.jbi.deployer.descriptor.DescriptorFactory;
 import org.apache.servicemix.jbi.runtime.ComponentWrapper;
@@ -49,8 +48,7 @@ public class ComponentImpl extends AbstractLifecycleJbiArtifact implements Compo
     private Bundle bundle;
     private ComponentDesc componentDesc;
     private javax.jbi.component.Component component;
-    private List<ServiceUnitImpl> serviceUnits;
-    private Runnable callback;
+    private Set<ServiceUnitImpl> serviceUnits;
     private SharedLibrary[] sharedLibraries;
 
     public ComponentImpl(Bundle bundle,
@@ -58,15 +56,13 @@ public class ComponentImpl extends AbstractLifecycleJbiArtifact implements Compo
                          javax.jbi.component.Component component,
                          Preferences prefs,
                          boolean autoStart,
-                         Runnable callback,
                          SharedLibrary[] sharedLibraries) {
         this.bundle = bundle;
         this.componentDesc = componentDesc;
         this.component = new ComponentWrapper(component);
         this.prefs = prefs;
-        this.runningState = State.valueOf(this.prefs.get(STATE, (autoStart ? State.Started : State.Shutdown).name()));
-        this.callback = callback;
-        this.serviceUnits = new ArrayList<ServiceUnitImpl>();
+        this.runningState = loadState(autoStart ? State.Started : State.Shutdown);
+        this.serviceUnits = new HashSet<ServiceUnitImpl>();
         this.sharedLibraries = sharedLibraries;
     }
 
@@ -121,11 +117,13 @@ public class ComponentImpl extends AbstractLifecycleJbiArtifact implements Compo
             if (state == State.Shutdown) {
                 component.getLifeCycle().init(null);
             }
+            fireEvent(LifeCycleEvent.LifeCycleEventType.Starting);
             component.getLifeCycle().start();
             state = State.Started;
             if (saveState) {
                 saveState();
             }
+            fireEvent(LifeCycleEvent.LifeCycleEventType.Started);
         }
     }
 
@@ -148,18 +146,14 @@ public class ComponentImpl extends AbstractLifecycleJbiArtifact implements Compo
     public void stop(boolean saveState) throws JBIException {
         LOGGER.info("Stopping component " + getName());
         if (state == State.Started) {
-            // Stop deployed SAs
-            for (ServiceAssemblyImpl sa : getServiceAssemblies()) {
-                if (sa.getState() == ServiceAssemblyImpl.State.Started) {
-                    sa.stop(false);
-                }
-            }
+            fireEvent(LifeCycleEvent.LifeCycleEventType.Stopping);
             // Stop component
             component.getLifeCycle().stop();
             state = State.Stopped;
             if (saveState) {
                 saveState();
             }
+            fireEvent(LifeCycleEvent.LifeCycleEventType.Stopped);
         }
     }
 
@@ -177,18 +171,14 @@ public class ComponentImpl extends AbstractLifecycleJbiArtifact implements Compo
             stop(saveState);
         }
         if (state == State.Stopped) {
-            // Shutdown deployed SAs
-            for (ServiceAssemblyImpl sa : getServiceAssemblies()) {
-                if (sa.getState() == ServiceAssemblyImpl.State.Stopped) {
-                    sa.shutDown(false, force);
-                }
-            }
+            fireEvent(LifeCycleEvent.LifeCycleEventType.ShuttingDown, force);
             // Shutdown component
             component.getLifeCycle().shutDown();
             state = State.Shutdown;
             if (saveState) {
                 saveState();
             }
+            fireEvent(LifeCycleEvent.LifeCycleEventType.ShutDown);
         }
     }
 
@@ -233,35 +223,39 @@ public class ComponentImpl extends AbstractLifecycleJbiArtifact implements Compo
         }
 
         public void init(ComponentContext context) throws JBIException {
+            ComponentContext contextToUse = context;
             if (this.context == null) {
                 this.context = context;
             }
-            if (context == null) {
-                context = this.context;
+            if (contextToUse == null) {
+                contextToUse = this.context;
             }
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
             try {
                 Thread.currentThread().setContextClassLoader(component.getClass().getClassLoader());
-                if (runningState != State.Unknown) {
-                    if (runningState == State.Started) {
-                        lifeCycle.init(context);
+                State stateToUse = context != null ? runningState : State.Shutdown;
+                switch (stateToUse) {
+                    case Started:
+                        fireEvent(LifeCycleEvent.LifeCycleEventType.Starting);
+                        lifeCycle.init(contextToUse);
                         start();
                         state = State.Started;
-                    } else if (runningState == State.Stopped) {
-                        lifeCycle.init(context);
+                        fireEvent(LifeCycleEvent.LifeCycleEventType.Started);
+                        break;
+                    case Stopped:
+                        fireEvent(LifeCycleEvent.LifeCycleEventType.Stopping);
+                        lifeCycle.init(contextToUse);
                         start();
                         stop();
                         state = State.Stopped;
-                    } else if (runningState == State.Shutdown) {
+                        fireEvent(LifeCycleEvent.LifeCycleEventType.Stopped);
+                        break;
+                    case Shutdown:
+                        fireEvent(LifeCycleEvent.LifeCycleEventType.ShuttingDown);
+                        lifeCycle.init(contextToUse);
                         state = State.Shutdown;
-                    }
-                    runningState = State.Unknown;
-                } else {
-                    lifeCycle.init(context);
-                    state = State.Shutdown;
-                }
-                if (callback != null) {
-                    callback.run();
+                        fireEvent(LifeCycleEvent.LifeCycleEventType.ShutDown);
+                        break;
                 }
             } finally {
                 Thread.currentThread().setContextClassLoader(cl);

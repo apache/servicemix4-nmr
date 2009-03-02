@@ -63,8 +63,17 @@ public abstract class AbstractComponentContext implements ComponentContext, MBea
     protected DeliveryChannel dc;
     protected ComponentRegistryImpl componentRegistry;
 
+    protected MBeanServer mbeanServer;
+    protected InitialContext initialContext;
+    protected Object transactionManager;
+
     public AbstractComponentContext(ComponentRegistryImpl componentRegistry) {
         this.componentRegistry = componentRegistry;
+        if (componentRegistry.getEnvironment() != null) {
+            this.mbeanServer = componentRegistry.getEnvironment().getMBeanServer();
+            this.initialContext = componentRegistry.getEnvironment().getNamingContext();
+            this.transactionManager = componentRegistry.getEnvironment().getTransactionManager();
+        }
     }
 
     public NMR getNmr() {
@@ -228,24 +237,15 @@ public abstract class AbstractComponentContext implements ComponentContext, MBea
     }
 
     public MBeanServer getMBeanServer() {
-        if (componentRegistry.getEnvironment() != null) {
-            return componentRegistry.getEnvironment().getMBeanServer();
-        }
-        return null;
+        return mbeanServer;
     }
 
     public InitialContext getNamingContext() {
-        if (this.componentRegistry.getEnvironment() != null) {
-            return componentRegistry.getEnvironment().getNamingContext();
-        }
-        return null;
+        return initialContext;
     }
 
     public Object getTransactionManager() {
-        if (this.componentRegistry.getEnvironment() != null) {
-            return this.componentRegistry.getEnvironment().getTransactionManager();
-        }
-        return null;
+        return transactionManager;
     }
 
     public ObjectName createCustomComponentMBeanName(String customName) {
