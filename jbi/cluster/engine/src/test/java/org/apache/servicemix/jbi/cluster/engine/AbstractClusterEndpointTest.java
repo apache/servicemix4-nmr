@@ -21,6 +21,9 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.io.File;
+import java.net.ServerSocket;
+import java.lang.management.ManagementFactory;
 
 import javax.jms.ConnectionFactory;
 import javax.xml.namespace.QName;
@@ -43,10 +46,13 @@ import org.apache.servicemix.nmr.core.ExchangeImpl;
 import org.apache.servicemix.nmr.core.util.StringSource;
 import org.apache.servicemix.jbi.runtime.impl.MessageExchangeImpl;
 import org.apache.servicemix.jbi.runtime.impl.DeliveryChannelImpl;
+import org.apache.servicemix.jbi.runtime.impl.AbstractComponentContext;
 import org.apache.servicemix.jbi.runtime.ExchangeCompletedListener;
 import org.apache.servicemix.jbi.cluster.requestor.Transacted;
 import org.apache.servicemix.jbi.cluster.requestor.GenericJmsRequestorPool;
 import org.apache.servicemix.jbi.cluster.requestor.AbstractPollingRequestorPool;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
 import org.jencks.GeronimoPlatformTransactionManager;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -57,6 +63,8 @@ public abstract class AbstractClusterEndpointTest extends AutoFailTestSupport {
     public static final String PROXY_ENDPOINT_NAME = "proxy";
     public static final String RECEIVER_ENDPOINT_NAME = "receiver";
 
+    private final Log LOG = LogFactory.getLog(getClass());
+
     protected NMR nmr1;
     protected NMR nmr2;
     protected Service broker;
@@ -64,14 +72,19 @@ public abstract class AbstractClusterEndpointTest extends AutoFailTestSupport {
     protected ExchangeCompletedListener listener;
     protected TransactionManager transactionManager;
     protected TaskExecutor executor;
+    protected int port;
 
     @Override
     protected void setUp() throws Exception {
+        LOG.info("============================================================");
+        LOG.info("     Starting test: " + this.toString());
+        LOG.info("============================================================");
         super.setUp();
         ExchangeImpl.getConverter();
+        this.port = findFreePort();
         this.executor = createTaskExecutor();
         this.transactionManager = new GeronimoPlatformTransactionManager();
-        this.broker = createBroker();
+        this.broker = createBroker(true);
         this.connectionFactory = createConnectionFactory();
         this.nmr1 = createNmr();
         this.nmr2 = createNmr();
@@ -80,8 +93,19 @@ public abstract class AbstractClusterEndpointTest extends AutoFailTestSupport {
         this.nmr2.getListenerRegistry().register(this.listener, null);
     }
 
+    protected int findFreePort() {
+        int port = 61616;
+        try {
+            ServerSocket ss = new ServerSocket(0);
+            port = ss.getLocalPort();
+            ss.close();
+        } catch (Exception e) {
+        }
+        return port;
+    }
+
     protected ConnectionFactory createConnectionFactory() {
-        ActiveMQConnectionFactory cf = new ActiveMQConnectionFactory("vm://localhost?jms.prefetchPolicy.queuePrefetch=1000");
+        ActiveMQConnectionFactory cf = new ActiveMQConnectionFactory("tcp://localhost:" + port);
         XaPooledConnectionFactory cnf = new XaPooledConnectionFactory(cf);
         cnf.setTransactionManager(transactionManager);
         return cnf;
@@ -111,10 +135,16 @@ public abstract class AbstractClusterEndpointTest extends AutoFailTestSupport {
         return exec;
     }
 
-    protected Service createBroker() throws Exception {
+    protected Service createBroker(boolean deleteData) throws Exception {
+        File data = new File("target/activemq");
+        if (deleteData) {
+            deleteFile(data);
+        }
         BrokerService broker = new BrokerService();
-        broker.setPersistent(false);
-        broker.setUseJmx(false);
+        broker.setPersistent(true);
+        broker.setDataDirectoryFile(data);
+        broker.setUseJmx(true);
+        broker.addConnector("tcp://localhost:" + port);
         broker.start();
         return broker;
     }
@@ -153,7 +183,8 @@ public abstract class AbstractClusterEndpointTest extends AutoFailTestSupport {
         nmr.getEndpointRegistry().register(proxy,
                 ServiceHelper.createMap(Endpoint.NAME, PROXY_ENDPOINT_NAME,
                                         Endpoint.SERVICE_NAME, "{urn:test}proxy",
-                                        Endpoint.ENDPOINT_NAME, "endpoint"));
+                                        Endpoint.ENDPOINT_NAME, "endpoint",
+                                        AbstractComponentContext.INTERNAL_ENDPOINT, "true"));
         SimpleClusterRegistration reg = new SimpleClusterRegistration();
         reg.setEndpoint(proxy);
         reg.init();
@@ -166,7 +197,8 @@ public abstract class AbstractClusterEndpointTest extends AutoFailTestSupport {
         nmr.getEndpointRegistry().register(receiver,
                 ServiceHelper.createMap(Endpoint.NAME, RECEIVER_ENDPOINT_NAME,
                                         Endpoint.SERVICE_NAME, "{urn:test}receiver",
-                                        Endpoint.ENDPOINT_NAME, "endpoint"));
+                                        Endpoint.ENDPOINT_NAME, "endpoint",
+                                        AbstractComponentContext.INTERNAL_ENDPOINT, "true"));
         return receiver;
     }
 
@@ -253,11 +285,11 @@ public abstract class AbstractClusterEndpointTest extends AutoFailTestSupport {
             }
             if (exchange.getStatus() == Status.Active) {
                 String key = exchange.getIn().getBody(String.class);
-                if (sendFault && !faultSent.containsKey(key)) {
+                if (sendFault && key != null && !faultSent.containsKey(key)) {
                     exchange.getFault().setBody(new StringSource("<fault/>"));
                     channel.send(exchange);
                     faultSent.put(key, true);
-                } else if (sendError && !errorSent.containsKey(key)) {
+                } else if (sendError && key != null && !errorSent.containsKey(key)) {
                     exchange.setError(new Exception("error"));
                     exchange.setStatus(Status.Error);
                     channel.send(exchange);
@@ -321,6 +353,33 @@ public abstract class AbstractClusterEndpointTest extends AutoFailTestSupport {
                 }
             }
         }
+    }
+
+    protected static boolean deleteFile(File fileToDelete) {
+        if (fileToDelete == null || !fileToDelete.exists()) {
+            return true;
+        }
+        boolean result = true;
+        if (fileToDelete.isDirectory()) {
+            File[] files = fileToDelete.listFiles();
+            if (files == null) {
+                result = false;
+            } else {
+                for (int i = 0; i < files.length; i++) {
+                    File file = files[i];
+                    if (file.getName().equals(".") || file.getName().equals("..")) {
+                        continue;
+                    }
+                    if (file.isDirectory()) {
+                        result &= deleteFile(file);
+                    } else {
+                        result &= file.delete();
+                    }
+                }
+            }
+        }
+        result &= fileToDelete.delete();
+        return result;
     }
 
 }

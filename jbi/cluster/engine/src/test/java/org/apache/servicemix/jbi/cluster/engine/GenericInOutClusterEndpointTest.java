@@ -42,8 +42,8 @@ public class GenericInOutClusterEndpointTest extends AbstractClusterEndpointTest
         Exchange exchange = client.createExchange(Pattern.InOut);
         exchange.getIn().setBody(new StringSource("<hello/>"));
         exchange.setTarget(nmr1.getEndpointRegistry().lookup(ServiceHelper.createMap(Endpoint.NAME, PROXY_ENDPOINT_NAME)));
-        client.sendSync(exchange);
-        assertEquals(Status.Active, exchange.getStatus());
+        assertTrue("sendSync failed for exchange " + exchange.getId(), client.sendSync(exchange));
+        assertEquals("bad status for exchange " + exchange.getId(), Status.Active, exchange.getStatus());
         exchange.setStatus(Status.Done);
         client.send(exchange);
         client.close();
@@ -57,8 +57,8 @@ public class GenericInOutClusterEndpointTest extends AbstractClusterEndpointTest
         Exchange exchange = client.createExchange(Pattern.InOut);
         exchange.getIn().setBody(new StringSource("<hello/>"));
         exchange.setTarget(nmr1.getEndpointRegistry().lookup(ServiceHelper.createMap(Endpoint.NAME, PROXY_ENDPOINT_NAME)));
-        client.sendSync(exchange);
-        assertEquals(Status.Error, exchange.getStatus());
+        assertTrue("sendSync failed for exchange " + exchange.getId(), client.sendSync(exchange));
+        assertEquals("bad status for exchange " + exchange.getId(), Status.Error, exchange.getStatus());
         client.close();
         receiver.assertExchangesReceived(1, TIMEOUT);
     }
@@ -70,8 +70,8 @@ public class GenericInOutClusterEndpointTest extends AbstractClusterEndpointTest
         Exchange exchange = client.createExchange(Pattern.InOut);
         exchange.getIn().setBody(new StringSource("<hello/>"));
         exchange.setTarget(nmr1.getEndpointRegistry().lookup(ServiceHelper.createMap(Endpoint.NAME, PROXY_ENDPOINT_NAME)));
-        client.sendSync(exchange);
-        assertEquals(Status.Active, exchange.getStatus());
+        assertTrue("sendSync failed for exchange " + exchange.getId(), client.sendSync(exchange));
+        assertEquals("bad status for exchange " + exchange.getId(), Status.Active, exchange.getStatus());
         exchange.setStatus(Status.Done);
         client.send(exchange);
         client.close();
@@ -85,8 +85,8 @@ public class GenericInOutClusterEndpointTest extends AbstractClusterEndpointTest
         Exchange exchange = client.createExchange(Pattern.InOut);
         exchange.getIn().setBody(new StringSource("<hello/>"));
         exchange.setTarget(nmr1.getEndpointRegistry().lookup(ServiceHelper.createMap(Endpoint.NAME, PROXY_ENDPOINT_NAME)));
-        client.sendSync(exchange);
-        assertEquals(Status.Error, exchange.getStatus());
+        assertTrue("sendSync failed for exchange " + exchange.getId(), client.sendSync(exchange));
+        assertEquals("bad status for exchange " + exchange.getId(), Status.Error, exchange.getStatus());
         client.close();
         receiver.assertExchangesReceived(1, TIMEOUT);
     }
@@ -98,8 +98,8 @@ public class GenericInOutClusterEndpointTest extends AbstractClusterEndpointTest
         Exchange exchange = client.createExchange(Pattern.InOut);
         exchange.getIn().setBody(new StringSource("<hello/>"));
         exchange.setTarget(nmr1.getEndpointRegistry().lookup(ServiceHelper.createMap(Endpoint.NAME, PROXY_ENDPOINT_NAME)));
-        client.sendSync(exchange);
-        assertEquals(Status.Active, exchange.getStatus());
+        assertTrue("sendSync failed for exchange " + exchange.getId(), client.sendSync(exchange));
+        assertEquals("bad status for exchange " + exchange.getId(), Status.Active, exchange.getStatus());
         exchange.setStatus(Status.Done);
         client.send(exchange);
         client.close();
@@ -113,8 +113,8 @@ public class GenericInOutClusterEndpointTest extends AbstractClusterEndpointTest
         Exchange exchange = client.createExchange(Pattern.InOut);
         exchange.getIn().setBody(new StringSource("<hello/>"));
         exchange.setTarget(nmr1.getEndpointRegistry().lookup(ServiceHelper.createMap(Endpoint.NAME, PROXY_ENDPOINT_NAME)));
-        client.sendSync(exchange);
-        assertEquals(Status.Error, exchange.getStatus());
+        assertTrue("sendSync failed for exchange " + exchange.getId(), client.sendSync(exchange));
+        assertEquals("bad status for exchange " + exchange.getId(), Status.Error, exchange.getStatus());
         client.close();
         receiver.assertExchangesReceived(1, TIMEOUT);
     }
@@ -126,8 +126,8 @@ public class GenericInOutClusterEndpointTest extends AbstractClusterEndpointTest
         Exchange exchange = client.createExchange(Pattern.InOut);
         exchange.getIn().setBody(new StringSource("<hello/>"));
         exchange.setTarget(nmr1.getEndpointRegistry().lookup(ServiceHelper.createMap(Endpoint.NAME, PROXY_ENDPOINT_NAME)));
-        client.sendSync(exchange);
-        assertEquals(Status.Active, exchange.getStatus());
+        assertTrue("sendSync failed for exchange " + exchange.getId(), client.sendSync(exchange));
+        assertEquals("bad status for exchange " + exchange.getId(), Status.Active, exchange.getStatus());
         exchange.setStatus(Status.Done);
         client.send(exchange);
         client.close();
@@ -141,8 +141,8 @@ public class GenericInOutClusterEndpointTest extends AbstractClusterEndpointTest
         Exchange exchange = client.createExchange(Pattern.InOut);
         exchange.getIn().setBody(new StringSource("<hello/>"));
         exchange.setTarget(nmr1.getEndpointRegistry().lookup(ServiceHelper.createMap(Endpoint.NAME, PROXY_ENDPOINT_NAME)));
-        client.sendSync(exchange);
-        assertEquals(Status.Active, exchange.getStatus());
+        assertTrue("sendSync failed for exchange " + exchange.getId(), client.sendSync(exchange));
+        assertEquals("bad status for exchange " + exchange.getId(), Status.Active, exchange.getStatus());
         exchange.setStatus(Status.Done);
         client.send(exchange);
         client.close();
@@ -156,8 +156,8 @@ public class GenericInOutClusterEndpointTest extends AbstractClusterEndpointTest
         Exchange exchange = client.createExchange(Pattern.InOut);
         exchange.getIn().setBody(new StringSource("<hello/>"));
         exchange.setTarget(nmr1.getEndpointRegistry().lookup(ServiceHelper.createMap(Endpoint.NAME, PROXY_ENDPOINT_NAME)));
-        client.sendSync(exchange);
-        assertEquals(Status.Active, exchange.getStatus());
+        assertTrue("sendSync failed for exchange " + exchange.getId(), client.sendSync(exchange));
+        assertEquals("bad status for exchange " + exchange.getId(), Status.Active, exchange.getStatus());
         exchange.setStatus(Status.Done);
         client.send(exchange);
         client.close();
@@ -171,8 +171,8 @@ public class GenericInOutClusterEndpointTest extends AbstractClusterEndpointTest
         Exchange exchange = client.createExchange(Pattern.InOut);
         exchange.getIn().setBody(new StringSource("<hello/>"));
         exchange.setTarget(nmr1.getEndpointRegistry().lookup(ServiceHelper.createMap(Endpoint.NAME, PROXY_ENDPOINT_NAME)));
-        client.sendSync(exchange);
-        assertEquals(Status.Error, exchange.getStatus());
+        assertTrue("sendSync failed for exchange " + exchange.getId(), client.sendSync(exchange));
+        assertEquals("bad status for exchange " + exchange.getId(), Status.Error, exchange.getStatus());
         client.close();
         receiver.assertExchangesReceived(1, TIMEOUT);
     }
@@ -184,8 +184,8 @@ public class GenericInOutClusterEndpointTest extends AbstractClusterEndpointTest
         Exchange exchange = client.createExchange(Pattern.InOut);
         exchange.getIn().setBody(new StringSource("<hello/>"));
         exchange.setTarget(nmr1.getEndpointRegistry().lookup(ServiceHelper.createMap(Endpoint.NAME, PROXY_ENDPOINT_NAME)));
-        client.sendSync(exchange);
-        assertEquals(Status.Active, exchange.getStatus());
+        assertTrue("sendSync failed for exchange " + exchange.getId(), client.sendSync(exchange));
+        assertEquals("bad status for exchange " + exchange.getId(), Status.Active, exchange.getStatus());
         exchange.setStatus(Status.Done);
         client.send(exchange);
         client.close();
@@ -199,8 +199,8 @@ public class GenericInOutClusterEndpointTest extends AbstractClusterEndpointTest
         Exchange exchange = client.createExchange(Pattern.InOut);
         exchange.getIn().setBody(new StringSource("<hello/>"));
         exchange.setTarget(nmr1.getEndpointRegistry().lookup(ServiceHelper.createMap(Endpoint.NAME, PROXY_ENDPOINT_NAME)));
-        client.sendSync(exchange);
-        assertEquals(Status.Active, exchange.getStatus());
+        assertTrue("sendSync failed for exchange " + exchange.getId(), client.sendSync(exchange));
+        assertEquals("bad status for exchange " + exchange.getId(), Status.Active, exchange.getStatus());
         exchange.setStatus(Status.Done);
         client.send(exchange);
         client.close();

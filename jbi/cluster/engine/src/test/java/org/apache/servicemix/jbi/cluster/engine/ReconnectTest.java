@@ -20,6 +20,7 @@ import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.io.File;
 
 import javax.jms.ConnectionFactory;
 
@@ -90,15 +91,15 @@ public class ReconnectTest extends AbstractClusterEndpointTest {
 
         latch.await();
 
-        Thread.sleep(1000);
+//        Thread.sleep(1000);
 
         cluster2.resume();
 
         //Thread.sleep(100);
 
         broker.stop();
-        Thread.sleep(1000);
-        broker = createBroker();
+//        Thread.sleep(1000);
+        broker = createBroker(false);
 
         latch.await();
 
@@ -112,22 +113,13 @@ public class ReconnectTest extends AbstractClusterEndpointTest {
         System.err.println("Throuput: " + (nbThreads * nbExchanges * 1000 / (t1 - t0)) + " messages/sec");
     }
 
-    protected ConnectionFactory createConnectionFactory() {
-        ActiveMQConnectionFactory cf = new ActiveMQConnectionFactory("tcp://localhost:61616");
-        return cf;
-//        XaPooledConnectionFactory cnf = new XaPooledConnectionFactory(cf);
-//        cnf.setTransactionManager(transactionManager);
-//        return cnf;
-    }
-
-    protected Service createBroker() throws Exception {
-        BrokerService broker = new BrokerService();
-        broker.setPersistent(true);
-        broker.setUseJmx(false);
-        broker.addConnector("tcp://localhost:61616");
-        broker.start();
-        return broker;
-    }
+//    protected ConnectionFactory createConnectionFactory() {
+//        ActiveMQConnectionFactory cf = new ActiveMQConnectionFactory("tcp://localhost:61616");
+//        return cf;
+////        XaPooledConnectionFactory cnf = new XaPooledConnectionFactory(cf);
+////        cnf.setTransactionManager(transactionManager);
+////        return cnf;
+//    }
 
     protected void createRoute(Transacted transacted,
                                boolean rollbackOnErrors,
@@ -157,4 +149,5 @@ public class ReconnectTest extends AbstractClusterEndpointTest {
         nmr2.getEndpointRegistry().unregister(receiver, null);
         super.tearDown();
     }
+
 }

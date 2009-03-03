@@ -47,16 +47,6 @@ public class ActiveMQInOnlyClusterEndpointTest extends GenericInOnlyClusterEndpo
         super.testInOnlyAckTxRb();
     }
 
-    protected ConnectionFactory createConnectionFactory() {
-        ActiveMQConnectionFactory cf = new ActiveMQConnectionFactory("vm://localhost");
-        cf.setAlwaysSessionAsync(false);
-        cf.setObjectMessageSerializationDefered(true);
-        cf.setCopyMessageOnSend(false);
-        XaPooledConnectionFactory cnf = new XaPooledConnectionFactory(cf);
-        cnf.setTransactionManager(transactionManager);
-        return cnf;
-    }
-
     protected AbstractPollingRequestorPool createPool() {
         ActiveMQJmsRequestorPool pool = new ActiveMQJmsRequestorPool();
         pool.setCacheSessions(true);

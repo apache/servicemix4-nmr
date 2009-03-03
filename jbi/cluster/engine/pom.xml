@@ -130,10 +130,16 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <forkMode>pertest</forkMode>
+                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                    <forkedProcessTimeoutInSeconds>60</forkedProcessTimeoutInSeconds>
+                    <!--
                     <skip>true</skip>
+                    -->
                     <excludes>
+                        <!--
                         <exclude>**/*ReconnectTest.java</exclude>
                         <exclude>**/*LoadTest.java</exclude>
+                        -->
                     </excludes>
                 </configuration>
             </plugin>

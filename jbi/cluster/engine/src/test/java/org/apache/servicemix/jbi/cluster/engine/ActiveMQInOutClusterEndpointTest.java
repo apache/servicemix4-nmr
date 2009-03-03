@@ -38,14 +38,6 @@ public class ActiveMQInOutClusterEndpointTest extends GenericInOutClusterEndpoin
         super.testInOutJmsTxRbInError();
     }
 
-    protected ConnectionFactory createConnectionFactory() {
-        ActiveMQConnectionFactory cf = new ActiveMQConnectionFactory("vm://localhost");
-        cf.setAlwaysSessionAsync(false);
-        cf.setObjectMessageSerializationDefered(true);
-        cf.setCopyMessageOnSend(false);
-        return cf;
-    }
-
     protected AbstractPollingRequestorPool createPool() {
         ActiveMQJmsRequestorPool pool = new ActiveMQJmsRequestorPool();
         pool.setCacheSessions(true);
