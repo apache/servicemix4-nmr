@@ -201,7 +201,7 @@ public abstract class AbstractJmsRequestorPool extends AbstractMessageListenerCo
                 StringBuffer msg = new StringBuffer();
                 msg.append("Setup of JMS message listener invoker failed for destination '");
                 msg.append(getDestinationDescription()).append("' - trying to recover. Cause: ");
-                msg.append(ex instanceof JMSException ? JmsUtils.buildExceptionMessage((JMSException) ex) : ex.getMessage());
+                msg.append(ex instanceof JMSException ? JmsUtils.buildExceptionMessage(fixForSpring5470((JMSException) ex)) : ex.getMessage());
                 if (logger.isDebugEnabled()) {
                     logger.info(msg, ex);
                 }
