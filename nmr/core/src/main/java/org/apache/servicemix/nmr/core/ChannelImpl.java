@@ -32,6 +32,7 @@ import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.nmr.api.Pattern;
 import org.apache.servicemix.nmr.api.Role;
+import org.apache.servicemix.nmr.api.Status;
 import org.apache.servicemix.nmr.api.event.ExchangeListener;
 import org.apache.servicemix.nmr.api.internal.InternalChannel;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
@@ -214,25 +215,29 @@ public class ChannelImpl implements InternalChannel {
      * @param exchange the exchange to process
      */
     protected void process(InternalExchange exchange) {
-        // Check for aborted exchanges
-        if (exchange.getError() instanceof AbortedException) {
-            return;
+        try {
+            // Check for aborted exchanges
+            if (exchange.getError() instanceof AbortedException) {
+                return;
+            }
+            // Set destination endpoint
+            if (exchange.getDestination() == null) {
+                exchange.setDestination(endpoint);
+            }
+            // Change role
+            exchange.setRole(exchange.getRole() == Role.Provider ? Role.Consumer : Role.Provider);
+            // Call listeners
+            for (ExchangeListener l : nmr.getListenerRegistry().getListeners(ExchangeListener.class)) {
+                l.exchangeDelivered(exchange);
+            }
+            // Check if sendSync was used, in which case we need to unblock the other side
+            // rather than delivering the exchange
+            // TODO:
+            // Process exchange
+            endpoint.process(exchange);
+        } catch (RuntimeException e) {
+            handleFailure(exchange, e, false);
         }
-        // Set destination endpoint
-        if (exchange.getDestination() == null) {
-            exchange.setDestination(endpoint);
-        }
-        // Change role
-        exchange.setRole(exchange.getRole() == Role.Provider ? Role.Consumer : Role.Provider);
-        // Call listeners
-        for (ExchangeListener l : nmr.getListenerRegistry().getListeners(ExchangeListener.class)) {
-            l.exchangeDelivered(exchange);
-        }
-        // Check if sendSync was used, in which case we need to unblock the other side
-        // rather than delivering the exchange
-        // TODO:
-        // Process exchange
-        endpoint.process(exchange);
     }                             
 
     /**
@@ -261,12 +266,43 @@ public class ChannelImpl implements InternalChannel {
         // Dispatch in NMR
         try {
             nmr.getFlowRegistry().dispatch(exchange);
-        } catch (RuntimeException t) {
-            exchange.setError(t);
+        } catch (RuntimeException e) {
+            handleFailure(exchange, e, true);
+        }
+    }
+
+    protected void handleFailure(InternalExchange exchange, RuntimeException e, boolean dispatch) {
+        LOG.warn("Error processing exchange " + exchange, e);
+        if (dispatch) {
+            exchange.setError(e);
             for (ExchangeListener l : nmr.getListenerRegistry().getListeners(ExchangeListener.class)) {
                 l.exchangeFailed(exchange);
             }
-            throw t;
+            // Rethrow the exception so that sendSync are unblocked
+            throw e;
+        } else {
+            // If the exchange is active, let's try to send an error on behalf of the endpoint
+            if (exchange.getStatus() == Status.Active) {
+                try {
+                    exchange.setError(e);
+                    send(exchange);
+                } catch (RuntimeException e2) {
+                    for (ExchangeListener l : nmr.getListenerRegistry().getListeners(ExchangeListener.class)) {
+                        l.exchangeFailed(exchange);
+                    }
+                }
+            } else {
+                exchange.setError(e);
+                Semaphore lock = exchange.getRole() == Role.Provider ? exchange.getConsumerLock(false)
+                        : exchange.getProviderLock(false);
+                if (lock != null) {
+                    lock.release();
+                }
+                for (ExchangeListener l : nmr.getListenerRegistry().getListeners(ExchangeListener.class)) {
+                    l.exchangeFailed(exchange);
+                }
+            }
         }
     }
+
 }

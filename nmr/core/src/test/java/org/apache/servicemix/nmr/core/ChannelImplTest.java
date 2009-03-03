@@ -147,9 +147,33 @@ public class ChannelImplTest extends TestCase {
         verify(listener);
     }
 
+    public void testProcessingFailure() throws Exception {
+        IMocksControl control = EasyMock.createControl();
+        ExchangeListener listener = control.createMock(ExchangeListener.class);
+        control.makeThreadSafe(true);
+        nmr.getListenerRegistry().register(listener, null);
+
+        final Exchange e = ep1.channel.createExchange(Pattern.InOnly);
+
+        listener.exchangeSent(same(e));
+        listener.exchangeDelivered(same(e));
+        listener.exchangeSent(same(e));
+        listener.exchangeDelivered(same(e));
+        replay(listener);
+
+        ep2.throwException = true;
+        e.setTarget(ep1.channel.getNMR().getEndpointRegistry().lookup(ServiceHelper.createMap(Endpoint.NAME, "ep2")));
+        ep1.channel.sendSync(e);
+
+        verify(listener);
+        assertNotNull(ep2.exchange);
+        assertEquals(Status.Error, e.getStatus());
+    }
+
     protected static class MyEndpoint implements Endpoint {
         private Channel channel;
         private Exchange exchange;
+        private boolean throwException;
 
         public void setChannel(Channel channel) {
             this.channel = channel;
@@ -158,6 +182,9 @@ public class ChannelImplTest extends TestCase {
         public synchronized void process(Exchange exchange) {
             this.exchange = exchange;
             this.notifyAll();
+            if (throwException) {
+                throw new RuntimeException("Error");
+            }
         }
 
         public synchronized void done() {
