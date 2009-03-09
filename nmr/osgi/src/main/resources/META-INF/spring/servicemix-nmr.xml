@@ -51,20 +51,17 @@
             </list>
         </property>
     </bean>
-    <osgi:list id="flows"
-               interface="org.apache.servicemix.nmr.api.internal.Flow"
-               cardinality="0..N">
-        <osgi:listener ref="flowRegistry" bind-method="register" unbind-method="unregister" />
-    </osgi:list>
+    <bean class="org.apache.servicemix.nmr.osgi.OsgiServiceRegistryTracker">
+        <property name="interface" value="org.apache.servicemix.nmr.api.internal.Flow" />
+        <property name="registry" ref="listenerRegistry" />
+    </bean>
 
     <!-- Listener registry and service tracker -->
     <bean id="listenerRegistry" class="org.apache.servicemix.nmr.core.ListenerRegistryImpl" />
-    <osgi:list id="listeners"
-               interface="org.apache.servicemix.nmr.api.event.Listener"
-               cardinality="0..N"
-               greedy-proxying="true">
-        <osgi:listener ref="listenerRegistry" bind-method="register" unbind-method="unregister" />
-    </osgi:list>
+    <bean class="org.apache.servicemix.nmr.osgi.OsgiServiceRegistryTracker">
+        <property name="interface" value="org.apache.servicemix.nmr.api.event.Listener" />
+        <property name="registry" ref="listenerRegistry" />
+    </bean>
 
     <!-- Endpoint registry and service tracker -->
     <bean id="endpointRegistry" class="org.apache.servicemix.nmr.core.EndpointRegistryImpl">
@@ -72,19 +69,17 @@
         <property name="registry" ref="internalEndpointRegistry" />
     </bean>
     <bean id="internalEndpointRegistry" class="org.apache.servicemix.nmr.osgi.InternalRegistryWrapper" />
-    <osgi:list id="endpoints"
-               interface="org.apache.servicemix.nmr.api.Endpoint"
-               cardinality="0..N">
-        <osgi:listener ref="endpointRegistry" bind-method="register" unbind-method="unregister" />
-    </osgi:list>
-    
+    <bean class="org.apache.servicemix.nmr.osgi.OsgiServiceRegistryTracker">
+        <property name="interface" value="org.apache.servicemix.nmr.api.Endpoint" />
+        <property name="registry" ref="endpointRegistry" />
+    </bean>
+
     <!-- Wire registry and service tracker -->
     <bean id="wireRegistry" class="org.apache.servicemix.nmr.core.WireRegistryImpl"/>
-    <osgi:list id="wires"
-               interface="org.apache.servicemix.nmr.api.Wire"
-               cardinality="0..N">
-        <osgi:listener ref="wireRegistry" bind-method="register" unbind-method="unregister" />
-    </osgi:list>
+    <bean class="org.apache.servicemix.nmr.osgi.OsgiServiceRegistryTracker">
+        <property name="interface" value="org.apache.servicemix.nmr.api.Wire" />
+        <property name="registry" ref="wireRegistry" />
+    </bean>
 
     <!-- AuthorizationService -->
     <bean id="authorizationService" class="org.apache.servicemix.nmr.core.security.DefaultAuthorizationService" />

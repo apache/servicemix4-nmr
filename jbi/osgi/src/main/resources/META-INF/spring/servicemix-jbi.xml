@@ -55,11 +55,10 @@
     </bean>
 
     <!-- Service tracker for JBI components -->
-    <osgi:list id="components"
-               interface="org.apache.servicemix.jbi.runtime.ComponentWrapper"
-               cardinality="0..N">
-        <osgi:listener ref="componentRegistry" bind-method="register" unbind-method="unregister" />
-    </osgi:list>
+    <bean class="org.apache.servicemix.nmr.osgi.OsgiServiceRegistryTracker">
+        <property name="interface" value="org.apache.servicemix.jbi.runtime.ComponentWrapper" />
+        <property name="registry" ref="componentRegistry" />
+    </bean>
 
     <!-- Reference to the ServiceMix NMR -->
     <osgi:reference id="nmr"

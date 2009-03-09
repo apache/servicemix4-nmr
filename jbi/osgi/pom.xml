@@ -45,6 +45,10 @@
             <artifactId>org.apache.servicemix.jbi.deployer</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.servicemix.nmr</groupId>
+            <artifactId>org.apache.servicemix.nmr.osgi</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.osgi.core</artifactId>
         </dependency>
@@ -66,6 +70,7 @@
                             org.apache.geronimo.transaction.manager;resolution:=optional,
                             org.apache.servicemix.document,
                             org.apache.servicemix.nmr.api,
+                            org.apache.servicemix.nmr.osgi,
                             org.apache.servicemix.jbi.runtime,
                             org.apache.servicemix.jbi.runtime.impl,
                             org.apache.servicemix.jbi.osgi,
