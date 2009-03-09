@@ -17,22 +17,20 @@
 package org.apache.servicemix.jbi.itests;
 
 import java.io.File;
-import java.util.Properties;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.HttpURLConnection;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import javax.jbi.component.Component;
 import javax.jbi.management.LifeCycleMBean;
 
-import org.apache.servicemix.nmr.api.NMR;
-import org.apache.servicemix.kernel.testing.support.AbstractIntegrationTest;
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.handler.JBIDeploymentListener;
+import org.apache.servicemix.kernel.testing.support.AbstractIntegrationTest;
+import org.apache.servicemix.nmr.api.NMR;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
 
@@ -183,6 +181,11 @@ public class IntegrationTest extends AbstractIntegrationTest {
         saBundle.stop();
 
         saBundle.start();
+        sa = getOsgiService(ServiceAssembly.class);
+        assertNotNull(sa);
+        assertEquals(LifeCycleMBean.STARTED, sa.getCurrentState());
+
+        saBundle.update();
         sa = getOsgiService(ServiceAssembly.class);
         assertNotNull(sa);
         assertEquals(LifeCycleMBean.STARTED, sa.getCurrentState());

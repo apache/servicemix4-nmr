@@ -27,10 +27,9 @@ import javax.management.ObjectName;
 
 import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
-import org.apache.servicemix.jbi.deployer.ServiceUnit;
 import org.apache.servicemix.jbi.deployer.artifacts.ComponentImpl;
-import org.apache.servicemix.jbi.deployer.artifacts.ServiceUnitImpl;
 import org.apache.servicemix.jbi.deployer.artifacts.ServiceAssemblyImpl;
+import org.apache.servicemix.jbi.deployer.artifacts.ServiceUnitImpl;
 import org.apache.servicemix.jbi.deployer.descriptor.Descriptor;
 import org.apache.servicemix.jbi.deployer.descriptor.ServiceUnitDesc;
 import org.apache.servicemix.jbi.deployer.utils.FileUtil;
@@ -94,6 +93,9 @@ public class ServiceAssemblyInstaller extends AbstractInstaller {
             if (LifeCycleMBean.STOPPED.equals(assembly.getCurrentState())) {
                 assembly.shutDown(false, force);
             }
+            for (ServiceUnitImpl su : assembly.getServiceUnitsList()) {
+                su.getComponentImpl().removeServiceUnit(su);
+            }
         }
     }
 
@@ -126,6 +128,22 @@ public class ServiceAssemblyInstaller extends AbstractInstaller {
     protected List<ServiceUnitImpl> deploySUs() throws Exception {
         // Create the SA directory
         File saDir = new File(installRoot.getParent(), "sus");
+        // Quickly undeploy the SA if it has changed
+        if (isModified && !isFirstInstall) {
+            for (ServiceUnitDesc sud : descriptor.getServiceAssembly().getServiceUnits()) {
+                File suRootDir = new File(saDir, sud.getIdentification().getName());
+                String componentName = sud.getTarget().getComponentName();
+                ComponentImpl component = deployer.getComponent(componentName);
+                ServiceUnitImpl su = deployer.createServiceUnit(sud, suRootDir, component);
+                try {
+                    su.undeploy();
+                } catch (Exception e) {
+                    LOGGER.warn("Problem undeploying SU " + su.getName());
+                }
+            }
+        }
+
+        // Wipe out the SA dir
         if (isModified) {
             FileUtil.deleteFile(saDir);
             FileUtil.buildDirectory(saDir);

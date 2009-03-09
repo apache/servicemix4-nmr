@@ -59,6 +59,7 @@ public abstract class AbstractInstaller {
     protected File jbiArtifact;
     protected File installRoot;
     protected boolean uninstallFromOsgi;
+    protected boolean isFirstInstall;
     protected boolean isModified;
 
     protected AbstractInstaller(Deployer deployer, Descriptor descriptor, File jbiArtifact, boolean autoStart) {
@@ -85,6 +86,7 @@ public abstract class AbstractInstaller {
     public void init() throws Exception {
         Preferences prefs = getPreferences();
         long lastInstall = prefs.getLong(LAST_INSTALL, 0);
+        isFirstInstall = lastInstall == 0; 
         isModified = lastInstall == 0 || getBundle().getLastModified() > lastInstall;
         if (isModified) {
             extractBundle(installRoot, getBundle(), "/");
