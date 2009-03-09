@@ -677,10 +677,13 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
         if (sa != null) {
             try {
                 if (sa.getState() == AbstractLifecycleJbiArtifact.State.Started) {
-                    sa.stop();
+                    sa.stop(false);
                 }
                 if (sa.getState() == AbstractLifecycleJbiArtifact.State.Stopped) {
-                    sa.shutDown();
+                    sa.shutDown(false, true);
+                }
+                for (ServiceUnitImpl su : sa.getServiceUnitsList()) {
+                    su.undeploy();
                 }
             } catch (Exception e) {
                 LOGGER.error("Error unregistering deployed service assembly", e);
