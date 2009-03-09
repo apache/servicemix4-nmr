@@ -264,7 +264,7 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
         bundleContext.removeBundleListener(this);
     }
 
-    public synchronized void bundleChanged(BundleEvent event) {
+    public void bundleChanged(BundleEvent event) {
         switch (event.getType()) {
             case BundleEvent.STARTED:
                 if (match(event.getBundle())) {
