@@ -40,10 +40,9 @@ import org.apache.servicemix.nmr.api.internal.InternalExchange;
 public class AssemblyReferencesListener implements EndpointListener, ExchangeListener {
 
     private final ThreadLocal<ServiceAssembly> assembly = new ThreadLocal<ServiceAssembly>();
-    private final ConcurrentMap<InternalEndpoint, ServiceAssembly> endpoints =
-            new ConcurrentHashMap<InternalEndpoint, ServiceAssembly>();
-    private final ConcurrentMap<ServiceAssembly, AtomicInteger> references =
-            new ConcurrentHashMap<ServiceAssembly, AtomicInteger>();
+    private final ConcurrentMap<InternalEndpoint, ServiceAssembly> endpoints = new ConcurrentHashMap<InternalEndpoint, ServiceAssembly>();
+    private final ConcurrentMap<ServiceAssembly, AtomicInteger> references = new ConcurrentHashMap<ServiceAssembly, AtomicInteger>();
+    private final ConcurrentMap<ServiceAssembly, Object> locks = new ConcurrentHashMap<ServiceAssembly, Object>();
 
     public void setAssembly(ServiceAssembly assembly) {
         this.assembly.set(assembly);
@@ -58,8 +57,9 @@ public class AssemblyReferencesListener implements EndpointListener, ExchangeLis
         AtomicInteger count = references.remove(assembly);
         if (count != null) {
             count.set(0);
-            synchronized (assembly) {
-                assembly.notifyAll();
+            Object lock = locks.remove(assembly);
+            synchronized (lock) {
+                lock.notifyAll();
             }
         }
     }
@@ -70,6 +70,9 @@ public class AssemblyReferencesListener implements EndpointListener, ExchangeLis
             endpoints.put(endpoint, assembly);
             if (references.get(assembly) == null) {
                 references.put(assembly, new AtomicInteger());
+            }
+            if (locks.get(assembly) == null) {
+                locks.put(assembly, new Object());
             }
         }
     }
@@ -124,9 +127,10 @@ public class AssemblyReferencesListener implements EndpointListener, ExchangeLis
             AtomicInteger count = references.get(assembly);
             if (count != null) {
                 if (count.get() != 0) {
-                    synchronized (assembly) {
+                    Object lock = locks.get(assembly);
+                    synchronized (lock) {
                         while (count.get() != 0) {
-                            assembly.wait(Long.MAX_VALUE);
+                            lock.wait(Long.MAX_VALUE);
                         }
                     }
                 }
@@ -160,8 +164,9 @@ public class AssemblyReferencesListener implements EndpointListener, ExchangeLis
             AtomicInteger count = references.get(assembly);
             if (count != null) {
                 if (count.decrementAndGet() == 0) {
-                    synchronized (assembly) {
-                        assembly.notifyAll();
+                    Object lock = locks.get(assembly);
+                    synchronized (lock) {
+                        lock.notifyAll();
                     }
                 }
             }
