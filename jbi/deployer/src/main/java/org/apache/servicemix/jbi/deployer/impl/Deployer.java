@@ -424,7 +424,9 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
         registerService(bundle, new String[] { Component.class.getName(), ComponentWrapper.class.getName() },
                         component, props);
         // Now, register the inner component
-        registerService(bundle, javax.jbi.component.Component.class.getName(), innerComponent, props);
+        if (!wrappedComponents.containsKey(name)) {
+            registerService(bundle, javax.jbi.component.Component.class.getName(), innerComponent, props);
+        }
         getManagementAgent().register(new StandardMBean(component, Component.class),
                                       getNamingStrategy().getObjectName(component));
         return component;
@@ -616,6 +618,7 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
             descriptor.setComponent(componentDesc);
 
             try {
+                wrappedComponents.put(name, true);
                 ComponentInstaller installer = new ComponentInstaller(this, descriptor, null, autoStart);
                 installer.setBundle(reference.getBundle());
                 installer.setInnerComponent(component);
