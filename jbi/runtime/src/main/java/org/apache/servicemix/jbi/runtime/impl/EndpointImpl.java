@@ -16,22 +16,23 @@
  */
 package org.apache.servicemix.jbi.runtime.impl;
 
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
+
+import javax.jbi.servicedesc.ServiceEndpoint;
+
 import org.apache.servicemix.nmr.api.Channel;
 import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.Exchange;
-import org.w3c.dom.DocumentFragment;
-
-import javax.jbi.servicedesc.ServiceEndpoint;
-import javax.xml.namespace.QName;
-import java.util.Queue;
-import java.util.Map;
+import org.apache.servicemix.nmr.api.ServiceMixException;
 
 /**
  */
 public class EndpointImpl extends ServiceEndpointImpl implements Endpoint {
 
     private Channel channel;
-    private Queue<Exchange> queue;
+    private BlockingQueue<Exchange> queue;
 
     public EndpointImpl(Map<String, ?> properties) {
         super(properties);
@@ -41,7 +42,11 @@ public class EndpointImpl extends ServiceEndpointImpl implements Endpoint {
         if (exchange.getProperty(ServiceEndpoint.class) == null) {
             exchange.setProperty(ServiceEndpoint.class, this);
         }
-        queue.offer(exchange);
+        try {
+            queue.offer(exchange, Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException e) {
+            throw new ServiceMixException(e);
+        }
     }
 
     public Channel getChannel() {
@@ -52,11 +57,11 @@ public class EndpointImpl extends ServiceEndpointImpl implements Endpoint {
         this.channel = channel;
     }
 
-    public Queue<Exchange> getQueue() {
+    public BlockingQueue<Exchange> getQueue() {
         return queue;
     }
 
-    public void setQueue(Queue<Exchange> queue) {
+    public void setQueue(BlockingQueue<Exchange> queue) {
         this.queue = queue;
     }
 

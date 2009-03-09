@@ -52,7 +52,7 @@ import com.ibm.wsdl.Constants;
  */
 public class ComponentContextImpl extends AbstractComponentContext {
 
-    public static final int DEFAULT_QUEUE_CAPACITY = 100;
+    public static final int DEFAULT_QUEUE_CAPACITY = 1024;
 
     private static final Log LOG = LogFactory.getLog(ComponentContextImpl.class);
 
