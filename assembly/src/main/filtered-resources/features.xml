@@ -54,6 +54,14 @@
         <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.deployer/${pom.version}</bundle>
         <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.commands/${pom.version}</bundle>
     </feature>
+    <feature name="jbi-cluster" version="${version}">
+        <feature version="${version}">jbi</feature>
+        <feature>activemq</feature>
+        <bundle>mvn:org.springframework/spring-jms/${spring.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.jbi.cluster/org.apache.servicemix.jbi.cluster.requestor/${pom.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.jbi.cluster/org.apache.servicemix.jbi.cluster.engine/${pom.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.jbi.cluster/org.apache.servicemix.jbi.cluster.config/${pom.version}</bundle>
+    </feature>
     <feature name="examples-nmr" version="${version}">
         <bundle>mvn:org.apache.servicemix.nmr.examples/org.apache.servicemix.nmr.examples.nmr.endpoint/${pom.version}</bundle>
         <bundle>mvn:org.apache.servicemix.nmr.examples/org.apache.servicemix.nmr.examples.nmr.client/${pom.version}</bundle>
