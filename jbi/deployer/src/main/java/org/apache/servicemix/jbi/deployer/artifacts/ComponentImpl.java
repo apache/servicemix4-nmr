@@ -50,6 +50,7 @@ public class ComponentImpl extends AbstractLifecycleJbiArtifact implements Compo
     private javax.jbi.component.Component component;
     private Set<ServiceUnitImpl> serviceUnits;
     private SharedLibrary[] sharedLibraries;
+    private boolean restoreState = true;
 
     public ComponentImpl(Bundle bundle,
                          ComponentDesc componentDesc,
@@ -233,29 +234,31 @@ public class ComponentImpl extends AbstractLifecycleJbiArtifact implements Compo
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
             try {
                 Thread.currentThread().setContextClassLoader(component.getClass().getClassLoader());
-                State stateToUse = context != null ? runningState : State.Shutdown;
-                switch (stateToUse) {
-                    case Started:
-                        fireEvent(LifeCycleEvent.LifeCycleEventType.Starting);
-                        lifeCycle.init(contextToUse);
-                        start();
-                        state = State.Started;
-                        fireEvent(LifeCycleEvent.LifeCycleEventType.Started);
-                        break;
-                    case Stopped:
-                        fireEvent(LifeCycleEvent.LifeCycleEventType.Stopping);
-                        lifeCycle.init(contextToUse);
-                        start();
-                        stop();
-                        state = State.Stopped;
-                        fireEvent(LifeCycleEvent.LifeCycleEventType.Stopped);
-                        break;
-                    case Shutdown:
-                        fireEvent(LifeCycleEvent.LifeCycleEventType.ShuttingDown);
-                        lifeCycle.init(contextToUse);
-                        state = State.Shutdown;
-                        fireEvent(LifeCycleEvent.LifeCycleEventType.ShutDown);
-                        break;
+                if (restoreState) {
+                    State stateToUse = context != null ? runningState : State.Shutdown;
+                    switch (stateToUse) {
+                        case Started:
+                            fireEvent(LifeCycleEvent.LifeCycleEventType.Starting);
+                            lifeCycle.init(contextToUse);
+                            start();
+                            state = State.Started;
+                            fireEvent(LifeCycleEvent.LifeCycleEventType.Started);
+                            break;
+                        case Stopped:
+                            fireEvent(LifeCycleEvent.LifeCycleEventType.Stopping);
+                            lifeCycle.init(contextToUse);
+                            start();
+                            stop();
+                            state = State.Stopped;
+                            fireEvent(LifeCycleEvent.LifeCycleEventType.Stopped);
+                            break;
+                        case Shutdown:
+                            state = State.Shutdown;
+                            break;
+                    }
+                    restoreState = false;
+                } else {
+                    lifeCycle.init(contextToUse);
                 }
             } finally {
                 Thread.currentThread().setContextClassLoader(cl);
