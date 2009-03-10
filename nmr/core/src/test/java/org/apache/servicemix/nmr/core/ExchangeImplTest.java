@@ -22,6 +22,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.net.URLClassLoader;
 
 import javax.xml.namespace.QName;
@@ -31,6 +35,8 @@ import org.apache.servicemix.nmr.api.Message;
 import org.apache.servicemix.nmr.api.Pattern;
 import org.apache.servicemix.nmr.api.Status;
 import org.apache.servicemix.nmr.api.Type;
+import org.apache.servicemix.nmr.api.internal.InternalExchange;
+
 import junit.framework.TestCase;
 
 
@@ -204,6 +210,28 @@ public class ExchangeImplTest extends TestCase {
 		assertNotNull(e.getFault());
 	}
 
+	public void testCancel() throws InterruptedException {
+	    final InternalExchange e = new ExchangeImpl(Pattern.InOnly);
+	    final CountDownLatch latch = new CountDownLatch(1);
+	    Thread thread = new Thread() {
+	        @Override
+	        public void run() {
+	            try {
+	                e.getConsumerLock(true).acquire();
+	                latch.countDown();
+	            } catch (InterruptedException e) {
+	                fail(e.getMessage());
+	            }
+	        }
+	    };
+	    thread.start();
+	    //let's sleep for a moment to make sure the thread has acquired the lock
+	    Thread.sleep(150);
+	    e.cancel();
+	    assertTrue("Exchange should have been cancelled", latch.await(1, TimeUnit.SECONDS));
+	    assertEquals(Status.Error, e.getStatus());
+	}
+
     public static Map<String, Object> createMap(String... data) {
         Map<String, Object> props = new HashMap<String, Object>();
         for (int i = 0; i < data.length / 2; i++) {
@@ -211,5 +239,4 @@ public class ExchangeImplTest extends TestCase {
         }
         return props;
     }
-
 }

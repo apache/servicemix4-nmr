@@ -322,6 +322,13 @@ public interface Exchange extends Serializable {
      * @return the string representation
      */
     String display(boolean displayContent);
+    
+    /**
+     * Cancels a pending synchronous exchange.
+     * 
+     * The canceled exchange's status will be set to {@link Status#Error}   
+     */
+    void cancel();
 
 
 }

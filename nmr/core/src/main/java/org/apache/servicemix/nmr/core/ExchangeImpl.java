@@ -474,5 +474,16 @@ public class ExchangeImpl implements InternalExchange {
         }
         return converter;
     }
-
+    
+    public void cancel() {
+        cancel(consumerLock);
+        cancel(providerLock);
+    }
+    
+    private void cancel(Semaphore lock) {
+        if (lock != null) {
+            setStatus(Status.Error);
+            lock.release();
+        }
+    }
 }
