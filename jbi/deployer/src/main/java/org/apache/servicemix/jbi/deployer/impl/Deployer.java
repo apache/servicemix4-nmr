@@ -220,7 +220,6 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
     }
     
     public void setShutdownTimeout(int shutdownTimeout) {
-        System.out.println("Shutting down in " + shutdownTimeout);
         this.shutdownTimeout = shutdownTimeout;
     }
     
