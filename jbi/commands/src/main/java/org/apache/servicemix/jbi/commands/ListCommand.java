@@ -18,6 +18,8 @@ package org.apache.servicemix.jbi.commands;
 
 import java.util.List;
 
+import javax.jbi.management.LifeCycleMBean;
+
 import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.SharedLibrary;
@@ -26,6 +28,8 @@ import org.apache.servicemix.jbi.deployer.SharedLibrary;
  * List JBI artifacts
  */
 public class ListCommand extends JbiCommandSupport {
+    
+    private static final int NAME_COL_LENGTH = 30; 
 
     protected Object doExecute() throws Exception {
         List<SharedLibrary> libraries = getSharedLibraries();
@@ -42,8 +46,11 @@ public class ListCommand extends JbiCommandSupport {
         if (components != null && !components.isEmpty()) {
             io.out.println("Components");
             io.out.println("----------");
+            io.out.println("   State                  Name                  Description");
             for (Component component : components) {
-                io.out.println(component.getName() + " - " + component.getCurrentState() + " - " + component.getDescription());
+                io.out.println("[" + getStateString(component.getCurrentState())+ "] ["
+                        + getNameString(component.getName(), NAME_COL_LENGTH) + "]     "
+                        + component.getDescription());
             }
             io.out.println();
         }
@@ -52,11 +59,38 @@ public class ListCommand extends JbiCommandSupport {
         if (assemblies != null && !assemblies.isEmpty()) {
             io.out.println("Service Assemblies");
             io.out.println("------------------");
+            io.out.println("   State                  Name                  Description");
             for (ServiceAssembly assembly : assemblies) {
-                io.out.println(assembly.getName() + " - " + assembly.getCurrentState() + " - " + assembly.getDescription());
+                io.out.println("[" + getStateString(assembly.getCurrentState())+ "] ["
+                        + getNameString(assembly.getName(), NAME_COL_LENGTH) + "]     "
+                        + assembly.getDescription());
             }
             io.out.println();
         }
         return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+    
+    
+    
+
+    private String getNameString(String name, int colLength) {
+        String ret = name;
+        for (int i = 0; i < colLength - name.length(); i++) {
+            ret = ret + " ";
+        }
+        return ret;
+    }
+
+
+    private String getStateString(String state) {
+        if (state.equals(LifeCycleMBean.SHUTDOWN)) {
+            return "Shutdown";
+        } else if (state.equals(LifeCycleMBean.STARTED)) {
+            return "Started ";
+        } else if (state.equals(LifeCycleMBean.STOPPED)) {
+            return "Stopped ";
+        } else {
+            return "Unknown ";
+        }
     }
 }
