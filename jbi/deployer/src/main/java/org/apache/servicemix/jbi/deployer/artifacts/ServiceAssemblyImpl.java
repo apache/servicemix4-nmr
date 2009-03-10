@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import javax.jbi.JBIException;
 import javax.jbi.management.LifeCycleMBean;
@@ -76,6 +78,8 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
     // map of wires and the matching OSGi ServiceRegistration
     private Map<Wire, ServiceRegistration> wires = new HashMap<Wire, ServiceRegistration>();
 
+    private int shutdownTimeout;
+
     public ServiceAssemblyImpl(Bundle bundle,
                                ServiceAssemblyDesc serviceAssemblyDesc,
                                List<ServiceUnitImpl> serviceUnits,
@@ -116,6 +120,10 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
 
     public List<ServiceUnitImpl> getServiceUnitsList() {
         return serviceUnits;
+    }
+    
+    public void setShutdownTimeout(int shutdownTimeout) {
+        this.shutdownTimeout = shutdownTimeout;
     }
 
     public synchronized void init() throws JBIException {
@@ -200,6 +208,7 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
 
     public synchronized void shutDown(boolean persist, boolean force) throws JBIException {
         listener.setAssembly(this);
+        final Semaphore semaphore = force && shutdownTimeout > 0 ? startShutdownMonitorThread() : null;
         try {
             if (state == State.Shutdown) {
                 return;
@@ -225,6 +234,11 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
         } finally {
             listener.setAssembly(null);
             listener.forget(this);
+            
+            //notify the shutdown monitor thread that things ended correctly
+            if (semaphore != null) {
+                semaphore.release();
+            }
         }
     }
 
@@ -302,5 +316,29 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
     protected ServiceRegistration registerWire(Wire wire) {
         return bundle.getBundleContext().registerService(Wire.class.getName(), 
                                                          wire, new MapToDictionary(wire.getFrom()));
+    }
+    
+    /*
+     * Start the shutdown monitor thread and return a semaphore to notify the thread of a clean shutdown
+     */
+    private Semaphore startShutdownMonitorThread() {
+        final Semaphore semaphore = new Semaphore(0);
+        Thread thread = new Thread(getName()  + " - Shutdown Monitor Thread") {
+            @Override
+            public void run() {
+                try {
+                    LOGGER.debug("Waiting for " + shutdownTimeout + " milliseconds to a clean shutdown of SA " + ServiceAssemblyImpl.this.getName());
+                    if (!semaphore.tryAcquire(shutdownTimeout, TimeUnit.MILLISECONDS)) {
+                        LOGGER.warn("Unable to do a clean shutdown of SA " + ServiceAssemblyImpl.this.getName() + ", canceling all sync exchanges");
+                        listener.cancelPendingSyncExchanges(ServiceAssemblyImpl.this);                        
+                    }
+                } catch (InterruptedException e) {
+                    //let's assume things went OK if we got interrupted
+                }
+            }
+        };
+        thread.setDaemon(true);
+        thread.start();
+        return semaphore;
     }
 }

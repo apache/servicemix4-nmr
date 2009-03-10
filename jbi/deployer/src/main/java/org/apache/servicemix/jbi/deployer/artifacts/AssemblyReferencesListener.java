@@ -16,11 +16,15 @@
  */
 package org.apache.servicemix.jbi.deployer.artifacts;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
+import org.apache.servicemix.jbi.runtime.impl.DeliveryChannelImpl;
+import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.Role;
 import org.apache.servicemix.nmr.api.Status;
@@ -43,6 +47,7 @@ public class AssemblyReferencesListener implements EndpointListener, ExchangeLis
     private final ConcurrentMap<InternalEndpoint, ServiceAssembly> endpoints = new ConcurrentHashMap<InternalEndpoint, ServiceAssembly>();
     private final ConcurrentMap<ServiceAssembly, AtomicInteger> references = new ConcurrentHashMap<ServiceAssembly, AtomicInteger>();
     private final ConcurrentMap<ServiceAssembly, Object> locks = new ConcurrentHashMap<ServiceAssembly, Object>();
+    private final ConcurrentMap<InternalExchange, ServiceAssembly> pending = new ConcurrentHashMap<InternalExchange, ServiceAssembly>();
 
     public void setAssembly(ServiceAssembly assembly) {
         this.assembly.set(assembly);
@@ -89,8 +94,20 @@ public class AssemblyReferencesListener implements EndpointListener, ExchangeLis
                 // Increment reference to the source SA
                 InternalExchange ie = (InternalExchange) exchange;
                 reference(ie.getSource());
+                if (isSync(exchange)) {
+                    pending(ie);
+                }
             }
         }
+    }
+
+    private boolean isSync(Exchange exchange) {
+        return exchange.getProperty(DeliveryChannelImpl.SEND_SYNC) != null && exchange.getProperty(DeliveryChannelImpl.SEND_SYNC, Boolean.class).booleanValue();
+    }
+
+    private void pending(InternalExchange exchange) {
+        ServiceAssembly assembly = endpoints.get(exchange.getSource());
+        pending.put(exchange, assembly);
     }
 
     public void exchangeDelivered(Exchange exchange) {
@@ -101,6 +118,7 @@ public class AssemblyReferencesListener implements EndpointListener, ExchangeLis
                 // Decrement references to source and destination SA
                 unreference(ie.getSource());
                 unreference(ie.getDestination());
+                pending.remove(exchange);
             }
             // Check if this is a new exchange
         } else if (exchange.getStatus() == Status.Active && exchange.getRole() == Role.Provider &&
@@ -119,6 +137,7 @@ public class AssemblyReferencesListener implements EndpointListener, ExchangeLis
             // Decrement references to source and destination SA
             unreference(ie.getSource());
             unreference(ie.getDestination());
+            pending.remove(exchange);
         }
     }
 
@@ -134,6 +153,14 @@ public class AssemblyReferencesListener implements EndpointListener, ExchangeLis
                         }
                     }
                 }
+            }
+        }
+    }
+    
+    public void cancelPendingSyncExchanges(ServiceAssembly assembly) {
+        if (assembly != null) {
+            for (Exchange exchange : getPending(assembly)) {
+                exchange.cancel();
             }
         }
     }
@@ -171,6 +198,16 @@ public class AssemblyReferencesListener implements EndpointListener, ExchangeLis
                 }
             }
         }
+    }
+
+    protected Set<InternalExchange> getPending(ServiceAssembly assembly) {
+        Set<InternalExchange> result = new HashSet<InternalExchange>();
+        for (InternalExchange exchange : pending.keySet()) {
+            if (pending.get(exchange).equals(assembly)) {
+                result.add(exchange);
+            }
+        }
+        return result;
     }
 
 }

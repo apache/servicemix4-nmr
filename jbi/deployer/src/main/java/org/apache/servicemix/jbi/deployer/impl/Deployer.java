@@ -112,6 +112,8 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
     private ServiceTracker deployedAssembliesTracker;
 
     private AssemblyReferencesListener endpointListener;
+    
+    private int shutdownTimeout;
 
     // Helper beans
     private NamingStrategy namingStrategy;
@@ -215,6 +217,15 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
 
     public ServiceAssemblyImpl getServiceAssembly(String name) {
         return name != null ? serviceAssemblies.get(name) : null;
+    }
+    
+    public void setShutdownTimeout(int shutdownTimeout) {
+        System.out.println("Shutting down in " + shutdownTimeout);
+        this.shutdownTimeout = shutdownTimeout;
+    }
+    
+    public int getShutdownTimeout() {
+        return shutdownTimeout;
     }
 
     public void afterPropertiesSet() throws Exception {
@@ -436,6 +447,7 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
         // Now create the SA and initialize it
         Preferences prefs = preferencesService.getUserPreferences(serviceAssemblyDesc.getIdentification().getName());
         ServiceAssemblyImpl sa = new ServiceAssemblyImpl(bundle, serviceAssemblyDesc, sus, prefs, endpointListener, autoStart);
+        sa.setShutdownTimeout(shutdownTimeout);
         sa.setListenerRegistry(listenerRegistry);
         sa.init();
         serviceAssemblies.put(sa.getName(), sa);
