@@ -35,13 +35,24 @@
         <gshell:link name="jbi/ls" target="jbi/list"/>
         <gshell:command name="jbi/start">
             <gshell:action class="org.apache.servicemix.jbi.commands.StartCommand" />
+            <gshell:completers>
+                <ref bean="jbiArtifactsCompleter" />
+            </gshell:completers>
         </gshell:command>
         <gshell:command name="jbi/stop">
             <gshell:action class="org.apache.servicemix.jbi.commands.StopCommand" />
+            <gshell:completers>
+                <ref bean="jbiArtifactsCompleter" />
+            </gshell:completers>
         </gshell:command>
         <gshell:command name="jbi/shutdown">
             <gshell:action class="org.apache.servicemix.jbi.commands.ShutdownCommand" />
+            <gshell:completers>
+                <ref bean="jbiArtifactsCompleter" />
+            </gshell:completers>
         </gshell:command>
     </gshell:command-bundle>
+
+    <bean id="jbiArtifactsCompleter" class="org.apache.servicemix.jbi.commands.JbiCommandCompleter" />
 
 </beans>
