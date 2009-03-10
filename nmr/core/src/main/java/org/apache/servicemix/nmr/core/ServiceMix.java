@@ -48,7 +48,9 @@ public class ServiceMix implements NMR {
             listeners = new ListenerRegistryImpl();
         }
         if (flows == null) {
-            flows = new FlowRegistryImpl();
+            FlowRegistryImpl reg = new FlowRegistryImpl();
+            reg.setRegistry(endpoints);
+            flows = reg;
             flows.register(new StraightThroughFlow(), ServiceHelper.createMap(Flow.ID, StraightThroughFlow.class.getName()));
         }
         if (wires == null) {

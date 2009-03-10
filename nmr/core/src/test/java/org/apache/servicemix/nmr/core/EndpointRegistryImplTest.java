@@ -22,16 +22,17 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import junit.framework.TestCase;
 import org.apache.servicemix.nmr.api.Channel;
 import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.EndpointRegistry;
 import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.nmr.api.Reference;
-import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
 import org.apache.servicemix.nmr.api.event.EndpointListener;
+import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
+import org.apache.servicemix.nmr.api.internal.InternalReference;
 import org.apache.servicemix.nmr.api.service.ServiceHelper;
-import junit.framework.TestCase;
 
 public class EndpointRegistryImplTest extends TestCase {
 
@@ -63,16 +64,16 @@ public class EndpointRegistryImplTest extends TestCase {
         Endpoint endpoint = new DummyEndpoint();
         Reference ref = registry.lookup(ServiceHelper.createMap(Endpoint.NAME, "id"));
         assertNotNull(ref);
-        assertTrue(ref instanceof DynamicReferenceImpl);
-        DynamicReferenceImpl r = (DynamicReferenceImpl) ref;
-        assertNotNull(r.choose());
-        assertFalse(r.choose().iterator().hasNext());
+        assertTrue(ref instanceof InternalReference);
+        InternalReference r = (InternalReference) ref;
+        assertNotNull(r.choose(registry));
+        assertFalse(r.choose(registry).iterator().hasNext());
         registry.register(endpoint, ServiceHelper.createMap(Endpoint.NAME, "id"));
-        assertNotNull(r.choose());
-        assertTrue(r.choose().iterator().hasNext());
+        assertNotNull(r.choose(registry));
+        assertTrue(r.choose(registry).iterator().hasNext());
         registry.unregister(endpoint, null);
-        assertNotNull(r.choose());
-        assertFalse(r.choose().iterator().hasNext());
+        assertNotNull(r.choose(registry));
+        assertFalse(r.choose(registry).iterator().hasNext());
     }
 
     public void testLdapFilter() throws Exception {
@@ -81,16 +82,16 @@ public class EndpointRegistryImplTest extends TestCase {
         Endpoint endpoint = new DummyEndpoint();
         Reference ref = registry.lookup("(NAME=id)");
         assertNotNull(ref);
-        assertTrue(ref instanceof DynamicReferenceImpl);
-        DynamicReferenceImpl r = (DynamicReferenceImpl) ref;
-        assertNotNull(r.choose());
-        assertFalse(r.choose().iterator().hasNext());
+        assertTrue(ref instanceof InternalReference);
+        InternalReference r = (InternalReference) ref;
+        assertNotNull(r.choose(registry));
+        assertFalse(r.choose(registry).iterator().hasNext());
         registry.register(endpoint, ServiceHelper.createMap(Endpoint.NAME, "id"));
-        assertNotNull(r.choose());
-        assertTrue(r.choose().iterator().hasNext());
+        assertNotNull(r.choose(registry));
+        assertTrue(r.choose(registry).iterator().hasNext());
         registry.unregister(endpoint, null);
-        assertNotNull(r.choose());
-        assertFalse(r.choose().iterator().hasNext());
+        assertNotNull(r.choose(registry));
+        assertFalse(r.choose(registry).iterator().hasNext());
     }
 
     public void testEndpointListener() throws Exception {
@@ -140,9 +141,9 @@ public class EndpointRegistryImplTest extends TestCase {
         // make sure that the query for the wire's from returns the target endpoint
         Reference ref = registry.lookup(from);
         assertNotNull(ref);
-        assertTrue(ref instanceof DynamicReferenceImpl);
-        DynamicReferenceImpl reference = (DynamicReferenceImpl) ref;
-        Iterable<InternalEndpoint> endpoints = reference.choose();
+        assertTrue(ref instanceof InternalReference);
+        InternalReference reference = (InternalReference) ref;
+        Iterable<InternalEndpoint> endpoints = reference.choose(registry);
         assertNotNull(endpoints);
         assertTrue(endpoints.iterator().hasNext());
         assertEquals(endpoint, endpoints.iterator().next().getEndpoint());

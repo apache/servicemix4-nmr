@@ -16,6 +16,7 @@
  */
 package org.apache.servicemix.nmr.api.internal;
 
+import org.apache.servicemix.nmr.api.EndpointRegistry;
 import org.apache.servicemix.nmr.api.Reference;
 
 /**
@@ -33,6 +34,6 @@ public interface InternalReference extends Reference {
      *
      * @return an iterator on matching endpoints
      */
-    Iterable<InternalEndpoint> choose();
+    Iterable<InternalEndpoint> choose(EndpointRegistry registry);
 
 }

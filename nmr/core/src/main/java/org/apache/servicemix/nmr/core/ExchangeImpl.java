@@ -59,10 +59,10 @@ public class ExchangeImpl implements InternalExchange {
     private Message out;
     private Message fault;
     private Exception error;
-    private InternalEndpoint source;
-    private InternalEndpoint destination;
-    private Semaphore consumerLock;
-    private Semaphore providerLock;
+    private transient InternalEndpoint source;
+    private transient InternalEndpoint destination;
+    private transient Semaphore consumerLock;
+    private transient Semaphore providerLock;
 
     private static transient Converter converter;
 

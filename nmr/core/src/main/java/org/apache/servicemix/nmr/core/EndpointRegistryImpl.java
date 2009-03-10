@@ -23,8 +23,8 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.w3c.dom.Document;
 
@@ -37,8 +37,6 @@ import org.apache.servicemix.nmr.api.Wire;
 import org.apache.servicemix.nmr.api.event.EndpointListener;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
 import org.apache.servicemix.nmr.api.service.ServiceRegistry;
-import org.apache.servicemix.nmr.core.util.Filter;
-import org.apache.servicemix.nmr.core.util.MapToDictionary;
 
 /**
  * Implementation of {@link EndpointRegistry} interface that defines
@@ -52,7 +50,7 @@ public class EndpointRegistryImpl implements EndpointRegistry {
     private NMR nmr;
     private ConcurrentMap<Endpoint, InternalEndpoint> endpoints = new ConcurrentHashMap<Endpoint, InternalEndpoint>();
     private Map<InternalEndpoint, Endpoint> wrappers = new ConcurrentHashMap<InternalEndpoint, Endpoint>();
-    private Map<DynamicReferenceImpl, Boolean> references = new WeakHashMap<DynamicReferenceImpl, Boolean>();
+    private Map<CacheableReference, Boolean> references = new WeakHashMap<CacheableReference, Boolean>();
     private ServiceRegistry<InternalEndpoint> registry;
 
     public EndpointRegistryImpl() {
@@ -109,7 +107,7 @@ public class EndpointRegistryImpl implements EndpointRegistry {
                 listener.endpointRegistered(wrapper);
             }
             synchronized (this.references) {
-                for (DynamicReferenceImpl ref : references.keySet()) {
+                for (CacheableReference ref : references.keySet()) {
                     ref.setDirty();
                 }
             }
@@ -146,7 +144,7 @@ public class EndpointRegistryImpl implements EndpointRegistry {
             }
         }
         synchronized (this.references) {
-            for (DynamicReferenceImpl ref : references.keySet()) {
+            for (CacheableReference ref : references.keySet()) {
                 ref.setDirty();
             }
         }
@@ -216,20 +214,7 @@ public class EndpointRegistryImpl implements EndpointRegistry {
      */
     public Reference lookup(Map<String, ?> props) {
         final Map<String, ?> properties = handleWiring(props);
-        DynamicReferenceImpl ref = new DynamicReferenceImpl(this, new Filter<InternalEndpoint>() {
-            public boolean match(InternalEndpoint endpoint) {
-                Map<String, ?> epProps = registry.getProperties(endpoint);
-                for (Map.Entry<String, ?> name : properties.entrySet()) {
-                    if (!name.getValue().equals(epProps.get(name.getKey()))) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-            public String toString() {
-                return properties.toString();
-            }
-        });
+        CacheableReference ref = new PropertyMatchingReference(properties);
         synchronized (this.references) {
             this.references.put(ref, true);
         }
@@ -258,16 +243,7 @@ public class EndpointRegistryImpl implements EndpointRegistry {
     public Reference lookup(final String filter) {
         try {
             try {
-                final org.osgi.framework.Filter flt = org.osgi.framework.FrameworkUtil.createFilter(filter);
-                DynamicReferenceImpl ref = new DynamicReferenceImpl(this, new Filter<InternalEndpoint>() {
-                    public boolean match(InternalEndpoint endpoint) {
-                        Map<String, ?> props = EndpointRegistryImpl.this.getProperties(endpoint);
-                        return flt.match(new MapToDictionary(props));
-                    }
-                    public String toString() {
-                        return filter;
-                    }
-                });
+                FilterMatchingReference ref = new FilterMatchingReference(filter);
                 synchronized (this.references) {
                     this.references.put(ref, true);
                 }

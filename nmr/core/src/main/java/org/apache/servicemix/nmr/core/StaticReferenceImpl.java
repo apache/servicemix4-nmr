@@ -20,6 +20,7 @@ import java.util.List;
 
 import org.w3c.dom.Document;
 
+import org.apache.servicemix.nmr.api.EndpointRegistry;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
 import org.apache.servicemix.nmr.api.internal.InternalReference;
 
@@ -59,7 +60,7 @@ public class StaticReferenceImpl implements InternalReference {
      *
      * @return an endpoint that will be used as the physical target
      */
-    public Iterable<InternalEndpoint> choose() {
+    public Iterable<InternalEndpoint> choose(EndpointRegistry registry) {
         return endpoints;
     }
 

@@ -18,31 +18,27 @@
  */
 package org.apache.servicemix.nmr.core;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.w3c.dom.Document;
 
 import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.EndpointRegistry;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
-import org.apache.servicemix.nmr.api.internal.InternalReference;
 import org.apache.servicemix.nmr.core.util.Filter;
 
 /**
  * A dynamic reference that holds a transient list of matching endpoints.
  * This list will be refreshed when #setDirty() has been called previsouly.
  */
-public class DynamicReferenceImpl implements InternalReference {
+public class DynamicReference implements CacheableReference {
 
     private final Filter<InternalEndpoint> filter;
-    private final EndpointRegistry registry;
     private transient volatile List<InternalEndpoint> matches;
+    private transient EndpointRegistry registry;
 
-    public DynamicReferenceImpl(EndpointRegistry registry, Filter<InternalEndpoint> filter) {
+    public DynamicReference(Filter<InternalEndpoint> filter) {
         this.filter = filter;
-        this.registry = registry;
     }
 
     public Document toXml() {
@@ -50,21 +46,22 @@ public class DynamicReferenceImpl implements InternalReference {
         return null;
     }
 
-    public synchronized Iterable<InternalEndpoint> choose() {
-        if (this.matches == null) {
-            List<InternalEndpoint> eps = new ArrayList<InternalEndpoint>();
-            for (Endpoint ep : registry.query((Map<String, ?>) null)) {
+    public synchronized Iterable<InternalEndpoint> choose(EndpointRegistry registry) {
+        List<InternalEndpoint> result = matches;
+        if (result == null || this.registry != registry) {
+            for (Endpoint ep : registry.query(null)) {
                 InternalEndpoint iep = (InternalEndpoint) ep;
                 if (filter.match(iep)) {
-                    eps.add(iep);
+                    result.add(iep);
                 }
             }
-            this.matches = eps;
+            this.registry = registry;
+            this.matches = result;
         }
-        return matches;
+        return result;
     }
 
-    protected synchronized void setDirty() {
+    public synchronized void setDirty() {
         this.matches = null;
     }
 

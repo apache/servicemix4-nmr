@@ -44,6 +44,7 @@
 
     <!-- Flow registry and service tracker -->
     <bean id="flowRegistry" class="org.apache.servicemix.nmr.core.FlowRegistryImpl">
+        <property name="registry" ref="endpointRegistry" />
         <property name="authorizationService" ref="authorizationService" />
         <property name="nonOsgiFlows">
             <list>
