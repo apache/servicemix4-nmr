@@ -38,6 +38,11 @@
         <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.commands/${pom.version}</bundle>
         <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.management/${pom.version}</bundle>
     </feature>
+    <feature name="nmr-audit" version="${version}">
+        <feature version="${version}">nmr</feature>
+        <bundle>mvn:org.apache.servicemix/servicemix-utils/${servicemix.utils.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.audit/${pom.version}</bundle>
+    </feature>
     <feature name="jbi" version="${version}">
         <feature version="${version}">naming</feature>
         <feature version="${version}">transaction</feature>

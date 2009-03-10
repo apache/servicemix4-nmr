@@ -38,6 +38,7 @@
         <module>osgi</module>
         <module>commands</module>
         <module>management</module>
+        <module>audit</module>
     </modules>
 
 </project>

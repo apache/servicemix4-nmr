@@ -236,6 +236,8 @@
                                 <descriptor>file:${basedir}/target/classes/features.xml</descriptor>
                             </descriptors>
                             <features>
+                                <feature>nmr</feature>
+                                <feature>nmr-audit</feature>
                                 <feature>jbi</feature>
                             </features>
                             <repository>target/features-repo</repository>
