@@ -37,7 +37,7 @@ public class ListCommand extends JbiCommandSupport {
             io.out.println("Shared Libraries");
             io.out.println("----------------");
             for (SharedLibrary library : libraries) {
-                io.out.println(library.getName() + " - " + library.getVersion() + " - " + library.getDescription());
+                io.out.println(library.getName() + " - " + library.getVersion() + " - " + (library.getDescription() != null ? library.getDescription() : ""));
             }
             io.out.println();
         }
@@ -50,7 +50,7 @@ public class ListCommand extends JbiCommandSupport {
             for (Component component : components) {
                 io.out.println("[" + getStateString(component.getCurrentState())+ "] ["
                         + getNameString(component.getName(), NAME_COL_LENGTH) + "]     "
-                        + component.getDescription());
+                        + (component.getDescription() != null ? component.getDescription() : ""));
             }
             io.out.println();
         }
@@ -63,7 +63,7 @@ public class ListCommand extends JbiCommandSupport {
             for (ServiceAssembly assembly : assemblies) {
                 io.out.println("[" + getStateString(assembly.getCurrentState())+ "] ["
                         + getNameString(assembly.getName(), NAME_COL_LENGTH) + "]     "
-                        + assembly.getDescription());
+                        + (assembly.getDescription() != null ? assembly.getDescription() : ""));
             }
             io.out.println();
         }
