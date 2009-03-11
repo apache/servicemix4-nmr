@@ -86,6 +86,7 @@
                             *
                         </Import-Package>
                         <Export-Package>${pom.artifactId}*;version=${pom.version}</Export-Package>
+                        <Spring-Context>*;publish-context:=false;create-asynchronously:=false</Spring-Context>
                     </instructions>
                 </configuration>
             </plugin>

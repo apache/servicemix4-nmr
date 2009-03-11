@@ -14,8 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicemix.nmr.audit.jdbc;
+package org.apache.servicemix.nmr.audit.lucene;
 
+import java.io.File;
 import java.sql.Connection;
 
 import javax.sql.DataSource;
@@ -24,13 +25,17 @@ import org.apache.servicemix.jbi.jaxp.StringSource;
 import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.Status;
 import org.apache.servicemix.nmr.audit.AbstractAuditorTest;
+import org.apache.servicemix.nmr.audit.jdbc.JdbcAuditor;
+import org.apache.servicemix.util.FileUtil;
 import org.hsqldb.jdbc.jdbcDataSource;
 
-public class JdbcAuditorTest extends AbstractAuditorTest {
+public class LuceneAuditorTest extends AbstractAuditorTest {
 
     private DataSource dataSource;
 
     private Connection connection;
+
+    private File index;
 
     protected void setUp() throws Exception {
         super.setUp();
@@ -39,6 +44,9 @@ public class JdbcAuditorTest extends AbstractAuditorTest {
         ds.setUser("sa");
         dataSource = ds;
         connection = dataSource.getConnection();
+
+        index = new File("target/data/lucene");
+        FileUtil.deleteFile(index);
     }
 
     protected void tearDown() throws Exception {
@@ -50,9 +58,14 @@ public class JdbcAuditorTest extends AbstractAuditorTest {
     public void testInsertUpdate() throws Exception {
         AbstractAuditorTest.ReceiverEndpoint receiver = createReceiver(nmr, false, false);
 
-        JdbcAuditor auditor = new JdbcAuditor();
-        auditor.setDataSource(dataSource);
-        auditor.afterPropertiesSet();
+        JdbcAuditor jdbcAuditor = new JdbcAuditor();
+        jdbcAuditor.setDataSource(dataSource);
+        jdbcAuditor.afterPropertiesSet();
+        LuceneAuditor auditor = new LuceneAuditor();
+        auditor.setDelegatedAuditor(jdbcAuditor);
+        LuceneIndexer indexer = new LuceneIndexer();
+        indexer.setDirectoryName(index);
+        auditor.setLuceneIndexer(indexer);
         nmr.getListenerRegistry().register(auditor, null);
 
         auditor.deleteAllExchanges();
@@ -65,6 +78,40 @@ public class JdbcAuditorTest extends AbstractAuditorTest {
         assertNotNull(exchanges);
         assertEquals(1, exchanges.length);
         assertEquals(Status.Done, exchanges[0].getStatus());
+
+        System.err.println(exchanges[0].display(true));
+
+        String[] ids = auditor.findExchangesIdsByMessageContent("in", "world");
+        assertNotNull(ids);
+        assertEquals(1, ids.length);
+        exchanges = auditor.getExchangesByIds(ids);
+        assertNotNull(exchanges);
+        assertEquals(1, exchanges.length);
+        assertEquals(Status.Done, exchanges[0].getStatus());
+
+        ids = auditor.findExchangesIdsByMessageHeader("in", "prop1", "val*");
+        assertNotNull(ids);
+        assertEquals(1, ids.length);
+
+        ids = auditor.findExchangesIdsByProperty("prop1", "val*");
+        assertNotNull(ids);
+        assertEquals(1, ids.length);
+
+        ids = auditor.findExchangesIdsByQuery("(properties.prop1: val*) AND (in.content: hello)");
+        assertNotNull(ids);
+        assertEquals(1, ids.length);
+
+        ids = auditor.findExchangesIdsByQuery("id: " + ids[0]);
+        assertNotNull(ids);
+        assertEquals(1, ids.length);
+
+        ids = auditor.findExchangesIdsByQuery("mep: InOnly");
+        assertNotNull(ids);
+        assertEquals(1, ids.length);
+
+        ids = auditor.findExchangesIdsByQuery("status: Done");
+        assertNotNull(ids);
+        assertEquals(1, ids.length);
 
         // TODO: reenable this when resendExchange is implemented
 

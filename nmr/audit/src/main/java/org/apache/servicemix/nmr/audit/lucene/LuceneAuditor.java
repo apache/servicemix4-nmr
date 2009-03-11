@@ -53,9 +53,17 @@ import org.apache.servicemix.nmr.core.util.StringSource;
  */
 public class LuceneAuditor extends AbstractAuditor implements AuditorQueryMBean {
 
+    public static final String FIELD_ID = "id";
+    public static final String FIELD_STATUS = "status";
+    public static final String FIELD_MEP = "mep";
+    public static final String FIELD_ROLE = "role";
+    public static final String FIELD_PROPERTIES = "properties";
+    public static final String FIELD_CONTENT = "content";
+
+
     private AuditorMBean delegatedAuditor;
 
-    private LuceneIndexer luceneIndexer = new LuceneIndexer();
+    private LuceneIndexer luceneIndexer;
 
     /**
      * @return Returns the luceneIndexer.
@@ -129,23 +137,27 @@ public class LuceneAuditor extends AbstractAuditor implements AuditorQueryMBean 
         return "Lucene Auditor";
     }
 
-    public String[] findExchangesIDsByStatus(Status status) throws AuditorException {
-        String field = "org.apache.servicemix.status";
-        return getExchangeIds(field, String.valueOf(status));
+    public String[] findExchangesIdsByQuery(String query) throws AuditorException {
+        return getExchangeIds("", query);
     }
 
-    public String[] findExchangesIDsByMessageContent(String type, String content) throws AuditorException {
-        String field = "org.apache.servicemix." + type + ".content";
-        return getExchangeIds(field, content);
+    public String[] findExchangesIdsByStatus(Status status) throws AuditorException {
+        return getExchangeIds(FIELD_STATUS, String.valueOf(status));
     }
 
-    public String[] findExchangesIDsByMessageProperty(String type, 
-                                                      String property, 
-                                                      String value) throws AuditorException {
-        if (property != null && !property.startsWith("org.apache.servicemix")) {
-            property = "org.apache.servicemix." + type + ".headers." + property;
-        }
-        return getExchangeIds(property, value);
+    public String[] findExchangesIdsByProperty(String property,
+                                               String value) throws AuditorException {
+        return getExchangeIds(FIELD_PROPERTIES + "." + property, value);
+    }
+
+    public String[] findExchangesIdsByMessageContent(String type, String content) throws AuditorException {
+        return getExchangeIds(type.toLowerCase() + "." + FIELD_CONTENT, content);
+    }
+
+    public String[] findExchangesIdsByMessageHeader(String type,
+                                                    String property,
+                                                    String value) throws AuditorException {
+        return getExchangeIds(type.toLowerCase() + "." + FIELD_PROPERTIES + "." + property, value);
     }
 
     protected Document createDocument(Exchange exchange) throws AuditorException {
@@ -153,16 +165,20 @@ public class LuceneAuditor extends AbstractAuditor implements AuditorQueryMBean 
             exchange.ensureReReadable();
             // This could be in a separated class (a LuceneDocumentProvider)
             Document d = new Document();
-            d.add(new Field("org.apache.servicemix.id", exchange.getId(), Field.Store.YES, Field.Index.ANALYZED));
-            d.add(new Field("org.apache.servicemix.status", String.valueOf(exchange.getStatus()), Field.Store.YES, Field.Index.ANALYZED));
-
+            d.add(new Field(FIELD_ID, exchange.getId(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+            d.add(new Field(FIELD_MEP, String.valueOf(exchange.getPattern()).toLowerCase(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+            d.add(new Field(FIELD_STATUS, String.valueOf(exchange.getStatus()).toLowerCase(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+            d.add(new Field(FIELD_ROLE, String.valueOf(exchange.getRole()).toLowerCase(), Field.Store.YES, Field.Index.NOT_ANALYZED));
+            addExchangePropertiesToDocument(exchange, d);
             Type[] types = { Type.In, Type.Out, Type.Fault };
             for (int i = 0; i < types.length; i++) {
                 Message message = exchange.getMessage(types[i], false);
                 if (message != null) {
-                    StringSource src = message.getBody(StringSource.class);
-                    d.add(new Field("org.apache.servicemix." + types[i].toString().toLowerCase() + ".content", src.getText(), Field.Store.NO, Field.Index.ANALYZED));
-                    addMessagePropertiesToDocument(message, d, types[i]);
+                    String text = getBodyAsText(message);
+                    if (text != null) {
+                        d.add(new Field(types[i].toString().toLowerCase() + "." + FIELD_CONTENT, text, Field.Store.COMPRESS, Field.Index.ANALYZED));
+                    }
+                    addMessageHeadersToDocument(message, d, types[i]);
                 }
             }
             return d;
@@ -171,13 +187,35 @@ public class LuceneAuditor extends AbstractAuditor implements AuditorQueryMBean 
         }
     }
 
-    protected void addMessagePropertiesToDocument(Message message,
-                                                  Document document, 
-                                                  Type type) {
+    protected String getBodyAsText(Message message) {
+        String text;
+        StringSource src = message.getBody(StringSource.class);
+        if (src != null) {
+            text = src.getText();
+        } else {
+            text = message.getBody(String.class);
+            if (text == null && message.getBody() != null) {
+                text = message.getBody().toString();
+            }
+        }
+        return text;
+    }
+
+    protected void addExchangePropertiesToDocument(Exchange exchange,
+                                                   Document document) {
+        for (Map.Entry<String,Object> entry : exchange.getProperties().entrySet()) {
+            if (entry.getValue() instanceof String) {
+                document.add(new Field(FIELD_PROPERTIES + "." + entry.getKey(), (String) entry.getValue(), Field.Store.YES, Field.Index.ANALYZED));
+            }
+        }
+    }
+
+    protected void addMessageHeadersToDocument(Message message,
+                                               Document document,
+                                               Type type) {
         for (Map.Entry<String,Object> entry : message.getHeaders().entrySet()) {
             if (entry.getValue() instanceof String) {
-                //org.apache.servicemix.out.myproperty
-                document.add(new Field("org.apache.servicemix." + type.toString().toLowerCase() + ".headers." + entry.getKey(), (String) entry.getValue(), Field.Store.NO, Field.Index.ANALYZED));
+                document.add(new Field(type.toString().toLowerCase() + "." + FIELD_PROPERTIES + "." + entry.getKey(), (String) entry.getValue(), Field.Store.YES, Field.Index.ANALYZED));
             }
         }
     }

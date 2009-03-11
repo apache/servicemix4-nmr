@@ -41,7 +41,10 @@ public abstract class AbstractAuditorTest extends TestCase {
         Exchange exchange = client.createExchange(Pattern.InOnly);
         exchange.setTarget(client.getNMR().getEndpointRegistry().lookup(
                 ServiceHelper.createMap(Endpoint.NAME, RECEIVER_ENDPOINT_NAME)));
+        exchange.setProperty("prop1", "value1");
         exchange.getIn().setBody(content);
+        exchange.getIn().setHeader("prop1", "value2");
+        exchange.getIn().setHeader("prop2", "value3");
         client.sendSync(exchange);
 
     }

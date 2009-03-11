@@ -35,6 +35,8 @@ import org.apache.lucene.search.TopDocs;
  */
 public class DefaultLuceneCallback implements LuceneCallback {
 
+    public static final int SEARCH_SIZE = 100;
+
     private String field;
 
     private String query;
@@ -48,16 +50,16 @@ public class DefaultLuceneCallback implements LuceneCallback {
         try {
             QueryParser qp = new QueryParser(field, new StandardAnalyzer());
             Query queryObj = qp.parse(query);
-            TopDocs topdocs = is.search(queryObj, Integer.MAX_VALUE);
+            TopDocs topdocs = is.search(queryObj, SEARCH_SIZE);
             int total = topdocs.totalHits;
             String[] ids = new String[total];
             for (int i = 0; i < total; i++) {
                 ScoreDoc d = topdocs.scoreDocs[i];
-                ids[i] = is.doc(d.doc).get("org.apache.servicemix.id");
+                ids[i] = is.doc(d.doc).get(LuceneAuditor.FIELD_ID);
             }
             return ids;
         } catch (ParseException pe) {
-            return new String[0];
+            throw (IOException) new IOException("Error parsing query").initCause(pe);
         }
     }
 

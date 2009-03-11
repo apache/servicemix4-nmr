@@ -28,11 +28,15 @@ import org.apache.servicemix.nmr.api.Status;
  */
 public interface AuditorQueryMBean extends AuditorMBean {
 
-    String[] findExchangesIDsByStatus(Status status) throws AuditorException;
+    String[] findExchangesIdsByQuery(String query) throws AuditorException;
 
-    String[] findExchangesIDsByMessageContent(String type, String content) throws AuditorException;
+    String[] findExchangesIdsByStatus(Status status) throws AuditorException;
 
-    String[] findExchangesIDsByMessageProperty(String type, String property, String value) throws AuditorException;
+    String[] findExchangesIdsByProperty(String property, String value) throws AuditorException;
+
+    String[] findExchangesIdsByMessageContent(String type, String content) throws AuditorException;
+
+    String[] findExchangesIdsByMessageHeader(String type, String property, String value) throws AuditorException;
 
     /**
      * Searches for Exchanges IDs using the supplied key-field and the expected content of the field 

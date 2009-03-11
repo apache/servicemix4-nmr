@@ -45,6 +45,9 @@
       <gshell:command name="audit/exchanges">
         <gshell:action class="org.apache.servicemix.nmr.audit.commands.ExchangesCommand" />
       </gshell:command>
+      <gshell:command name="audit/find">
+        <gshell:action class="org.apache.servicemix.nmr.audit.commands.FindCommand" />
+      </gshell:command>
   </gshell:command-bundle>
 
 </beans>

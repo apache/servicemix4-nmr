@@ -27,6 +27,7 @@ import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.Lock;
 
 
 /**
@@ -36,11 +37,13 @@ import org.apache.lucene.store.FSDirectory;
  * @version $Revision: 550578 $
  */
 public class LuceneIndexer {
+
     protected Directory directory;
 
     private File segmentFile;
 
     public LuceneIndexer() {
+        IndexWriter.setDefaultWriteLockTimeout(Lock.LOCK_OBTAIN_WAIT_FOREVER);
     }
 
     public Directory getDirectory() {
@@ -60,26 +63,23 @@ public class LuceneIndexer {
      * Drop object from Lucene index
      */
     protected void remove(String id) throws IOException {
-        synchronized (directory) {
-            IndexReader ir = IndexReader.open(directory);
-            try {
-                ir.deleteDocuments(new Term("org.apache.servicemix.id", id));
-            } finally {
-                ir.close();
-            }
-        }
+        remove(new String[] { id });
     }
 
+    /**
+     * Drop objects from Lucene index
+     */
     protected void remove(String[] ids) throws IOException {
-        if (ids != null && ids.length > 0) {
-            synchronized (directory) {
-                IndexReader ir = IndexReader.open(directory);
+        synchronized (directory) {
+            if (ids != null && ids.length > 0) {
+                IndexWriter writer = new IndexWriter(directory, new SimpleAnalyzer(), IndexWriter.MaxFieldLength.LIMITED);
                 try {
                     for (int i = 0; i < ids.length; i++) {
-                        ir.deleteDocuments(new Term("org.apache.servicemix.id", ids[i]));
+                        writer.deleteDocuments(new Term(LuceneAuditor.FIELD_ID, ids[i]));
                     }
+                    writer.commit();
                 } finally {
-                    ir.close();
+                    writer.close();
                 }
             }
         }
@@ -90,21 +90,15 @@ public class LuceneIndexer {
      */
     public void add(Document lucDoc, String id) throws IOException {
         synchronized (directory) {
-            IndexWriter writer = new IndexWriter(directory, new SimpleAnalyzer(), !segmentFile.exists());
+            remove(id);
+            IndexWriter writer = new IndexWriter(directory, new SimpleAnalyzer(), IndexWriter.MaxFieldLength.LIMITED);
             try {
                 writer.addDocument(lucDoc);
+                writer.commit();
             } finally {
                 writer.close();
             }
         }
-    }
-
-    /**
-     * called when an existing document is updated.
-     */
-    public void update(Document lucDoc, String id) throws IOException {
-        remove(id);
-        add(lucDoc, id);
     }
 
     public Object search(LuceneCallback lc) throws IOException {
