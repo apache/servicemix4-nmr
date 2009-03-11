@@ -96,7 +96,7 @@ public class ServiceUnitImpl implements ServiceUnit {
     public void deploy() throws JBIException {
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {
-            Thread.currentThread().setContextClassLoader(component.getComponent().getClass().getClassLoader());
+            Thread.currentThread().setContextClassLoader(component.getComponentClassLoader());
             component.getComponent().getServiceUnitManager().deploy(getName(), getRootDir() != null ? getRootDir().getAbsolutePath() : null);
         } finally {
             Thread.currentThread().setContextClassLoader(oldCl);
@@ -107,7 +107,7 @@ public class ServiceUnitImpl implements ServiceUnit {
     public void init() throws JBIException {
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {
-            Thread.currentThread().setContextClassLoader(component.getComponent().getClass().getClassLoader());
+            Thread.currentThread().setContextClassLoader(component.getComponentClassLoader());
             component.getComponent().getServiceUnitManager().init(getName(), getRootDir() != null ? getRootDir().getAbsolutePath() : null);
         } finally {
             Thread.currentThread().setContextClassLoader(oldCl);
@@ -119,7 +119,7 @@ public class ServiceUnitImpl implements ServiceUnit {
         checkComponentStarted("start");
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {
-            Thread.currentThread().setContextClassLoader(component.getComponent().getClass().getClassLoader());
+            Thread.currentThread().setContextClassLoader(component.getComponentClassLoader());
             component.getComponent().getServiceUnitManager().start(getName());
         } finally {
             Thread.currentThread().setContextClassLoader(oldCl);
@@ -130,7 +130,7 @@ public class ServiceUnitImpl implements ServiceUnit {
         checkComponentStarted("stop");
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {
-            Thread.currentThread().setContextClassLoader(component.getComponent().getClass().getClassLoader());
+            Thread.currentThread().setContextClassLoader(component.getComponentClassLoader());
             component.getComponent().getServiceUnitManager().stop(getName());
         } finally {
             Thread.currentThread().setContextClassLoader(oldCl);
@@ -141,7 +141,7 @@ public class ServiceUnitImpl implements ServiceUnit {
         checkComponentStartedOrStopped("shutDown");
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {
-            Thread.currentThread().setContextClassLoader(component.getComponent().getClass().getClassLoader());
+            Thread.currentThread().setContextClassLoader(component.getComponentClassLoader());
             component.getComponent().getServiceUnitManager().shutDown(getName());
         } finally {
             Thread.currentThread().setContextClassLoader(oldCl);
@@ -151,7 +151,7 @@ public class ServiceUnitImpl implements ServiceUnit {
     public void undeploy() throws JBIException {
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {
-            Thread.currentThread().setContextClassLoader(component.getComponent().getClass().getClassLoader());
+            Thread.currentThread().setContextClassLoader(component.getComponentClassLoader());
             component.getComponent().getServiceUnitManager().undeploy(getName(), getRootDir() != null ? getRootDir().getAbsolutePath() : null);
         } finally {
             Thread.currentThread().setContextClassLoader(oldCl);

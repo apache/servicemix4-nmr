@@ -51,6 +51,7 @@ public class ComponentImpl extends AbstractLifecycleJbiArtifact implements Compo
     private Set<ServiceUnitImpl> serviceUnits;
     private SharedLibrary[] sharedLibraries;
     private boolean restoreState = true;
+    private ClassLoader componentClassLoader;
 
     public ComponentImpl(Bundle bundle,
                          ComponentDesc componentDesc,
@@ -65,6 +66,11 @@ public class ComponentImpl extends AbstractLifecycleJbiArtifact implements Compo
         this.runningState = loadState(autoStart ? State.Started : State.Shutdown);
         this.serviceUnits = new HashSet<ServiceUnitImpl>();
         this.sharedLibraries = sharedLibraries;
+        this.componentClassLoader = component.getClass().getClassLoader();
+    }
+
+    public ClassLoader getComponentClassLoader() {
+        return componentClassLoader;
     }
 
     public void addServiceUnit(ServiceUnitImpl serviceUnit) {
@@ -233,7 +239,7 @@ public class ComponentImpl extends AbstractLifecycleJbiArtifact implements Compo
             }
             ClassLoader cl = Thread.currentThread().getContextClassLoader();
             try {
-                Thread.currentThread().setContextClassLoader(component.getClass().getClassLoader());
+                Thread.currentThread().setContextClassLoader(getComponentClassLoader());
                 if (restoreState) {
                     State stateToUse = context != null ? runningState : State.Shutdown;
                     switch (stateToUse) {
