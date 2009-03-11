@@ -108,8 +108,10 @@ public class ServiceAssemblyInstaller extends AbstractInstaller {
             throw ManagementSupport.failure("undeployServiceAssembly", "ServiceAssembly '" + getName() + "' is not deployed.");
         }
         // Undeploy SUs
-        for (ServiceUnitImpl su : assembly.getServiceUnitsList()) {
-            su.undeploy();
+        if (assembly.getServiceUnitsList() != null) {
+            for (ServiceUnitImpl su : assembly.getServiceUnitsList()) {
+                su.undeploy();
+            }
         }
         // Unregister assembly
         deployer.unregisterServiceAssembly(assembly);
@@ -172,9 +174,9 @@ public class ServiceAssemblyInstaller extends AbstractInstaller {
                 }
                 // Add it to the list
                 sus.add(su);
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 LOGGER.error("Error deploying SU " + su.getName(), e);
-                failure = e;
+                failure = new Exception("Error deploying SU " + su.getName(), e);
                 break;
             }
         }
