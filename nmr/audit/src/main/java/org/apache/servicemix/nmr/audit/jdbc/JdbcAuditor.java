@@ -211,7 +211,7 @@ public class JdbcAuditor extends AbstractAuditor implements InitializingBean {
                 adapter.doRemoveData(connection, ids[row]);
             }
             connection.commit();
-            return -1;
+            return ids.length;
         } catch (Exception e) {
             throw new AuditorException("Could not delete exchanges", e);
         } finally {
