@@ -72,7 +72,8 @@
     <osgi:list id="transactionManagers"
                interface="javax.transaction.TransactionManager"
                cardinality="0..N"
-               greedy-proxying="true" />
+               greedy-proxying="true"
+               context-class-loader="unmanaged" />
 
     <!-- Reference to the JMX server -->
     <osgi:list id="mbeanServers"
