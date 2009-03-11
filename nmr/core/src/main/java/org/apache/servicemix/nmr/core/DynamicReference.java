@@ -18,6 +18,7 @@
  */
 package org.apache.servicemix.nmr.core;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.w3c.dom.Document;
@@ -49,6 +50,7 @@ public class DynamicReference implements CacheableReference {
     public synchronized Iterable<InternalEndpoint> choose(EndpointRegistry registry) {
         List<InternalEndpoint> result = matches;
         if (result == null || this.registry != registry) {
+            result = new ArrayList<InternalEndpoint>();
             for (Endpoint ep : registry.query(null)) {
                 InternalEndpoint iep = (InternalEndpoint) ep;
                 if (filter.match(iep)) {
