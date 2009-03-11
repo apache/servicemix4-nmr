@@ -16,14 +16,11 @@
  */
 package org.apache.servicemix.jbi.deployer.artifacts;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-
 import java.util.Collections;
 
-import junit.framework.TestCase;
+import javax.jbi.component.Component;
 
+import junit.framework.TestCase;
 import org.apache.servicemix.jbi.deployer.artifacts.AbstractLifecycleJbiArtifact.State;
 import org.apache.servicemix.jbi.deployer.descriptor.DescriptorFactory;
 import org.apache.servicemix.jbi.deployer.descriptor.ServiceAssemblyDesc;
@@ -37,6 +34,9 @@ import org.apache.servicemix.nmr.api.internal.InternalExchange;
 import org.apache.servicemix.nmr.api.service.ServiceHelper;
 import org.apache.servicemix.nmr.core.ExchangeImpl;
 import org.apache.servicemix.nmr.core.InternalEndpointWrapper;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
 import org.osgi.service.prefs.Preferences;
 
 /**
@@ -120,8 +120,10 @@ public class AssemblyReferencesListenerTest extends TestCase {
         final Preferences prefs = createMock(Preferences.class);
         expect(prefs.get("state", State.Shutdown.name())).andReturn(State.Shutdown.name()).anyTimes();
         replay(prefs);
+        final Component component = createMock(Component.class);
+        replay(component);
 
-        ComponentImpl comp = new ComponentImpl(null, null, null, prefs, false, null);
+        ComponentImpl comp = new ComponentImpl(null, null, component, prefs, false, null);
         ServiceUnitImpl su = new ServiceUnitImpl(descriptor.getServiceUnits()[0], null, comp);
         ServiceAssemblyImpl sa = new ServiceAssemblyImpl(null, descriptor, Collections.singletonList(su), prefs, new AssemblyReferencesListener(), false);
         return sa;
