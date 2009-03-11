@@ -309,6 +309,16 @@
           <version>${pom.version}</version>
       </dependency>
       <dependency>
+          <groupId>org.apache.servicemix.nmr</groupId>
+          <artifactId>org.apache.servicemix.nmr.audit</artifactId>
+          <version>${pom.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.servicemix.nmr</groupId>
+          <artifactId>org.apache.servicemix.nmr.branding</artifactId>
+          <version>${pom.version}</version>
+      </dependency>
+      <dependency>
           <groupId>org.apache.servicemix.specs</groupId>
           <artifactId>org.apache.servicemix.specs.jbi-api-1.0</artifactId>
           <version>${servicemix.specs.version}</version>

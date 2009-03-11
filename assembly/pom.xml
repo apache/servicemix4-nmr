@@ -76,6 +76,14 @@
             <artifactId>org.apache.servicemix.nmr.spring</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.servicemix.nmr</groupId>
+            <artifactId>org.apache.servicemix.nmr.audit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.nmr</groupId>
+            <artifactId>org.apache.servicemix.nmr.branding</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.servicemix.specs</groupId>
             <artifactId>org.apache.servicemix.specs.jbi-api-1.0</artifactId>
         </dependency>
