@@ -131,7 +131,7 @@
                 <configuration>
                     <forkMode>pertest</forkMode>
                     <redirectTestOutputToFile>true</redirectTestOutputToFile>
-                    <forkedProcessTimeoutInSeconds>60</forkedProcessTimeoutInSeconds>
+                    <forkedProcessTimeoutInSeconds>90</forkedProcessTimeoutInSeconds>
                     <!--
                     <skip>true</skip>
                     -->
