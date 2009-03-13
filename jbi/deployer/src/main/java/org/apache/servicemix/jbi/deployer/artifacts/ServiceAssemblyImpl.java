@@ -19,8 +19,10 @@ package org.apache.servicemix.jbi.deployer.artifacts;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
@@ -29,11 +31,10 @@ import javax.jbi.management.LifeCycleMBean;
 
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
-import org.apache.servicemix.jbi.deployer.events.LifeCycleEvent;
 import org.apache.servicemix.jbi.deployer.descriptor.Connection;
 import org.apache.servicemix.jbi.deployer.descriptor.DescriptorFactory;
 import org.apache.servicemix.jbi.deployer.descriptor.ServiceAssemblyDesc;
-import org.apache.servicemix.jbi.deployer.artifacts.AssemblyReferencesListener;
+import org.apache.servicemix.jbi.deployer.events.LifeCycleEvent;
 import org.apache.servicemix.nmr.api.Wire;
 import org.apache.servicemix.nmr.core.util.MapToDictionary;
 import org.osgi.framework.Bundle;
@@ -243,16 +244,23 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
     }
 
     protected void checkComponentsStarted() throws JBIException {
-        StringBuilder sb = new StringBuilder();
+        Set<String> names = new HashSet<String>();
         for (ServiceUnitImpl su : serviceUnits) {
+            if (su.getComponent() == null) {
+                throw new JBIException("SU has not been correctly deployed: " + su.getName());
+            }
             if (!LifeCycleMBean.STARTED.equals(su.getComponent().getCurrentState())) {
+                names.add(su.getComponentName());
+            }
+        }
+        if (!names.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (String name : names) {
                 if (sb.length() > 0) {
                     sb.append(", ");
                 }
-                sb.append(su.getComponentName());
+                sb.append(name);
             }
-        }
-        if (sb.length() > 0) {
             throw new JBIException("Components are not started: " + sb.toString());
         }
     }

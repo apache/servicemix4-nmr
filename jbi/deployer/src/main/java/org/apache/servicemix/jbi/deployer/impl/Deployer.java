@@ -344,13 +344,14 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
                         throw new IllegalStateException("Unrecognized JBI descriptor: " + url);
                     }
                     installer.setBundle(bundle);
-                    installers.put(bundle, installer);
                 }
 
                 // TODO: handle the case where the bundle is restarted: i.e. the artifact is already installed
                 try {
                     installer.init();
                     installer.install();
+                    // only register installer if installation has been successfull
+                    installers.put(bundle, installer);
                 } catch (PendingException e) {
                     pendingInstallers.add(installer);
                     LOGGER.warn("Requirements not met for JBI artifact in bundle " + OsgiStringUtils.nullSafeNameAndSymName(bundle) + ". Installation pending. " + e);
@@ -503,6 +504,7 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
             for (ServiceUnitImpl su : assembly.getServiceUnitsList()) {
                 su.getComponentImpl().removeServiceUnit(su);
             }
+            pendingAssemblies.remove(assembly);
         }
     }
 

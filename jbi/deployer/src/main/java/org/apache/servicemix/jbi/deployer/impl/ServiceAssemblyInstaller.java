@@ -69,6 +69,7 @@ public class ServiceAssemblyInstaller extends AbstractInstaller {
     public ObjectName install() throws JBIException {
         try {
             List<ServiceUnitImpl> sus = deploySUs();
+            postInstall();
             ServiceAssembly sa = deployer.registerServiceAssembly(bundle, descriptor.getServiceAssembly(), sus);
             return deployer.getNamingStrategy().getObjectName(sa);
         } catch (Exception e) {
@@ -107,14 +108,16 @@ public class ServiceAssemblyInstaller extends AbstractInstaller {
         if (assembly == null && !force) {
             throw ManagementSupport.failure("undeployServiceAssembly", "ServiceAssembly '" + getName() + "' is not deployed.");
         }
-        // Undeploy SUs
-        if (assembly.getServiceUnitsList() != null) {
-            for (ServiceUnitImpl su : assembly.getServiceUnitsList()) {
-                su.undeploy();
+        if (assembly != null) {
+            // Undeploy SUs
+            if (assembly.getServiceUnitsList() != null) {
+                for (ServiceUnitImpl su : assembly.getServiceUnitsList()) {
+                    su.undeploy();
+                }
             }
+            // Unregister assembly
+            deployer.unregisterServiceAssembly(assembly);
         }
-        // Unregister assembly
-        deployer.unregisterServiceAssembly(assembly);
         // Remove preferences
         try {
             deletePreferences();

@@ -20,10 +20,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 import javax.jbi.JBIException;
 import javax.jbi.component.Bootstrap;
@@ -135,13 +133,16 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
                     ObjectName name = initComponent();
                     cleanUpBootstrap();
                     installationContext.setInstall(false);
+                    postInstall();
                     return name;
                 } catch (Exception e) {
                     cleanUpBootstrap();
                     throw e;
                 }
             } else {
-                return initComponent();
+                ObjectName name = initComponent();
+                postInstall();
+                return name;
             }
         } catch (Exception e) {
             LOGGER.error(e.getMessage());

@@ -95,7 +95,11 @@ public abstract class AbstractInstaller {
                             ? AbstractLifecycleJbiArtifact.State.Started.name()
                             : AbstractLifecycleJbiArtifact.State.Shutdown.name());
         }
-        prefs.putLong(LAST_INSTALL, lastInstall);
+    }
+
+    protected void postInstall() throws Exception {
+        Preferences prefs = getPreferences();
+        prefs.putLong(LAST_INSTALL, getBundle().getLastModified());
         prefs.flush();
     }
 
