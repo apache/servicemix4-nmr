@@ -65,7 +65,7 @@ public class ChannelImplTest extends TestCase {
 
         e.setTarget(ep1.channel.getNMR().getEndpointRegistry().lookup(ServiceHelper.createMap(Endpoint.NAME, "ep2")));
         ep1.channel.send(e);
-
+        Thread.sleep(1000);
         verify(listener);
 
         reset(listener);
