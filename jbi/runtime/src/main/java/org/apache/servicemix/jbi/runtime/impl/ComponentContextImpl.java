@@ -145,6 +145,7 @@ public class ComponentContextImpl extends AbstractComponentContext {
             props.put(Endpoint.NAME, serviceName.toString() + ":" + endpointName);
             props.put(Endpoint.SERVICE_NAME, serviceName.toString());
             props.put(Endpoint.ENDPOINT_NAME, endpointName);
+            props.put(Endpoint.UNTARGETABLE, Boolean.TRUE.toString());
             props.put(EXTERNAL_ENDPOINT, Boolean.TRUE.toString());
             props.put(ServiceEndpoint.class.getName(), externalEndpoint);
             QName[] interfaceNames = externalEndpoint.getInterfaces();

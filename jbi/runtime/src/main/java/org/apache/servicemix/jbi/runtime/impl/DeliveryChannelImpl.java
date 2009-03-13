@@ -249,7 +249,6 @@ public class DeliveryChannelImpl implements DeliveryChannel {
             if (props.isEmpty()) {
                 throw new IllegalStateException("No endpoint, service or interface name specified for routing");
             }
-            props.put(AbstractComponentContext.INTERNAL_ENDPOINT, Boolean.TRUE.toString());
             Reference target = nmr.getEndpointRegistry().lookup(props);
             exchange.setTarget(target);
         }

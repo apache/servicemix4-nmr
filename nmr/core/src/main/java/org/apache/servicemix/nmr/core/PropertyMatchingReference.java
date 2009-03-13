@@ -46,6 +46,9 @@ public class PropertyMatchingReference implements CacheableReference, Serializab
             result = new ArrayList<InternalEndpoint>();
             for (Endpoint ep : registry.query(null)) {
                 InternalEndpoint iep = (InternalEndpoint) ep;
+                if (Boolean.valueOf((String) iep.getMetaData().get(Endpoint.UNTARGETABLE))) {
+                    continue;
+                }
                 if (match(registry, iep)) {
                     result.add(iep);
                 }

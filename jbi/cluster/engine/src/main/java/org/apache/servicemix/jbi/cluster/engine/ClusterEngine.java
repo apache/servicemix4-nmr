@@ -527,7 +527,7 @@ public class ClusterEngine extends ServiceRegistryImpl<ClusterRegistration>
             Map<String,?> props = registry.getProperties(ep);
             // Check if this endpoint is addressable in the JBI space
             if (props.get(Endpoint.SERVICE_NAME) != null && props.get(Endpoint.ENDPOINT_NAME) != null
-                    && props.get(AbstractComponentContext.INTERNAL_ENDPOINT) != null) {
+                    && !Boolean.valueOf((String) props.get(Endpoint.UNTARGETABLE))) {
                 endpoints.add(new ServiceEndpointImpl(props));
             }
         }

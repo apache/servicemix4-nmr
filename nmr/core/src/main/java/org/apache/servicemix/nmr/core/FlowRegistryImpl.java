@@ -24,6 +24,7 @@ import javax.security.auth.Subject;
 import org.apache.servicemix.nmr.api.EndpointRegistry;
 import org.apache.servicemix.nmr.api.Role;
 import org.apache.servicemix.nmr.api.ServiceMixException;
+import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.internal.Flow;
 import org.apache.servicemix.nmr.api.internal.FlowRegistry;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
@@ -83,6 +84,9 @@ public class FlowRegistryImpl extends ServiceRegistryImpl<Flow> implements FlowR
                 boolean match = false;
                 boolean securityMatch = false;
                 for (InternalEndpoint endpoint : target.choose(registry)) {
+                    if (Boolean.valueOf((String) endpoint.getMetaData().get(Endpoint.UNTARGETABLE))) {
+                        continue;
+                    }
                     match = true;
                     if (authorizationService != null) {
                         Set<GroupPrincipal> acls = authorizationService.getAcls(endpoint.getId(), exchange.getOperation());

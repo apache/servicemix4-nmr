@@ -36,7 +36,7 @@ import org.osgi.framework.InvalidSyntaxException;
 public class FilterMatchingReference implements CacheableReference, Serializable {
 
     private final String filter;
-    private transient Filter osgiFilter;
+    private transient volatile Filter osgiFilter;
     private transient volatile List<InternalEndpoint> matches;
     private transient EndpointRegistry registry;
 
@@ -51,6 +51,9 @@ public class FilterMatchingReference implements CacheableReference, Serializable
             result = new ArrayList<InternalEndpoint>();
             for (Endpoint ep : registry.query(null)) {
                 InternalEndpoint iep = (InternalEndpoint) ep;
+                if (Boolean.valueOf((String) iep.getMetaData().get(Endpoint.UNTARGETABLE))) {
+                    continue;
+                }
                 if (match(registry, iep)) {
                     result.add(iep);
                 }

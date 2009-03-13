@@ -53,6 +53,9 @@ public class DynamicReference implements CacheableReference {
             result = new ArrayList<InternalEndpoint>();
             for (Endpoint ep : registry.query(null)) {
                 InternalEndpoint iep = (InternalEndpoint) ep;
+                if (Boolean.valueOf((String) iep.getMetaData().get(Endpoint.UNTARGETABLE))) {
+                    continue;
+                }
                 if (filter.match(iep)) {
                     result.add(iep);
                 }

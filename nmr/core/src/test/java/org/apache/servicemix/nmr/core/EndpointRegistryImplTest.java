@@ -149,6 +149,18 @@ public class EndpointRegistryImplTest extends TestCase {
         assertEquals(endpoint, endpoints.iterator().next().getEndpoint());
     }
 
+    public void testUntargetableEndpointLookup() throws Exception {
+        registry.register(new DummyEndpoint(), ServiceHelper.createMap(Endpoint.NAME, "id", Endpoint.UNTARGETABLE, "true"));
+        // make sure that the query for the wire's from returns the target endpoint
+        Reference ref = registry.lookup(ServiceHelper.createMap());
+        assertNotNull(ref);
+        assertTrue(ref instanceof InternalReference);
+        InternalReference reference = (InternalReference) ref;
+        Iterable<InternalEndpoint> endpoints = reference.choose(registry);
+        assertNotNull(endpoints);
+        assertFalse(endpoints.iterator().hasNext());
+    }
+
     private Endpoint createWiredEndpoint(Map<String, Object> from) {
         return createWiredEndpoint(from, ServiceHelper.createMap(Endpoint.SERVICE_NAME, "test:service",
                                                                  Endpoint.ENDPOINT_NAME, "endpoint"));

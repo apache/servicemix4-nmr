@@ -59,6 +59,12 @@ public interface Endpoint {
     String VERSION = "VERSION";
 
     /**
+     * If this property is set to <code>true</code> on a given
+     * endpoint, it won't be used as a target for any exchange
+     */
+    String UNTARGETABLE = "UNTARGETABLE";
+
+    /**
      * Set the channel so that the endpoint can send exchanges back
      * when they are processed or act as a consumer itself.
      * This method will be called by the NMR while the endpoint is registered.

@@ -59,7 +59,6 @@ public class IntegrationTest extends TestCase {
         };
         Map<String, Object> props = new HashMap<String, Object>();
         props.put(Endpoint.SERVICE_NAME, new QName("target").toString());
-        props.put(AbstractComponentContext.INTERNAL_ENDPOINT, Boolean.TRUE.toString());
         smx.getEndpointRegistry().register(tep, props);
 
         EIPComponent eip = new EIPComponent();
