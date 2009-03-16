@@ -27,6 +27,7 @@ import javax.management.ObjectName;
 
 import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
+import org.apache.servicemix.jbi.deployer.DeployedAssembly;
 import org.apache.servicemix.jbi.deployer.artifacts.ComponentImpl;
 import org.apache.servicemix.jbi.deployer.artifacts.ServiceAssemblyImpl;
 import org.apache.servicemix.jbi.deployer.artifacts.ServiceUnitImpl;
@@ -40,14 +41,25 @@ import org.osgi.service.prefs.BackingStoreException;
 
 public class ServiceAssemblyInstaller extends AbstractInstaller {
 
+    private DeployedAssembly deployedAssembly;
+
     public ServiceAssemblyInstaller(Deployer deployer, Descriptor descriptor, File jbiArtifact, boolean autoStart) {
         super(deployer, descriptor, jbiArtifact, autoStart);
         this.installRoot = new File(System.getProperty("servicemix.base"), "data/jbi/" + getName() + "/install");
         this.installRoot.mkdirs();
     }
 
+    public ServiceAssemblyInstaller(Deployer deployer, Descriptor descriptor, DeployedAssembly deployedAssembly, boolean autoStart) {
+        super(deployer, descriptor, null, autoStart);
+        this.deployedAssembly = deployedAssembly;
+    }
+
     public String getName() {
         return descriptor.getServiceAssembly().getIdentification().getName();
+    }
+
+    public DeployedAssembly getDeployedAssembly() {
+        return deployedAssembly;
     }
 
     public void init() throws Exception {
@@ -68,7 +80,19 @@ public class ServiceAssemblyInstaller extends AbstractInstaller {
 
     public ObjectName install() throws JBIException {
         try {
-            List<ServiceUnitImpl> sus = deploySUs();
+            List<ServiceUnitImpl> sus;
+            if (deployedAssembly == null) {
+                sus = deploySUs();
+            } else {
+                sus = new ArrayList<ServiceUnitImpl>();
+                for (ServiceUnitDesc sud : descriptor.getServiceAssembly().getServiceUnits()) {
+                    String componentName = sud.getTarget().getComponentName();
+                    ComponentImpl component = deployer.getComponent(componentName);
+                    // Create service unit object
+                    ServiceUnitImpl su = deployer.createServiceUnit(sud, null, component);
+                    sus.add(su);
+                }
+            }
             postInstall();
             ServiceAssembly sa = deployer.registerServiceAssembly(bundle, descriptor.getServiceAssembly(), sus);
             return deployer.getNamingStrategy().getObjectName(sa);
@@ -94,9 +118,13 @@ public class ServiceAssemblyInstaller extends AbstractInstaller {
             if (LifeCycleMBean.STOPPED.equals(assembly.getCurrentState())) {
                 assembly.shutDown(false, force);
             }
+        }
+        if (deployedAssembly == null) {
             for (ServiceUnitImpl su : assembly.getServiceUnitsList()) {
                 su.getComponentImpl().removeServiceUnit(su);
             }
+        } else {
+            deployedAssembly.undeploy(bundle.getState() == Bundle.ACTIVE);
         }
     }
 

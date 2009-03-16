@@ -101,6 +101,8 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
 
     private final Set<AbstractInstaller> pendingInstallers = new HashSet<AbstractInstaller>();
 
+    private final Set<ServiceAssemblyImpl> pendingAssemblies = new HashSet<ServiceAssemblyImpl>();
+
     private File jbiRootDir;
 
     private PreferencesService preferencesService;
@@ -339,7 +341,7 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
                         installer = new ComponentInstaller(this, descriptor, null, true);
                     } else if (descriptor.getServiceAssembly() != null) {
                         LOGGER.info("Deploying bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' as a JBI service assembly");
-                        installer = new ServiceAssemblyInstaller(this, descriptor, null, true);
+                        installer = new ServiceAssemblyInstaller(this, descriptor, (File) null, true);
                     } else {
                         throw new IllegalStateException("Unrecognized JBI descriptor: " + url);
                     }
@@ -478,9 +480,13 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
                     if (installer != null) {
                         try {
                             installer.stop(true);
-                            unregisterServiceAssembly(sa);
                             pendingAssemblies.remove(sa);
-                            pendingInstallers.add(installer);
+                            if (installer.getDeployedAssembly() == null) {
+                                unregisterServiceAssembly(sa);
+                                pendingInstallers.add(installer);
+                            } else {
+                                installers.remove(bundle);
+                            }
                         } catch (Exception e) {
                             LOGGER.warn("Error uninstalling service assembly", e);
                         }
@@ -500,11 +506,11 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
     protected void unregisterServiceAssembly(ServiceAssemblyImpl assembly) {
         if (assembly != null) {
             serviceAssemblies.remove(assembly.getName());
+            pendingAssemblies.remove(assembly);
             unregisterServices(assembly.getBundle());
             for (ServiceUnitImpl su : assembly.getServiceUnitsList()) {
                 su.getComponentImpl().removeServiceUnit(su);
             }
-            pendingAssemblies.remove(assembly);
         }
     }
 
@@ -553,8 +559,6 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
             }
         }
     }
-
-    private Set<ServiceAssemblyImpl> pendingAssemblies = new HashSet<ServiceAssemblyImpl>();
 
     protected void checkPendingAssemblies() {
         List<ServiceAssemblyImpl> sas = new ArrayList<ServiceAssemblyImpl>(pendingAssemblies);
@@ -665,21 +669,32 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
 
     public void registerDeployedServiceAssembly(ServiceReference reference, DeployedAssembly assembly) {
         try {
-            assembly.deploy();
             ServiceAssemblyDesc desc = new ServiceAssemblyDesc();
             desc.setIdentification(new Identification());
             desc.getIdentification().setName(assembly.getName());
-            List<ServiceUnitImpl> sus = new ArrayList<ServiceUnitImpl>();
+            List<ServiceUnitDesc> sus = new ArrayList<ServiceUnitDesc>();
             for (Map.Entry<String, String> unit : assembly.getServiceUnits().entrySet()) {
                 ServiceUnitDesc suDesc = new ServiceUnitDesc();
                 suDesc.setIdentification(new Identification());
                 suDesc.getIdentification().setName(unit.getKey());
                 suDesc.setTarget(new Target());
                 suDesc.getTarget().setComponentName(unit.getValue());
-                ServiceUnitImpl su = createServiceUnit(suDesc, null, components.get(unit.getValue()));
-                sus.add(su);
+                sus.add(suDesc);
             }
-            registerServiceAssembly(reference.getBundle(), desc, sus);
+            desc.setServiceUnits(sus.toArray(new ServiceUnitDesc[sus.size()]));
+            Descriptor descriptor = new Descriptor();
+            descriptor.setServiceAssembly(desc);
+
+            ServiceAssemblyInstaller installer = new ServiceAssemblyInstaller(this, descriptor, assembly, autoStart);
+            installer.setBundle(reference.getBundle());
+            try {
+                installer.init();
+                installer.install();
+                installers.put(installer.getBundle(), installer);
+            } catch (PendingException e) {
+                pendingInstallers.add(installer);
+                LOGGER.warn("Requirements not met for JBI artifact in bundle " + OsgiStringUtils.nullSafeNameAndSymName(reference.getBundle()) + ". Installation pending. " + e);
+            }
             bundles.add(reference.getBundle());
         } catch (Exception e) {
             LOGGER.error("Error registering deployed service assembly", e);

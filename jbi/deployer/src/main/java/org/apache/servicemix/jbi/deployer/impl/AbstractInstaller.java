@@ -88,7 +88,7 @@ public abstract class AbstractInstaller {
         long lastInstall = prefs.getLong(LAST_INSTALL, 0);
         isFirstInstall = lastInstall == 0; 
         isModified = lastInstall == 0 || getBundle().getLastModified() > lastInstall;
-        if (isModified) {
+        if (isModified && installRoot != null) {
             extractBundle(installRoot, getBundle(), "/");
             lastInstall = getBundle().getLastModified();
             prefs.put(AbstractLifecycleJbiArtifact.STATE, isAutoStart()
