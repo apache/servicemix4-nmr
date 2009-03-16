@@ -16,9 +16,13 @@
  */
 package org.apache.servicemix.jbi.cluster.engine;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import junit.framework.TestCase;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -78,6 +82,16 @@ public abstract class AutoFailTestSupport extends TestCase {
                     if (!isTestSuccess.get()) {
                         LOG.error("Test case has exceeded the maximum allotted time to run of: " + getMaxTestTime() + " ms.");
                         LOG.fatal("Test case has exceeded the maximum allotted time to run of: " + getMaxTestTime() + " ms.");
+                        
+                        if (LOG.isDebugEnabled()) {
+                            ThreadMXBean threads = ManagementFactory.getThreadMXBean();
+                            ThreadInfo[]  threadInfos = threads.getThreadInfo(threads.getAllThreadIds(), 50);
+    
+                            for (ThreadInfo threadInfo : threadInfos) {
+                                LOG.debug(threadInfo);
+                            }
+                        }
+
                         System.exit(EXIT_ERROR);
                     }
                 }
