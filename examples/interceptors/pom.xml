@@ -21,20 +21,18 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.apache.servicemix.nmr</groupId>
-        <artifactId>nmr-parent</artifactId>
+        <groupId>org.apache.servicemix.nmr.examples</groupId>
+        <artifactId>examples</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.apache.servicemix.nmr.examples</groupId>
-    <artifactId>examples</artifactId>
+    <artifactId>org.apache.servicemix.nmr.examples.interceptors</artifactId>
     <packaging>pom</packaging>
-    <name>Apache ServiceMix NMR Examples</name>
+    <name>Apache Servicemix NMR Examples:: Interceptors</name>
 
     <modules>
-        <module>cluster</module>
-        <module>interceptors</module>
-        <module>nmr</module>
+        <module>exchange</module>
     </modules>
 
 </project>

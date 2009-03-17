@@ -122,6 +122,14 @@
             <fileMode>0644</fileMode>
             <lineEnding>dos</lineEnding>
         </file>
+
+        <!--filtering README.txt-->
+        <file>
+            <source>../examples/interceptors/exchange/README.txt</source>
+            <outputDirectory>/examples/interceptors/exchange</outputDirectory>
+            <filtered>true</filtered>
+            <lineEnding>dos</lineEnding>
+        </file>
     </files>
 
 

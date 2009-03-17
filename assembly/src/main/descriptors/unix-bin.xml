@@ -121,6 +121,14 @@
             <fileMode>0644</fileMode>
             <lineEnding>unix</lineEnding>
         </file>
+
+        <!--filtering README.txt-->
+        <file>
+            <source>../examples/interceptors/exchange/README.txt</source>
+            <outputDirectory>/examples/interceptors/exchange</outputDirectory>
+            <filtered>true</filtered>
+            <lineEnding>unix</lineEnding>
+        </file>
     </files>
 
 </assembly>
