@@ -32,6 +32,7 @@
     <name>Apache ServiceMix NMR Examples</name>
 
     <modules>
+        <module>cluster</module>
         <module>nmr</module>
     </modules>
 
