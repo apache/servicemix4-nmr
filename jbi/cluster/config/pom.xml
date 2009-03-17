@@ -50,10 +50,15 @@
                             javax.jms,
                             org.apache.servicemix.nmr.api,
                             org.apache.servicemix.nmr.api.event,
+                            org.apache.servicemix.nmr.core,
                             org.apache.servicemix.jbi.cluster.engine,
                             org.apache.servicemix.jbi.cluster.requestor,
+                            org.apache.servicemix.jbi.runtime.impl,
                             *
                         </Import-Package>
+                        <DynamicImport-Package>
+                            *
+                        </DynamicImport-Package>
                         <Spring-Context>*;publish-context:=false;create-asynchronously:=true</Spring-Context>
                     </instructions>
                 </configuration>

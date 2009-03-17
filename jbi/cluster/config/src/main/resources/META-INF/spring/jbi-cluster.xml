@@ -19,24 +19,30 @@
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:ctx="http://www.springframework.org/schema/context"
        xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
        xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="
   http://www.springframework.org/schema/beans
   http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/context
+  http://www.springframework.org/schema/context/spring-context.xsd
   http://www.springframework.org/schema/util
   http://www.springframework.org/schema/util/spring-util.xsd
   http://www.springframework.org/schema/osgi
-  http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+  http://www.springframework.org/schema/osgi/spring-osgi.xsd
+  http://www.springframework.org/schema/osgi-compendium
+  http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd">
 
     <bean id="clusterEngine" class="org.apache.servicemix.jbi.cluster.engine.ClusterEngine">
         <property name="pool">
             <bean class="org.apache.servicemix.jbi.cluster.requestor.ActiveMQJmsRequestorPool">
                 <property name="connectionFactory" ref="connectionFactory" />
-                <property name="destinationName" value="org.apache.servicemix.jbi.cluster" />
+                <property name="destinationName" value="${destinationName}" />
             </bean>
         </property>
-        <property name="name" value="org.apache.servicemix.jbi.cluster" />
+        <property name="name" value="${clusterName}" />
     </bean>
 
     <osgi:list id="clusterRegistrations"
@@ -55,8 +61,15 @@
             <value>org.apache.servicemix.nmr.api.event.ExchangeListener</value>
         </osgi:interfaces>
         <osgi:service-properties>
-            <entry key="NAME" value="org.apache.servicemix.jbi.cluster" />
+            <entry key="NAME" value="${clusterName}" />
         </osgi:service-properties>
     </osgi:service>
+
+    <osgix:cm-properties id="clusterProps" persistent-id="org.apache.servicemix.jbi.cluster.config">
+        <prop key="clusterName">${servicemix.name}</prop>
+        <prop key="destinationName">org.apache.servicemix.jbi.cluster</prop>
+    </osgix:cm-properties>
+
+    <ctx:property-placeholder properties-ref="clusterProps" />
 
 </beans>

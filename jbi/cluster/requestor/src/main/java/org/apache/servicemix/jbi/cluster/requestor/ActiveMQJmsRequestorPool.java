@@ -356,6 +356,7 @@ public class ActiveMQJmsRequestorPool extends AbstractPollingRequestorPool imple
                 }
                 failure = false;
             } catch (Exception e) {
+                logger.debug("Error processing message", e);
                 setRollbackOnly();
             } finally {
                 close();
