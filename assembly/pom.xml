@@ -247,6 +247,7 @@
                                 <feature>nmr</feature>
                                 <feature>nmr-audit</feature>
                                 <feature>jbi</feature>
+                                <feature>jbi-cluster</feature>
                             </features>
                             <repository>target/features-repo</repository>
                         </configuration>

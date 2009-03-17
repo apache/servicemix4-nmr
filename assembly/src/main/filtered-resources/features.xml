@@ -61,7 +61,6 @@
     </feature>
     <feature name="jbi-cluster" version="${version}">
         <feature version="${version}">jbi</feature>
-        <feature>activemq</feature>
         <bundle>mvn:org.springframework/spring-jms/${spring.version}</bundle>
         <bundle>mvn:org.apache.servicemix.jbi.cluster/org.apache.servicemix.jbi.cluster.requestor/${pom.version}</bundle>
         <bundle>mvn:org.apache.servicemix.jbi.cluster/org.apache.servicemix.jbi.cluster.engine/${pom.version}</bundle>
