@@ -24,6 +24,7 @@ import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.nmr.api.Pattern;
 import org.apache.servicemix.nmr.api.Status;
+import org.apache.servicemix.nmr.api.Reference;
 import org.apache.servicemix.nmr.api.service.ServiceHelper;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -34,12 +35,12 @@ public class Client implements InitializingBean, DisposableBean {
     private NMR nmr;
 
     private SendRequestThread sendRequestThread;
-    
+
     public void afterPropertiesSet() throws Exception {
         sendRequestThread = new SendRequestThread();
         sendRequestThread.setRun(true);
         sendRequestThread.start();
-        
+
     }
 
     public void destroy() throws Exception {
@@ -54,35 +55,44 @@ public class Client implements InitializingBean, DisposableBean {
     public NMR getNmr() {
         return nmr;
     }
-    
+
     class SendRequestThread extends Thread {
         private boolean run;
+
         public void run() {
-            while (run) {
-                try {
-                    Thread.sleep(5000);
-                    if (run && nmr != null) {
-		        Channel client = nmr.createChannel();
-                	Exchange e = client.createExchange(Pattern.InOut);
-	                e.setTarget(nmr.getEndpointRegistry().lookup(ServiceHelper.createMap(Endpoint.NAME, "EchoEndpoint")));
-        	        e.getIn().setBody("Hello");
-                	client.sendSync(e);
-	                LOG.info("Response from Endpoint " + e.getOut().getBody());
-                        e.setStatus(Status.Done);
-                        client.send(e);                        
+            Channel client = null;
+            try {
+                client = nmr.createChannel();
+                Reference ref = nmr.getEndpointRegistry().lookup(ServiceHelper.createMap(Endpoint.NAME, "EchoEndpoint")); 
+                while (run) {
+                    try {
+                        Thread.sleep(5000);
+                        if (run && nmr != null) {
+                            Exchange e = client.createExchange(Pattern.InOut);
+                            e.setTarget(ref);
+                            e.getIn().setBody("Hello");
+                            client.sendSync(e);
+                            LOG.info("Response from Endpoint " + e.getOut().getBody());
+                            e.setStatus(Status.Done);
+                            client.send(e);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        LOG.error(e.getMessage());
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    LOG.error(e.getMessage());
+                }
+            } finally {
+                if (client != null) {
+                    client.close();
                 }
             }
         }
-        
+
         public void setRun(boolean run) {
             this.run = run;
         }
     }
 
-    
+
 }
 
