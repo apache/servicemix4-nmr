@@ -24,7 +24,9 @@ import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.Status;
 
 public class EchoEndpoint implements Endpoint {
+
     private static final transient Log LOG = LogFactory.getLog(EchoEndpoint.class);
+
     private Channel channel;
 
     public void process(Exchange exchange) {

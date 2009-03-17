@@ -28,8 +28,8 @@
   http://www.springframework.org/schema/osgi/spring-osgi.xsd">
 
     <!-- Echo Endpoint -->
-    <bean id="echo" class="org.apache.servicemix.nmr.examples.nmr.endpoint.EchoEndpoint">
-    </bean>
+    <bean id="echo" class="org.apache.servicemix.nmr.examples.nmr.endpoint.EchoEndpoint" />
+
     <osgi:service ref="echo">
         <osgi:interfaces>
             <value>org.apache.servicemix.nmr.api.Endpoint</value>
