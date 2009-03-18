@@ -88,7 +88,7 @@ public abstract class AbstractClusterEndpointTest extends AutoFailTestSupport {
         this.connectionFactory = createConnectionFactory();
         this.nmr1 = createNmr();
         this.nmr2 = createNmr();
-        this.listener = new ExchangeCompletedListener();
+        this.listener = new ExchangeCompletedListener(60000);
         this.nmr1.getListenerRegistry().register(this.listener, null);
         this.nmr2.getListenerRegistry().register(this.listener, null);
     }
@@ -113,8 +113,8 @@ public abstract class AbstractClusterEndpointTest extends AutoFailTestSupport {
 
     @Override
     protected void tearDown() throws Exception {
-        ((DisposableBean) executor).destroy();
         listener.assertExchangeCompleted();
+        ((DisposableBean) executor).destroy();
         if (executor instanceof DisposableBean) {
             ((DisposableBean) executor).destroy();
         }

@@ -40,6 +40,7 @@ import org.apache.activemq.ActiveMQSession;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.activemq.pool.PooledSession;
 import org.springframework.jms.JmsException;
+import org.springframework.jms.connection.ConnectionFactoryUtils;
 import org.springframework.util.Assert;
 
 public class ActiveMQJmsRequestorPool extends AbstractPollingRequestorPool implements ExceptionListener {
@@ -71,6 +72,14 @@ public class ActiveMQJmsRequestorPool extends AbstractPollingRequestorPool imple
     }
 
     public void onException(JMSException exception) {
+        handleListenerException(exception);
+        if (sharedConnectionEnabled()) {
+            try {
+                refreshSharedConnection();
+            } catch (JMSException e) {
+                e.printStackTrace();
+            }
+        }
         recreateConsumers(true);
     }
 
@@ -147,11 +156,15 @@ public class ActiveMQJmsRequestorPool extends AbstractPollingRequestorPool imple
                 }
             }
             for (ActiveMQRequestor requestor : reqs) {
-                requestor.destroyConsumer();
-                try {
-                    requestor.afterClose();
-                } catch (Throwable t) {
+                if (destroyRequestors) {
                     requestor.destroy();
+                } else {
+                    requestor.destroyConsumer();
+                    try {
+                        requestor.afterClose();
+                    } catch (Throwable t) {
+                        requestor.destroy();
+                    }
                 }
             }
             startConsumers();
@@ -174,6 +187,7 @@ public class ActiveMQJmsRequestorPool extends AbstractPollingRequestorPool imple
                         } catch (Throwable ex) {
                             handleListenerSetupFailure(ex, alreadyRecovered);
                             alreadyRecovered = true;
+                            recoverAfterListenerSetupFailure();
                         }
                     }
                     consumersStarting = false;

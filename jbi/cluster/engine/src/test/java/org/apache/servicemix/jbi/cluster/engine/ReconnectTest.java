@@ -91,17 +91,11 @@ public class ReconnectTest extends AbstractClusterEndpointTest {
 
         latch.await();
 
-//        Thread.sleep(1000);
-
+        broker.stop();
         cluster2.resume();
 
-        //Thread.sleep(100);
-
-        broker.stop();
-//        Thread.sleep(1000);
+        Thread.sleep(500);
         broker = createBroker(false);
-
-        latch.await();
 
         receiver.assertExchangesReceived(nbThreads * nbExchanges, TIMEOUT);
         //Thread.sleep(500);

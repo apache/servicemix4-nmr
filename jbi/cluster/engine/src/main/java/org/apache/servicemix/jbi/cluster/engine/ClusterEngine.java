@@ -272,7 +272,6 @@ public class ClusterEngine extends ServiceRegistryImpl<ClusterRegistration>
     protected AtomicInteger pendingExchanges = new AtomicInteger();
     protected AtomicBoolean pauseConsumption = new AtomicBoolean(false);
     protected int maxPendingExchanges = DEFAULT_MAX_PENDING_EXCHANGES;
-    protected AtomicBoolean paused = new AtomicBoolean(false);
 
     public Channel getChannel() {
         return channel;
@@ -370,7 +369,7 @@ public class ClusterEngine extends ServiceRegistryImpl<ClusterRegistration>
     }
 
     public void pause() {
-        if (paused.compareAndSet(false, true)) {
+        if (pauseConsumption.compareAndSet(false, true)) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Pausing cluster endpoint: " + name);
             }
@@ -379,7 +378,7 @@ public class ClusterEngine extends ServiceRegistryImpl<ClusterRegistration>
     }
 
     public void resume() {
-        if (paused.compareAndSet(true, false)) {
+        if (pauseConsumption.compareAndSet(true, false)) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Resuming cluster endpoint: " + name);
             }

@@ -296,10 +296,10 @@ public abstract class AbstractPollingRequestorPool extends AbstractJmsRequestorP
          * Destroy this item and free associated JMS resources.
          */
         protected void destroy() {
-//                closeMessageConsumer(consumer);
-//                closeMessageProducer(producer);
             JmsUtils.closeSession(session);
             JmsUtils.closeConnection(connection);
+            session = null;
+            connection = null;
         }
 
         /**
