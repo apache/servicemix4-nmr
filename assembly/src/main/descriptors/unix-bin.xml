@@ -129,6 +129,12 @@
             <filtered>true</filtered>
             <lineEnding>unix</lineEnding>
         </file>
+        <file>
+            <source>../examples/interceptors/endpoint/README.txt</source>
+            <outputDirectory>/examples/interceptors/endpoint</outputDirectory>
+            <filtered>true</filtered>
+            <lineEnding>unix</lineEnding>
+        </file>
     </files>
 
 </assembly>

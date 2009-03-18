@@ -130,6 +130,12 @@
             <filtered>true</filtered>
             <lineEnding>dos</lineEnding>
         </file>
+        <file>
+            <source>../examples/interceptors/endpoint/README.txt</source>
+            <outputDirectory>/examples/interceptors/endpoint</outputDirectory>
+            <filtered>true</filtered>
+            <lineEnding>dos</lineEnding>
+        </file>
     </files>
 
 

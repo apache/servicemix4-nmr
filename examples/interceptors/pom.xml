@@ -33,6 +33,7 @@
 
     <modules>
         <module>exchange</module>
+        <module>endpoint</module>
     </modules>
 
 </project>
