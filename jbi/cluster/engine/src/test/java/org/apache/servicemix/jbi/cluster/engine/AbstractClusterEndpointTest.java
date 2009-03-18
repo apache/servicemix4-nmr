@@ -141,8 +141,7 @@ public abstract class AbstractClusterEndpointTest extends AutoFailTestSupport {
             deleteFile(data);
         }
         BrokerService broker = new BrokerService();
-        broker.setPersistent(true);
-        broker.setDataDirectoryFile(data);
+        broker.setPersistent(false);
         broker.setUseJmx(true);
         broker.addConnector("tcp://localhost:" + port);
         broker.start();

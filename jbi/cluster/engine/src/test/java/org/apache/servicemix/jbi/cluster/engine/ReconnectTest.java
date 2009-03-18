@@ -144,4 +144,19 @@ public class ReconnectTest extends AbstractClusterEndpointTest {
         super.tearDown();
     }
 
+    @Override
+    protected Service createBroker(boolean deleteData) throws Exception {
+        // For reconnection tests, we need a persistent broker
+        File data = new File("target/activemq");
+        if (deleteData) {
+            deleteFile(data);
+        }
+        BrokerService broker = new BrokerService();
+        broker.setPersistent(true);
+        broker.setDataDirectoryFile(data);
+        broker.setUseJmx(true);
+        broker.addConnector("tcp://localhost:" + port);
+        broker.start();
+        return broker;
+    }
 }

@@ -254,11 +254,6 @@ public class GenericInOnlyClusterEndpointTest extends AbstractClusterEndpointTes
     }
 
     @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-    }
-
-    @Override
     protected void tearDown() throws Exception {
         listener.assertExchangeCompleted();
         ((DisposableBean) cluster1.getPool()).destroy();
