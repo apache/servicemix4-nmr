@@ -74,6 +74,7 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Import-Package>
+                            org.apache.activemq*;resolution:=optional,
                             *
                         </Import-Package>
                         <Spring-Context>*;publish-context:=false;create-asynchronously:=true</Spring-Context>
