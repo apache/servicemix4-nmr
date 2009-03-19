@@ -26,6 +26,7 @@ import org.apache.servicemix.nmr.api.Channel;
 import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.ServiceMixException;
+import org.apache.servicemix.nmr.core.ChannelImpl;
 
 /**
  */
@@ -55,6 +56,13 @@ public class EndpointImpl extends ServiceEndpointImpl implements Endpoint {
 
     public void setChannel(Channel channel) {
         this.channel = channel;
+        // We know process exchange is very fast, because those endpoints
+        // will simply add the exchange to the queue, so speed things up
+        // by allowing the delivery channel to deliver and process
+        // exchanges synchronously
+        if (channel instanceof ChannelImpl) {
+            ((ChannelImpl) channel).setShouldRunSynchronously(true);
+        }
     }
 
     public BlockingQueue<Exchange> getQueue() {

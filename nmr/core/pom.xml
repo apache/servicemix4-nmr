@@ -37,6 +37,10 @@
             <artifactId>org.apache.servicemix.nmr.api</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.servicemix</groupId>
+            <artifactId>servicemix-utils</artifactId>
+        </dependency>
+        <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
         </dependency>
@@ -79,7 +83,10 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Export-Package>${pom.artifactId}*</Export-Package>
-                        <Import-Package>org.apache.camel.*;resolution:=optional,*</Import-Package>
+                        <Import-Package>
+                            org.apache.camel.*;resolution:=optional,
+                            *
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

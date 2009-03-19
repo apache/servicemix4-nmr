@@ -19,15 +19,21 @@
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:ctx="http://www.springframework.org/schema/context"
        xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
        xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="
   http://www.springframework.org/schema/beans
   http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/context
+  http://www.springframework.org/schema/context/spring-context.xsd
   http://www.springframework.org/schema/util
   http://www.springframework.org/schema/util/spring-util.xsd
   http://www.springframework.org/schema/osgi
-  http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+  http://www.springframework.org/schema/osgi/spring-osgi.xsd
+  http://www.springframework.org/schema/osgi-compendium
+  http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd">
 
     <!-- ServiceMix NMR -->
     <bean id="servicemix" class="org.apache.servicemix.nmr.core.ServiceMix">
@@ -35,6 +41,7 @@
         <property name="listenerRegistry" ref="listenerRegistry" />
         <property name="flowRegistry" ref="flowRegistry" />
         <property name="wireRegistry" ref="wireRegistry" />
+        <property name="executorFactory" ref="executorFactory" />
     </bean>
     <osgi:service ref="servicemix">
         <osgi:interfaces>
@@ -68,6 +75,7 @@
     <bean id="endpointRegistry" class="org.apache.servicemix.nmr.core.EndpointRegistryImpl">
         <property name="nmr" ref="servicemix" />
         <property name="registry" ref="internalEndpointRegistry" />
+        <property name="executorFactory" ref="executorFactory" />
     </bean>
     <bean id="internalEndpointRegistry" class="org.apache.servicemix.nmr.osgi.InternalRegistryWrapper" />
     <bean class="org.apache.servicemix.nmr.osgi.OsgiServiceRegistryTracker">
@@ -106,5 +114,28 @@
     <!-- AuthenticationService -->
     <bean id="authenticationService" class="org.apache.servicemix.nmr.core.security.JaasAuthenticationService" />
     <osgi:service ref="authenticationService" interface="org.apache.servicemix.nmr.api.security.AuthenticationService" />
+
+    <!-- ExecutorFactory -->
+    <bean id="executorFactory" class="org.apache.servicemix.executors.impl.ExecutorFactoryImpl">
+        <property name="defaultConfig">
+            <bean class="org.apache.servicemix.executors.impl.ExecutorConfig">
+                <property name="allowCoreThreadsTimeout" value="${allowCoreThreadsTimeout}" />
+                <property name="corePoolSize" value="${threadPoolCorePoolSize}"/>
+                <property name="maximumPoolSize" value="${threadPoolMaximumPoolSize}"/>
+                <property name="queueSize" value="${threadPoolQueueSize}"/>
+                <property name="bypassIfSynchronous" value="${bypassIfSynchronous}" />
+            </bean>
+        </property>
+    </bean>
+
+    <osgix:cm-properties id="cmProps" persistent-id="org.apache.servicemix.nmr">
+        <prop key="allowCoreThreadsTimeout">true</prop>
+        <prop key="threadPoolCorePoolSize">1</prop>
+        <prop key="threadPoolMaximumPoolSize">16</prop>
+        <prop key="threadPoolQueueSize">256</prop>
+        <prop key="bypassIfSynchronous">true</prop>
+    </osgix:cm-properties>
+
+    <ctx:property-placeholder properties-ref="cmProps" />
 
 </beans>

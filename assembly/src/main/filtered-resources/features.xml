@@ -30,6 +30,10 @@
         <bundle>mvn:org.apache.servicemix.transaction/org.apache.servicemix.transaction/${version}</bundle>
     </feature>
     <feature name="nmr" version="${version}">
+        <!-- those two bundles are currently required for servicemix-utils to resolve -->
+        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${servicemix.specs.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jbi-api-1.0/${servicemix.specs.version}</bundle>
+        <bundle>mvn:org.apache.servicemix/servicemix-utils/${servicemix.utils.version}</bundle>
         <bundle>mvn:org.apache.servicemix.document/org.apache.servicemix.document/${pom.version}</bundle>
         <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.api/${pom.version}</bundle>
         <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.core/${pom.version}</bundle>
@@ -47,13 +51,11 @@
         <feature version="${version}">naming</feature>
         <feature version="${version}">transaction</feature>
         <feature version="${version}">nmr</feature>
-        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${servicemix.specs.version}</bundle>
         <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.javamail-api-1.4/${servicemix.specs.version}</bundle>
         <bundle>mvn:org.apache.xbean/xbean-classloader/${xbean.version}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.woodstox/${woodstox.version}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.wsdl4j/${wsdl4j.version}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.ant/${ant.version}</bundle>
-        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jbi-api-1.0/${servicemix.specs.version}</bundle>
         <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.runtime/${pom.version}</bundle>
         <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.osgi/${pom.version}</bundle>
         <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.deployer/${pom.version}</bundle>

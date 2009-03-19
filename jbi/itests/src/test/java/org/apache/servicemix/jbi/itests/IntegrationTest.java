@@ -73,6 +73,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
             getBundle("org.apache.xbean", "xbean-classloader"),
             getBundle("org.apache.servicemix.kernel", "org.apache.servicemix.kernel.filemonitor"),
             getBundle("org.apache.servicemix.kernel", "org.apache.servicemix.kernel.management"),
+            getBundle("org.apache.servicemix", "servicemix-utils"),
             getBundle("org.apache.servicemix.nmr", "org.apache.servicemix.nmr.api"),
             getBundle("org.apache.servicemix.nmr", "org.apache.servicemix.nmr.core"),
             getBundle("org.apache.servicemix.nmr", "org.apache.servicemix.nmr.spring"),

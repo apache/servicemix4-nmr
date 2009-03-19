@@ -80,6 +80,8 @@
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Import-Package>
                             org.apache.servicemix.document,
+                            org.apache.servicemix.executors,
+                            org.apache.servicemix.executors.impl,
                             org.apache.servicemix.nmr.api,
                             org.apache.servicemix.nmr.api.event,
                             org.apache.servicemix.nmr.api.internal,

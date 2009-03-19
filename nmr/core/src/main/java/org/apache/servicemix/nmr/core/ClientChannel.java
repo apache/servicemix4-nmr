@@ -27,6 +27,7 @@ import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.nmr.api.internal.InternalChannel;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
+import org.apache.servicemix.executors.Executor;
 
 /**
  * A {@link Channel} to be used as a client.
@@ -34,8 +35,8 @@ import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
  */
 public class ClientChannel extends ChannelImpl {
 
-    public ClientChannel(NMR nmr) {
-        super(new ClientEndpoint(), Executors.newCachedThreadPool(), nmr);
+    public ClientChannel(NMR nmr, Executor executor) {
+        super(new ClientEndpoint(), executor, nmr);
         getEndpoint().setChannel(this);
     }
 

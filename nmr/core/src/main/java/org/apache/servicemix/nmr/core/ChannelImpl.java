@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -37,6 +36,8 @@ import org.apache.servicemix.nmr.api.event.ExchangeListener;
 import org.apache.servicemix.nmr.api.internal.InternalChannel;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
 import org.apache.servicemix.nmr.api.internal.InternalExchange;
+import org.apache.servicemix.executors.Executor;
+import org.apache.servicemix.executors.ExecutorAwareRunnable;
 
 /**
  * The {@link org.apache.servicemix.nmr.api.Channel} implementation.
@@ -51,12 +52,13 @@ public class ChannelImpl implements InternalChannel {
     private static final Log LOG = LogFactory.getLog(NMR.class);
 
     private final InternalEndpoint endpoint;
-    private final ExecutorService executor;
+    private final Executor executor;
     private final NMR nmr;
     private String name;
     private AtomicBoolean closed = new AtomicBoolean();
+    private boolean shouldRunSynchronously;
 
-    public ChannelImpl(InternalEndpoint endpoint, ExecutorService executor, NMR nmr) {
+    public ChannelImpl(InternalEndpoint endpoint, Executor executor, NMR nmr) {
         this.endpoint = endpoint;
         this.executor = executor;
         this.nmr = nmr;
@@ -67,6 +69,14 @@ public class ChannelImpl implements InternalChannel {
         if (this.name == null) {
             this.name = toString();
         }
+    }
+
+    public boolean isShouldRunSynchronously() {
+        return shouldRunSynchronously;
+    }
+
+    public void setShouldRunSynchronously(boolean shouldRunSynchronously) {
+        this.shouldRunSynchronously = shouldRunSynchronously;
     }
 
     /**
@@ -195,9 +205,12 @@ public class ChannelImpl implements InternalChannel {
         }
         // Delegate processing to the executor
         try {
-            this.executor.execute(new Runnable() {
+            this.executor.execute(new ExecutorAwareRunnable() {
                 public void run() {
                     process(exchange);
+                }
+                public boolean shouldRunSynchronously() {
+                    return shouldRunSynchronously;
                 }
             });
         } catch (RejectedExecutionException e) {

@@ -23,8 +23,6 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import org.w3c.dom.Document;
 
@@ -37,6 +35,9 @@ import org.apache.servicemix.nmr.api.Wire;
 import org.apache.servicemix.nmr.api.event.EndpointListener;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
 import org.apache.servicemix.nmr.api.service.ServiceRegistry;
+import org.apache.servicemix.executors.ExecutorFactory;
+import org.apache.servicemix.executors.Executor;
+import org.apache.servicemix.executors.impl.ExecutorFactoryImpl;
 
 /**
  * Implementation of {@link EndpointRegistry} interface that defines
@@ -47,11 +48,15 @@ import org.apache.servicemix.nmr.api.service.ServiceRegistry;
  */
 public class EndpointRegistryImpl implements EndpointRegistry {
 
+    public static final String EXECUTOR_PREFIX = "nmr.endpoint.";
+    public static final String EXECUTOR_DEFAULT = "default";
+
     private NMR nmr;
     private ConcurrentMap<Endpoint, InternalEndpoint> endpoints = new ConcurrentHashMap<Endpoint, InternalEndpoint>();
     private Map<InternalEndpoint, Endpoint> wrappers = new ConcurrentHashMap<InternalEndpoint, Endpoint>();
     private Map<CacheableReference, Boolean> references = new WeakHashMap<CacheableReference, Boolean>();
     private ServiceRegistry<InternalEndpoint> registry;
+    private ExecutorFactory executorFactory;
 
     public EndpointRegistryImpl() {
     }
@@ -66,6 +71,14 @@ public class EndpointRegistryImpl implements EndpointRegistry {
 
     public void setNmr(NMR nmr) {
         this.nmr = nmr;
+    }
+
+    public ExecutorFactory getExecutorFactory() {
+        return executorFactory;
+    }
+
+    public void setExecutorFactory(ExecutorFactory executorFactory) {
+        this.executorFactory = executorFactory;
     }
 
     public ServiceRegistry<InternalEndpoint> getRegistry() {
@@ -83,6 +96,9 @@ public class EndpointRegistryImpl implements EndpointRegistry {
         if (registry == null) {
             registry = new ServiceRegistryImpl<InternalEndpoint>();
         }
+        if (executorFactory == null) {
+            executorFactory = new ExecutorFactoryImpl();
+        }
     }
 
     /**
@@ -98,7 +114,14 @@ public class EndpointRegistryImpl implements EndpointRegistry {
     public void register(Endpoint endpoint, Map<String, ?> properties) {
         InternalEndpointWrapper wrapper = new InternalEndpointWrapper(endpoint, properties);
         if (endpoints.putIfAbsent(endpoint, wrapper) == null) {
-            ExecutorService executor = Executors.newCachedThreadPool();
+            // Get executor
+            String name = (String) properties.get(Endpoint.NAME);
+            if (name == null || name.length() == 0) {
+                name = EXECUTOR_DEFAULT;
+            }
+            name = EXECUTOR_PREFIX + name;
+            Executor executor = executorFactory.createExecutor(name);
+            // Create channel
             ChannelImpl channel = new ChannelImpl(wrapper, executor, nmr);
             wrapper.setChannel(channel);
             wrappers.put(wrapper, endpoint);

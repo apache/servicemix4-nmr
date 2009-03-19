@@ -24,23 +24,32 @@ import org.apache.servicemix.nmr.api.event.ListenerRegistry;
 import org.apache.servicemix.nmr.api.internal.Flow;
 import org.apache.servicemix.nmr.api.internal.FlowRegistry;
 import org.apache.servicemix.nmr.api.service.ServiceHelper;
+import org.apache.servicemix.executors.ExecutorFactory;
+import org.apache.servicemix.executors.impl.ExecutorFactoryImpl;
 
 /**
  * This class is the servicemix class implementing the NMR
  */
 public class ServiceMix implements NMR {
 
+    public static final String EXECUTOR_CLIENT = "nmr.client";
+
     private EndpointRegistry endpoints;
     private ListenerRegistry listeners;
     private FlowRegistry flows;
     private WireRegistry wires;
+    private ExecutorFactory executorFactory;
 
     /**
      * Initialize ServiceMix
      */
     public void init() {
+        if (executorFactory == null) {
+            executorFactory = new ExecutorFactoryImpl();
+        }
         if (endpoints == null) {
             EndpointRegistryImpl reg = new EndpointRegistryImpl(this);
+            reg.setExecutorFactory(executorFactory);
             reg.init();
             endpoints = reg;
         }
@@ -112,13 +121,32 @@ public class ServiceMix implements NMR {
         this.flows = flows;
     }
 
+
+    /**
+     * Access the executor factory
+     *
+     * @return the executor factory
+     */
+    public ExecutorFactory getExecutorFactory() {
+        return executorFactory;
+    }
+
+    /**
+     * Set the executor factory
+     *
+     * @param executorFactory the executor factory
+     */
+    public void setExecutorFactory(ExecutorFactory executorFactory) {
+        this.executorFactory = executorFactory;
+    }
+
     /**
      * Create a channel to interact with the NMR without exposing an endpoint.
      *
      * @return a channel
      */
     public Channel createChannel() {
-        return new ClientChannel(this);
+        return new ClientChannel(this, executorFactory.createExecutor(EXECUTOR_CLIENT));
     }
 
     /**
