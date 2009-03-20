@@ -462,29 +462,30 @@ public class GenericJmsRequestorPool extends AbstractPollingRequestorPool {
         }
 
         protected boolean invokeListener() throws Exception {
-            Requestor req = null;
             boolean messageReceived = false;
-            try {
-                req = createRequestor(true);
-                req.begin();
-                messageReceived = req.receive(receiveTimeout) != null;
-                if (messageReceived) {
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Received message of type [" + req.getMessage().getClass() + "] from consumer");
+            Requestor req = createRequestor(true);
+            synchronized (req) {
+                try {
+                    req.begin();
+                    messageReceived = req.receive(receiveTimeout) != null;
+                    if (messageReceived) {
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Received message of type [" + req.getMessage().getClass() + "] from consumer");
+                        }
+                        messageReceived(this, req.getSession());
+                        listener.onMessage(req);
+                        lastMessageSucceeded = true;
+                    } else {
+                        if (logger.isTraceEnabled()) {
+                            logger.trace("Consumer did not receive a message");
+                        }
+                        noMessageReceived(this, req.getSession());
+                        lastMessageSucceeded = true;
                     }
-                    messageReceived(this, req.getSession());
-                    listener.onMessage(req);
-                    lastMessageSucceeded = true;
-                } else {
-                    if (logger.isTraceEnabled()) {
-                        logger.trace("Consumer did not receive a message");
+                } finally {
+                    if (req != null) {
+                        req.close();
                     }
-                    noMessageReceived(this, req.getSession());
-                    lastMessageSucceeded = true;
-                }
-            } finally {
-                if (req != null) {
-                    req.close();
                 }
             }
             return messageReceived;

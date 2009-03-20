@@ -102,7 +102,9 @@ public abstract class AbstractPollingRequestorPool extends AbstractJmsRequestorP
 
     public JmsRequestor resume(String id) {
         Requestor requestor = parked.remove(id);
-        requestor.resume();
+        synchronized (requestor) {
+            requestor.resume();
+        }
         return requestor;
     }
 
@@ -131,7 +133,7 @@ public abstract class AbstractPollingRequestorPool extends AbstractJmsRequestorP
          * Retrieve the jms session
          * @return the session
          */
-        public Session getSession() throws JmsException {
+        public synchronized Session getSession() throws JmsException {
             try {
                 if (session == null) {
                     Connection conToUse;
@@ -161,7 +163,7 @@ public abstract class AbstractPollingRequestorPool extends AbstractJmsRequestorP
          * @return the JMS message
          * @throws javax.jms.JMSException if an error occur
          */
-        public Message receive(long timeout) throws JMSException {
+        public synchronized Message receive(long timeout) throws JMSException {
             if (timeout < 0) {
                 message = getConsumer().receive();
             } else {
@@ -188,7 +190,7 @@ public abstract class AbstractPollingRequestorPool extends AbstractJmsRequestorP
          * @param msg the message to send
          * @throws javax.jms.JMSException if an error occur
          */
-        public void send(Message msg) throws JmsException {
+        public synchronized void send(Message msg) throws JmsException {
             if (logger.isDebugEnabled()) {
                 logger.debug("Sending JMS message: " + msg);
             }
@@ -217,7 +219,7 @@ public abstract class AbstractPollingRequestorPool extends AbstractJmsRequestorP
          * the item is no longer used.  If an item has been parked previously,
          * this call will do nothing.
          */
-        public void close() {
+        public synchronized void close() {
             if (session != null) {
                 if (!suspended) {
                     try {
@@ -274,7 +276,7 @@ public abstract class AbstractPollingRequestorPool extends AbstractJmsRequestorP
          * This should be called when the same session need to be reused at a later time.
          * @param id the parking id
          */
-        public void suspend(String id) {
+        public synchronized void suspend(String id) {
             if (transacted == Transacted.Xa) {
                 try {
                     if (logger.isDebugEnabled()) {
@@ -317,7 +319,7 @@ public abstract class AbstractPollingRequestorPool extends AbstractJmsRequestorP
          * Mark this item has not parked anymore so that it can later be
          * returned to the pool by a call to {@link #close()}.
          */
-        protected void resume() {
+        protected synchronized void resume() {
             if (transaction != null) {
                 try {
                     if (logger.isDebugEnabled()) {
@@ -340,7 +342,7 @@ public abstract class AbstractPollingRequestorPool extends AbstractJmsRequestorP
          * Internal use only.
          * Prepare this item to be used again.
          */
-        public void begin() throws JmsException {
+        public synchronized void begin() throws JmsException {
             startXaTransaction();
             getSession();
         }
@@ -364,7 +366,7 @@ public abstract class AbstractPollingRequestorPool extends AbstractJmsRequestorP
          * This means that the transaction will be rolled back instead of
          * being committed.
          */
-        public void setRollbackOnly() {
+        public synchronized void setRollbackOnly() {
             rollbackOnly = true;
             if (transacted == Transacted.Xa) {
                 try {
