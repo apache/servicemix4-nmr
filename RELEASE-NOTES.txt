@@ -72,8 +72,6 @@
      * [SMX4NMR-108] - Stopping / Starting the OSGi bundle for a service assembly does not restart the SA (the previous running state is lost)
      * [SMX4NMR-109] - When a component is stopped and restarted, service assemblies are stopped, but not restarted
      * [SMX4NMR-110] - Starting a service assembly which has a non started component should fail
-     * [SMX4NMR-113] - ComponentInstaller.createBootstrap() should add component's SharedLib when create MultipleParentClassLoader
-     * [SMX4NMR-114] - add org.apache.felix.framework dependency for jbi/itests to pick up the fix for felix system bundle classloader
      * [SMX4NMR-115] - Do not use spring proxies for tracking endpoints and other NMR lists
      * [SMX4NMR-116] - Avoid deadlock when shutting down a SA while receiving a sync exchange for it
      * [SMX4NMR-117] - Refactor the InternalReference to allow references to be serializable
