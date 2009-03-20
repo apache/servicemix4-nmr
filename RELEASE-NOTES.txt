@@ -15,6 +15,128 @@
  * limitations under the License.
  */
 
+                  Apache ServiceMix NMR 1.0.0
+                  ===========================
+
+  Overview
+  --------
+
+ This release brings a lot of features, enhancements and bug fixes.  A lot of work has been done to follow more closely
+ the rules from the JBI 1.0 specification and to have a much better lifecycle processing for variour JBI artifacts.
+ A new clustering engine has been developped which allows endpoints to be individually clustered, leveraging the
+ transparent remoting (communications between two endpoints on different JBI containers) but also load-balancing and
+ fail-over.  Other features include the backporting of the auditor package from ServiceMix 3, the integration of the
+ transaction manager and a JNDI/OSGi integration.
+
+ ServiceMix NMR 1.0.0 is a brand new JBI container based on OSGi.  This means that most of the applications developped
+ for ServiceMix 3 can be deployed onto this container.  However, due to the OSGi layer underneath, a lot of classloading
+ related issues may arise when migrating an application from ServiceMix 3, because both containers do not behave the
+ same way.  Another major change compared to ServiceMix 3 is the changed transactional model which allows the use of
+ transactions for asynchronous exchanges: this change will affect your application if you were leveraging the JCA flow
+ in ServiceMix 3.
+
+ See the change log below for more informations.
+
+  Changelog
+  ---------
+
+ The following list shows the bug fixes and enhancements included in this release:
+
+ ** Bug
+     * [SMX4NMR-47] - A full stack trace is displayed when NPE occurs in the ManagementEndpointRegistry when endpoints are not registered
+     * [SMX4NMR-53] - Upgrade to kernel 1.1.0
+     * [SMX4NMR-54] - osgi update command does not stop an endpoint before restarting it
+     * [SMX4NMR-57] - Exchange.toString() does not include the error
+     * [SMX4NMR-58] - update spring and spring osgi version used in NMR
+     * [SMX4NMR-59] - java.lang.IllegalStateException: Alias meta-file does not contain 'ALIAS' attribute: meta:/jbi when try to use jbi shell
+     * [SMX4NMR-60] - EndpointRegistryImpl is not thread safe
+     * [SMX4NMR-61] - jbi/list output isn't correct after stop and start jbi deployer bundle
+     * [SMX4NMR-70] - If an error occurs while dispatching a message, stopping the assembly will wait forever
+     * [SMX4NMR-76] - When a JBI component is uninstalled, it's running state is not remove, which leads to a bad state when re-installing the component
+     * [SMX4NMR-77] - Uninstalling a bundle for a JBI packaged component does not update the org.apache.servicemix.jbi.management.InstallationService installers
+     * [SMX4NMR-78] - Uninstalling a bundle for a JBI packaged component does not update the org.apache.servicemix.jbi.management.InstallationService installers
+     * [SMX4NMR-79] - If the JBI artifact deployed has a MANIFEST.MF which is not the first entry in the jar, it leads to an exception when writing the transformed jar
+     * [SMX4NMR-80] - Listing of JBI artifacts through ant tasks are not always valid
+     * [SMX4NMR-81] - Can not deploy a shared library with a class path item equals to "."
+     * [SMX4NMR-82] - Once a component has been shut down, restarting it should call Lifecycle#init()
+     * [SMX4NMR-83] - org.apache.servicemix.specs.jbi-api-1.0 version in the features.xml is not correct
+     * [SMX4NMR-84] - JBI deployer puts component in start state when installed via install-component ant task. (It should be in Shutdown state till start-component is called.)
+     * [SMX4NMR-88] - JBI deployer puts service assembly in start state when installed via  deploy-service-assembly ant task. (It should be in Shutdown state) Same holds true for the SU that is deployed as part of the SA.
+     * [SMX4NMR-90] - When shared libraries reference classes inside the zip of the SL, those are not loaded
+     * [SMX4NMR-97] - The JBI components classloader sometime fails to load classes or resources
+     * [SMX4NMR-99] - org.apache.servicemix.jbi.deployer.artifacts.ServiceAssemblyImpl.init() needs to do transition from start state to stop first before shutdown.
+     * [SMX4NMR-100] - org.apache.servicemix.jbi.deployer.impl.ComponentInstaller.uninstall() doesn't call bootstrap.init() and cleanup() which is required as per JBI specs.
+     * [SMX4NMR-101] - The message exchange pattern's URI does not comply with the spec
+     * [SMX4NMR-104] - Each time the OSGi bundle is started / stopped, the JBI artifact is installed / uninstalled
+     * [SMX4NMR-105] - When installing a JBI artifact, the JBI->OSGi deployer sometimes throw a ZipException
+     * [SMX4NMR-108] - Stopping / Starting the OSGi bundle for a service assembly does not restart the SA (the previous running state is lost)
+     * [SMX4NMR-109] - When a component is stopped and restarted, service assemblies are stopped, but not restarted
+     * [SMX4NMR-110] - Starting a service assembly which has a non started component should fail
+     * [SMX4NMR-113] - ComponentInstaller.createBootstrap() should add component's SharedLib when create MultipleParentClassLoader
+     * [SMX4NMR-114] - add org.apache.felix.framework dependency for jbi/itests to pick up the fix for felix system bundle classloader
+     * [SMX4NMR-115] - Do not use spring proxies for tracking endpoints and other NMR lists
+     * [SMX4NMR-116] - Avoid deadlock when shutting down a SA while receiving a sync exchange for it
+     * [SMX4NMR-117] - Refactor the InternalReference to allow references to be serializable
+     * [SMX4NMR-118] - Allow configurable shutdown timeout that ensures that a SA can be stopped by canceling sync requests
+     * [SMX4NMR-120] - Add missing dependencies to assembly pom
+     * [SMX4NMR-121] - JBI components are not able to target NMR endpoints anymore
+     * [SMX4NMR-122] - Wrong TCCL is used when operating service units
+     * [SMX4NMR-123] - When going through the TransactionManager, the TCCL is changed to the transaction manager classloader
+     * [SMX4NMR-130] - Lifecycle issues when using OSGi package service assemblies
+
+ ** Improvement
+     * [SMX4NMR-55] - Ensure a clean shutdown of service assemblies
+     * [SMX4NMR-62] - Use a StringSource instead of a DOMSource when making an exchange rereadable or using copy to ensure it is serializable
+     * [SMX4NMR-63] - Use a static TransformerFactory when converting sources for performance
+     * [SMX4NMR-64] - Use a static converter for speed improvements
+     * [SMX4NMR-65] - Switch the Endpoint.SERVICE_NAME property value to the string representation of the qname for ease of use
+     * [SMX4NMR-66] - Refactor ServiceEndpoint implementations
+     * [SMX4NMR-68] - Parse interfaces supported by endpoints using the wsdl description
+     * [SMX4NMR-71] - When a component sends a new exchange, the DeliveryChannel should select the NMR channel corresponding to this endpoint instead of the one for the component's endpoint
+     * [SMX4NMR-72] - The ExchangeCompletedListener should only catch done/error exchanges when they are delivered, not sent
+     * [SMX4NMR-73] - Throw an exception when sending a message to a closed channel
+     * [SMX4NMR-75] - Upgrade to xbean 3.5
+     * [SMX4NMR-85] - Improve JBI->OSGi transformation speed
+     * [SMX4NMR-86] - Thread pools created by the EndpointRegistryImpl for ChanneImpl can not be managed / configured
+     * [SMX4NMR-87] - Queues created by ComponentContextImpl for DeliveryChannelImpl can not be managed / configured
+     * [SMX4NMR-95] - Allow the customization of the OSGi manifest when transforming a JBI artifact to an OSGi bundle
+     * [SMX4NMR-96] - The transaction manager given to JBI components should implement RecoverableTransactionManager
+     * [SMX4NMR-119] - Add command completion for jbi lifefycles commands
+
+ ** New Feature
+     * [SMX4NMR-17] - Implement the needed JMX mbeans for deployment / installation / management of JBI artifacts
+     * [SMX4NMR-18] - JBI ant tasks
+     * [SMX4NMR-20] - Implement SA connections
+     * [SMX4NMR-22] - Port the audit feature from ServiceMix 3
+     * [SMX4NMR-25] - JMS clustering
+     * [SMX4NMR-56] - Handle external endpoints
+     * [SMX4NMR-89] - Implement the JBI bootstrap mechanism
+     * [SMX4NMR-94] - JNDI integration
+     * [SMX4NMR-131] - Create interceptor example using EndpointListener from NMR eventing api.
+
+ ** Task
+     * [SMX4NMR-16] - Full JBI 1.0 compatibility
+     * [SMX4NMR-50] - Make sure that shutting down the jbi layer cleanly shuts down all the JBI artifacts deployed (using both JBI and OSGi packaging)
+     * [SMX4NMR-69] - Use managed dependencies instead of specifying the versions in all poms
+     * [SMX4NMR-74] - Change the distribution to include ant tasks and the kernel to have a fully operational minimal jbi container
+     * [SMX4NMR-91] - Create an example showing how to access the NMR from an osgi bundle to send exchanges
+     * [SMX4NMR-92] - Create an example showing how to write an NMR endpoint
+     * [SMX4NMR-102] - Move transactions support from the features project to the NMR
+     * [SMX4NMR-107] - Use EasyMock for mock testing
+     * [SMX4NMR-111] - Make sure the JBI plugin can be used to deploy jbi artifacts onto the NMR
+
+ ** Test
+     * [SMX4NMR-126] - Cluster engine tests fails on Hudson -- forked test times out in 60 seconds
+     * [SMX4NMR-127] - ChannelImplTest.testDispatchAsync failed on my box caused by time issue
+
+
+
+  Known Issues
+  ------------
+
+  * [SMX4NMR-128] - JBI Cluster Engine unit tests stall intermittently
+
+
                   Apache ServiceMix NMR 1.0.0-m3
                   ================================
 
