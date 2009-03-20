@@ -132,9 +132,7 @@
                     <forkMode>pertest</forkMode>
                     <redirectTestOutputToFile>true</redirectTestOutputToFile>
                     <forkedProcessTimeoutInSeconds>90</forkedProcessTimeoutInSeconds>
-                    <!--
                     <skip>true</skip>
-                    -->
                     <excludes>
                         <!--
                         <exclude>**/*ReconnectTest.java</exclude>
