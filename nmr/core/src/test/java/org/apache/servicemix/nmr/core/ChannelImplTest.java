@@ -18,7 +18,13 @@ package org.apache.servicemix.nmr.core;
 
 import static org.easymock.EasyMock.*;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import junit.framework.TestCase;
 
@@ -169,6 +175,63 @@ public class ChannelImplTest extends TestCase {
         assertNotNull(ep2.exchange);
         assertEquals(Status.Error, e.getStatus());
     }
+    
+    public void testChangeThreadNameForSyncExchange() throws Exception {
+        final BlockingEndpoint blocking = new BlockingEndpoint();
+        final CountDownLatch sent = new CountDownLatch(1);
+        final Map<String, Object> props = ServiceHelper.createMap(Endpoint.NAME, "blocking");
+        nmr.getEndpointRegistry().register(blocking, props);
+        nmr.getListenerRegistry().register(new ExchangeListener() {
+
+            public void exchangeDelivered(Exchange exchange) {}
+
+            public void exchangeFailed(Exchange exchange) {}
+
+            public void exchangeSent(Exchange exchange) {
+                sent.countDown();                
+            }
+            
+        }, null);
+        
+        
+        final CountDownLatch done = new CountDownLatch(1);
+        final Channel channel = nmr.createChannel();
+        final Exchange exchange = channel.createExchange(Pattern.InOnly);
+        exchange.setTarget(nmr.getEndpointRegistry().lookup(props));
+        
+        Thread thread = new Thread(new Runnable() {
+            public void run() {
+                channel.sendSync(exchange);
+                done.countDown();
+            }
+        });
+        thread.start();
+        
+        //let's wait a sec for the exchange to be sent
+        sent.await(1, TimeUnit.SECONDS);
+        assertNotNull(exchange);
+        assertNotNull("There should be a thread waiting for the exchange", 
+                      findThread(exchange.getId()));
+        
+        blocking.lock.release();
+        //let's wait another sec for the exchange to be done
+        done.await(1, TimeUnit.SECONDS);
+        assertNull("There shouldn't be any thread waiting for the exchange",
+                   findThread(exchange.getId()));
+    }
+
+    private Object findThread(String id) {
+        ThreadMXBean threads = ManagementFactory.getThreadMXBean();
+        ThreadInfo[]  threadInfos = threads.getThreadInfo(threads.getAllThreadIds(), 0);
+
+        for (ThreadInfo threadInfo : threadInfos) {
+            if (threadInfo.getThreadName().contains(id)) {
+                return threadInfo;
+            }
+        }
+
+        return null;
+    }
 
     protected static class MyEndpoint implements Endpoint {
         private Channel channel;
@@ -192,5 +255,27 @@ public class ChannelImplTest extends TestCase {
             channel.send(exchange);
         }
 
+    }
+    
+    private static class BlockingEndpoint implements Endpoint {
+
+        private Semaphore lock = new Semaphore(0);
+        private Channel channel;
+
+        public void process(Exchange exchange) {
+            //let's make the endpoint block until we release it
+            try {
+                lock.acquire();
+            } catch (InterruptedException e) {
+                //nothing to do here
+            }
+            
+            exchange.setStatus(Status.Done);
+            channel.send(exchange);
+        }
+
+        public void setChannel(Channel channel) {
+            this.channel = channel;
+        }            
     }
 }

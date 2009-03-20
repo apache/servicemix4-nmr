@@ -139,12 +139,15 @@ public class ChannelImpl implements InternalChannel {
         Semaphore lock = e.getRole() == Role.Consumer ? e.getConsumerLock(true)
                 : e.getProviderLock(true);
         dispatch(e);
+        Thread thread = Thread.currentThread();
+        String original = thread.getName();
         try {
             if (timeout > 0) {
                 if (!lock.tryAcquire(timeout, TimeUnit.MILLISECONDS)) {
                     throw new TimeoutException();
                 }
             } else {
+                thread.setName(original + " (waiting for exchange " + exchange.getId() + ")");
                 lock.acquire();
             }
             e.setRole(e.getRole() == Role.Consumer ? Role.Provider : Role.Consumer);
@@ -160,6 +163,8 @@ public class ChannelImpl implements InternalChannel {
                 l.exchangeFailed(exchange);
             }
             return false;
+        } finally {
+            thread.setName(original);
         }
         return true;
     }
