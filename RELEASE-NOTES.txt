@@ -22,18 +22,17 @@
   --------
 
  This release brings a lot of features, enhancements and bug fixes.  A lot of work has been done to follow more closely
- the rules from the JBI 1.0 specification and to have a much better lifecycle processing for variour JBI artifacts.
+ the rules from the JBI 1.0 specification and to have a much better lifecycle processing for various JBI artifacts.
  A new clustering engine has been developped which allows endpoints to be individually clustered, leveraging the
  transparent remoting (communications between two endpoints on different JBI containers) but also load-balancing and
  fail-over.  Other features include the backporting of the auditor package from ServiceMix 3, the integration of the
  transaction manager and a JNDI/OSGi integration.
 
- ServiceMix NMR 1.0.0 is a brand new JBI container based on OSGi.  This means that most of the applications developped
- for ServiceMix 3 can be deployed onto this container.  However, due to the OSGi layer underneath, a lot of classloading
- related issues may arise when migrating an application from ServiceMix 3, because both containers do not behave the
- same way.  Another major change compared to ServiceMix 3 is the changed transactional model which allows the use of
- transactions for asynchronous exchanges: this change will affect your application if you were leveraging the JCA flow
- in ServiceMix 3.
+ ServiceMix NMR 1.0.0 is a brand new JBI container based on OSGi.  Most of the applications developped for ServiceMix 3
+ can be deployed onto this container, however, due to the OSGi layer underneath, some classloading related issues may
+ arise when migrating an application from ServiceMix 3 because both containers do not behave the same way.  Another major
+ change compared to ServiceMix 3 is the changed transactional model which allows the use of transactions for asynchronous
+ exchanges: this change will affect your application if you were leveraging the JCA flow in ServiceMix 3.
 
  See the change log below for more informations.
 
