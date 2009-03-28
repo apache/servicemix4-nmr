@@ -323,6 +323,11 @@
           <version>${servicemix.specs.version}</version>
       </dependency>
       <dependency>
+          <groupId>org.apache.servicemix.transaction</groupId>
+          <artifactId>org.apache.servicemix.transaction</artifactId>
+          <version>${pom.version}</version>
+      </dependency>
+      <dependency>
           <groupId>org.apache.servicemix.jbi</groupId>
           <artifactId>org.apache.servicemix.jbi.commands</artifactId>
           <version>${pom.version}</version>

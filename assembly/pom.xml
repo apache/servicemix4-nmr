@@ -128,6 +128,14 @@
             <artifactId>org.apache.servicemix.bundles.wsdl4j</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.howl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.transaction</groupId>
+            <artifactId>org.apache.servicemix.transaction</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.prefs</artifactId>
         </dependency>
