@@ -92,7 +92,7 @@
                             *
                         </Import-Package>
                         <Export-Package>org.apache.servicemix.jbi.deployer*</Export-Package>
-                        <Spring-Context>*;publish-context:=false;create-asynchronously:=false</Spring-Context>
+                        <Spring-Context>*;publish-context:=false;create-asynchronously:=true</Spring-Context>
                     </instructions>
                 </configuration>
             </plugin>
