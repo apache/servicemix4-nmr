@@ -115,6 +115,20 @@ public class AssemblyReferencesListenerTest extends TestCase {
         assertEquals(Status.Error, exchange.getStatus());
     }
 
+    public void testNoExceptionsOnUnknownExchange() throws Exception {
+        AssemblyReferencesListener listener = new AssemblyReferencesListener();
+        InternalEndpoint endpoint = new InternalEndpointWrapper(new EndpointImpl(ServiceHelper.createMap(Endpoint.ENDPOINT_NAME, "endpoint")),
+                                                                ServiceHelper.createMap(Endpoint.ENDPOINT_NAME, "internal-endpoint"));
+        
+        InternalExchange exchange = new ExchangeImpl(Pattern.InOnly);
+        exchange.setSource(endpoint);
+        exchange.setProperty(DeliveryChannelImpl.SEND_SYNC, Boolean.TRUE);
+        exchange.getConsumerLock(true);
+        
+        // this should not throw an exception
+        listener.exchangeSent(exchange);
+    }
+
     private ServiceAssemblyImpl createServiceAssembly() {
         ServiceAssemblyDesc descriptor = DescriptorFactory.buildDescriptor(DescriptorFactory.class.getResource("serviceAssembly.xml")).getServiceAssembly();
         final Preferences prefs = createMock(Preferences.class);

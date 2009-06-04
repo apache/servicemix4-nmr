@@ -107,7 +107,9 @@ public class AssemblyReferencesListener implements EndpointListener, ExchangeLis
 
     private void pending(InternalExchange exchange) {
         ServiceAssembly assembly = endpoints.get(exchange.getSource());
-        pending.put(exchange, assembly);
+        if (assembly != null) {
+          pending.put(exchange, assembly);
+        }
     }
 
     public void exchangeDelivered(Exchange exchange) {
