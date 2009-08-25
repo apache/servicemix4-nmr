@@ -40,8 +40,8 @@
         <property name="autoStart" value="true" />
         <property name="endpointListener" ref="endpointListener" />
         <property name="environment" ref="environment" />
-        <property name="namingStrategy" ref="namingStrategy" />
-        <property name="managementAgent" ref="managementAgent" />
+        <property name="managementStrategy" ref="managementStrategy" />
+        <property name="mbeanServer" ref="mbeanServer" />
         <property name="preferencesService" ref="preferencesService" />
         <property name="shutdownTimeout" value="${shutdownTimeout}" />
     </bean>
@@ -71,17 +71,9 @@
         </osgi:interfaces>
     </osgi:service>
 
-    <!-- Utilities -->
-    <bean id="namingStrategy" class="org.apache.servicemix.jbi.deployer.impl.DefaultNamingStrategy">
-        <property name="jmxDomainName" value="org.apache.servicemix" />
-    </bean>
-    <bean id="managementAgent" class="org.apache.servicemix.jbi.deployer.impl.ManagementAgent">
-        <property name="mbeanServer" ref="mbeanServer" />
-    </bean>
-
     <!-- Services -->
     <bean id="adminService" class="org.apache.servicemix.jbi.deployer.impl.AdminService">
-        <property name="namingStrategy" ref="namingStrategy" />
+        <property name="deployer" ref="deployer" />
     </bean>
     <bean id="adminCommandsService" class="org.apache.servicemix.jbi.deployer.impl.AdminCommandsImpl">
         <property name="deployer" ref="deployer" />
@@ -96,8 +88,13 @@
     </bean>
 
 
-    <!-- Expose management service in OSGi -->
+    <!-- Expose AdminCommandsService in OSGi -->
     <osgi:service ref="adminCommandsService" interface="org.apache.servicemix.jbi.deployer.AdminCommandsService" />
+
+    <!-- Retrieve ManagementStrategy from OSGi service registry -->
+    <osgi:reference id="managementStrategy"
+                    interface="org.fusesource.commons.management.ManagementStrategy"
+                    cardinality="1..1" />
 
     <!-- Environment -->
     <bean id="environment" class="org.apache.servicemix.jbi.runtime.impl.EnvironmentImpl">

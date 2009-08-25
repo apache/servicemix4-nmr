@@ -14,24 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicemix.jbi.deployer;
+package org.apache.servicemix.nmr.core;
 
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
+import java.util.EventObject;
+
+import org.apache.servicemix.nmr.api.NMR;
 
 /**
+ * Event representing an NMR instance having started.
  */
-public interface NamingStrategy {
+public class NmrStartedEvent extends EventObject {
 
-    ObjectName getObjectName(SharedLibrary sharedLibrary) throws MalformedObjectNameException;
+    private NMR nmr;
 
-    ObjectName getObjectName(Component component) throws MalformedObjectNameException;
+    public NmrStartedEvent(NMR source) {
+        super(source);
+        this.nmr = source;
+    }
 
-    ObjectName getObjectName(ServiceAssembly serviceAssembly) throws MalformedObjectNameException;
+    public NMR getNmr() {
+        return nmr;
+    }
 
-    ObjectName getObjectName(AdminCommandsService adminCommandsService) throws MalformedObjectNameException;
-
-    ObjectName createCustomComponentMBeanName(String type, String name);
-
-    String getJmxDomainName();
+    public String toString() {
+        return "Started NMR: " + nmr.getId();
+    }
 }

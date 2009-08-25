@@ -53,4 +53,14 @@ public class LifeCycleEvent extends EventObject {
     public boolean isForced() {
         return forced;
     }
+
+    public String toString() {
+        String clz = getSource().getClass().getSimpleName();
+        return (clz.endsWith("Impl") 
+                ? clz.substring(0, clz.length() - "Impl".length())
+                : clz) + " " +
+               getSource() + " " +
+               type + " " +
+               (isForced() ? "(forced)" : "");
+    }
 }

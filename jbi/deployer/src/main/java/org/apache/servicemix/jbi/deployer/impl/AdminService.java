@@ -20,7 +20,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.jbi.management.AdminServiceMBean;
-import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import org.apache.servicemix.jbi.deployer.Component;
@@ -38,7 +37,6 @@ public class AdminService implements AdminServiceMBean {
     public static final int DEFAULT_CONNECTOR_PORT = 1099;
 
     private Deployer deployer;
-    private DefaultNamingStrategy namingStrategy;
 
     public Deployer getDeployer() {
         return deployer;
@@ -48,21 +46,13 @@ public class AdminService implements AdminServiceMBean {
         this.deployer = deployer;
     }
 
-    public void setNamingStrategy(DefaultNamingStrategy namingStrategy) {
-        this.namingStrategy = namingStrategy;
-    }
-
-    public DefaultNamingStrategy getNamingStrategy() {
-        return namingStrategy;
-    }
-
     public ObjectName[] getBindingComponents() {
         Set<ObjectName> names = new HashSet<ObjectName>();
         for (Component component : deployer.getComponents().values()) {
             if (Deployer.TYPE_BINDING_COMPONENT.equals(component.getType())) {
                 try {
-                    names.add(namingStrategy.getObjectName(component));
-                } catch (MalformedObjectNameException e) {
+                    names.add(deployer.getManagementStrategy().getManagedObjectName(component, null, ObjectName.class));
+                } catch (Exception e) {
                 }
             }
         }
@@ -73,8 +63,8 @@ public class AdminService implements AdminServiceMBean {
         Component component = deployer.getComponent(name);
         if (component != null) {
             try {
-                return namingStrategy.getObjectName(component);
-            } catch (MalformedObjectNameException e) {
+                return deployer.getManagementStrategy().getManagedObjectName(component, null, ObjectName.class);
+            } catch (Exception e) {
             }
         }
         return null;
@@ -85,8 +75,8 @@ public class AdminService implements AdminServiceMBean {
         for (Component component : deployer.getComponents().values()) {
             if (Deployer.TYPE_SERVICE_ENGINE.equals(component.getType())) {
                 try {
-                    names.add(namingStrategy.getObjectName(component));
-                } catch (MalformedObjectNameException e) {
+                    names.add(deployer.getManagementStrategy().getManagedObjectName(component, null, ObjectName.class));
+                } catch (Exception e) {
                 }
             }
         }

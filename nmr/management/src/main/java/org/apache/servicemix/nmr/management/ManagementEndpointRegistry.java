@@ -27,6 +27,7 @@ import org.apache.servicemix.nmr.api.Status;
 import org.apache.servicemix.nmr.api.event.ExchangeListener;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
 import org.apache.servicemix.nmr.api.internal.InternalExchange;
+import org.fusesource.commons.management.ManagementStrategy;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
@@ -35,36 +36,27 @@ public class ManagementEndpointRegistry implements ExchangeListener, Initializin
 
     private static final transient Log LOG = LogFactory.getLog(ManagementEndpointRegistry.class);
 
-    private NamingStrategy namingStrategy;
-    private ManagementAgent managementAgent;
+    private ManagementStrategy managementStrategy;
     private Map<String, ManagedEndpoint> endpoints;
 
     public ManagementEndpointRegistry() {
         endpoints = new ConcurrentHashMap<String, ManagedEndpoint>();
     }
 
-    public NamingStrategy getNamingStrategy() {
-        return namingStrategy;
+    public ManagementStrategy getManagementAgent() {
+        return managementStrategy;
     }
 
-    public void setNamingStrategy(NamingStrategy namingStrategy) {
-        this.namingStrategy = namingStrategy;
-    }
-
-    public ManagementAgent getManagementAgent() {
-        return managementAgent;
-    }
-
-    public void setManagementAgent(ManagementAgent managementAgent) {
-        this.managementAgent = managementAgent;
+    public void setManagementStrategy(ManagementStrategy managementStrategy) {
+        this.managementStrategy = managementStrategy;
     }
 
     public void register(InternalEndpoint endpoint, Map<String, ?> properties) {
         try {
             LOG.info("Registering endpoint: " + endpoint + " with properties " + properties);
-            ManagedEndpoint ep = new ManagedEndpoint(endpoint, properties);
+            ManagedEndpoint ep = new ManagedEndpoint(endpoint, properties, managementStrategy);
             endpoints.put(endpoint.getId(), ep);
-            managementAgent.register(ep, namingStrategy.getObjectName(ep));
+            managementStrategy.manageObject(ep);
         } catch (Exception e) {
             LOG.warn("Unable to register managed endpoint: " + e, e);
         }
@@ -74,7 +66,7 @@ public class ManagementEndpointRegistry implements ExchangeListener, Initializin
         try {
             LOG.info("Unregistering endpoint: " + endpoint + " with properties " + properties);
             ManagedEndpoint ep = endpoints.remove(endpoint.getId());
-            managementAgent.unregister(namingStrategy.getObjectName(ep));
+            managementStrategy.unmanageObject(ep);
         } catch (Exception e) {
             LOG.warn("Unable to unregister managed endpoint: " + e, e);
         }
@@ -133,14 +125,17 @@ public class ManagementEndpointRegistry implements ExchangeListener, Initializin
     }
 
     public void exchangeFailed(Exchange exchange) {
+        ExchangeFailedEvent event = new ExchangeFailedEvent(exchange);
+        try {
+            managementStrategy.notify(event);
+        } catch (Exception ex) {
+            LOG.warn("ExchangeFailedEvent notification failed", ex);
+        }
     }
 
     public void afterPropertiesSet() throws Exception {
-        if (managementAgent == null) {
-            throw new IllegalArgumentException("managementAgent must not be null");
-        }
-        if (namingStrategy == null) {
-            throw new IllegalArgumentException("namingStrategy must not be null");
+        if (managementStrategy == null) {
+            throw new IllegalArgumentException("managementStrategy must not be null");
         }
     }
 }

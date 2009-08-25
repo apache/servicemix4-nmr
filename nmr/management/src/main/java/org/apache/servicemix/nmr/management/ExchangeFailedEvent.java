@@ -16,19 +16,28 @@
  */
 package org.apache.servicemix.nmr.management;
 
-import javax.management.ObjectName;
-import javax.management.MalformedObjectNameException;
+import java.util.EventObject;
 
+import org.apache.servicemix.nmr.api.Exchange;
 
 /**
+ * Event representing an Exchange failure.
  */
-public interface NamingStrategy {
+public class ExchangeFailedEvent extends EventObject {
 
-    ObjectName getObjectName(ManagedEndpoint endpoint) throws MalformedObjectNameException;
-    
-    ObjectName getObjectName(Nameable nameable) throws MalformedObjectNameException;
-    
-    ObjectName getCustomObjectName(String type, String name);
-    
-    String getJmxDomainName();
+    private Exchange exchange;
+
+    public ExchangeFailedEvent(Exchange source) {
+        super(source);
+        this.exchange = source;
+    }
+
+    public Exchange getExchange() {
+        return exchange;
+    }
+
+    public String toString() {
+        return "Exchange failed: " + exchange.getId();
+    }
 }
+

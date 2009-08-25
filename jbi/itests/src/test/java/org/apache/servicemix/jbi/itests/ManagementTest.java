@@ -49,6 +49,9 @@ public class ManagementTest extends AbstractIntegrationTest {
 	 */
 	protected String[] getTestBundlesNames() {
         return new String[] {
+            getBundle("org.fusesource.commonman", "commons-management"),
+            getBundle("org.apache.xbean", "xbean-naming"),
+            getBundle("org.apache.servicemix.naming", "org.apache.servicemix.naming"),
             getBundle("org.apache.servicemix.specs", "org.apache.servicemix.specs.stax-api-1.0"),
             getBundle("org.apache.servicemix.specs", "org.apache.servicemix.specs.jbi-api-1.0"),
             getBundle("org.apache.servicemix.specs", "org.apache.servicemix.specs.activation-api-1.1"),
@@ -63,6 +66,7 @@ public class ManagementTest extends AbstractIntegrationTest {
             getBundle("org.apache.servicemix.nmr", "org.apache.servicemix.nmr.core"),
             getBundle("org.apache.servicemix.nmr", "org.apache.servicemix.nmr.spring"),
             getBundle("org.apache.servicemix.nmr", "org.apache.servicemix.nmr.osgi"),
+            getBundle("org.apache.servicemix.nmr", "org.apache.servicemix.nmr.management"),
             getBundle("org.apache.servicemix.document", "org.apache.servicemix.document"),
             getBundle("org.apache.servicemix.jbi", "org.apache.servicemix.jbi.runtime"),
             getBundle("org.apache.servicemix.jbi", "org.apache.servicemix.jbi.deployer"),

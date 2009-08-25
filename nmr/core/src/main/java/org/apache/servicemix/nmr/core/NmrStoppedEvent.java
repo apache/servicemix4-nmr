@@ -14,21 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicemix.nmr.management;
+package org.apache.servicemix.nmr.core;
 
-import javax.management.ObjectName;
-import javax.management.MalformedObjectNameException;
+import java.util.EventObject;
 
+import org.apache.servicemix.nmr.api.NMR;
 
 /**
+ * Event representing an NMR instance having stopped.
  */
-public interface NamingStrategy {
+public class NmrStoppedEvent extends EventObject {
 
-    ObjectName getObjectName(ManagedEndpoint endpoint) throws MalformedObjectNameException;
-    
-    ObjectName getObjectName(Nameable nameable) throws MalformedObjectNameException;
-    
-    ObjectName getCustomObjectName(String type, String name);
-    
-    String getJmxDomainName();
+    private NMR nmr;
+
+    public NmrStoppedEvent(NMR source) {
+        super(source);
+        this.nmr = source;
+    }
+
+    public NMR getNmr() {
+        return nmr;
+    }
+
+    public String toString() {
+        return "Stopped NMR: " + nmr.getId();
+    }
 }

@@ -21,8 +21,9 @@ import java.util.Map;
 
 import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
-import org.apache.servicemix.nmr.management.stats.CountStatistic;
-import org.apache.servicemix.nmr.management.stats.TimeStatistic;
+import org.fusesource.commons.management.ManagementStrategy;
+import org.fusesource.commons.management.Statistic;
+import org.fusesource.commons.management.Statistic.UpdateMode;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -34,18 +35,30 @@ public class ManagedEndpoint {
 
     protected final InternalEndpoint endpoint;
     protected final Map<String,?> properties;
-    protected final CountStatistic inboundExchanges;
-    protected final CountStatistic outboundExchanges;
-    protected final TimeStatistic inboundExchangeRate;
-    protected final TimeStatistic outboundExchangeRate;
+    protected final Statistic inboundExchanges;
+    protected final Statistic outboundExchanges;
+    protected final Statistic inboundExchangeRate;
+    protected final Statistic outboundExchangeRate;
+    protected final ManagementStrategy managementStrategy;
 
-    public ManagedEndpoint(InternalEndpoint endpoint, Map<String,?> properties) {
+    public ManagedEndpoint(InternalEndpoint endpoint, 
+                           Map<String,?> properties, 
+                           ManagementStrategy managementStrategy) {
         this.endpoint = endpoint;
         this.properties = new HashMap<String,Object>(properties);
-        this.inboundExchanges = new CountStatistic("inboundExchanges", "Number of exchanges received");
-        this.inboundExchangeRate = new TimeStatistic("inboundExchangeRate", "Number of exchanges received per second");
-        this.outboundExchanges = new CountStatistic("outboundExchanges", "Number of exchanges sent");
-        this.outboundExchangeRate = new TimeStatistic("outboundExchangeRate", "Number of exchanges sent per second");
+        this.managementStrategy = managementStrategy;
+        this.inboundExchanges = managementStrategy.createStatistic("inboundExchanges", 
+                                                                   this, 
+                                                                   UpdateMode.VALUE); 
+        this.inboundExchangeRate = managementStrategy.createStatistic("inboundExchangeRate", 
+                                                                      this, 
+                                                                      UpdateMode.COUNTER);
+        this.outboundExchanges = managementStrategy.createStatistic("outboundExchanges", 
+                                                                    this, 
+                                                                    UpdateMode.VALUE);        
+        this.outboundExchangeRate = managementStrategy.createStatistic("outboundExchangeRate", 
+                                                                       this, 
+                                                                       UpdateMode.COUNTER);
     }
 
     public InternalEndpoint getEndpoint() {
@@ -54,12 +67,12 @@ public class ManagedEndpoint {
 
     void incrementInbound() {
         inboundExchanges.increment();
-        inboundExchangeRate.addTime();
+        inboundExchangeRate.increment();
     }
 
     void incrementOutbound() {
         outboundExchanges.increment();
-        outboundExchangeRate.addTime();
+        outboundExchangeRate.increment();
     }
 
     /**
@@ -89,7 +102,7 @@ public class ManagedEndpoint {
      */
     @ManagedAttribute(description = "Number of exchanges received")
     public long getInboundExchangeCount() {
-        return inboundExchanges.getCount();
+        return inboundExchanges.getUpdateCount();
     }
 
     /**
@@ -99,7 +112,7 @@ public class ManagedEndpoint {
      */
     @ManagedAttribute(description = "Exchanges received per second")
     public double getInboundExchangeRate() {
-        return inboundExchangeRate.getAveragePerSecond();
+        return getRate(inboundExchangeRate);
     }
 
     /**
@@ -109,7 +122,7 @@ public class ManagedEndpoint {
      */
     @ManagedAttribute(description = "Number of exchanges sent")
     public long getOutboundExchangeCount() {
-        return outboundExchanges.getCount();
+        return outboundExchanges.getUpdateCount();
     }
 
     /**
@@ -119,7 +132,7 @@ public class ManagedEndpoint {
      */
     @ManagedAttribute(description = "Exchanges sent per second")
     public double getOutboundExchangeRate() {
-        return outboundExchangeRate.getAveragePerSecond();
+        return getRate(outboundExchangeRate);
     }
 
     /**
@@ -131,6 +144,19 @@ public class ManagedEndpoint {
         outboundExchanges.reset();
         inboundExchangeRate.reset();
         outboundExchangeRate.reset();
+    }
+    
+    /**
+     * Get the update rate for the given statistic
+     * @param stat the statistic
+     * @return
+     */
+    private synchronized double getRate(Statistic stat) {
+        if (stat.getUpdateCount() == 0) {
+            return 0;
+        }
+        double d = stat.getValue();
+        return d / stat.getUpdateCount();
     }
 
 }

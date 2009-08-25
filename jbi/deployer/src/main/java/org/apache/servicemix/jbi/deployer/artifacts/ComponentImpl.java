@@ -38,12 +38,13 @@ import org.apache.servicemix.jbi.deployer.events.LifeCycleEvent;
 import org.apache.servicemix.jbi.deployer.descriptor.ComponentDesc;
 import org.apache.servicemix.jbi.deployer.descriptor.DescriptorFactory;
 import org.apache.servicemix.jbi.runtime.ComponentWrapper;
+import org.apache.servicemix.nmr.management.Nameable;
 import org.osgi.framework.Bundle;
 import org.osgi.service.prefs.Preferences;
 
 /**
  */
-public class ComponentImpl extends AbstractLifecycleJbiArtifact implements Component, ComponentWrapper {
+public class ComponentImpl extends AbstractLifecycleJbiArtifact implements Component, ComponentWrapper, Nameable {
 
     private Bundle bundle;
     private ComponentDesc componentDesc;
@@ -302,4 +303,25 @@ public class ComponentImpl extends AbstractLifecycleJbiArtifact implements Compo
         }
     }
 
+    public String toString() {
+        return getName();
+    }
+
+    public String getParent() {
+        return null;
+    }
+    
+    // REVISIT Type should be "Component"
+    
+    public String getSubType() {
+        return "LifeCycle";
+    }
+    
+    public String getVersion() {
+        return null;
+    }
+
+    public Class getPrimaryInterface() {
+        return Component.class;
+    }
 }

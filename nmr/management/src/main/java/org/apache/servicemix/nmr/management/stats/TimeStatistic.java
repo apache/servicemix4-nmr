@@ -22,7 +22,6 @@ package org.apache.servicemix.nmr.management.stats;
  * @version $Revision: 482795 $
  */
 public class TimeStatistic extends Statistic {
-    private long count;
     private long maxTime;
     private long minTime;
     private long totalTime;
@@ -43,19 +42,14 @@ public class TimeStatistic extends Statistic {
 
     public synchronized void reset() {
         super.reset();
-        count = 0;
         maxTime = 0;
         minTime = 0;
         totalTime = 0;
     }
 
-    public synchronized long getCount() {
-        return count;
-    }
-
-    public synchronized void addTime(long time) {
+    public synchronized void updateValue(long time) {
         updateSampleTime();
-        count++;
+        updateUpdateCount();
         totalTime += time;
         if (time > maxTime) {
             maxTime = time;
@@ -64,15 +58,15 @@ public class TimeStatistic extends Statistic {
             minTime = time;
         }
         if (parent != null) {
-            parent.addTime(time);
+            parent.updateValue(time);
         }
     }
 
-    public synchronized void addTime() {
+    public synchronized void increment() {
         long time = getLastSampleTime();
         updateSampleTime();
+        updateUpdateCount();
         time = getLastSampleTime() - time;
-        count++;
         totalTime += time;
         if (time > maxTime) {
             maxTime = time;
@@ -81,7 +75,7 @@ public class TimeStatistic extends Statistic {
             minTime = time;
         }
         if (parent != null) {
-            parent.addTime(time);
+            parent.updateValue(time);
         }
     }
 
@@ -102,7 +96,7 @@ public class TimeStatistic extends Statistic {
     /**
      * @return the total time of all the steps added together
      */
-    public synchronized long getTotalTime() {
+    public synchronized long getValue() {
         return totalTime;
     }
 
@@ -111,11 +105,11 @@ public class TimeStatistic extends Statistic {
      *         total time by the number of counts
      */
     public synchronized double getAverageTime() {
-        if (count == 0) {
+        if (updateCount.get() == 0) {
             return 0;
         }
         double d = totalTime;
-        return d / count;
+        return d / updateCount.get();
     }
 
 
@@ -125,11 +119,11 @@ public class TimeStatistic extends Statistic {
      *         minimum and maximum times.
      */
     public synchronized double getAverageTimeExcludingMinMax() {
-        if (count <= 2) {
+        if (updateCount.get() <= 2) {
             return 0;
         }
         double d = totalTime - minTime - maxTime;
-        return d / (count - 2);
+        return d / (updateCount.incrementAndGet() - 2);
     }
 
 
@@ -166,8 +160,8 @@ public class TimeStatistic extends Statistic {
     }
 
     protected synchronized void appendFieldDescription(StringBuffer buffer) {
-        buffer.append(" count: ");
-        buffer.append(Long.toString(count));
+        buffer.append(" update count: ");
+        buffer.append(Long.toString(updateCount.get()));
         buffer.append(" maxTime: ");
         buffer.append(Long.toString(maxTime));
         buffer.append(" minTime: ");

@@ -40,11 +40,13 @@ import javax.xml.namespace.QName;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 
-import org.apache.servicemix.jbi.deployer.NamingStrategy;
+import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.descriptor.ComponentDesc;
 import org.apache.servicemix.jbi.deployer.descriptor.InstallationDescriptorExtension;
 import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryList;
 import org.apache.servicemix.jbi.runtime.Environment;
+import org.fusesource.commons.management.ManagementStrategy;
+import org.apache.servicemix.nmr.management.Nameable;
 
 
 /**
@@ -54,8 +56,8 @@ import org.apache.servicemix.jbi.runtime.Environment;
 public class InstallationContextImpl implements InstallationContext, ComponentContext, MBeanNames {
 
     private ComponentDesc descriptor;
-    private NamingStrategy namingStrategy;
-    private ManagementAgent managementAgent;
+    private ManagementStrategy managementStrategy;
+    private MBeanServer mbeanServer;
     private Environment environment;
     private File installRoot;
     private List<String> classPathElements = Collections.emptyList();
@@ -63,12 +65,12 @@ public class InstallationContextImpl implements InstallationContext, ComponentCo
 
     public InstallationContextImpl(ComponentDesc descriptor,
                                    Environment environment,
-                                   NamingStrategy namingStrategy,
-                                   ManagementAgent managementAgent) {
+                                   ManagementStrategy managementStrategy,
+                                   MBeanServer mbeanServer) {
         this.descriptor = descriptor;
         this.environment = environment;
-        this.namingStrategy = namingStrategy;
-        this.managementAgent = managementAgent;
+        this.managementStrategy = managementStrategy;
+        this.mbeanServer = mbeanServer;
         if (descriptor.getComponentClassPath() != null
                 && descriptor.getComponentClassPath().getPathElements() != null
                 && descriptor.getComponentClassPath().getPathElements().length > 0) {
@@ -291,17 +293,47 @@ public class InstallationContextImpl implements InstallationContext, ComponentCo
     }
 
     public ObjectName createCustomComponentMBeanName(String customName) {
-        if (namingStrategy != null) {
-            return namingStrategy.createCustomComponentMBeanName(customName, descriptor.getIdentification().getName());
+        ObjectName name = null;
+        if (managementStrategy != null) {
+            Nameable nameable = new Nameable() {
+                public String getName() {
+                    return descriptor.getIdentification().getName();
+                }                    
+                public String getParent() {
+                    return null;
+                }
+                public String getType() {
+                    return null;
+                }
+                public String getSubType() {
+                    return null;
+                }
+                public String getVersion() {
+                    return null;
+                }
+                public Class getPrimaryInterface() {
+                    return null;
+                }
+            };
+            try {
+                name = managementStrategy.getManagedObjectName(nameable, customName, ObjectName.class);
+            } catch (Exception e){
+                // ignore
+            }
         }
-        return null;
+        return name;
     }
 
     public String getJmxDomainName() {
-        if (namingStrategy != null) {
-            return namingStrategy.getJmxDomainName();
+        String name = null;
+        if (managementStrategy != null) {
+            try {
+                name = managementStrategy.getManagedObjectName(null, null, String.class);
+            } catch (Exception e) {
+                // ignore
+            }
         }
-        return null;
+        return name;
     }
 
     /**
@@ -351,7 +383,7 @@ public class InstallationContextImpl implements InstallationContext, ComponentCo
     }
 
     public MBeanServer getMBeanServer() {
-        return managementAgent.getMbeanServer();
+        return mbeanServer;
     }
 
     public InitialContext getNamingContext() {
@@ -361,5 +393,4 @@ public class InstallationContextImpl implements InstallationContext, ComponentCo
     public Object getTransactionManager() {
         return environment.getTransactionManager();
     }
-
 }

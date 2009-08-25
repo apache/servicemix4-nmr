@@ -76,6 +76,15 @@
             <artifactId>easymock</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.nmr</groupId>
+            <artifactId>org.apache.servicemix.nmr.management</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.fusesource.commonman</groupId>
+            <artifactId>commons-management</artifactId>
+            <version>${commons.management.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -89,6 +98,7 @@
                         <Import-Package>
                             javax.transaction,
                             org.apache.geronimo.transaction.manager;resolution:=optional,
+                            org.apache.servicemix.jbi.runtime.impl,
                             *
                         </Import-Package>
                         <Export-Package>org.apache.servicemix.jbi.deployer*</Export-Package>

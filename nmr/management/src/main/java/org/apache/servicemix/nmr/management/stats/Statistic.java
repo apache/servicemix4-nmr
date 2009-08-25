@@ -16,17 +16,20 @@
  */
 package org.apache.servicemix.nmr.management.stats;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 /**
  * Base class for a Statistic implementation
  *
  * @version $Revision: 482795 $
  */
-public class Statistic {
+public abstract class Statistic implements org.fusesource.commons.management.Statistic {
     private String name;
     private String unit;
     private String description;
     private long startTime;
     private long lastSampleTime;
+    protected final AtomicLong updateCount = new AtomicLong(0);
 
     public Statistic(String name, String unit, String description) {
         this.name = name;
@@ -35,14 +38,28 @@ public class Statistic {
         startTime = System.currentTimeMillis();
         lastSampleTime = startTime;
     }
-
+    
+    /**
+     * Gets the number of times the statistic has been updated since the last reset.
+     * 
+     * @return the update count
+     */
+    public long getUpdateCount() {
+        return updateCount.get();
+    }
+    
     public synchronized void reset() {
+        updateCount.set(0);
         startTime = System.currentTimeMillis();
         lastSampleTime = startTime;
     }
 
     protected synchronized void updateSampleTime() {
         lastSampleTime = System.currentTimeMillis();
+    }
+    
+    protected void updateUpdateCount() {
+        updateCount.incrementAndGet();
     }
 
     public synchronized String toString() {

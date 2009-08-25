@@ -46,17 +46,19 @@ public class CountStatistic extends Statistic {
         counter.set(0);
     }
 
-    public long getCount() {
+    public long getValue() {
         return counter.get();
     }
 
-    public void setCount(long count) {
+    public void updateValue(long count) {
         counter.set(count);
+        updateUpdateCount();
     }
 
     public void add(long amount) {
         counter.addAndGet(amount);
         updateSampleTime();
+        updateUpdateCount();
         if (parent != null) {
             parent.add(amount);
         }
@@ -65,6 +67,7 @@ public class CountStatistic extends Statistic {
     public void increment() {
         counter.incrementAndGet();
         updateSampleTime();
+        updateUpdateCount();
         if (parent != null) {
             parent.increment();
         }
@@ -73,6 +76,7 @@ public class CountStatistic extends Statistic {
     public void subtract(long amount) {
         counter.addAndGet(-amount);
         updateSampleTime();
+        updateUpdateCount();
         if (parent != null) {
             parent.subtract(amount);
         }
@@ -81,6 +85,7 @@ public class CountStatistic extends Statistic {
     public void decrement() {
         counter.decrementAndGet();
         updateSampleTime();
+        updateUpdateCount();
         if (parent != null) {
             parent.decrement();
         }

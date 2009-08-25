@@ -33,13 +33,7 @@
     <bean id="componentRegistry" class="org.apache.servicemix.jbi.runtime.impl.ComponentRegistryImpl">
         <property name="nmr" ref="nmrWrapper" />
         <property name="documentRepository" ref="documentRepository" />
-        <property name="managementContext" ref="managementContext" />
-        <property name="environment" ref="environment" />
-    </bean>
-
-    <!-- Management context -->
-    <bean id="managementContext" class="org.apache.servicemix.jbi.runtime.impl.ManagementContext">
-        <property name="jmxDomainName" value="org.apache.servicemix" />
+        <property name="managementStrategy" ref="managementStrategy" />
         <property name="environment" ref="environment" />
     </bean>
 
@@ -59,6 +53,11 @@
         <property name="interface" value="org.apache.servicemix.jbi.runtime.ComponentWrapper" />
         <property name="registry" ref="componentRegistry" />
     </bean>
+
+    <!-- Retrieve ManagementStrategy from OSGi service registry -->
+    <osgi:reference id="managementStrategy"
+                    interface="org.fusesource.commons.management.ManagementStrategy"
+                    cardinality="1..1" />
 
     <!-- Reference to the ServiceMix NMR -->
     <osgi:reference id="nmr"

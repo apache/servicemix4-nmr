@@ -16,6 +16,8 @@
  */
 package org.apache.servicemix.nmr.core;
 
+import java.util.EventObject;
+
 import org.apache.servicemix.nmr.api.Channel;
 import org.apache.servicemix.nmr.api.EndpointRegistry;
 import org.apache.servicemix.nmr.api.NMR;
@@ -26,6 +28,9 @@ import org.apache.servicemix.nmr.api.internal.FlowRegistry;
 import org.apache.servicemix.nmr.api.service.ServiceHelper;
 import org.apache.servicemix.executors.ExecutorFactory;
 import org.apache.servicemix.executors.impl.ExecutorFactoryImpl;
+
+import org.fusesource.commons.management.ManagementStrategy;
+
 
 /**
  * This class is the servicemix class implementing the NMR
@@ -39,6 +44,8 @@ public class ServiceMix implements NMR {
     private FlowRegistry flows;
     private WireRegistry wires;
     private ExecutorFactory executorFactory;
+    private ManagementStrategy managementStrategy;
+    private String id;
 
     /**
      * Initialize ServiceMix
@@ -65,6 +72,14 @@ public class ServiceMix implements NMR {
         if (wires == null) {
             wires = new WireRegistryImpl();
         }
+        fireEvent(new NmrStartedEvent(this));
+    }
+
+    /**
+     * Shutdown ServiceMix
+     */
+    public void shutdown() {
+        fireEvent(new NmrStoppedEvent(this));
     }
 
     /**
@@ -163,5 +178,49 @@ public class ServiceMix implements NMR {
      */
     public void setWireRegistry(WireRegistry wires) {
         this.wires = wires;
+    }
+
+    /**
+     * Access the management strategy
+     *
+     * @return the management strategy
+     */
+    public ManagementStrategy getManagementStrategy() {
+        return managementStrategy;
+    }
+ 
+    /**
+     * Set the management strategy
+     * 
+     * @param managementStrategy the management strategy
+     */
+    public void setManagementStrategy(ManagementStrategy managementStrategy) {
+        this.managementStrategy = managementStrategy;
+    }
+
+    /**
+     * Access the NMR id
+     *
+     * @return the NMR id
+     */
+    public String getId() {
+        return id;
+    }
+ 
+    /**
+     * Set the NMR id
+     * 
+     * @param id the NMR id
+     */
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    private void fireEvent(EventObject event) {
+        try { 
+            getManagementStrategy().notify(event);
+        } catch (Exception e) {
+            // ignore
+        }  
     }
 }

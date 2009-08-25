@@ -21,6 +21,8 @@ import java.net.MalformedURLException;
 import java.util.HashMap;
 import java.util.Map;
 
+import java.lang.reflect.Method;
+
 import javax.management.MBeanServerInvocationHandler;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
@@ -29,7 +31,7 @@ import javax.management.remote.JMXServiceURL;
 
 import org.apache.servicemix.jbi.deployer.AdminCommandsService;
 import org.apache.servicemix.jbi.deployer.impl.AdminService;
-import org.apache.servicemix.jbi.deployer.impl.DefaultNamingStrategy;
+//import org.apache.servicemix.nmr.management.DefaultNamingStrategy;
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Project;
 import org.apache.tools.ant.Task;
@@ -52,6 +54,8 @@ public abstract class JbiTask extends Task {
     private int port = AdminService.DEFAULT_CONNECTOR_PORT;
 
     private String jndiPath = AdminService.DEFAULT_CONNECTOR_PATH;
+
+    private String namingStrategy = "org.apache.servicemix.nmr.management.DefaultNamingStrategy";
 
     private String username;
 
@@ -113,11 +117,23 @@ public abstract class JbiTask extends Task {
      * Get the AdminCommandsService
      *
      * @return the main administration service MBean
-     * @throws IOException
+     * @throws Exception
      */
-    public AdminCommandsService getAdminCommandsService() throws IOException {
-        ObjectName objectName = DefaultNamingStrategy.getSystemObjectName(jmxDomainName, containerName,
-                AdminCommandsService.class);
+    public AdminCommandsService getAdminCommandsService() throws Exception {
+
+        // invoke the static getSystemObjectName() method via reflection
+        // so as to allow an alternative class be configured via the 
+        // namingStrategy attribute on the ant task
+        //
+        Class<?> clazz = Class.forName(namingStrategy);
+        Method method = clazz.getMethod("getSystemObjectName", 
+                                        new Class[]{String.class, 
+                                                    String.class, 
+                                                    Class.class});
+        ObjectName objectName = (ObjectName)
+            method.invoke(null, new Object[]{jmxDomainName, 
+                                             containerName, 
+                                             AdminCommandsService.class});
         return (AdminCommandsService) MBeanServerInvocationHandler.newProxyInstance(
                 jmxConnector.getMBeanServerConnection(), objectName,
                 AdminCommandsService.class, true);
@@ -247,6 +263,20 @@ public abstract class JbiTask extends Task {
      */
     public void setFailOnError(boolean failOnError) {
         this.failOnError = failOnError;
+    }
+
+    /**
+     * @return Returns the namingStrategy.
+     */
+    public String getNamingStrategy() {
+        return namingStrategy;
+    }
+
+    /**
+     * @param strategy The namingStrategy to set.
+     */
+    public void setNamingStrategy(String namingStrategy) {
+        this.namingStrategy = namingStrategy;
     }
 
     /**

@@ -24,7 +24,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import javax.jbi.management.LifeCycleMBean;
-import javax.management.StandardMBean;
 
 import org.apache.servicemix.jbi.deployer.AdminCommandsService;
 import org.apache.servicemix.jbi.deployer.Component;
@@ -32,11 +31,12 @@ import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
 import org.apache.servicemix.jbi.deployer.SharedLibrary;
 import org.apache.servicemix.jbi.deployer.utils.ManagementSupport;
+import org.apache.servicemix.nmr.management.Nameable;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.StringUtils;
 
-public class AdminCommandsImpl implements AdminCommandsService, InitializingBean, DisposableBean {
+public class AdminCommandsImpl implements AdminCommandsService, InitializingBean, DisposableBean, Nameable {
 
     private Deployer deployer;
     private InstallationService installationService;
@@ -71,7 +71,7 @@ public class AdminCommandsImpl implements AdminCommandsService, InitializingBean
     public String uninstallComponent(final String name) throws Exception {
         try {
             if (installationService.unloadInstaller(name, true)) {
-            	return ManagementSupport.createSuccessMessage("uninstallComponent", name);
+                return ManagementSupport.createSuccessMessage("uninstallComponent", name);
             }
             throw ManagementSupport.failure("uninstallComponent", name);
         } catch (Exception e) {
@@ -445,12 +445,11 @@ public class AdminCommandsImpl implements AdminCommandsService, InitializingBean
     }
 
     public void afterPropertiesSet() throws Exception {
-        deployer.getManagementAgent().register(new StandardMBean(this, AdminCommandsService.class),
-                                               deployer.getNamingStrategy().getObjectName(this));
+        deployer.getManagementStrategy().manageObject(this);
     }
 
     public void destroy() throws Exception {
-        deployer.getManagementAgent().unregister(deployer.getNamingStrategy().getObjectName(this));
+        deployer.getManagementStrategy().unmanageObject(this);
     }
 
     public void setInstallationService(InstallationService installationService) {
@@ -477,4 +476,27 @@ public class AdminCommandsImpl implements AdminCommandsService, InitializingBean
         this.deployer = deployer;
     }
 
+    public String getParent() {
+        return AdminService.DEFAULT_NAME;
+    }
+
+    public String getName() {
+        return "AdminCommandsService";
+    }
+    
+    public String getType() {
+        return "SystemService";
+    }
+
+    public String getSubType() {
+        return null;
+    }
+
+    public Class getPrimaryInterface() {
+        return AdminCommandsService.class;
+    }
+
+    public String getVersion() {
+        return null;
+    }
 }

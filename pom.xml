@@ -107,6 +107,7 @@
       <wsdl4j.version>1.6.1_1</wsdl4j.version>
       <xbean.version>3.5</xbean.version>
       <geronimo.stax.version>1.0.1</geronimo.stax.version>
+      <commons.management.version>1.0</commons.management.version>
       <sonar.skippedModules>examples</sonar.skippedModules>
   </properties>
 

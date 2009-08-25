@@ -32,7 +32,6 @@ import javax.management.Attribute;
 import javax.management.JMException;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
-import javax.management.StandardMBean;
 
 import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.SharedLibrary;
@@ -43,11 +42,12 @@ import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryList;
 import org.apache.servicemix.jbi.deployer.utils.FileUtil;
 import org.apache.servicemix.jbi.deployer.utils.ManagementSupport;
 import org.apache.xbean.classloader.MultiParentClassLoader;
+import org.apache.servicemix.nmr.management.Nameable;
 import org.osgi.framework.Bundle;
 import org.osgi.service.prefs.BackingStoreException;
 import org.springframework.osgi.util.BundleDelegatingClassLoader;
 
-public class ComponentInstaller extends AbstractInstaller implements InstallerMBean {
+public class ComponentInstaller extends AbstractInstaller implements InstallerMBean, Nameable {
 
     private InstallationContextImpl installationContext;
     private ObjectName objectName;
@@ -61,8 +61,10 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
         super(deployer, descriptor, jbiArtifact, autoStart);
         this.installRoot = new File(System.getProperty("servicemix.base"), "data/jbi/" + getName() + "/install");
         this.installRoot.mkdirs();
-        this.installationContext = new InstallationContextImpl(descriptor.getComponent(), deployer.getEnvironment(),
-                                                               deployer.getNamingStrategy(), deployer.getManagementAgent());
+        this.installationContext = new InstallationContextImpl(descriptor.getComponent(), 
+                                                               deployer.getEnvironment(),
+                                                               deployer.getManagementStrategy(),
+                                                               deployer.getMbeanServer());
         this.installationContext.setInstallRoot(installRoot);
     }
 
@@ -76,11 +78,19 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
     }
 
     public void register() throws JMException {
-        deployer.getManagementAgent().register(new StandardMBean(this, InstallerMBean.class), getObjectName());
+        try {
+            deployer.getManagementStrategy().manageObject(this);
+        } catch (Exception ex) {
+            throw new JMException(ex.getMessage());
+        }
     }
 
     public void unregister() throws JMException {
-        deployer.getManagementAgent().unregister(getObjectName());
+        try {
+            deployer.getManagementStrategy().unmanageObject(this);
+        } catch (Exception ex) {
+            throw new JMException(ex.getMessage());
+        }
     }
 
     public String getName() {
@@ -246,7 +256,11 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
      */
     public ObjectName getObjectName() {
         if (objectName == null) {
-            objectName = deployer.getNamingStrategy().createCustomComponentMBeanName("Installer", getName());
+            try {
+                objectName = deployer.getManagementStrategy().getManagedObjectName(this, null, ObjectName.class);
+            } catch (Exception e) {
+                // ignore
+            }
         }
         return objectName;
     }
@@ -306,9 +320,9 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
                 // in case the bootstrap has not done it
                 try {
                     if (extensionMBeanName != null) {
-                        deployer.getManagementAgent().unregister(extensionMBeanName);
+                        deployer.getManagementStrategy().unmanageObject(extensionMBeanName);
                     }
-                } catch (JMException e) {
+                } catch (Exception e) {
                     // ignore
                 }
                 if (bootstrap == null) {
@@ -411,7 +425,7 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
             }
         }
         Component component = deployer.registerComponent(getBundle(), componentDesc, innerComponent, aLibs);
-        return deployer.getNamingStrategy().getObjectName(component);
+        return deployer.getManagementStrategy().getManagedObjectName(component, null, ObjectName.class);
     }
 
     public void configure(Properties props) throws Exception {
@@ -420,7 +434,7 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
             if (on == null) {
                 LOGGER.warn("Could not find installation configuration MBean. Installation properties will be ignored.");
             } else {
-                MBeanServer mbs = deployer.getManagementAgent().getMbeanServer();
+                MBeanServer mbs = deployer.getMbeanServer();
                 for (Object o : props.keySet()) {
                     String key = (String) o;
                     String val = props.getProperty(key);
@@ -432,5 +446,25 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
                 }
             }
         }
+    }
+
+    public String getParent() {
+        return null;
+    }
+    
+    public String getType() {
+        return "service-engine";
+    }
+    
+    public String getSubType() {
+        return "Installer";
+    }
+    
+    public String getVersion() {
+        return null;
+    }
+    
+    public Class getPrimaryInterface() {
+        return InstallerMBean.class;
     }
 }

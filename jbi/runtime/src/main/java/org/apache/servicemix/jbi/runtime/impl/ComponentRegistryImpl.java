@@ -30,6 +30,7 @@ import org.apache.servicemix.jbi.runtime.Environment;
 import org.apache.servicemix.jbi.runtime.ComponentWrapper;
 import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.nmr.core.ServiceRegistryImpl;
+import org.fusesource.commons.management.ManagementStrategy;
 
 /**
  * Registry of JBI components objects
@@ -42,7 +43,7 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<ComponentWrapper>
     private DocumentRepository documentRepository;
     private Map<String, ComponentContextImpl> contexts;
     private Environment environment;
-    private ManagementContext managementContext;
+    private ManagementStrategy managementStrategy;
 
     public ComponentRegistryImpl() {
         contexts = new ConcurrentHashMap<String, ComponentContextImpl>();
@@ -64,14 +65,14 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<ComponentWrapper>
         this.environment = environment;
     }
 
-    public ManagementContext getManagementContext() {
-        return managementContext;
+    public ManagementStrategy getManagementStrategy() {
+        return managementStrategy;
     }
 
-    public void setManagementContext(ManagementContext managementContext) {
-        this.managementContext = managementContext;
+    public void setManagementStrategy(ManagementStrategy managementStrategy) {
+        this.managementStrategy = managementStrategy;
     }
-
+    
     public DocumentRepository getDocumentRepository() {
         return documentRepository;
     }

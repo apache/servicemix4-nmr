@@ -32,20 +32,24 @@ public class CountStatisticTest extends StatisticTestSupport {
         CountStatistic stat = new CountStatistic("myCounter", "seconds", "myDescription");
         assertStatistic(stat, "myCounter", "seconds", "myDescription");
 
-        assertEquals(0, stat.getCount());
+        assertEquals(0, stat.getValue());
 
         stat.increment();
-        assertEquals(1, stat.getCount());
+        assertEquals(1, stat.getValue());
+        assertEquals(1, stat.getUpdateCount());
 
         stat.increment();
-        assertEquals(2, stat.getCount());
+        assertEquals(2, stat.getValue());
+        assertEquals(2, stat.getUpdateCount());
 
         stat.decrement();
-        assertEquals(1, stat.getCount());
+        assertEquals(1, stat.getValue());
+        assertEquals(3, stat.getUpdateCount());
 
         Thread.sleep(500);
 
         stat.increment();
+        assertEquals(4, stat.getUpdateCount());
 
         assertLastTimeNotStartTime(stat);
 
@@ -53,6 +57,7 @@ public class CountStatisticTest extends StatisticTestSupport {
 
         stat.reset();
 
-        assertEquals(0, stat.getCount());
+        assertEquals(0, stat.getValue());
+        assertEquals(0, stat.getUpdateCount());
     }
 }

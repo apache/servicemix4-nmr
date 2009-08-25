@@ -16,19 +16,42 @@
  */
 package org.apache.servicemix.nmr.management;
 
-import javax.management.ObjectName;
-import javax.management.MalformedObjectNameException;
-
 
 /**
+ * This interface avoids type leakage from the JBI-specific layer into 
+ * the generic NMR layer when the names for managable objects are being 
+ * constructed by the latter. 
  */
-public interface NamingStrategy {
+public interface Nameable {
 
-    ObjectName getObjectName(ManagedEndpoint endpoint) throws MalformedObjectNameException;
+    /**
+     * @return the name of the parent
+     */
+    String getParent();
     
-    ObjectName getObjectName(Nameable nameable) throws MalformedObjectNameException;
+    /**
+     * @return the name of the entity
+     */
+    String getName();
     
-    ObjectName getCustomObjectName(String type, String name);
+    /**
+     * @return the (non-Java) type of the entity 
+     */
+    String getType();
     
-    String getJmxDomainName();
+    /**
+     * @return the sub-type of the entity
+     */
+    String getSubType();
+    
+    /**
+     * @return the version of the entity
+     */
+    String getVersion();
+    
+    /**
+     * @return the primary interface of the entity from a management 
+     * point of view
+     */
+    Class getPrimaryInterface();
 }

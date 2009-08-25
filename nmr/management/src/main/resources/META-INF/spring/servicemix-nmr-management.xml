@@ -36,16 +36,7 @@
 
     <!-- Endpoint registry -->
     <bean id="endpointRegistry" class="org.apache.servicemix.nmr.management.ManagementEndpointRegistry">
-        <property name="namingStrategy" ref="namingStrategy" />
-        <property name="managementAgent" ref="managementAgent" />
-    </bean>
-
-    <bean id="namingStrategy" class="org.apache.servicemix.nmr.management.DefaultNamingStrategy">
-        <property name="jmxDomainName" value="org.apache.servicemix" />
-    </bean>
-
-    <bean id="managementAgent" class="org.apache.servicemix.nmr.management.ManagementAgent">
-        <property name="mbeanServer" ref="mbeanServer" />
+        <property name="managementStrategy" ref="managementStrategy" />
     </bean>
 
     <!-- List of endpoints -->
@@ -60,6 +51,25 @@
         <osgi:interfaces>
             <value>org.apache.servicemix.nmr.api.event.ExchangeListener</value>
             <value>org.apache.servicemix.nmr.api.event.Listener</value>
+        </osgi:interfaces>
+    </osgi:service>
+
+    <!-- ManagementStrategy -->
+    <!-- Replace the following beans and <osgi:service> element with 
+         an <osgi:reference> element if plugging in an alternative 
+         ManagementStrategy implementation from another bunble -->
+    <bean id="namingStrategy" class="org.apache.servicemix.nmr.management.DefaultNamingStrategy">
+        <property name="jmxDomainName" value="org.apache.servicemix" />
+    </bean>
+
+    <bean id="managementStrategy" class="org.apache.servicemix.nmr.management.ManagementAgent">
+        <property name="namingStrategy" ref="namingStrategy" />
+        <property name="mbeanServer" ref="mbeanServer" />
+    </bean>
+
+    <osgi:service ref="managementStrategy">
+        <osgi:interfaces>
+            <value>org.fusesource.commons.management.ManagementStrategy</value>
         </osgi:interfaces>
     </osgi:service>
 

@@ -29,29 +29,29 @@ public class TimeStatisticTest extends StatisticTestSupport {
         TimeStatistic stat = new TimeStatistic("myTimer", "millis", "myDescription");
         assertStatistic(stat, "myTimer", "millis", "myDescription");
 
-        assertEquals(0, stat.getCount());
+        assertEquals(0, stat.getUpdateCount());
 
-        stat.addTime(100);
-        assertEquals(1, stat.getCount());
+        stat.updateValue(100);
+        assertEquals(1, stat.getUpdateCount());
         assertEquals(100, stat.getMinTime());
         assertEquals(100, stat.getMaxTime());
 
-        stat.addTime(403);
-        assertEquals(2, stat.getCount());
+        stat.updateValue(403);
+        assertEquals(2, stat.getUpdateCount());
         assertEquals(100, stat.getMinTime());
         assertEquals(403, stat.getMaxTime());
 
-        stat.addTime(50);
-        assertEquals(3, stat.getCount());
+        stat.updateValue(50);
+        assertEquals(3, stat.getUpdateCount());
         assertEquals(50, stat.getMinTime());
         assertEquals(403, stat.getMaxTime());
 
 
-        assertEquals(553, stat.getTotalTime());
+        assertEquals(553, stat.getValue());
 
         Thread.sleep(500);
 
-        stat.addTime(10);
+        stat.updateValue(10);
 
         assertLastTimeNotStartTime(stat);
 
@@ -59,16 +59,16 @@ public class TimeStatisticTest extends StatisticTestSupport {
 
         stat.reset();
 
-        assertEquals(0, stat.getCount());
+        assertEquals(0, stat.getUpdateCount());
         assertEquals(0, stat.getMinTime());
         assertEquals(0, stat.getMaxTime());
-        assertEquals(0, stat.getTotalTime());
+        assertEquals(0, stat.getValue());
 
-        stat.addTime(100);
-        assertEquals(1, stat.getCount());
+        stat.updateValue(100);
+        assertEquals(1, stat.getUpdateCount());
         assertEquals(100, stat.getMinTime());
         assertEquals(100, stat.getMaxTime());
-        assertEquals(100, stat.getTotalTime());
+        assertEquals(100, stat.getValue());
 
     }
 }

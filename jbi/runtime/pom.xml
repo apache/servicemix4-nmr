@@ -86,6 +86,15 @@
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.wsdl4j</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.nmr</groupId>
+            <artifactId>org.apache.servicemix.nmr.management</artifactId>
+        </dependency>
+        <dependency>
+           <groupId>org.fusesource.commonman</groupId>
+           <artifactId>commons-management</artifactId>
+           <version>${commons.management.version}</version>
+       </dependency>
     </dependencies>
 
     <build>

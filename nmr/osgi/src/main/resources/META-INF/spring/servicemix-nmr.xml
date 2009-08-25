@@ -36,12 +36,16 @@
   http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd">
 
     <!-- ServiceMix NMR -->
-    <bean id="servicemix" class="org.apache.servicemix.nmr.core.ServiceMix">
+    <bean id="servicemix" class="org.apache.servicemix.nmr.core.ServiceMix"
+          init-method="init"
+          destroy-method="shutdown">
         <property name="endpointRegistry" ref="endpointRegistry" />
         <property name="listenerRegistry" ref="listenerRegistry" />
         <property name="flowRegistry" ref="flowRegistry" />
         <property name="wireRegistry" ref="wireRegistry" />
         <property name="executorFactory" ref="executorFactory" />
+        <property name="managementStrategy" ref="managementStrategy" />
+        <property name="id" value="${nmrId}" />
     </bean>
     <osgi:service ref="servicemix">
         <osgi:interfaces>
@@ -128,7 +132,14 @@
         </property>
     </bean>
 
+    <!-- Retrieve ManagementStrategy from OSGi service registry -->
+    <osgi:reference id="managementStrategy"
+                    interface="org.fusesource.commons.management.ManagementStrategy"
+                    cardinality="1..1" />
+
+
     <osgix:cm-properties id="cmProps" persistent-id="org.apache.servicemix.nmr">
+        <prop key="nmrId">org.apache.servicemix.NMR</prop>
         <prop key="allowCoreThreadsTimeout">true</prop>
         <prop key="threadPoolCorePoolSize">1</prop>
         <prop key="threadPoolMaximumPoolSize">16</prop>

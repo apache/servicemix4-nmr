@@ -30,6 +30,13 @@ import org.apache.servicemix.nmr.api.event.ListenerRegistry;
 public interface NMR {
 
     /**
+     * Access the NMR id.
+     *
+     * @return the NMR id
+     */
+    String getId();
+
+    /**
      * Access the endpoint registry.
      *
      * @return the endpoint registry

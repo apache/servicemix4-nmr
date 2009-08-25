@@ -68,6 +68,11 @@
             <artifactId>commons-logging</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.fusesource.commonman</groupId>
+            <artifactId>commons-management</artifactId>
+	    <version>${commons.management.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -89,6 +94,7 @@
                             org.apache.servicemix.nmr.core,
                             org.apache.servicemix.nmr.core.security,
                             org.apache.servicemix.nmr.osgi,
+                            org.fusesource.commons.management,
                             *
                         </Import-Package>
 

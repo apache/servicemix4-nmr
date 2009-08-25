@@ -52,6 +52,7 @@ import org.apache.servicemix.jbi.runtime.impl.utils.URIResolver;
 import org.apache.servicemix.jbi.runtime.ComponentWrapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.servicemix.nmr.management.Nameable;
 
 public abstract class AbstractComponentContext implements ComponentContext, MBeanNames {
 
@@ -70,6 +71,13 @@ public abstract class AbstractComponentContext implements ComponentContext, MBea
     public AbstractComponentContext(ComponentRegistryImpl componentRegistry) {
         this.componentRegistry = componentRegistry;
         if (componentRegistry.getEnvironment() != null) {
+            MBeanServer mbs = componentRegistry.getEnvironment().getMBeanServer();
+            if (componentRegistry.getManagementStrategy() != null) {
+                this.mbeanServer = new MBeanServerWrapper(mbs, componentRegistry.getManagementStrategy());
+            } else {
+                this.mbeanServer = mbs;
+            }
+
             this.mbeanServer = componentRegistry.getEnvironment().getMBeanServer();
             this.initialContext = componentRegistry.getEnvironment().getNamingContext();
             this.transactionManager = componentRegistry.getEnvironment().getTransactionManager();
@@ -249,17 +257,49 @@ public abstract class AbstractComponentContext implements ComponentContext, MBea
     }
 
     public ObjectName createCustomComponentMBeanName(String customName) {
-        if (componentRegistry.getManagementContext() != null) {
-            return componentRegistry.getManagementContext().createCustomComponentMBeanName(customName, getComponentName());
+        ObjectName name = null;
+        if (componentRegistry.getManagementStrategy() != null) {
+            try {
+                Nameable nameable = new Nameable() {
+                    public String getName() {
+                        return getComponentName();
+                    }                    
+                    public String getParent() {
+                        return null;
+                    }
+                    public String getType() {
+                        return null;
+                    }
+                    public String getSubType() {
+                        return null;
+                    }
+                    public String getVersion() {
+                        return null;
+                    }
+                    public Class getPrimaryInterface() {
+                        return null;
+                    }
+                };
+                name = componentRegistry.getManagementStrategy().getManagedObjectName(nameable, 
+                                                                                      customName, 
+                                                                                      ObjectName.class);
+            } catch (Exception e) {
+                // ignore
+            }
         }
-        return null;
+        return name;
     }
 
     public String getJmxDomainName() {
-        if (this.componentRegistry.getManagementContext() != null) {
-            return componentRegistry.getManagementContext().getJmxDomainName();
+        String name = null;
+        if (this.componentRegistry.getManagementStrategy() != null) {
+            try {
+                name = componentRegistry.getManagementStrategy().getManagedObjectName(null, null, String.class);
+            } catch (Exception e) {
+                // ignore
+            }
         }
-        return null;
+        return name;
     }
 
     public ServiceEndpoint resolveEndpointReference(DocumentFragment epr) {

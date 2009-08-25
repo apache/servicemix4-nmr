@@ -29,6 +29,7 @@ import java.util.concurrent.TimeUnit;
 import javax.jbi.JBIException;
 import javax.jbi.management.LifeCycleMBean;
 
+import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
 import org.apache.servicemix.jbi.deployer.descriptor.Connection;
@@ -37,6 +38,7 @@ import org.apache.servicemix.jbi.deployer.descriptor.ServiceAssemblyDesc;
 import org.apache.servicemix.jbi.deployer.events.LifeCycleEvent;
 import org.apache.servicemix.nmr.api.Wire;
 import org.apache.servicemix.nmr.core.util.MapToDictionary;
+import org.apache.servicemix.nmr.management.Nameable;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.prefs.Preferences;
@@ -44,7 +46,7 @@ import org.osgi.service.prefs.Preferences;
 /**
  * ServiceAssembly object
  */
-public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements ServiceAssembly {
+public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements ServiceAssembly, Nameable {
 
     private enum Action {
         Init,
@@ -348,5 +350,29 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
         thread.setDaemon(true);
         thread.start();
         return semaphore;
+    }
+    
+    public String toString() {
+        return getName();
+    }
+
+    public String getParent() {
+        return null;
+    }
+
+    public String getType() {
+        return "ServiceAssembly";
+    }
+    
+    public String getSubType() {
+        return null;
+    }
+    
+    public String getVersion() {
+        return null;
+    }
+
+    public Class getPrimaryInterface() {
+        return ServiceAssembly.class;
     }
 }

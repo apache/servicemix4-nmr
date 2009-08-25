@@ -26,12 +26,14 @@ import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.SharedLibrary;
 import org.apache.servicemix.jbi.deployer.descriptor.DescriptorFactory;
 import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryDesc;
+import org.apache.servicemix.jbi.deployer.impl.AdminService;
+import org.apache.servicemix.nmr.management.Nameable;
 import org.osgi.framework.Bundle;
 
 /**
  * SharedLibrary object
  */
-public class SharedLibraryImpl implements SharedLibrary {
+public class SharedLibraryImpl implements SharedLibrary, Nameable {
 
     protected final Log LOGGER = LogFactory.getLog(getClass());
 
@@ -86,4 +88,19 @@ public class SharedLibraryImpl implements SharedLibrary {
         components.remove(component);
     }
 
+    public String getParent() {
+        return null;
+    }
+    
+    public String getType() {
+        return "SharedLibrary";
+    }
+
+    public String getSubType() {
+        return null;
+    }
+
+    public Class getPrimaryInterface() {
+        return SharedLibrary.class;
+    }
 }

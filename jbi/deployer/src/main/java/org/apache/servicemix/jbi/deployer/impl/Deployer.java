@@ -28,13 +28,12 @@ import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jbi.JBIException;
-import javax.management.StandardMBean;
+import javax.management.MBeanServer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.DeployedAssembly;
-import org.apache.servicemix.jbi.deployer.NamingStrategy;
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.SharedLibrary;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
@@ -58,6 +57,7 @@ import org.apache.servicemix.jbi.runtime.ComponentWrapper;
 import org.apache.servicemix.jbi.runtime.Environment;
 import org.apache.servicemix.nmr.api.event.ListenerRegistry;
 import org.apache.servicemix.nmr.core.ListenerRegistryImpl;
+import org.fusesource.commons.management.ManagementStrategy;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -118,11 +118,12 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
     private int shutdownTimeout;
 
     // Helper beans
-    private NamingStrategy namingStrategy;
-    private ManagementAgent managementAgent;
+    private ManagementStrategy managementStrategy;
     private Environment environment;
 
     private ListenerRegistry listenerRegistry;
+    
+    private MBeanServer mbeanServer;
 
     public Deployer() throws JBIException {
         // TODO: control that using properties
@@ -165,20 +166,20 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
         return endpointListener;
     }
 
-    public NamingStrategy getNamingStrategy() {
-        return namingStrategy;
+    public ManagementStrategy getManagementStrategy() {
+        return managementStrategy;
     }
 
-    public void setNamingStrategy(NamingStrategy namingStrategy) {
-        this.namingStrategy = namingStrategy;
+    public void setManagementStrategy(ManagementStrategy managementStrategy) {
+        this.managementStrategy = managementStrategy;
+    }
+    
+    public MBeanServer getMbeanServer() {
+        return mbeanServer;
     }
 
-    public ManagementAgent getManagementAgent() {
-        return managementAgent;
-    }
-
-    public void setManagementAgent(ManagementAgent managementAgent) {
-        this.managementAgent = managementAgent;
+    public void setMbeanServer(MBeanServer mbeanServer) {
+        this.mbeanServer = mbeanServer;
     }
 
     public void setEnvironment(Environment environment) {
@@ -404,7 +405,7 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
         return new ServiceUnitImpl(sud, suRootDir, component);
     }
 
-    public SharedLibrary registerSharedLibrary(Bundle bundle, SharedLibraryDesc sharedLibraryDesc, ClassLoader classLoader) throws Exception {
+    public SharedLibraryImpl registerSharedLibrary(Bundle bundle, SharedLibraryDesc sharedLibraryDesc, ClassLoader classLoader) throws Exception {
         // Create shared library
         SharedLibraryImpl sl = new SharedLibraryImpl(bundle, sharedLibraryDesc, classLoader);
         sharedLibraries.put(sl.getName(), sl);
@@ -413,13 +414,13 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
         props.put(NAME, sharedLibraryDesc.getIdentification().getName());
         LOGGER.debug("Registering JBI Shared Library");
         registerService(bundle, SharedLibrary.class.getName(), sl, props);
-        getManagementAgent().register(new StandardMBean(sl, SharedLibrary.class), getNamingStrategy().getObjectName(sl));
+        getManagementStrategy().manageObject(sl);
         // Check pending bundles
         checkPendingInstallers();
         return sl;
     }
 
-    public Component registerComponent(Bundle bundle, ComponentDesc componentDesc, javax.jbi.component.Component innerComponent, SharedLibrary[] sharedLibraries) throws Exception {
+    public ComponentImpl registerComponent(Bundle bundle, ComponentDesc componentDesc, javax.jbi.component.Component innerComponent, SharedLibrary[] sharedLibraries) throws Exception {
         String name = componentDesc.getIdentification().getName();
         Preferences prefs = preferencesService.getUserPreferences(name);
         ComponentImpl component = new ComponentImpl(bundle, componentDesc, innerComponent, prefs, autoStart, sharedLibraries);
@@ -440,12 +441,11 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
         if (!wrappedComponents.containsKey(name)) {
             registerService(bundle, javax.jbi.component.Component.class.getName(), innerComponent, props);
         }
-        getManagementAgent().register(new StandardMBean(component, Component.class),
-                                      getNamingStrategy().getObjectName(component));
+        getManagementStrategy().manageObject(component);
         return component;
     }
 
-    public ServiceAssembly registerServiceAssembly(Bundle bundle, ServiceAssemblyDesc serviceAssemblyDesc, List<ServiceUnitImpl> sus) throws Exception {
+    public ServiceAssemblyImpl registerServiceAssembly(Bundle bundle, ServiceAssemblyDesc serviceAssemblyDesc, List<ServiceUnitImpl> sus) throws Exception {
         // Now create the SA and initialize it
         Preferences prefs = preferencesService.getUserPreferences(serviceAssemblyDesc.getIdentification().getName());
         ServiceAssemblyImpl sa = new ServiceAssemblyImpl(bundle, serviceAssemblyDesc, sus, prefs, endpointListener, autoStart);
@@ -459,7 +459,7 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
         // register the service assembly in the OSGi registry
         LOGGER.debug("Registering JBI service assembly");
         registerService(bundle, ServiceAssembly.class.getName(), sa, props);
-        getManagementAgent().register(new StandardMBean(sa, ServiceAssembly.class), getNamingStrategy().getObjectName(sa));
+        getManagementStrategy().manageObject(sa);
         return sa;
     }
 
@@ -603,6 +603,14 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
                     checkPendingAssemblies();
                     break;
             }
+        }
+
+        // propagate lifecycle event to management strategy
+        // 
+        try {
+            getManagementStrategy().notify(event);
+        } catch (Exception e) {
+            // ignore
         }
     }
 

@@ -72,6 +72,11 @@
             <artifactId>easymock</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.fusesource.commonman</groupId>
+            <artifactId>commons-management</artifactId>
+            <version>${commons.management.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
