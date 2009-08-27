@@ -86,6 +86,7 @@
       <geronimo.transaction.version>2.2-r634076</geronimo.transaction.version>
       <howl.version>1.0.1-1_1</howl.version>
       <hsqldb.version>1.8.0.7</hsqldb.version>
+      <javax.mail.version>1.4.1_1-SNAPSHOT</javax.mail.version>
       <jencks.version>2.1_1</jencks.version>
       <jline.version>0.9.94</jline.version>
       <junit.version>3.8.2_1</junit.version>
@@ -436,9 +437,9 @@
           <version>${servicemix.specs.version}</version>
       </dependency>
       <dependency>
-          <groupId>org.apache.servicemix.specs</groupId>
-          <artifactId>org.apache.servicemix.specs.javamail-api-1.4</artifactId>
-          <version>${servicemix.specs.version}</version>
+          <groupId>org.apache.servicemix.bundles</groupId>
+          <artifactId>org.apache.servicemix.bundles.javax.mail</artifactId>
+          <version>${javax.mail.version}</version>
       </dependency>
       <dependency>
           <groupId>org.apache.geronimo.specs</groupId>

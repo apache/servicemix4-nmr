@@ -55,7 +55,6 @@ public class ManagementTest extends AbstractIntegrationTest {
             getBundle("org.apache.servicemix.specs", "org.apache.servicemix.specs.stax-api-1.0"),
             getBundle("org.apache.servicemix.specs", "org.apache.servicemix.specs.jbi-api-1.0"),
             getBundle("org.apache.servicemix.specs", "org.apache.servicemix.specs.activation-api-1.1"),
-            getBundle("org.apache.servicemix.specs", "org.apache.servicemix.specs.javamail-api-1.4"),
             getBundle("org.apache.geronimo.specs", "geronimo-jta_1.1_spec"),
             getBundle("org.apache.felix", "org.apache.felix.prefs"),
             getBundle("org.apache.xbean", "xbean-classloader"),
@@ -72,6 +71,7 @@ public class ManagementTest extends AbstractIntegrationTest {
             getBundle("org.apache.servicemix.jbi", "org.apache.servicemix.jbi.deployer"),
             getBundle("org.apache.servicemix.jbi", "org.apache.servicemix.jbi.osgi"),
             getBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.ant"),
+            getBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.javax.mail"),
             getBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.woodstox"),
             getBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.wsdl4j"),
 		};

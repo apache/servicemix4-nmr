@@ -52,8 +52,8 @@
         <feature version="${version}">naming</feature>
         <feature version="${version}">transaction</feature>
         <feature version="${version}">nmr</feature>
-        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.javamail-api-1.4/${servicemix.specs.version}</bundle>
         <bundle>mvn:org.apache.xbean/xbean-classloader/${xbean.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.javax.mail/${javax.mail.version}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.woodstox/${woodstox.version}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.wsdl4j/${wsdl4j.version}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.ant/${ant.version}</bundle>

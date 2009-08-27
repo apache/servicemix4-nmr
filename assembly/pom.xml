@@ -144,8 +144,8 @@
             <artifactId>org.apache.servicemix.specs.activation-api-1.1</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.servicemix.specs</groupId>
-            <artifactId>org.apache.servicemix.specs.javamail-api-1.4</artifactId>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.javax.mail</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
