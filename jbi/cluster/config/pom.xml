@@ -47,6 +47,8 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Import-Package>
+                            org.springframework.osgi*;version="[1.2.0,2.0.0)",
+                            org.springframework*;version="[2.5.6,3.0.0)",
                             javax.jms,
                             org.apache.servicemix.nmr.api,
                             org.apache.servicemix.nmr.api.event,
