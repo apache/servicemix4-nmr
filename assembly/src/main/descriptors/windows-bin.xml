@@ -26,7 +26,7 @@
 
         <!-- Expanded ServiceMix Runtime -->
         <fileSet>
-            <directory>${basedir}/target/dependencies/unix/apache-servicemix-kernel-${servicemix.kernel.version}</directory>
+            <directory>${basedir}/target/dependencies/win/apache-servicemix-kernel-${servicemix.kernel.version}</directory>
             <outputDirectory>/</outputDirectory>
             <excludes>
               <exclude>bin/**</exclude>
@@ -41,7 +41,7 @@
 
         <!-- Copy over bin/servicemix separately to get the correct file mode -->
         <fileSet>
-            <directory>${basedir}/target/dependencies/unix/apache-servicemix-kernel-${servicemix.kernel.version}</directory>
+            <directory>${basedir}/target/dependencies/win/apache-servicemix-kernel-${servicemix.kernel.version}</directory>
             <outputDirectory>/</outputDirectory>
             <includes>
               <include>bin/*</include>
@@ -60,7 +60,7 @@
             <lineEnding>dos</lineEnding>
         </fileSet>
 
-        <!-- Copy over everything that needs to get unix line endings -->
+        <!-- Copy over everything that needs to get dos line endings -->
         <fileSet>
             <directory>${basedir}/src/main/distribution/ant</directory>
             <outputDirectory>/ant</outputDirectory>
