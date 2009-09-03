@@ -16,24 +16,31 @@
  */
 package org.apache.servicemix.jbi.deployer.utils;
 
+import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.List;
 
 import javax.jbi.management.DeploymentException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.runtime.impl.utils.DOMUtil;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
 /**
- * ManagementMessageHelper is a class that ease the building of management messages.
+ * ManagementMessageHelper is a class that ease the parsing and build of management messages.
  */
 public final class ManagementSupport {
 
@@ -66,6 +73,8 @@ public final class ManagementSupport {
     public static final String VERSION = "version";
     public static final String XMLNS = "xmlns";
 
+    private static final String WRAPPER = "wrapper";
+    
     private static final Log LOG = LogFactory.getLog(ManagementSupport.class);
 
     private ManagementSupport() {
@@ -325,6 +334,82 @@ public final class ManagementSupport {
         msg.setMessage(info);
         msg.setComponent(component);
         return createComponentMessage(msg);
+    }
+    
+    public static boolean getComponentTaskResult(String resultMsg, String component, List<Element> results) {
+        Element result = null;
+        boolean success = true;
+
+        try {
+            Document doc = parse(wrap(resultMsg));
+            Element wrapper = getElement(doc, WRAPPER);
+            result = getChildElement(wrapper, COMPONENT_TASK_RESULT);
+            Element e = getChildElement(result, COMPONENT_TASK_RESULT_DETAILS);
+            e = getChildElement(e, TASK_RESULT_DETAILS);
+            e = getChildElement(e, TASK_RESULT);
+            String r = DOMUtil.getElementText(e);
+            if (!SUCCESS.equals(r)) {
+                success = false;
+            }
+        } catch (Exception e) {
+            // The component did not throw an exception upon deployment, but the
+            // result string is not compliant: issue a warning and consider this
+            // is a successful deployment
+            try {
+                if (success) {
+                    result = ManagementSupport.createComponentWarning("deploy", component,
+                                                                      "Unable to parse result string", e);
+                } else {
+                    result = ManagementSupport.createComponentFailure("deploy", component,
+                                                                      "Unable to parse result string", e);
+                }
+            } catch (Exception e2) {
+                LOG.error(e2);
+                result = null;
+            }
+        }
+        if (result != null) {
+            results.add(result);
+        }
+        return success;
+    }
+    
+    /**
+     * Wrap the result message string to set the default namespace. The JBI spec
+     * is a bit misleading here: the javadoc for ServiceUnitManager.deploy shows
+     * a result string that does not declare the namespace for the
+     * component-task-result element. That would be invalid, but we'll hack the
+     * result string to allow it.
+     */
+    private static String wrap(String resultMsg) {
+        String xmlDecl = "<?xml version=\"1.0\" encoding=\"UTF-8\"/?>";
+        int ix = 0;
+        if (resultMsg.startsWith("<?xml")) {
+            ix = resultMsg.indexOf("?>") + 2;
+            xmlDecl = resultMsg.substring(0, ix);
+        }
+        return xmlDecl + "<" + WRAPPER + " xmlns=\"" + HTTP_JAVA_SUN_COM_XML_NS_JBI_MANAGEMENT_MESSAGE
+               + "\"> " + resultMsg.substring(ix) + "</" + WRAPPER + ">";
+    }
+
+    private static Document parse(String result) throws ParserConfigurationException, SAXException,
+        IOException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        factory.setIgnoringElementContentWhitespace(true);
+        factory.setIgnoringComments(true);
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        return builder.parse(new InputSource(new StringReader(result)));
+    }
+
+    private static Element getElement(Document doc, String name) {
+        NodeList l = doc.getElementsByTagNameNS(HTTP_JAVA_SUN_COM_XML_NS_JBI_MANAGEMENT_MESSAGE, name);
+        return (Element)l.item(0);
+    }
+
+    private static Element getChildElement(Element element, String name) {
+        NodeList l = element.getElementsByTagNameNS(HTTP_JAVA_SUN_COM_XML_NS_JBI_MANAGEMENT_MESSAGE, name);
+        return (Element)l.item(0);
     }
 
 }

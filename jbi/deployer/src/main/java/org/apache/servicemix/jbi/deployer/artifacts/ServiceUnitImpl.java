@@ -17,6 +17,8 @@
 package org.apache.servicemix.jbi.deployer.artifacts;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.jbi.JBIException;
 import javax.jbi.management.ComponentLifeCycleMBean;
@@ -28,7 +30,9 @@ import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
 import org.apache.servicemix.jbi.deployer.descriptor.ServiceUnitDesc;
+import org.apache.servicemix.jbi.deployer.utils.ManagementSupport;
 
+import org.w3c.dom.Element;
 
 public class ServiceUnitImpl implements ServiceUnit {
 
@@ -97,7 +101,11 @@ public class ServiceUnitImpl implements ServiceUnit {
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(component.getComponentClassLoader());
-            component.getComponent().getServiceUnitManager().deploy(getName(), getRootDir() != null ? getRootDir().getAbsolutePath() : null);
+            String resultMsg = component.getComponent().getServiceUnitManager().deploy(getName(), getRootDir() != null ? getRootDir().getAbsolutePath() : null);
+            List<Element> results = new ArrayList<Element>();
+            if (!ManagementSupport.getComponentTaskResult(resultMsg, getComponentName(), results)) {
+                throw ManagementSupport.failure("deploy", results);
+            }
         } finally {
             Thread.currentThread().setContextClassLoader(oldCl);
         }
@@ -152,7 +160,11 @@ public class ServiceUnitImpl implements ServiceUnit {
         ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
         try {
             Thread.currentThread().setContextClassLoader(component.getComponentClassLoader());
-            component.getComponent().getServiceUnitManager().undeploy(getName(), getRootDir() != null ? getRootDir().getAbsolutePath() : null);
+            String resultMsg = component.getComponent().getServiceUnitManager().undeploy(getName(), getRootDir() != null ? getRootDir().getAbsolutePath() : null);
+            List<Element> results = new ArrayList<Element>();
+            if (!ManagementSupport.getComponentTaskResult(resultMsg, getComponentName(), results)) {
+                throw ManagementSupport.failure("undeploy", results);
+            }
         } finally {
             Thread.currentThread().setContextClassLoader(oldCl);
         }
