@@ -267,7 +267,7 @@ public abstract class AbstractComponentContext implements ComponentContext, MBea
                     public String getParent() {
                         return null;
                     }
-                    public String getType() {
+                    public String getMainType() {
                         return null;
                     }
                     public String getSubType() {

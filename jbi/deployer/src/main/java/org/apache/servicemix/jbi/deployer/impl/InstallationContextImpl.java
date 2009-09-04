@@ -302,7 +302,7 @@ public class InstallationContextImpl implements InstallationContext, ComponentCo
                 public String getParent() {
                     return null;
                 }
-                public String getType() {
+                public String getMainType() {
                     return null;
                 }
                 public String getSubType() {

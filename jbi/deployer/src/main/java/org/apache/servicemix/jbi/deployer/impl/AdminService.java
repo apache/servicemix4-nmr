@@ -49,7 +49,7 @@ public class AdminService implements AdminServiceMBean {
     public ObjectName[] getBindingComponents() {
         Set<ObjectName> names = new HashSet<ObjectName>();
         for (Component component : deployer.getComponents().values()) {
-            if (Deployer.TYPE_BINDING_COMPONENT.equals(component.getType())) {
+            if (Deployer.TYPE_BINDING_COMPONENT.equals(component.getMainType())) {
                 try {
                     names.add(deployer.getManagementStrategy().getManagedObjectName(component, null, ObjectName.class));
                 } catch (Exception e) {
@@ -73,7 +73,7 @@ public class AdminService implements AdminServiceMBean {
     public ObjectName[] getEngineComponents() {
         Set<ObjectName> names = new HashSet<ObjectName>();
         for (Component component : deployer.getComponents().values()) {
-            if (Deployer.TYPE_SERVICE_ENGINE.equals(component.getType())) {
+            if (Deployer.TYPE_SERVICE_ENGINE.equals(component.getMainType())) {
                 try {
                     names.add(deployer.getManagementStrategy().getManagedObjectName(component, null, ObjectName.class));
                 } catch (Exception e) {
@@ -99,12 +99,12 @@ public class AdminService implements AdminServiceMBean {
 
     public boolean isBinding(String componentName) {
         Component component = deployer.getComponent(componentName);
-        return component != null && Deployer.TYPE_BINDING_COMPONENT.equals(component.getType());
+        return component != null && Deployer.TYPE_BINDING_COMPONENT.equals(component.getMainType());
     }
 
     public boolean isEngine(String componentName) {
         Component component = deployer.getComponent(componentName);
-        return component != null && Deployer.TYPE_SERVICE_ENGINE.equals(component.getType());
+        return component != null && Deployer.TYPE_SERVICE_ENGINE.equals(component.getMainType());
     }
 
 }

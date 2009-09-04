@@ -360,7 +360,7 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
         return null;
     }
 
-    public String getType() {
+    public String getMainType() {
         return "ServiceAssembly";
     }
     

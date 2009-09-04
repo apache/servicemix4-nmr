@@ -37,7 +37,7 @@ public interface Nameable {
     /**
      * @return the (non-Java) type of the entity 
      */
-    String getType();
+    String getMainType();
     
     /**
      * @return the sub-type of the entity

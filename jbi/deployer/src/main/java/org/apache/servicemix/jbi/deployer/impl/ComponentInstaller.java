@@ -452,7 +452,7 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
         return null;
     }
     
-    public String getType() {
+    public String getMainType() {
         return "service-engine";
     }
     

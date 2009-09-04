@@ -92,7 +92,7 @@ public class SharedLibraryImpl implements SharedLibrary, Nameable {
         return null;
     }
     
-    public String getType() {
+    public String getMainType() {
         return "SharedLibrary";
     }
 

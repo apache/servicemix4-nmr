@@ -311,8 +311,10 @@ public class ComponentImpl extends AbstractLifecycleJbiArtifact implements Compo
         return null;
     }
     
-    // REVISIT Type should be "Component"
-    
+    public String getMainType() {
+        return "Component";
+    }
+
     public String getSubType() {
         return "LifeCycle";
     }

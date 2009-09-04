@@ -49,7 +49,7 @@ public class DefaultNamingStrategy implements NamingStrategy {
     public ObjectName getObjectName(Nameable nameable) throws MalformedObjectNameException {
         String name = jmxDomainName + ":" +
                 (nameable.getParent() != null ? "ContainerName=" + sanitize(nameable.getParent()) + "," : "") +
-                "Type=" + sanitize(nameable.getType()) +
+                "Type=" + sanitize(nameable.getMainType()) +
                 ",Name=" + sanitize(nameable.getName()) +
                 (nameable.getVersion() != null ? ",Version=" + sanitize(nameable.getVersion()) : "") +
                 (nameable.getSubType() != null ? ",SubType=" + sanitize(nameable.getSubType()) : "");

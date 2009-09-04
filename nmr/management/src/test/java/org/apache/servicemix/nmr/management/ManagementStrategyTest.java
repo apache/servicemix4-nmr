@@ -330,7 +330,7 @@ public class ManagementStrategyTest extends Assert { //TestCase {
             public String getParent() {
                 return parent;
             }
-            public String getType() {
+            public String getMainType() {
                 return type;
             }
             public String getSubType() {
@@ -386,7 +386,7 @@ public class ManagementStrategyTest extends Assert { //TestCase {
         public String getParent() {
             return parent;
         }
-        public String getType() {
+        public String getMainType() {
             return type;
         }
         public String getSubType() {

@@ -51,7 +51,7 @@ public interface Component extends ComponentLifeCycleMBean {
      *
      * @return the type
      */
-    String getType();
+    String getMainType();
 
     /**
      * Access to the JBI component

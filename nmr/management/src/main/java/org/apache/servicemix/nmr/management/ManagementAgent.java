@@ -90,7 +90,6 @@ public class ManagementAgent implements ManagementStrategy, DisposableBean {
             try {
                 register(managedObject, (ObjectName)preferredName);
             } catch (Exception ex) {
-                ex.printStackTrace();
                 throw new JMException(ex.getMessage());
             }
         }

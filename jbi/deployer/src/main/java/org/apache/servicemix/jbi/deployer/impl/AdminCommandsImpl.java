@@ -288,11 +288,11 @@ public class AdminCommandsImpl implements AdminCommandsService, InitializingBean
         List<Component> components = new ArrayList<Component>();
         for (Component component : deployer.getComponents().values()) {
             // Check type
-            if (excludeSEs && Deployer.TYPE_SERVICE_ENGINE.equals(component.getType())) {
+            if (excludeSEs && Deployer.TYPE_SERVICE_ENGINE.equals(component.getMainType())) {
                 continue;
             }
             // Check type
-            if (excludeBCs && Deployer.TYPE_BINDING_COMPONENT.equals(component.getType())) {
+            if (excludeBCs && Deployer.TYPE_BINDING_COMPONENT.equals(component.getMainType())) {
                 continue;
             }
             // Check status
@@ -333,7 +333,7 @@ public class AdminCommandsImpl implements AdminCommandsService, InitializingBean
         buffer.append("<component-info-list xmlns='http://java.sun.com/xml/ns/jbi/component-info-list' version='1.0'>\n");
         for (Component component : components) {
             buffer.append("  <component-info");
-            buffer.append(" type='").append(component.getType()).append("'");
+            buffer.append(" type='").append(component.getMainType()).append("'");
             buffer.append(" name='").append(component.getName()).append("'");
             buffer.append(" state='").append(component.getCurrentState()).append("'>\n");
             buffer.append("    <description>");
@@ -484,7 +484,7 @@ public class AdminCommandsImpl implements AdminCommandsService, InitializingBean
         return "AdminCommandsService";
     }
     
-    public String getType() {
+    public String getMainType() {
         return "SystemService";
     }
 
