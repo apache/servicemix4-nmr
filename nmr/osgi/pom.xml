@@ -45,8 +45,9 @@
             <artifactId>org.apache.servicemix.nmr.spring</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.osgi</groupId>
-            <artifactId>spring-osgi-core</artifactId>
+            <groupId>org.apache.geronimo</groupId>
+            <artifactId>blueprint-bundle</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
@@ -84,8 +85,6 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Import-Package>
-                            org.springframework.osgi*;version="[1.2.0,2.0.0)",
-                            org.springframework*;version="[2.5.6,3.0.0)",
                             org.apache.servicemix.document,
                             org.apache.servicemix.executors,
                             org.apache.servicemix.executors.impl,
@@ -96,10 +95,9 @@
                             org.apache.servicemix.nmr.core,
                             org.apache.servicemix.nmr.core.security,
                             org.apache.servicemix.nmr.osgi,
-                            org.fusesource.commons.management,
+                            javax.xml.namespace,
                             *
                         </Import-Package>
-
                     </instructions>
                 </configuration>
             </plugin>

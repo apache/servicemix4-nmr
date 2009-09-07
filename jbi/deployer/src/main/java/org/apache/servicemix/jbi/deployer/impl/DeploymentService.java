@@ -37,7 +37,7 @@ import org.apache.servicemix.jbi.deployer.utils.ManagementSupport;
 import org.osgi.framework.BundleContext;
 import org.springframework.osgi.context.BundleContextAware;
 
-public class DeploymentService implements DeploymentServiceMBean, BundleContextAware {
+public class DeploymentService implements DeploymentServiceMBean {
 
     private static final Log LOG = LogFactory.getLog(DeploymentService.class);
 

@@ -19,9 +19,12 @@ package org.apache.servicemix.jbi.commands;
 import javax.jbi.JBIException;
 import javax.jbi.management.LifeCycleMBean;
 
+import org.apache.felix.gogo.commands.Command;
+
 /**
  * Start a JBI artifact
  */
+@Command(scope = "jbi", name = "start", description = "Start a JBI artifact")
 public class StartCommand extends JbiLifeCycleCommandSupport {
 
     protected void handle(LifeCycleMBean artifact) throws JBIException {

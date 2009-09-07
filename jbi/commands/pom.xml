@@ -37,8 +37,9 @@
             <artifactId>org.apache.servicemix.jbi.deployer</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.servicemix.kernel.gshell</groupId>
-            <artifactId>org.apache.servicemix.kernel.gshell.core</artifactId>
+            <groupId>org.apache.felix.karaf.gshell</groupId>
+            <artifactId>org.apache.felix.karaf.gshell.console</artifactId>
+            <version>${felix.karaf.version}</version>
         </dependency>
     </dependencies>
 
@@ -51,15 +52,12 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Import-Package>
-                            org.springframework.osgi*;version="[1.2.0,2.0.0)",
-                            org.springframework*;version="[2.5.6,3.0.0)",
-                              org.apache.geronimo.gshell.wisdom.command,
-                              org.apache.geronimo.gshell.wisdom.registry,
-                              org.apache.servicemix.kernel.gshell.core,
-                              *
+                            org.osgi.service.command,
+                            org.apache.felix.gogo.commands,
+                            org.apache.felix.karaf.gshell.console,
+                            *
                         </Import-Package>
-                        <Export-Package>${pom.artifactId}*</Export-Package>
-                        <Spring-Context>*;publish-context:=false;create-asynchronously:=false</Spring-Context>
+                        <Export-Package>${pom.artifactId}*;version=${project.version}</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>

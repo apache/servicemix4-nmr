@@ -16,7 +16,7 @@
  */
 package org.apache.servicemix.nmr.audit.commands;
 
-import org.apache.geronimo.gshell.clp.Option;
+import org.apache.felix.gogo.commands.Option;
 import org.apache.servicemix.nmr.audit.AuditorMBean;
 
 /**
@@ -24,10 +24,10 @@ import org.apache.servicemix.nmr.audit.AuditorMBean;
  */
 public class DeleteCommand extends AuditCommandSupport {
 
-    @Option(name = "--index", argumentRequired = true)
+    @Option(name = "--index", required = true)
     int index = -1;
 
-    @Option(name = "--id", argumentRequired = true)
+    @Option(name = "--id", required = true)
     String id;
 
     @Option(name="--all")
@@ -42,10 +42,10 @@ public class DeleteCommand extends AuditCommandSupport {
         } else if (all) {
             nb = auditor.deleteAllExchanges();
         } else {
-            io.err.println("One of [--index, --id, --all] option must be specified");
-            return Result.FAILURE;
+            System.err.println("One of [--index, --id, --all] option must be specified");
+            return 1;
         }
-        io.out.println(nb + " exchanges deleted");
-        return Result.SUCCESS;
+        System.out.println(nb + " exchanges deleted");
+        return 0;
     }
 }

@@ -41,8 +41,8 @@
             <artifactId>org.apache.servicemix.jbi.runtime</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.servicemix.kernel</groupId>
-            <artifactId>org.apache.servicemix.kernel.filemonitor</artifactId>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.fileinstall</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.xbean</groupId>
@@ -96,15 +96,13 @@
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
                         <Import-Package>
-                            org.springframework.osgi*;version="[1.2.0,2.0.0)",
-                            org.springframework*;version="[2.5.6,3.0.0)",
                             javax.transaction,
+                            javax.management.loading,
                             org.apache.geronimo.transaction.manager;resolution:=optional,
                             org.apache.servicemix.jbi.runtime.impl,
                             *
                         </Import-Package>
                         <Export-Package>org.apache.servicemix.jbi.deployer*</Export-Package>
-                        <Spring-Context>*;publish-context:=false;create-asynchronously:=true</Spring-Context>
                     </instructions>
                 </configuration>
             </plugin>

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:cm="http://www.osgi.org/xmlns/blueprint-cm/v1.0.0"
+           xmlns:ext="http://geronimo.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0">
+
+    <!-- JBI Deployer -->
+    <bean id="deployer" class="org.apache.servicemix.jbi.deployer.impl.Deployer" init-method="init" destroy-method="destroy">
+        <property name="autoStart" value="true" />
+        <property name="endpointListener" ref="endpointListener" />
+        <property name="environment" ref="environment" />
+        <property name="managementStrategy" ref="managementStrategy" />
+        <property name="preferencesService" ref="preferencesService" />
+        <property name="shutdownTimeout" value="${shutdownTimeout}" />
+        <property name="bundleContext" ref="blueprintBundleContext"/>
+    </bean>
+
+    <!-- Endpoint listener -->
+    <bean id="endpointListener" class="org.apache.servicemix.jbi.deployer.artifacts.AssemblyReferencesListener" />
+
+    <!-- Deployment listener -->
+    <bean id="listener" class="org.apache.servicemix.jbi.deployer.handler.JBIDeploymentListener" />
+    
+    <!-- JBI Handler -->
+    <bean id="jbiHandler" class="org.apache.servicemix.jbi.deployer.handler.URLHandler" />
+
+    <service ref="jbiHandler" interface="org.osgi.service.url.URLStreamHandlerService">
+    	<service-properties>
+            <entry key="url.handler.protocol" value="jbi"/>
+        </service-properties>
+    </service>
+
+    <service ref="listener" interface="org.apache.felix.fileinstall.ArtifactTransformer" />
+
+    <service ref="endpointListener">
+        <interfaces>
+            <value>org.apache.servicemix.nmr.api.event.Listener</value>
+            <value>org.apache.servicemix.nmr.api.event.EndpointListener</value>
+            <value>org.apache.servicemix.nmr.api.event.ExchangeListener</value>
+        </interfaces>
+    </service>
+
+    <!-- Utilities -->
+    <reference id="managementStrategy" interface="org.fusesource.commons.management.ManagementStrategy" />
+
+    <!-- Services -->
+    <bean id="adminService" class="org.apache.servicemix.jbi.deployer.impl.AdminService">
+    </bean>
+    <bean id="adminCommandsService" class="org.apache.servicemix.jbi.deployer.impl.AdminCommandsImpl" init-method="init" destroy-method="destroy">
+        <property name="deployer" ref="deployer" />
+        <property name="deploymentService" ref="deploymentService" />
+        <property name="installationService" ref="installationService" />
+    </bean>
+    <bean id="installationService" class="org.apache.servicemix.jbi.deployer.impl.InstallationService">
+        <property name="deployer" ref="deployer" />
+    </bean>
+    <bean id="deploymentService" class="org.apache.servicemix.jbi.deployer.impl.DeploymentService">
+        <property name="deployer" ref="deployer" />
+        <property name="bundleContext" ref="blueprintBundleContext"/>
+    </bean>
+
+
+    <!-- Expose management service in OSGi -->
+    <service ref="adminCommandsService" interface="org.apache.servicemix.jbi.deployer.AdminCommandsService" />
+
+    <!-- Environment -->
+    <bean id="environment" class="org.apache.servicemix.jbi.runtime.impl.EnvironmentImpl">
+        <property name="transactionManagers" ref="transactionManagers" />
+        <property name="mbeanServer" ref="mbeanServer" />
+        <property name="namingContext" ref="namingContext" />
+    </bean>
+
+    <!-- Reference to the Transaction Manager -->
+    <reference-list id="transactionManagers"
+                    interface="javax.transaction.TransactionManager"
+                    availability="optional"
+                    ext:proxy-method="greedy"/>
+
+    <!-- The InitialContext -->
+    <bean id="namingContext" class="javax.naming.InitialContext">
+        <argument><null/></argument>
+    </bean>
+
+    <!-- MBeanServer -->
+    <reference id="mbeanServer"
+               interface="javax.management.MBeanServer"
+               availability="mandatory" />
+
+    <!-- Preferences Service -->
+    <reference id="preferencesService"
+               interface="org.osgi.service.prefs.PreferencesService" />
+
+    <cm:property-placeholder persistent-id="org.apache.servicemix.jbi">
+        <cm:default-properties>
+            <cm:property name="shutdownTimeout" value="0"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+</blueprint>

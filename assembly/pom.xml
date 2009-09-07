@@ -34,13 +34,13 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.servicemix.kernel</groupId>
-            <artifactId>apache-servicemix-kernel</artifactId>
+            <groupId>org.apache.felix.karaf</groupId>
+            <artifactId>apache-felix-karaf</artifactId>
             <type>zip</type>
         </dependency>
         <dependency>
-            <groupId>org.apache.servicemix.kernel</groupId>
-            <artifactId>apache-servicemix-kernel</artifactId>
+            <groupId>org.apache.felix.karaf</groupId>
+            <artifactId>apache-felix-karaf</artifactId>
             <type>tar.gz</type>
         </dependency>
         <dependency>
@@ -132,6 +132,14 @@
             <artifactId>org.apache.servicemix.bundles.howl</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.aopalliance</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix.bundles</groupId>
+            <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.servicemix.transaction</groupId>
             <artifactId>org.apache.servicemix.transaction</artifactId>
         </dependency>
@@ -154,6 +162,18 @@
 	    <dependency>
             <groupId>org.apache.xbean</groupId>
             <artifactId>xbean-classloader</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.osgi</groupId>
+            <artifactId>spring-osgi-extender</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.osgi</groupId>
+            <artifactId>spring-osgi-annotation</artifactId>
         </dependency>
     </dependencies>
     <build>
@@ -193,8 +213,8 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>org.apache.servicemix.kernel</groupId>
-                                    <artifactId>apache-servicemix-kernel</artifactId>
+                                    <groupId>org.apache.felix.karaf</groupId>
+                                    <artifactId>apache-felix-karaf</artifactId>
                                     <type>tar.gz</type>
                                     <outputDirectory>target/dependencies/unix</outputDirectory>
                                 </artifactItem>
@@ -210,8 +230,8 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>org.apache.servicemix.kernel</groupId>
-                                    <artifactId>apache-servicemix-kernel</artifactId>
+                                    <groupId>org.apache.felix.karaf</groupId>
+                                    <artifactId>apache-felix-karaf</artifactId>
                                     <type>zip</type>
                                     <outputDirectory>target/dependencies/win</outputDirectory>
                                 </artifactItem>
@@ -238,8 +258,9 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.servicemix.tooling</groupId>
+                <groupId>org.apache.felix.karaf.tooling</groupId>
                 <artifactId>features-maven-plugin</artifactId>
+                <version>${felix.karaf.version}</version>
                 <executions>
                     <execution>
                         <id>add-features-to-repo</id>
@@ -249,6 +270,7 @@
                         </goals>
                         <configuration>
                             <descriptors>
+                                <descriptor>mvn:org.apache.felix.karaf/apache-felix-karaf/${felix.karaf.version}/xml/features</descriptor>
                                 <descriptor>file:${basedir}/target/classes/features.xml</descriptor>
                             </descriptors>
                             <features>

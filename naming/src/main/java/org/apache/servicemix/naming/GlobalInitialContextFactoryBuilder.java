@@ -18,39 +18,22 @@ package org.apache.servicemix.naming;
 
 import java.util.Hashtable;
 
-import javax.naming.spi.InitialContextFactoryBuilder;
-import javax.naming.spi.InitialContextFactory;
 import javax.naming.NamingException;
-import javax.naming.Context;
+import javax.naming.spi.InitialContextFactory;
+import javax.naming.spi.InitialContextFactoryBuilder;
 
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.DisposableBean;
 import org.apache.xbean.naming.global.GlobalContextManager;
 
 /**
  * An InitialContextFactoryBuilder used to return an XBean Naming context.
  */
-public class GlobalInitialContextFactoryBuilder implements InitialContextFactoryBuilder, InitializingBean, DisposableBean {
+public class GlobalInitialContextFactoryBuilder implements InitialContextFactoryBuilder {
 
-    private Context globalContext;
-
-    public Context getGlobalContext() {
-        return globalContext;
-    }
-
-    public void setGlobalContext(Context globalContext) {
-        this.globalContext = globalContext;
-    }
-
-    public void afterPropertiesSet() throws Exception {
-        GlobalContextManager.setGlobalContext(globalContext);
-    }
-
-    public void destroy() throws Exception {
-        GlobalContextManager.setGlobalContext(null);
+    public GlobalInitialContextFactoryBuilder() {
     }
 
     public InitialContextFactory createInitialContextFactory(Hashtable<?, ?> environment) throws NamingException {
         return new GlobalContextManager();
     }
+
 }

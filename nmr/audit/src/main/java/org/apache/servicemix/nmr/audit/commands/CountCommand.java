@@ -24,7 +24,7 @@ import org.apache.servicemix.nmr.audit.AuditorMBean;
 public class CountCommand extends AuditCommandSupport {
 
     protected Object doExecute(AuditorMBean auditor) throws Exception {
-        io.out.println(auditor.getExchangeCount() + " exchanges");
-        return Result.SUCCESS;
+        System.out.println(auditor.getExchangeCount() + " exchanges");
+        return 0;
     }
 }

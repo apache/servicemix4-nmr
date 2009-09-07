@@ -16,7 +16,7 @@
  */
 package org.apache.servicemix.nmr.audit.commands;
 
-import org.apache.geronimo.gshell.clp.Option;
+import org.apache.felix.gogo.commands.Option;
 import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.audit.AuditorMBean;
 
@@ -25,16 +25,16 @@ import org.apache.servicemix.nmr.audit.AuditorMBean;
  */
 public class ExchangesCommand extends AuditCommandSupport {
 
-    @Option(name = "--index", argumentRequired = true)
+    @Option(name = "--index", required = true)
     int index = -1;
 
-    @Option(name = "--from", argumentRequired = true)
+    @Option(name = "--from", required = true)
     int from = -1;
 
-    @Option(name = "--to", argumentRequired = true)
+    @Option(name = "--to", required = true)
     int to = -1;
 
-    @Option(name = "--id", argumentRequired = true)
+    @Option(name = "--id", required = true)
     String id;
 
     @Option(name="--all")
@@ -51,16 +51,16 @@ public class ExchangesCommand extends AuditCommandSupport {
         } else if (all) {
             exchanges = auditor.getAllExchanges();
         } else {
-            io.err.println("One of [--index, --id, --all] option must be specified");
-            return Result.FAILURE;
+            System.err.println("One of [--index, --id, --all] option must be specified");
+            return 1;
         }
         if (exchanges != null) {
             for (Exchange e : exchanges) {
                 if (e != null) {
-                    io.out.println(e.display(true));
+                    System.out.println(e.display(true));
                 }
             }
         }
-        return Result.SUCCESS;
+        return 0;
     }
 }

@@ -16,7 +16,7 @@
  */
 package org.apache.servicemix.nmr.audit.commands;
 
-import org.apache.geronimo.gshell.clp.Argument;
+import org.apache.felix.gogo.commands.Argument;
 import org.apache.servicemix.nmr.audit.AuditorMBean;
 import org.apache.servicemix.nmr.audit.AuditorQueryMBean;
 
@@ -30,8 +30,8 @@ public class FindCommand extends AuditCommandSupport {
 
     protected Object doExecute(AuditorMBean auditor) throws Exception {
         if (!(auditor instanceof AuditorQueryMBean)) {
-            io.err.println("Auditor does not support search.  The auditor should be wrapped within a lucene auditor");
-            return Result.FAILURE;
+            System.err.println("Auditor does not support search.  The auditor should be wrapped within a lucene auditor");
+            return 1;
         }
         return doExecute((AuditorQueryMBean) auditor);
     }
@@ -39,14 +39,14 @@ public class FindCommand extends AuditCommandSupport {
     protected Object doExecute(AuditorQueryMBean auditor) throws Exception {
         String[] ids = auditor.findExchangesIdsByQuery(query);
         if (ids == null || ids.length == 0) {
-            io.out.println("No matching exchanges");
+            System.out.println("No matching exchanges");
         } else {
             for (String id : ids) {
                 if (id != null) {
-                    io.out.println(id);
+                    System.out.println(id);
                 }
             }
         }
-        return Result.SUCCESS;
+        return 0;
     }
 }

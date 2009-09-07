@@ -18,18 +18,17 @@
 -->
 <features>
     <feature name="naming" version="${version}">
-        <bundle>mvn:org.apache.xbean/xbean-naming/${xbean.version}</bundle>
         <bundle>mvn:org.apache.servicemix.naming/org.apache.servicemix.naming/${pom.version}</bundle>
     </feature>
     <feature name="transaction" version="${version}">
-        <bundle>mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimo.jta.version}</bundle>
-        <bundle>mvn:org.apache.geronimo.specs/geronimo-j2ee-connector_1.5_spec/${geronimo.j2ee.connector.version}</bundle>
-        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.howl/${howl.version}</bundle>
-        <bundle>mvn:org.apache.geronimo.components/geronimo-transaction/${geronimo.transaction.version}</bundle>
-        <bundle>mvn:org.springframework/spring-tx/${spring.version}</bundle>
         <bundle>mvn:org.apache.servicemix.transaction/org.apache.servicemix.transaction/${version}</bundle>
     </feature>
+    <feature name="document" version="${version}">
+        <feature>spring-dm</feature>
+        <bundle>mvn:org.apache.servicemix.document/org.apache.servicemix.document/${pom.version}</bundle>
+    </feature>
     <feature name="nmr" version="${version}">
+        <feature>document</feature>
         <!-- those two bundles are currently required for servicemix-utils to resolve -->
         <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${servicemix.specs.version}</bundle>
         <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jbi-api-1.0/${servicemix.specs.version}</bundle>
@@ -64,6 +63,7 @@
     </feature>
     <feature name="jbi-cluster" version="${version}">
         <feature version="${version}">jbi</feature>
+        <feature>spring</feature>
         <bundle>mvn:org.apache.geronimo.specs/geronimo-jms_1.1_spec/${geronimo.jms.version}</bundle>
         <bundle>mvn:org.springframework/spring-jms/${spring.version}</bundle>
         <bundle>mvn:org.apache.servicemix.jbi.cluster/org.apache.servicemix.jbi.cluster.requestor/${pom.version}</bundle>

@@ -20,8 +20,8 @@ import java.util.List;
 
 import javax.jbi.management.LifeCycleMBean;
 
-import org.apache.geronimo.gshell.clp.Argument;
-import org.apache.geronimo.gshell.clp.Option;
+import org.apache.felix.gogo.commands.Argument;
+import org.apache.felix.gogo.commands.Option;
 import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 
@@ -59,10 +59,10 @@ public abstract class JbiLifeCycleCommandSupport extends JbiCommandSupport {
                         continue;
                     }
                 }
-                io.out.println("Artifact " + artifact + " not found");
+                System.out.println("Artifact " + artifact + " not found");
             }
             catch (Exception e) {
-                io.out.println("Error processing " + artifact + ": " + e);
+                System.out.println("Error processing " + artifact + ": " + e);
             }
         }
         return null;

@@ -21,8 +21,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import jline.Completor;
-import org.apache.geronimo.gshell.console.completer.StringsCompleter;
+import org.apache.felix.karaf.gshell.console.Completer;
+import org.apache.felix.karaf.gshell.console.completer.StringsCompleter;
 import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.impl.Deployer;
@@ -31,9 +31,9 @@ import org.osgi.framework.ServiceReference;
 import org.springframework.osgi.context.BundleContextAware;
 
 /**
- * {@link jline.Completor} for JBI artifacts.
+ * {@link org.apache.felix.karaf.gshell.console.Completer} for JBI artifacts.
  */
-public class JbiCommandCompleter implements Completor, BundleContextAware {
+public class JbiCommandCompleter implements Completer, BundleContextAware {
 
     private BundleContext bundleContext;
 

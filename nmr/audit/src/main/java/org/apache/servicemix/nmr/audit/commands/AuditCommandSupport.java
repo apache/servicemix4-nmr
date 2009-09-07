@@ -16,7 +16,7 @@
  */
 package org.apache.servicemix.nmr.audit.commands;
 
-import org.apache.servicemix.kernel.gshell.core.OsgiCommandSupport;
+import org.apache.felix.karaf.gshell.console.OsgiCommandSupport;
 import org.apache.servicemix.nmr.audit.AuditorMBean;
 import org.osgi.framework.ServiceReference;
 
@@ -36,8 +36,8 @@ public abstract class AuditCommandSupport extends OsgiCommandSupport {
     protected Object doExecute() throws Exception {
         AuditorMBean auditor = getAuditor();
         if (auditor == null) {
-            io.err.println("No NMR auditor has been registered. Aborting");
-            return Result.FAILURE;
+            System.err.println("No NMR auditor has been registered. Aborting");
+            return 1;
         }
         return doExecute(auditor);
     }

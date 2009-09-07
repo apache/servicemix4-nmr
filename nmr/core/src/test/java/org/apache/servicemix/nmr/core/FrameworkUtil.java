@@ -16,7 +16,6 @@
  */
 package org.apache.servicemix.nmr.core;
 
-import org.apache.felix.framework.FilterImpl;
 import org.osgi.framework.Filter;
 import org.osgi.framework.InvalidSyntaxException;
 
@@ -25,7 +24,7 @@ import org.osgi.framework.InvalidSyntaxException;
 public class FrameworkUtil {
 
     public static Filter createFilter(String f) throws InvalidSyntaxException {
-        return new FilterImpl(f);
+        return org.osgi.framework.FrameworkUtil.createFilter(f);
     }
 
 }

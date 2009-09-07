@@ -32,7 +32,7 @@ import org.springframework.osgi.context.BundleContextAware;
  * This way, the JBI layer is decoupled from OSGi, while still
  * having the endpoints registered in the OSGi registry.
  */
-public class NMRWrapper implements NMR, BundleContextAware, InitializingBean {
+public class NMRWrapper implements NMR {
 
     private NMR nmr;
     private BundleContext bundleContext;
@@ -46,7 +46,7 @@ public class NMRWrapper implements NMR, BundleContextAware, InitializingBean {
         this.bundleContext = bundleContext;
     }
 
-    public void afterPropertiesSet() throws Exception {
+    public void init() throws Exception {
         if (this.nmr == null) {
             throw new IllegalArgumentException("nmr must be set");
         }

@@ -64,11 +64,6 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Import-Package>
-                            org.springframework.osgi*;version="[1.2.0,2.0.0)",
-                            org.springframework*;version="[2.5.6,3.0.0)",
-                            *
-                        </Import-Package>
                         <Export-Package>${pom.artifactId},${pom.artifactId}.factory</Export-Package>
                         <Private-Package>${pom.artifactId}.impl</Private-Package>
                         <Spring-Context>*;publish-context:=false;create-asynchronously:=true</Spring-Context>

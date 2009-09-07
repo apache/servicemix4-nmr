@@ -23,10 +23,12 @@ import javax.jbi.management.LifeCycleMBean;
 import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.SharedLibrary;
+import org.apache.felix.gogo.commands.Command;
 
 /**
  * List JBI artifacts
  */
+@Command(scope = "jbi", name = "list", description = "List JBI endpoints")
 public class ListCommand extends JbiCommandSupport {
     
     private static final int NAME_COL_LENGTH = 30; 
@@ -34,38 +36,38 @@ public class ListCommand extends JbiCommandSupport {
     protected Object doExecute() throws Exception {
         List<SharedLibrary> libraries = getSharedLibraries();
         if (libraries != null && !libraries.isEmpty()) {
-            io.out.println("Shared Libraries");
-            io.out.println("----------------");
+            System.out.println("Shared Libraries");
+            System.out.println("----------------");
             for (SharedLibrary library : libraries) {
-                io.out.println(library.getName() + " - " + library.getVersion() + " - " + (library.getDescription() != null ? library.getDescription() : ""));
+                System.out.println(library.getName() + " - " + library.getVersion() + " - " + (library.getDescription() != null ? library.getDescription() : ""));
             }
-            io.out.println();
+            System.out.println();
         }
 
         List<Component> components = getComponents();
         if (components != null && !components.isEmpty()) {
-            io.out.println("Components");
-            io.out.println("----------");
-            io.out.println("   State                  Name                  Description");
+            System.out.println("Components");
+            System.out.println("----------");
+            System.out.println("   State                  Name                  Description");
             for (Component component : components) {
-                io.out.println("[" + getStateString(component.getCurrentState())+ "] ["
+                System.out.println("[" + getStateString(component.getCurrentState())+ "] ["
                         + getNameString(component.getName(), NAME_COL_LENGTH) + "]     "
                         + (component.getDescription() != null ? component.getDescription() : ""));
             }
-            io.out.println();
+            System.out.println();
         }
 
         List<ServiceAssembly> assemblies = getServiceAssemblies();
         if (assemblies != null && !assemblies.isEmpty()) {
-            io.out.println("Service Assemblies");
-            io.out.println("------------------");
-            io.out.println("   State                  Name                  Description");
+            System.out.println("Service Assemblies");
+            System.out.println("------------------");
+            System.out.println("   State                  Name                  Description");
             for (ServiceAssembly assembly : assemblies) {
-                io.out.println("[" + getStateString(assembly.getCurrentState())+ "] ["
+                System.out.println("[" + getStateString(assembly.getCurrentState())+ "] ["
                         + getNameString(assembly.getName(), NAME_COL_LENGTH) + "]     "
                         + (assembly.getDescription() != null ? assembly.getDescription() : ""));
             }
-            io.out.println();
+            System.out.println();
         }
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }

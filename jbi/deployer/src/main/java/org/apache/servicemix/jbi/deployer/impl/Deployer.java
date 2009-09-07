@@ -68,14 +68,11 @@ import org.osgi.service.prefs.Preferences;
 import org.osgi.service.prefs.PreferencesService;
 import org.osgi.util.tracker.ServiceTracker;
 import org.springframework.osgi.util.OsgiStringUtils;
-import org.springframework.osgi.context.BundleContextAware;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.DisposableBean;
 
 /**
  * Deployer for JBI artifacts
  */
-public class Deployer implements BundleContextAware, InitializingBean, DisposableBean, SynchronousBundleListener, LifeCycleListener {
+public class Deployer implements SynchronousBundleListener, LifeCycleListener {
 
     public static final String NAME = "NAME";
     public static final String TYPE = "TYPE";
@@ -230,7 +227,7 @@ public class Deployer implements BundleContextAware, InitializingBean, Disposabl
         return shutdownTimeout;
     }
 
-    public void afterPropertiesSet() throws Exception {
+    public void init() throws Exception {
         // Track bundles
         bundleContext.addBundleListener(this);
         for (Bundle bundle : bundleContext.getBundles()) {

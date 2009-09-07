@@ -69,7 +69,7 @@ public class ManagementAgent implements ManagementStrategy, DisposableBean {
     }
     
     /**
-     * @see org.fusesource.commons.management.ManagementStrategy#getObjectName(java.lang.Object)
+     * @see org.fusesource.commons.management.ManagementStrategy#getManagedObjectName(java.lang.Object,java.lang.String,java.lang.Class)
      */
     public <T> T getManagedObjectName(Object managableObject, 
                                       String customName, 
@@ -82,7 +82,7 @@ public class ManagementAgent implements ManagementStrategy, DisposableBean {
     }
 
     /**
-     * @see org.fusesource.commons.management.ManagementStrategy#manageNamedObject(java.lang.Object)
+     * @see org.fusesource.commons.management.ManagementStrategy#manageNamedObject(java.lang.Object,java.lang.Object)
      */
     public void manageNamedObject(Object managedObject, Object preferredName) throws Exception {
         managedObject = getTypeSpecificManagedObject(managedObject);
@@ -90,7 +90,7 @@ public class ManagementAgent implements ManagementStrategy, DisposableBean {
             try {
                 register(managedObject, (ObjectName)preferredName);
             } catch (Exception ex) {
-                throw new JMException(ex.getMessage());
+                throw (JMException) new JMException(ex.getMessage()).initCause(ex);
             }
         }
     }
@@ -113,7 +113,7 @@ public class ManagementAgent implements ManagementStrategy, DisposableBean {
     }
     
     /**
-     * @see org.fusesource.commons.management.ManagementStrategy#isManaged(java.lang.Object)
+     * @see org.fusesource.commons.management.ManagementStrategy#isManaged(java.lang.Object,java.lang.Object)
      */
     public boolean isManaged(Object managableObject, Object name) {
         try {
@@ -129,7 +129,7 @@ public class ManagementAgent implements ManagementStrategy, DisposableBean {
     }
 
     /**
-     * @see org.fusesource.commons.management.ManagementStrategy#createStatistic(java.lang.Object)
+     * @see org.fusesource.commons.management.ManagementStrategy#createStatistic(java.lang.String,java.lang.Object,UpdateMode)
      */
     public Statistic createStatistic(String name, Object owner, UpdateMode updateMode) {
         return updateMode == UpdateMode.COUNTER

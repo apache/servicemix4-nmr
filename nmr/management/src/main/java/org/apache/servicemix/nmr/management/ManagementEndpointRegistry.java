@@ -63,6 +63,9 @@ public class ManagementEndpointRegistry implements ExchangeListener, Initializin
     }
 
     public void unregister(InternalEndpoint endpoint, Map<String, ?> properties) {
+        if (endpoint ==  null) {
+            return;
+        }
         try {
             LOG.info("Unregistering endpoint: " + endpoint + " with properties " + properties);
             ManagedEndpoint ep = endpoints.remove(endpoint.getId());

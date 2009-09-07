@@ -94,9 +94,11 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-                        <Import-Package>*</Import-Package>
+                        <Import-Package>
+                            javax.management.loading,
+                            *
+                        </Import-Package>
                         <Export-Package>${pom.artifactId}*;version=${pom.version}</Export-Package>
-                        <Spring-Context>*;publish-context:=false;create-asynchronously:=true</Spring-Context>
                     </instructions>
                 </configuration>
             </plugin>

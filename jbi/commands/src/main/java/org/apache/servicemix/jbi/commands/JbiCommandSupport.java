@@ -19,7 +19,7 @@ package org.apache.servicemix.jbi.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.servicemix.kernel.gshell.core.OsgiCommandSupport;
+import org.apache.felix.karaf.gshell.console.OsgiCommandSupport;
 import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.SharedLibrary;

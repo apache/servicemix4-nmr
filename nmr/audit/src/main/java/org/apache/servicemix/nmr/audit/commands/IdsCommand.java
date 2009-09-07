@@ -16,7 +16,7 @@
  */
 package org.apache.servicemix.nmr.audit.commands;
 
-import org.apache.geronimo.gshell.clp.Option;
+import org.apache.felix.gogo.commands.Option;
 import org.apache.servicemix.nmr.audit.AuditorMBean;
 
 /**
@@ -45,18 +45,18 @@ public class IdsCommand extends AuditCommandSupport {
         } else if (all) {
             ids = auditor.getAllExchangeIds();
         } else {
-            io.err.println("One of [--index, --id, --all] option must be specified");
-            return Result.FAILURE;
+            System.err.println("One of [--index, --id, --all] option must be specified");
+            return 1;
         }
         if (ids == null || ids.length == 0) {
-            io.out.println("No matching exchanges");
+            System.out.println("No matching exchanges");
         } else {
             for (String id : ids) {
                 if (id != null) {
-                    io.out.println(id);
+                    System.out.println(id);
                 }
             }
         }
-        return Result.SUCCESS;
+        return 0;
     }
 }

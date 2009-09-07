@@ -16,67 +16,37 @@
  */
 package org.apache.servicemix.naming;
 
-import java.util.Hashtable;
 import java.lang.reflect.Field;
+import java.util.Hashtable;
 
-import javax.naming.spi.InitialContextFactoryBuilder;
-import javax.naming.spi.InitialContextFactory;
-import javax.naming.spi.NamingManager;
-import javax.naming.NamingException;
 import javax.naming.Context;
+import javax.naming.NamingException;
 import javax.naming.NoInitialContextException;
+import javax.naming.spi.InitialContextFactory;
+import javax.naming.spi.InitialContextFactoryBuilder;
+import javax.naming.spi.NamingManager;
 
-import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.framework.BundleContext;
-import org.springframework.osgi.context.BundleContextAware;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.util.Assert;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * An InitialContextFactoryBuilder which delegates to any InitialContextFactoryBuilder found
- * in the OSGi registry. 
+ * in the OSGi registry.
  */
-public class OSGiInitialContextFactoryBuilder implements InitialContextFactoryBuilder, BundleContextAware,
-                                                         InitializingBean, DisposableBean {
+public class OSGiInitialContextFactoryBuilder extends ServiceTracker implements InitialContextFactoryBuilder {
 
-    private BundleContext bundleContext;
     private Context osgiContext;
-    private ServiceTracker tracker;
 
-    public OSGiInitialContextFactoryBuilder() {
-    }
-
-    public BundleContext getBundleContext() {
-        return bundleContext;
-    }
-
-    public void setBundleContext(BundleContext bundleContext) {
-        this.bundleContext = bundleContext;
-    }
-
-    public Context getOsgiContext() {
-        return osgiContext;
-    }
-
-    public void setOsgiContext(Context osgiContext) {
+    public OSGiInitialContextFactoryBuilder(BundleContext bundleContext, Context osgiContext) throws NamingException {
+        super(bundleContext, InitialContextFactoryBuilder.class.getName(), null);
+        open();
         this.osgiContext = osgiContext;
-    }
-
-    public void afterPropertiesSet() throws NamingException {
-        Assert.notNull(bundleContext, "Required 'bundleContext' property was not set.");
-        Assert.notNull(osgiContext, "Required 'osgiContext' property was not set.");
-        tracker = new ServiceTracker(bundleContext, InitialContextFactoryBuilder.class.getName(), null);
-        tracker.open();
-
         NamingManager.setInitialContextFactoryBuilder(this);
     }
 
     public void destroy() {
         // Close the tracker
-        tracker.close();
-        tracker = null;
-
+        close();
         // Try to reset the InitialContextFactoryBuilder on the NamingManager
         // As there is no public API to do so, we try using reflection.
         // The following code will try to nullify all static fields of type
@@ -94,11 +64,8 @@ public class OSGiInitialContextFactoryBuilder implements InitialContextFactoryBu
     }
 
     public InitialContextFactory createInitialContextFactory(Hashtable<?, ?> env) throws NamingException {
-        if (tracker == null) {
-            throw new IllegalStateException("OSGiInitialContextFactoryBuilder is not initialized");
-        }
         InitialContextFactory factory = null;
-        InitialContextFactoryBuilder factoryBuilder = (InitialContextFactoryBuilder) tracker.getService();
+        InitialContextFactoryBuilder factoryBuilder = (InitialContextFactoryBuilder) getService();
         if (factoryBuilder != null) {
             factory = factoryBuilder.createInitialContextFactory(env);
         }
@@ -116,10 +83,10 @@ public class OSGiInitialContextFactoryBuilder implements InitialContextFactoryBu
         }
         if (factory == null) {
             NoInitialContextException ne = new NoInitialContextException(
-                "Need to specify class name in environment or system " +
-                "property, or as an applet parameter, or in an " +
-                "application resource file:  " +
-                Context.INITIAL_CONTEXT_FACTORY);
+                    "Need to specify class name in environment or system " +
+                            "property, or as an applet parameter, or in an " +
+                            "application resource file:  " +
+                            Context.INITIAL_CONTEXT_FACTORY);
             throw ne;
         }
         return new InitialContextFactoryWrapper(factory, osgiContext);

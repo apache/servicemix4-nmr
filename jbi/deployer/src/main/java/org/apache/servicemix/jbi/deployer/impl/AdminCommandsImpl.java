@@ -36,7 +36,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.StringUtils;
 
-public class AdminCommandsImpl implements AdminCommandsService, InitializingBean, DisposableBean, Nameable {
+public class AdminCommandsImpl implements AdminCommandsService, Nameable {
 
     private Deployer deployer;
     private InstallationService installationService;
@@ -444,7 +444,7 @@ public class AdminCommandsImpl implements AdminCommandsService, InitializingBean
         return buffer.toString();
     }
 
-    public void afterPropertiesSet() throws Exception {
+    public void init() throws Exception {
         deployer.getManagementStrategy().manageObject(this);
     }
 

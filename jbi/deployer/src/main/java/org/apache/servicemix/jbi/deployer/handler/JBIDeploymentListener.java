@@ -25,14 +25,14 @@ import java.util.jar.Manifest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.deployer.descriptor.DescriptorFactory;
-import org.apache.servicemix.kernel.filemonitor.DeploymentListener;
+import org.apache.felix.fileinstall.ArtifactTransformer;
 
 /**
  * A JBI DeploymentListener which transforms plain JBI artifacts to OSGi bundles.
  * The deployer will recognize zip and jar files containing a JBI descriptor and
  * without any OSGi manifest entries.
  */
-public class JBIDeploymentListener implements DeploymentListener {
+public class JBIDeploymentListener implements ArtifactTransformer {
 
     private static final Log Logger = LogFactory.getLog(JBIDeploymentListener.class);
 
@@ -79,7 +79,7 @@ public class JBIDeploymentListener implements DeploymentListener {
      * @return the location of the transformed OSGi bundle, or <code>null</code>
      *         if the transformation could not take place.
      */
-    public File handle(File artifact, File tmpDir) {
+    public File transform(File artifact, File tmpDir) {
         try {
             String bundleName = artifact.getName().substring(0, artifact.getName().length() - 4) + ".jar";
             File destFile = new File(tmpDir, bundleName);

@@ -33,7 +33,7 @@ import org.springframework.osgi.util.OsgiServiceReferenceUtils;
  * when services are registered / unregistered in the OSGi registry.  This avoid using spring proxies which are
  * not always needed especially in our case.
  */
-public class OsgiServiceRegistryTracker<T> implements BundleContextAware, InitializingBean, DisposableBean, ServiceTrackerCustomizer {
+public class OsgiServiceRegistryTracker<T> implements ServiceTrackerCustomizer {
 
     private BundleContext bundleContext;
     private ServiceRegistry<T> registry;
@@ -64,7 +64,7 @@ public class OsgiServiceRegistryTracker<T> implements BundleContextAware, Initia
         this.registry = registry;
     }
 
-    public void afterPropertiesSet() throws Exception {
+    public void init() throws Exception {
         tracker = new ServiceTracker(bundleContext, clazz.getName(), this);
         tracker.open();
     }
