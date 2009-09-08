@@ -17,23 +17,9 @@
     limitations under the License.
 
 -->
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:ctx="http://www.springframework.org/schema/context"
-       xmlns:osgi="http://www.springframework.org/schema/osgi"
-       xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
-       xmlns:util="http://www.springframework.org/schema/util"
-       xsi:schemaLocation="
-  http://www.springframework.org/schema/beans
-  http://www.springframework.org/schema/beans/spring-beans.xsd
-  http://www.springframework.org/schema/context
-  http://www.springframework.org/schema/context/spring-context.xsd
-  http://www.springframework.org/schema/util
-  http://www.springframework.org/schema/util/spring-util.xsd
-  http://www.springframework.org/schema/osgi
-  http://www.springframework.org/schema/osgi/spring-osgi.xsd
-  http://www.springframework.org/schema/osgi-compendium
-  http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium.xsd">
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:cm="http://geronimo.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0"
+           xmlns:ext="http://geronimo.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0">
 
     <bean id="clusterEngine" class="org.apache.servicemix.jbi.cluster.engine.ClusterEngine">
         <property name="pool">
@@ -45,31 +31,31 @@
         <property name="name" value="${clusterName}" />
     </bean>
 
-    <osgi:list id="clusterRegistrations"
+    <reference-list id="clusterRegistrations"
                interface="org.apache.servicemix.jbi.cluster.engine.ClusterRegistration"
-               cardinality="0..N">
-       <osgi:listener ref="clusterEngine" bind-method="register" unbind-method="unregister" />
-    </osgi:list>
+               availability="optional">
+       <reference-listener ref="clusterEngine" bind-method="register" unbind-method="unregister" />
+    </reference-list>
 
-    <osgi:reference id="connectionFactory" interface="javax.jms.ConnectionFactory" />
+    <reference id="connectionFactory" interface="javax.jms.ConnectionFactory" />
 
-    <osgi:service ref="clusterEngine">
-        <osgi:interfaces>
+    <service ref="clusterEngine">
+        <interfaces>
             <value>org.apache.servicemix.nmr.api.Endpoint</value>
             <value>org.apache.servicemix.nmr.api.event.Listener</value>
             <value>org.apache.servicemix.nmr.api.event.EndpointListener</value>
             <value>org.apache.servicemix.nmr.api.event.ExchangeListener</value>
-        </osgi:interfaces>
-        <osgi:service-properties>
+        </interfaces>
+        <service-properties>
             <entry key="NAME" value="${clusterName}" />
-        </osgi:service-properties>
-    </osgi:service>
+        </service-properties>
+    </service>
 
-    <osgix:cm-properties id="clusterProps" persistent-id="org.apache.servicemix.jbi.cluster.config">
-        <prop key="clusterName">${servicemix.name}</prop>
-        <prop key="destinationName">org.apache.servicemix.jbi.cluster</prop>
-    </osgix:cm-properties>
+    <cm:property-placeholder persistent-id="org.apache.servicemix.jbi.cluster.config">
+        <cm:default-properties>
+            <cm:property name="clusterName" value="${servicemix.name}"/>
+            <cm:property name="destinationName" value="org.apache.servicemix.jbi.cluster"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
 
-    <ctx:property-placeholder properties-ref="clusterProps" />
-
-</beans>
+</blueprint>
