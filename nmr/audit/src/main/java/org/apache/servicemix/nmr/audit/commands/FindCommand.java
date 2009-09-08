@@ -17,12 +17,14 @@
 package org.apache.servicemix.nmr.audit.commands;
 
 import org.apache.felix.gogo.commands.Argument;
+import org.apache.felix.gogo.commands.Command;
 import org.apache.servicemix.nmr.audit.AuditorMBean;
 import org.apache.servicemix.nmr.audit.AuditorQueryMBean;
 
 /**
  * Retrieve exchange ids
  */
+@Command(scope = "audit", name = "find", description = "Find exchange ids.")
 public class FindCommand extends AuditCommandSupport {
 
     @Argument(required = true)
@@ -31,7 +33,7 @@ public class FindCommand extends AuditCommandSupport {
     protected Object doExecute(AuditorMBean auditor) throws Exception {
         if (!(auditor instanceof AuditorQueryMBean)) {
             System.err.println("Auditor does not support search.  The auditor should be wrapped within a lucene auditor");
-            return 1;
+            return null;
         }
         return doExecute((AuditorQueryMBean) auditor);
     }
@@ -47,6 +49,6 @@ public class FindCommand extends AuditCommandSupport {
                 }
             }
         }
-        return 0;
+        return null;
     }
 }

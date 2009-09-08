@@ -17,10 +17,12 @@
 package org.apache.servicemix.nmr.audit.commands;
 
 import org.apache.servicemix.nmr.audit.AuditorMBean;
+import org.apache.felix.gogo.commands.Command;
 
 /**
  * Print the number of exchanges
  */
+@Command(scope = "audit", name = "count", description = "Display the number of available exchanges.")
 public class CountCommand extends AuditCommandSupport {
 
     protected Object doExecute(AuditorMBean auditor) throws Exception {

@@ -17,11 +17,13 @@
 package org.apache.servicemix.nmr.audit.commands;
 
 import org.apache.felix.gogo.commands.Option;
+import org.apache.felix.gogo.commands.Command;
 import org.apache.servicemix.nmr.audit.AuditorMBean;
 
 /**
  * Delete all exchanges
  */
+@Command(scope = "audit", name = "delete", description = "Display exchanges.")
 public class DeleteCommand extends AuditCommandSupport {
 
     @Option(name = "--index", required = true)
@@ -34,7 +36,7 @@ public class DeleteCommand extends AuditCommandSupport {
     boolean all;
 
     protected Object doExecute(AuditorMBean auditor) throws Exception {
-        int nb = 0;
+        int nb;
         if (index >= 0) {
             nb = auditor.deleteExchangeByIndex(index) ? 1 : 0;
         } else if (id != null) {
@@ -43,9 +45,9 @@ public class DeleteCommand extends AuditCommandSupport {
             nb = auditor.deleteAllExchanges();
         } else {
             System.err.println("One of [--index, --id, --all] option must be specified");
-            return 1;
+            return null;
         }
         System.out.println(nb + " exchanges deleted");
-        return 0;
+        return null;
     }
 }

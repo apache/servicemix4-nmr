@@ -17,24 +17,26 @@
 package org.apache.servicemix.nmr.audit.commands;
 
 import org.apache.felix.gogo.commands.Option;
+import org.apache.felix.gogo.commands.Command;
 import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.audit.AuditorMBean;
 
 /**
  * Retrieve exchanges
  */
+@Command(scope = "audit", name = "exchanges", description = "Retrieve and display exchanges.")
 public class ExchangesCommand extends AuditCommandSupport {
 
-    @Option(name = "--index", required = true)
+    @Option(name = "--index")
     int index = -1;
 
-    @Option(name = "--from", required = true)
+    @Option(name = "--from")
     int from = -1;
 
-    @Option(name = "--to", required = true)
+    @Option(name = "--to")
     int to = -1;
 
-    @Option(name = "--id", required = true)
+    @Option(name = "--id")
     String id;
 
     @Option(name="--all")
@@ -52,7 +54,7 @@ public class ExchangesCommand extends AuditCommandSupport {
             exchanges = auditor.getAllExchanges();
         } else {
             System.err.println("One of [--index, --id, --all] option must be specified");
-            return 1;
+            return null;
         }
         if (exchanges != null) {
             for (Exchange e : exchanges) {
@@ -61,6 +63,6 @@ public class ExchangesCommand extends AuditCommandSupport {
                 }
             }
         }
-        return 0;
+        return null;
     }
 }

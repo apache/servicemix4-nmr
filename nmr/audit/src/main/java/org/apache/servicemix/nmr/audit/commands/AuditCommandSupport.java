@@ -37,7 +37,7 @@ public abstract class AuditCommandSupport extends OsgiCommandSupport {
         AuditorMBean auditor = getAuditor();
         if (auditor == null) {
             System.err.println("No NMR auditor has been registered. Aborting");
-            return 1;
+            return null;
         }
         return doExecute(auditor);
     }
