@@ -124,7 +124,7 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
 
     public Deployer() throws JBIException {
         // TODO: control that using properties
-        jbiRootDir = new File(System.getProperty("servicemix.base"), "data/jbi");
+        jbiRootDir = new File(System.getProperty("karaf.base"), "data/jbi");
         jbiRootDir.mkdirs();
         // Create listener registry
         listenerRegistry = new ListenerRegistryImpl();
