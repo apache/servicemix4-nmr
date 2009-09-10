@@ -92,7 +92,7 @@
       <howl.version>1.0.1-1_1</howl.version>
       <hsqldb.version>1.8.0.7</hsqldb.version>
       <javax.mail.version>1.4.1_1-SNAPSHOT</javax.mail.version>
-      <jencks.version>2.1_1</jencks.version>
+      <jencks.version>2.2</jencks.version>
       <jline.version>0.9.94</jline.version>
       <junit.version>3.8.2_1</junit.version>
       <log4j.version>1.2.14</log4j.version>
@@ -237,8 +237,8 @@
           <version>${camel.version}</version>
       </dependency>
       <dependency>
-          <groupId>org.apache.servicemix.bundles</groupId>
-          <artifactId>org.apache.servicemix.bundles.jencks</artifactId>
+          <groupId>org.jencks</groupId>
+          <artifactId>jencks</artifactId>
           <version>${jencks.version}</version>
       </dependency>
       <dependency>
