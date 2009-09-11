@@ -661,6 +661,13 @@
           <type>tar.gz</type>
       </dependency>
       <dependency>
+          <groupId>org.apache.felix.karaf</groupId>
+          <artifactId>apache-felix-karaf</artifactId>
+          <version>${felix.karaf.version}</version>
+          <classifier>features</classifier>
+          <type>xml</type>
+      </dependency>
+      <dependency>
           <groupId>org.apache.geronimo.components</groupId>
           <artifactId>geronimo-transaction</artifactId>
           <version>${geronimo.transaction.version}</version>
