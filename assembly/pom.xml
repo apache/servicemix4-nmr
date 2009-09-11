@@ -44,6 +44,12 @@
             <type>tar.gz</type>
         </dependency>
         <dependency>
+            <groupId>org.apache.felix.karaf</groupId>
+            <artifactId>apache-felix-karaf</artifactId>
+            <classifier>features</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
             <groupId>org.apache.servicemix.document</groupId>
             <artifactId>org.apache.servicemix.document</artifactId>
         </dependency>
