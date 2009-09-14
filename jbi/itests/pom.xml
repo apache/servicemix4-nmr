@@ -33,7 +33,6 @@
 
     <properties>
         <ant.version>1.7.0_1</ant.version>
-        <geronimo.blueprint.version>1.0.0-SNAPSHOT</geronimo.blueprint.version>
     </properties>
 
     <dependencies>
@@ -65,8 +64,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.geronimo</groupId>
-            <artifactId>blueprint-bundle</artifactId>
+            <groupId>org.apache.geronimo.blueprint</groupId>
+            <artifactId>geronimo-blueprint</artifactId>
             <version>${geronimo.blueprint.version}</version>
         </dependency>
         <dependency>
