@@ -32,14 +32,14 @@ Quick steps to install the sample
 ---------------------------------
 cd this example folder
 mvn install
-Launch the ServiceMix Kernel by running
-  bin/servicemix
+Launch the karaf by running
+  bin/karaf
 in the root dir of this distribution.
 
 When inside the console, just run the following commands to install the
 example:
 
-  features/install examples-nmr
+  features:install examples-nmr
 
 If you have all the bundles available in your local repo, the installation
 of the example will be very fast, otherwise it may take some time to
@@ -50,10 +50,8 @@ Testing the example
 
 When the feature is installed, you should be output from the log file every 5
 seconds
-15:50:37,240 | INFO  | pool-8-thread-1  | EchoEndpoint                     |
-amples.nmr.endpoint.EchoEndpoint   30 | Receiced in EchoEndpoint: Hello
-15:50:37,241 | INFO  | Thread-11        | Client                           |
-.client.Client$SendRequestThread   69 | Response from Endpoint EchoHello
+09:35:02,450 | INFO  | ndpoint-thread-1 | EchoEndpoint                     | amples.nmr.endpoint.EchoEndpoint   34 | Received in EchoEndpoint: Hello
+09:35:02,451 | INFO  | Thread-8         | Client                           | x.nmr.examples.nmr.client.Client   75 | Response from Endpoint EchoHello
 
 
 
