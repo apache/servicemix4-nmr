@@ -368,7 +368,6 @@
                     <forkMode>pertest</forkMode>
                     <excludes>
                         <exclude>**/IntegrationTest.java</exclude>
-                        <exclude>**/ManagementTest.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>

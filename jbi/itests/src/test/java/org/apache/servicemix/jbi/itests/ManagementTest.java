@@ -20,6 +20,7 @@ import java.io.File;
 
 import org.apache.servicemix.jbi.deployer.AdminCommandsService;
 import org.ops4j.pax.exam.junit.Configuration;
+import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.ops4j.pax.exam.Option;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
@@ -28,11 +29,14 @@ import static org.ops4j.pax.exam.CoreOptions.bootClasspathLibrary;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
 import static org.junit.Assert.fail;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+@RunWith(JUnit4TestRunner.class)
 public class ManagementTest extends AbstractIntegrationTest {
 
     @Test
     public void testInstallUninstall() throws Exception {
+    	
         String smxShared = localMavenBundle("org.apache.servicemix", "servicemix-shared",
                                             getArtifactVersion("org.apache.servicemix", "servicemix-shared"),
                                             "installer", "zip").getPath();
@@ -138,7 +142,8 @@ public class ManagementTest extends AbstractIntegrationTest {
     public static Option[] configuration() {
         Option[] options = options(
             // this is how you set the default log level when using pax logging (logProfile)
-            systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
+            systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
+            systemProperty("basedir").value(System.getProperty("basedir")),
             systemProperty("karaf.name").value("root"),
             systemProperty("karaf.home").value("target/karaf.home"),
             systemProperty("karaf.base").value("target/karaf.home"),
@@ -169,7 +174,8 @@ public class ManagementTest extends AbstractIntegrationTest {
             mavenBundle("org.apache.felix.karaf.gshell", "org.apache.felix.karaf.gshell.console"),
             mavenBundle("org.apache.felix.karaf.gshell", "org.apache.felix.karaf.gshell.osgi"),
             mavenBundle("org.apache.felix.karaf.gshell", "org.apache.felix.karaf.gshell.log").noStart(),
-
+            mavenBundle("org.apache.felix.karaf", "org.apache.felix.karaf.management"),
+            
             equinox(),
 
             // Spring

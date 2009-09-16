@@ -27,6 +27,7 @@
         <property name="endpointListener" ref="endpointListener" />
         <property name="environment" ref="environment" />
         <property name="managementStrategy" ref="managementStrategy" />
+        <property name="mbeanServer" ref="mbeanServer" />
         <property name="preferencesService" ref="preferencesService" />
         <property name="shutdownTimeout" value="${shutdownTimeout}" />
         <property name="bundleContext" ref="blueprintBundleContext"/>
