@@ -208,14 +208,14 @@ public class ChannelImplTest extends TestCase {
         thread.start();
         
         //let's wait a sec for the exchange to be sent
-        sent.await(1, TimeUnit.SECONDS);
+        sent.await(5, TimeUnit.SECONDS);
         assertNotNull(exchange);
         assertNotNull("There should be a thread waiting for the exchange", 
                       findThread(exchange.getId()));
         
         blocking.lock.release();
         //let's wait another sec for the exchange to be done
-        done.await(1, TimeUnit.SECONDS);
+        done.await(5, TimeUnit.SECONDS);
         assertNull("There shouldn't be any thread waiting for the exchange",
                    findThread(exchange.getId()));
     }
