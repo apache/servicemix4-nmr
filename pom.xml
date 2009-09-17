@@ -89,7 +89,7 @@
       <geronimo.jta.version>1.1.1</geronimo.jta.version>
       <geronimo.servlet.version>1.1.2</geronimo.servlet.version>
       <geronimo.stax.version>1.0.1</geronimo.stax.version>
-      <geronimo.transaction.version>2.1.3-SNAPSHOT</geronimo.transaction.version>
+      <geronimo.transaction.version>2.1.3</geronimo.transaction.version>
       <howl.version>1.0.1-1_1</howl.version>
       <hsqldb.version>1.8.0.7</hsqldb.version>
       <javax.mail.version>1.4.1_1-SNAPSHOT</javax.mail.version>
