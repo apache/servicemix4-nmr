@@ -152,10 +152,12 @@ public class IntegrationTest extends AbstractIntegrationTest {
         if (!errors.isEmpty()) {
             throw errors.get(0);
         }
-        //Thread.sleep(500);
+        
         saBundle.uninstall();
-        //sa.stop();
-        //sa.shutDown();
+        smxHttp.stop();
+        smxJsr181.stop();
+        smxShared.stop();
+      
     }
 
     @Test
@@ -203,6 +205,9 @@ public class IntegrationTest extends AbstractIntegrationTest {
         sa = getOsgiService(ServiceAssembly.class);
         assertNotNull(sa);
         assertEquals(LifeCycleMBean.STARTED, sa.getCurrentState());
+        smxHttp.stop();
+        smxJsr181.stop();
+        smxShared.stop();
 
     }
 
@@ -212,14 +217,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
 
         MavenArtifactProvisionOption mvnUrl = mavenBundle(groupId, artifactId, getArtifactVersion(groupId, artifactId), classifier, type);
         return bundleContext.installBundle("jbi:" + mvnUrl.getURL());
-//        String version = getBundleVersion(groupId, artifactId);
-//        File loc = localMavenBundle(groupId, artifactId, version, classifier, type);
-//        File tmpDir = new File("target/temp/");
-//        tmpDir.mkdirs();
-//        File out = new JBIDeploymentListener().transform(loc, tmpDir);
-//        Bundle bundle = bundleContext.installBundle(out.toURI().toString());
-//        bundle.start();
-//        return bundle;
+
     }
 
     @Configuration
