@@ -18,7 +18,11 @@ package org.apache.servicemix.jbi.itests;
 
 import java.io.File;
 
+import javax.management.ObjectName;
+
 import org.apache.servicemix.jbi.deployer.AdminCommandsService;
+import org.apache.servicemix.nmr.management.Nameable;
+import org.fusesource.commons.management.ManagementStrategy;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.ops4j.pax.exam.Option;
@@ -27,6 +31,8 @@ import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.CoreOptions.systemPackages;
 import static org.ops4j.pax.exam.CoreOptions.bootClasspathLibrary;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,6 +57,9 @@ public class ManagementTest extends AbstractIntegrationTest {
                                             null, "zip").getPath();
 
         AdminCommandsService admin = getAdminCommands();
+        ManagementStrategy ms = getOsgiService(ManagementStrategy.class);
+
+        assertTrue("expected AdminCommandsService MBean", ms.isManaged(null, getAdminCommandsName(ms)));
 
         try {
             String res = admin.installComponent(smxJsr181, null, false);
@@ -60,8 +69,12 @@ public class ManagementTest extends AbstractIntegrationTest {
             // Expected
         }
 
+        assertComponentMBean(ms, "servicemix-jsr181", false);
+
         System.err.println(admin.installSharedLibrary(smxShared, false));
         System.err.println(admin.installComponent(smxJsr181, null, false));
+
+        assertComponentMBean(ms, "servicemix-jsr181", true);
 
         try {
             String res = admin.installComponent(smxJsr181, null, false);
@@ -74,15 +87,27 @@ public class ManagementTest extends AbstractIntegrationTest {
         System.err.println(admin.uninstallComponent("servicemix-jsr181"));
 
         System.err.println(admin.installComponent(smxJsr181, null, false));
+
+        assertComponentMBean(ms, "servicemix-jsr181", true);
+        assertComponentMBean(ms, "servicemix-http", false);
+
         System.err.println(admin.installComponent(smxHttp, null, false));
+
+        assertComponentMBean(ms, "servicemix-http", true);
 
         System.err.println(admin.startComponent("servicemix-jsr181"));
         System.err.println(admin.startComponent("servicemix-http"));
 
+        assertFalse("unexpected ServiceAssembly MBean", ms.isManaged(null, getServiceAssemblyName(ms, "wsdl-first-sa")));
+
         System.err.println(admin.deployServiceAssembly(wsdlFirst, false));
+
+        assertTrue("expected ServiceAssembly MBean", ms.isManaged(null, getServiceAssemblyName(ms, "wsdl-first-sa")));
+
         System.err.println(admin.undeployServiceAssembly("wsdl-first-sa"));
 
         System.err.println(admin.deployServiceAssembly(wsdlFirst, false));
+
         System.err.println(admin.startServiceAssembly("wsdl-first-sa"));
         System.err.println(admin.stopServiceAssembly("wsdl-first-sa"));
         System.err.println(admin.shutdownServiceAssembly("wsdl-first-sa"));
@@ -94,6 +119,9 @@ public class ManagementTest extends AbstractIntegrationTest {
         System.err.println(admin.shutdownComponent("servicemix-jsr181"));
         System.err.println(admin.shutdownComponent("servicemix-http"));
 
+        assertComponentMBean(ms, "servicemix-jsr181", true);
+        assertComponentMBean(ms, "servicemix-http", true);
+
         System.err.println(admin.uninstallComponent("servicemix-http"));
         System.err.println(admin.uninstallComponent("servicemix-jsr181"));
 
@@ -102,6 +130,81 @@ public class ManagementTest extends AbstractIntegrationTest {
 
     protected AdminCommandsService getAdminCommands() {
         return getOsgiService(AdminCommandsService.class);
+    }
+
+    private ObjectName getAdminCommandsName(ManagementStrategy ms) throws Exception {
+        Nameable nameable = getNameable("AdminCommandsService", 
+                                        "ServiceMix",
+                                        "SystemService", 
+                                        null, 
+                                        null, 
+                                        null);
+        return ms.getManagedObjectName(nameable, 
+                                       null, 
+                                       ObjectName.class);
+    }
+
+    private ObjectName getComponentName(ManagementStrategy ms, String componentName) throws Exception {
+        Nameable nameable = getNameable(componentName,
+                                        null,
+                                        "Component",
+                                        "LifeCycle",
+                                        null,
+                                        null);
+        ObjectName on = ms.getManagedObjectName(nameable,
+                                       null,
+                                       ObjectName.class);
+        System.out.println("@@@ querying: " + on);
+        return on;
+    }
+
+    private ObjectName getServiceAssemblyName(ManagementStrategy ms, String saName) throws Exception {
+        Nameable nameable = getNameable(saName,
+                                        null,
+                                        "ServiceAssembly",
+                                        null,
+                                        null,
+                                        null);
+        return ms.getManagedObjectName(nameable,
+                                       null,
+                                       ObjectName.class);
+    }
+
+
+    protected Nameable getNameable(final String name,
+                                   final String parent,
+                                   final String type,
+                                   final String subtype,
+                                   final String version,
+                                   final Class primary) {
+        return new Nameable() {
+            public String getName() {
+                return name;
+            }                    
+            public String getParent() {
+                return parent;
+            }
+            public String getMainType() {
+                return type;
+            }
+            public String getSubType() {
+                return subtype;
+            }
+            public String getVersion() {
+                return version;
+            }
+            public Class getPrimaryInterface() {
+                return primary;
+            }
+        };
+    }
+
+    protected void assertComponentMBean(ManagementStrategy ms, String componentName, boolean expected) throws Exception {
+        if (expected) {
+            assertTrue("expected Component MBean", ms.isManaged(null, getComponentName(ms, componentName)));
+        } else {
+            assertFalse("unexpected Component MBean", ms.isManaged(null, getComponentName(ms, componentName)));
+        }
     }
 
     protected File localMavenBundle(String groupId, String artifact, String version, String classifier, String type) {
