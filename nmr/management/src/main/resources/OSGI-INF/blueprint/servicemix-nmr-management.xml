@@ -47,9 +47,9 @@
     </service>
 
     <!-- ManagementStrategy -->
-    <!-- Replace the following beans and <osgi:service> element with
-         an <osgi:reference> element if plugging in an alternative
-         ManagementStrategy implementation from another bunble -->
+    <!-- Replace the following beans and <service> element with
+         a <reference> element if plugging in an alternative
+         ManagementStrategy implementation from another bundle -->
     <bean id="namingStrategy" class="org.apache.servicemix.nmr.management.DefaultNamingStrategy">
         <property name="jmxDomainName" value="org.apache.servicemix" />
     </bean>

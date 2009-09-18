@@ -58,11 +58,9 @@
         </interfaces>
     </service>
 
-    <!-- Utilities -->
-    <reference id="managementStrategy" interface="org.fusesource.commons.management.ManagementStrategy" />
-
     <!-- Services -->
     <bean id="adminService" class="org.apache.servicemix.jbi.deployer.impl.AdminService">
+       <property name="deployer" ref="deployer" />
     </bean>
     <bean id="adminCommandsService" class="org.apache.servicemix.jbi.deployer.impl.AdminCommandsImpl" init-method="init" destroy-method="destroy">
         <property name="deployer" ref="deployer" />
@@ -77,9 +75,11 @@
         <property name="bundleContext" ref="blueprintBundleContext"/>
     </bean>
 
-
-    <!-- Expose management service in OSGi -->
+    <!-- Expose AdminCommandsService in OSGi -->
     <service ref="adminCommandsService" interface="org.apache.servicemix.jbi.deployer.AdminCommandsService" />
+
+    <!-- Retrieve ManagementStrategy from OSGi service registry -->
+    <reference id="managementStrategy" interface="org.fusesource.commons.management.ManagementStrategy" />
 
     <!-- Environment -->
     <bean id="environment" class="org.apache.servicemix.jbi.runtime.impl.EnvironmentImpl">

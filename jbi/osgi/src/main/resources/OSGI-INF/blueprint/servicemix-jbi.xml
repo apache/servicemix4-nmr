@@ -35,7 +35,7 @@
         <property name="environment" ref="environment" />
     </bean>
 
-    <!-- Management context -->
+    <!-- Retrieve ManagementStrategy from OSGi service registry -->
     <reference id="managementStrategy" interface="org.fusesource.commons.management.ManagementStrategy" />
 
     <!-- Environment -->

@@ -96,6 +96,7 @@
                             org.apache.servicemix.nmr.core.security,
                             org.apache.servicemix.nmr.osgi,
                             javax.xml.namespace,
+                            org.fusesource.commons.management,
                             *
                         </Import-Package>
                     </instructions>
