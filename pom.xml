@@ -462,6 +462,12 @@
           <groupId>org.springframework.osgi</groupId>
           <artifactId>spring-osgi-core</artifactId>
           <version>${spring.osgi.version}</version>
+          <exclusions>
+            <exclusion>
+                <groupId>org.aopalliance</groupId>
+                <artifactId>com.springsource.org.aopalliance</artifactId>
+            </exclusion>
+          </exclusions>
       </dependency>
       <dependency>
           <groupId>org.springframework.osgi</groupId>
