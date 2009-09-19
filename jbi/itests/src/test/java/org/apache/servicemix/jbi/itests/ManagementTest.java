@@ -26,11 +26,13 @@ import org.fusesource.commons.management.ManagementStrategy;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.ops4j.pax.exam.Option;
+import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.localRepository;
 import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.CoreOptions.systemPackages;
 import static org.ops4j.pax.exam.CoreOptions.bootClasspathLibrary;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
+import static org.ops4j.pax.exam.CoreOptions.when;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -252,6 +254,10 @@ public class ManagementTest extends AbstractIntegrationTest {
             systemProperty("karaf.base").value("target/karaf.home"),
             systemProperty("karaf.startLocalConsole").value("false"),
             systemProperty("karaf.startRemoteShell").value("false"),
+            when (System.getProperty("maven.repo.local")!=null).useOptions(
+                localRepository(System.getProperty("maven.repo.local")),
+                systemProperty("localRepository").value(System.getProperty("maven.repo.local", ""))
+            ),
 
             // hack system packages
             systemPackages("org.apache.felix.karaf.main.spi;version=1.0.0", "org.apache.felix.karaf.jaas.boot;version=0.9.0"),
