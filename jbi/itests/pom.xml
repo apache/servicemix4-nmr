@@ -247,18 +247,18 @@
             <version>${felix.karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf.gshell</groupId>
-            <artifactId>org.apache.felix.karaf.gshell.console</artifactId>
+            <groupId>org.apache.felix.karaf.shell</groupId>
+            <artifactId>org.apache.felix.karaf.shell.console</artifactId>
             <version>${felix.karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf.gshell</groupId>
-            <artifactId>org.apache.felix.karaf.gshell.osgi</artifactId>
+            <groupId>org.apache.felix.karaf.shell</groupId>
+            <artifactId>org.apache.felix.karaf.shell.osgi</artifactId>
             <version>${felix.karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf.gshell</groupId>
-            <artifactId>org.apache.felix.karaf.gshell.log</artifactId>
+            <groupId>org.apache.felix.karaf.shell</groupId>
+            <artifactId>org.apache.felix.karaf.shell.log</artifactId>
             <version>${felix.karaf.version}</version>
         </dependency>
         <dependency>
