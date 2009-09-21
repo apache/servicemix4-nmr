@@ -43,6 +43,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.apache.geronimo.blueprint</groupId>
+            <artifactId>geronimo-blueprint</artifactId>
+            <version>${geronimo.blueprint.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.osgi.compendium</artifactId>
         </dependency>

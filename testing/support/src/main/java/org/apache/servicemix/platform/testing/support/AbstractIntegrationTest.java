@@ -51,7 +51,7 @@ public class AbstractIntegrationTest extends AbstractConfigurableBundleCreatorTe
 //            System.setProperty("org.apache.servicemix.filemonitor.monitorDir", new File(f, "deploy").getAbsolutePath());
 //            System.setProperty("org.apache.servicemix.filemonitor.generatedJarDir", new File(f, "data/generate-bundles").getAbsolutePath());
             System.setProperty("bundles.configuration.location", new File("src/test/conf").getAbsolutePath());
-            System.setProperty("org.osgi.vendor.framework", "org.apache.servicemix.platform.testing.support");
+            System.setProperty("org.osgi.vendor.framework", "org.osgi.framework");
             PropertyConfigurator.configure("target/test-classes/log4j.properties");
         } catch (Throwable t) {}
     }
@@ -101,6 +101,7 @@ public class AbstractIntegrationTest extends AbstractConfigurableBundleCreatorTe
             getBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.aopalliance"),
             getBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.asm"),
             getBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.junit"),
+            getBundle("org.apache.geronimo.blueprint", "geronimo-blueprint"),
             getBundle("org.springframework", "spring-beans"),
             getBundle("org.springframework", "spring-core"),
             getBundle("org.springframework", "spring-context"),
