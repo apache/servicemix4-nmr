@@ -449,7 +449,13 @@ public class AdminCommandsImpl implements AdminCommandsService, Nameable {
     }
 
     public void destroy() throws Exception {
-        deployer.getManagementStrategy().unmanageObject(this);
+        try {
+            deployer.getManagementStrategy().unmanageObject(this);
+        } catch (Exception e) {
+            // ignore ServiceUnavailableException thrown by Blueprint
+            // Service on dereference of ManagementStrategy proxy if its
+            // already in the process of itself shutting down
+        }
     }
 
     public void setInstallationService(InstallationService installationService) {
