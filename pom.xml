@@ -82,8 +82,8 @@
       <felix.prefs.version>1.0.2</felix.prefs.version>
       <felix.karaf.version>0.9.0-SNAPSHOT</felix.karaf.version>
       <felix.fileinstall.version>2.0.0</felix.fileinstall.version>
-      <felix.gogo.version>0.9.0-SNAPSHOT</felix.gogo.version>
-      <geronimo.blueprint.version>1.0.1-SNAPSHOT</geronimo.blueprint.version>
+      <felix.gogo.version>0.2.0</felix.gogo.version>
+      <geronimo.blueprint.version>1.0.0</geronimo.blueprint.version>
       <geronimo.j2ee.connector.version>2.0.0</geronimo.j2ee.connector.version>
       <geronimo.jms.version>1.1.1</geronimo.jms.version>
       <geronimo.jta.version>1.1.1</geronimo.jta.version>
