@@ -210,10 +210,6 @@
                   <groupId>org.springframework.osgi</groupId>
                   <artifactId>asm.osgi</artifactId>
               </exclusion>
-              <exclusion>
-                  <groupId>org.springframework</groupId>
-                  <artifactId>org.springframework.test</artifactId>
-              </exclusion>
           </exclusions>
       </dependency>
       <dependency>
