@@ -128,8 +128,9 @@
       <sshd.version>0.2.0</sshd.version>
       <spring.osgi.version>1.2.0</spring.osgi.version>
       <spring.version>2.5.6.SEC01</spring.version>
-      <woodstox.version>3.2.7_1</woodstox.version>
-      <wsdl4j.version>1.6.1_1</wsdl4j.version>
+      <woodstox.version>4.0.5</woodstox.version>
+      <woodstox.stax2api.version>3.0.1</woodstox.stax2api.version>
+      <wsdl4j.version>1.6.2_1-SNAPSHOT</wsdl4j.version>
       <xbean.version>3.5</xbean.version>
       <geronimo.stax.version>1.0.1</geronimo.stax.version>
       <commons.management.version>1.0</commons.management.version>
@@ -399,9 +400,14 @@
           <version>${servicemix.specs.version}</version>
       </dependency>
       <dependency>
-          <groupId>org.apache.servicemix.bundles</groupId>
-          <artifactId>org.apache.servicemix.bundles.woodstox</artifactId>
+          <groupId>org.codehaus.woodstox</groupId>
+          <artifactId>woodstox-core-asl</artifactId>
           <version>${woodstox.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.codehaus.woodstox</groupId>
+          <artifactId>stax2-api</artifactId>
+          <version>${woodstox.stax2api.version}</version>
       </dependency>
       <dependency>
           <groupId>org.apache.servicemix.bundles</groupId>

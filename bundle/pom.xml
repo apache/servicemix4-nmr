@@ -83,8 +83,8 @@
             <artifactId>org.apache.servicemix.jbi.runtime</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.woodstox</artifactId>
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>woodstox-core-asl</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
