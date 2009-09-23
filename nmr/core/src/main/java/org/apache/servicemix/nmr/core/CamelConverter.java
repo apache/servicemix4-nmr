@@ -16,6 +16,9 @@
  */
 package org.apache.servicemix.nmr.core;
 
+import org.apache.camel.impl.DefaultClassResolver;
+import org.apache.camel.impl.DefaultFactoryFinderResolver;
+import org.apache.camel.impl.DefaultPackageScanClassResolver;
 import org.apache.camel.impl.converter.DefaultTypeConverter;
 import org.apache.camel.util.ReflectionInjector;
 
@@ -24,7 +27,8 @@ import org.apache.camel.util.ReflectionInjector;
  */
 class CamelConverter implements Converter {
 
-    final DefaultTypeConverter tc = new DefaultTypeConverter(new ReflectionInjector());
+    final DefaultTypeConverter tc = new DefaultTypeConverter(new DefaultPackageScanClassResolver(),
+        new ReflectionInjector(), new DefaultFactoryFinderResolver().resolveDefaultFactoryFinder(new DefaultClassResolver()));
 
     public <T> T convert(Object body, Class<T> type) {
         return tc.convertTo(type, body);
