@@ -89,7 +89,7 @@
       <easymock.version>2.4</easymock.version>
       <equinox.version>3.5.0.v20090520</equinox.version>
       <felix.configadmin.version>1.0.4</felix.configadmin.version>
-      <felix.plugin.version>1.4.3</felix.plugin.version>
+      <felix.plugin.version>2.0.0</felix.plugin.version>
       <felix.framework.version>2.0.0</felix.framework.version>
       <felix.osgi.version>1.4.0</felix.osgi.version>
       <felix.compendium.version>1.4.0</felix.compendium.version>
