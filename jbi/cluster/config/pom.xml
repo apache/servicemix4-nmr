@@ -59,7 +59,6 @@
                         <DynamicImport-Package>
                             *
                         </DynamicImport-Package>
-                        <Spring-Context>*;publish-context:=false;create-asynchronously:=true</Spring-Context>
                     </instructions>
                 </configuration>
             </plugin>
