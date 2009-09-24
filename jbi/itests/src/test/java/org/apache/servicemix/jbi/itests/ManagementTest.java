@@ -254,9 +254,9 @@ public class ManagementTest extends AbstractIntegrationTest {
             systemProperty("karaf.base").value("target/karaf.home"),
             systemProperty("karaf.startLocalConsole").value("false"),
             systemProperty("karaf.startRemoteShell").value("false"),
-            when (System.getProperty("maven.repo.local")!=null).useOptions(
-                localRepository(System.getProperty("maven.repo.local")),
-                systemProperty("localRepository").value(System.getProperty("maven.repo.local", ""))
+            when ((System.getProperty("maven.repo.local")!=null) || (System.getProperty("localRepository")!=null)).useOptions(
+                localRepository(System.getProperty("maven.repo.local", System.getProperty("localRepository", ""))),
+                systemProperty("localRepository").value(System.getProperty("maven.repo.local", System.getProperty("localRepository", "")))
             ),
 
             // hack system packages
