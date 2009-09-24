@@ -381,8 +381,8 @@ public final class ManagementSupport {
      * component-task-result element. That would be invalid, but we'll hack the
      * result string to allow it.
      */
-    private static String wrap(String resultMsg) {
-        String xmlDecl = "<?xml version=\"1.0\" encoding=\"UTF-8\"/?>";
+    protected static String wrap(String resultMsg) {
+        String xmlDecl = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
         int ix = 0;
         if (resultMsg.startsWith("<?xml")) {
             ix = resultMsg.indexOf("?>") + 2;
