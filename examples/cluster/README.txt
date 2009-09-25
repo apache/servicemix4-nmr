@@ -54,13 +54,14 @@ Instructions
 
 First, run "mvn install" in this examples folder, then copy the contents of the "target/instances" 
 folder from this example into the installation directory of ServiceMix.
+
 Note that the cluster.xml files refer to the release of ServiceMix Features project.  The default 
-version used in this example is 4.0.0, but if this version has not been released yet, you need
-to edit the pom.xml and replace the <properties><servicemix.features.version> text element with
-a valid version, for example 4.0-m2-SNAPSHOT.
+version used in this example is 4.0.0, but if this example is shipped with ServiceMix
+you need to edit the pom.xml and replace the <properties><servicemix.features.version> text element
+with the version of ServiceMix.  
 
 You should have the following tree:
-  + apache-servicemix-nmr
+  + apache-servicemix-xxx
   |-- ant
   |-- bin
   |-- etc
@@ -86,26 +87,28 @@ a broker on each of the instances and configure them to build a network of broke
 See the ActiveMQ web site (http://activemq.apache.org/networks-of-brokers.html) for more
 informations.
 
-Note that the maven url below may need to be changed.  It is pointing to the released version
-of Apache ServiceMix 4.x and the version may need to be modified (if the 4.0.0 version has not
-been released yet, you need to change it to a snapshot version). Something like:
-   mvn:org.apache.servicemix.features/apache-servicemix/4.0-m2-SNAPSHOT/xml/features
+If this example is shipped with ServiceMix , you can skip the below features:addUrl and activemq:create-broker command.
 
-smx@root:/> features/addUrl mvn:org.apache.servicemix.features/apache-servicemix/4.0.0/xml/features
-smx@root:/> features/install activemq
-smx@root:/> activemq/create-broker
+Note that the maven url below may need to be changed.  It is pointing to the released version
+of Apache ServiceMix 4.x and the version may need to be modified. Something like:
+   mvn:org.apache.servicemix.features/apache-servicemix/4.0.0/xml/features
+
+smx@root:/> features:addUrl mvn:org.apache.servicemix.features/apache-servicemix/4.0.0/xml/features
+
+smx@root:/> features:install activemq
+smx@root:/> activemq:create-broker
 
 Then, create two new instances of ServiceMix Kernel and start then using the following commands:
 
-smx@root:/> admin/create smx1
-smx@root:/> admin/start smx1
-smx@root:/> admin/create smx2
-smx@root:/> admin/start smx2
+smx@root:/> admin:create smx1
+smx@root:/> admin:start smx1
+smx@root:/> admin:create smx2
+smx@root:/> admin:start smx2
 
 Wait for the two new instances to be fully started.  This can be easily checked by running the
 following command:
 
-smx@root:/> admin/list
+smx@root:/> admin:list
 
 Both instances should be displayed as either "Starting" or "Started", so you just need to wait
 a bit until both are displayed as "Started".
@@ -115,8 +118,8 @@ a bit until both are displayed as "Started".
 Now, we can make sure the example is working as designed by connecting to the "smx2" instance
 and checking the log.
 
-smx:root:/> admin/connect smx2
-smx:smx2:/> ld | grep Exchange
+smx:root:/> admin:connect smx2
+smx:smx2:/> log:display | grep Exchange
 
 You should see a list of log statements, one for each message received from the "smx1" instance.
 

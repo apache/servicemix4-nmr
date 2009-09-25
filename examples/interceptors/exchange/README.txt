@@ -21,8 +21,8 @@ Welcome to the ServiceMix Custom Exchange Listener Example
 Quick steps to install this example
 -------------------------------------
 
-Launch the ServiceMix Kernel by running
-  bin/karaf
+Launch the container by running
+  bin/servicemix, bin/nmr or bin/karaf
 in the root dir of this distribution.
 
 run:

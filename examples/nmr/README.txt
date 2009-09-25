@@ -32,8 +32,8 @@ Quick steps to install the sample
 ---------------------------------
 cd this example folder
 mvn install
-Launch the karaf by running
-  bin/karaf
+Launch the container by running
+  bin/servicemix, bin/nmr or bin/karaf
 in the root dir of this distribution.
 
 When inside the console, just run the following commands to install the
