@@ -119,10 +119,13 @@ public class ServiceAssemblyInstaller extends AbstractInstaller {
                 assembly.shutDown(false, force);
             }
         }
+        
         if (deployedAssembly == null) {
-            for (ServiceUnitImpl su : assembly.getServiceUnitsList()) {
-                su.getComponentImpl().removeServiceUnit(su);
-            }
+        	if (assembly != null) {
+        		for (ServiceUnitImpl su : assembly.getServiceUnitsList()) {
+        			su.getComponentImpl().removeServiceUnit(su);
+        		}
+        	}
         } else {
             deployedAssembly.undeploy(bundle.getState() == Bundle.ACTIVE);
         }
