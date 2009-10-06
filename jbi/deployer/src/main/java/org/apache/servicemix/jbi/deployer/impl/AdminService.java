@@ -32,7 +32,7 @@ public class AdminService implements AdminServiceMBean {
 
     public static final String DEFAULT_DOMAIN = "org.apache.servicemix";
 
-    public static final String DEFAULT_CONNECTOR_PATH = "/jmxrmi";
+    public static final String DEFAULT_CONNECTOR_PATH = "/karaf-root";
 
     public static final int DEFAULT_CONNECTOR_PORT = 1099;
 
