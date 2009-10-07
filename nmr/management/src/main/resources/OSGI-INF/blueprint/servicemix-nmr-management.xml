@@ -25,12 +25,38 @@
     <reference id="mbeanServer"
                interface="javax.management.MBeanServer"
                availability="mandatory"/>
+ 
 
-    <!-- Endpoint registry -->
-    <bean id="endpointRegistry" class="org.apache.servicemix.nmr.management.ManagementEndpointRegistry">
-        <property name="managementStrategy" ref="managementStrategy" />
+    <bean id="namingStrategy" class="org.apache.servicemix.nmr.management.DefaultNamingStrategy">
+        <property name="jmxDomainName" value="org.apache.servicemix" />
     </bean>
 
+    <!-- ManagementStrategy -->
+    <bean id="managementStrategy"
+          class="org.apache.servicemix.nmr.management.ManagementAgent"
+          init-method="init"
+          destroy-method="destroy">
+        <property name="bundleContext" ref="blueprintBundleContext"/>
+        <property name="enabled" value="${enabled}"/>
+        <property name="namingStrategy" ref="namingStrategy" />
+        <property name="mbeanServer" ref="mbeanServer" />
+    </bean>
+
+    <!-- Service registration for the management strategy is done in
+         ManagementAgent.init() so that is can be made optional depending
+         on the value returned by isEnabled().  This means that we must
+         get a separate reference to the management strategy so it can 
+         be injected into the management endpoint registry. --> 
+    <reference id="managementStrategyRef"
+               interface="org.fusesource.commons.management.ManagementStrategy" 
+               availability="optional"/>
+
+    <!-- Endpoint registry -->   
+    <bean id="endpointRegistry" 
+          class="org.apache.servicemix.nmr.management.ManagementEndpointRegistry">
+        <property name="managementStrategy" ref="managementStrategyRef"/>
+    </bean>
+       
     <!-- List of endpoints -->
     <reference-list id="endpoints"
                     interface="org.apache.servicemix.nmr.api.internal.InternalEndpoint"
@@ -45,24 +71,15 @@
             <value>org.apache.servicemix.nmr.api.event.Listener</value>
         </interfaces>
     </service>
-
-    <!-- ManagementStrategy -->
-    <!-- Replace the following beans and <service> element with
-         a <reference> element if plugging in an alternative
-         ManagementStrategy implementation from another bundle -->
-    <bean id="namingStrategy" class="org.apache.servicemix.nmr.management.DefaultNamingStrategy">
-        <property name="jmxDomainName" value="org.apache.servicemix" />
-    </bean>
-
-    <bean id="managementStrategy" class="org.apache.servicemix.nmr.management.ManagementAgent">
-        <property name="namingStrategy" ref="namingStrategy" />
-        <property name="mbeanServer" ref="mbeanServer" />
-    </bean>
-
-    <service ref="managementStrategy">
-        <interfaces>
-            <value>org.fusesource.commons.management.ManagementStrategy</value>
-        </interfaces>
-    </service>
-
+    
+    <!-- Property place holder -->
+    <cm:property-placeholder persistent-id="org.apache.servicemix.nmr.management">
+        <cm:default-properties>
+            <!-- This property should be overridden to false if plugging in
+                 an alternative ManagementStrategy implementation from
+                 another bundle -->
+            <cm:property name="enabled" value="true"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+    
 </blueprint>

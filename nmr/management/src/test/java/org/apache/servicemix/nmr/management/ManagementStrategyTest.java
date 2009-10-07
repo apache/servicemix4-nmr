@@ -38,6 +38,8 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 
 public class ManagementStrategyTest extends Assert { //TestCase {
 
@@ -306,6 +308,35 @@ public class ManagementStrategyTest extends Assert { //TestCase {
     public void testEventNotify() throws Exception {
         // non-replacable static log factory awkward to mock 
         strategy.notify(new EventObject(this));
+    }
+    
+    @Test
+    public void testEnableDisable() throws Exception {
+
+        ServiceRegistration sr = createMock(ServiceRegistration.class);
+        sr.unregister();
+        BundleContext ctx = createMock(BundleContext.class);
+        expect(ctx.registerService("org.fusesource.commons.management.ManagementStrategy",
+                                   strategy, null)).andReturn(sr);
+        replay(ctx, sr);
+
+        strategy.setEnabled(true);
+        assertTrue(strategy.isEnabled());
+        strategy.setBundleContext(ctx);
+        assertSame(ctx, strategy.getBundleContext());
+        strategy.init();
+        strategy.destroy();
+        verify(ctx, sr);
+
+        reset(ctx, sr);
+        replay(ctx, sr);
+        strategy = setUpStrategy();
+        strategy.setEnabled(false);
+        assertFalse(strategy.isEnabled());
+        strategy.init();
+        strategy.destroy();
+        verify(ctx, sr);
+
     }
 
     protected ManagementAgent setUpStrategy() {

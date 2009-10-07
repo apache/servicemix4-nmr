@@ -33,6 +33,8 @@ import javax.management.modelmbean.ModelMBeanInfo;
 import javax.management.modelmbean.RequiredModelMBean;
 import javax.management.modelmbean.InvalidTargetObjectTypeException;
 
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler;
 import org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource;
 import org.springframework.beans.factory.DisposableBean;
@@ -50,10 +52,13 @@ public class ManagementAgent implements ManagementStrategy, DisposableBean {
 
     private static final transient Log LOG = LogFactory.getLog(ManagementAgent.class);
 
+    private boolean enabled;
     private MBeanServer mbeanServer;
     private MetadataMBeanInfoAssembler assembler;
     private Set<ObjectName> mbeans = new HashSet<ObjectName>();
     private NamingStrategy namingStrategy;
+    private BundleContext bundleContext;
+    private ServiceRegistration serviceRegistration;
 
     public ManagementAgent() {
         assembler = new MetadataMBeanInfoAssembler();
@@ -148,7 +153,23 @@ public class ManagementAgent implements ManagementStrategy, DisposableBean {
             LOG.trace(event.toString());
         }
     }
- 
+
+    public void setBundleContext(BundleContext ctx) {
+        bundleContext = ctx;
+    }
+    
+    public BundleContext getBundleContext() {
+        return bundleContext;
+    }
+    
+    public void setEnabled(boolean b) {
+        enabled = b;
+    }    
+    
+    public boolean isEnabled() {
+        return enabled;
+    }
+    
     public MBeanServer getMbeanServer() {
         return mbeanServer;
     }
@@ -164,25 +185,36 @@ public class ManagementAgent implements ManagementStrategy, DisposableBean {
     public void setNamingStrategy(NamingStrategy namingStrategy) {
         this.namingStrategy = namingStrategy;
     }
+    
+    public void init() throws Exception {
+        if (isEnabled()) {
+            registerService();
+        }        
+    }
+           
 
     public void destroy() throws Exception {
         // Using the array to hold the busMBeans to avoid the
         // CurrentModificationException
-        Object[] mBeans = mbeans.toArray();
-        int caught = 0;
-        for (Object name : mBeans) {
-            mbeans.remove((ObjectName)name);
-            try {
-                unregister((ObjectName)name);
-            } catch (JMException jmex) {
-                LOG.info("Exception unregistering MBean", jmex);
-                caught++;
+        try {
+            Object[] mBeans = mbeans.toArray();
+            int caught = 0;
+            for (Object name : mBeans) {
+                mbeans.remove((ObjectName)name);
+                try {
+                    unregister((ObjectName)name);
+                } catch (JMException jmex) {
+                    LOG.info("Exception unregistering MBean", jmex);
+                    caught++;
+                }
             }
-        }
-        if (caught > 0) {
-            LOG.warn("A number of " + caught
-                     + " exceptions caught while unregistering MBeans during stop operation.  "
-                     + "See INFO log for details.");
+            if (caught > 0) {
+                LOG.warn("A number of " + caught
+                        + " exceptions caught while unregistering MBeans during stop operation.  "
+                        + "See INFO log for details.");
+            }
+        } finally {
+            unregisterService();
         }
     }
 
@@ -227,6 +259,17 @@ public class ManagementAgent implements ManagementStrategy, DisposableBean {
 
         if (instance != null) {
             mbeans.add(name);
+        }
+    }
+    
+    protected void registerService() {        
+        serviceRegistration = getBundleContext().registerService("org.fusesource.commons.management.ManagementStrategy",
+                                                                 this, null);                
+    }
+
+    protected void unregisterService() {
+        if (serviceRegistration != null) {
+            serviceRegistration.unregister();
         }
     }
     
