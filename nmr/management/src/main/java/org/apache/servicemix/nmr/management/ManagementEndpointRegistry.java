@@ -91,7 +91,10 @@ public class ManagementEndpointRegistry implements ExchangeListener, Initializin
                 }
                 ManagedEndpoint me = endpoints.get(id);
                 if (me == null) {
-                    LOG.warn("No managed endpoint registered with id: " + id);
+                	if (LOG.isTraceEnabled()) {
+                        LOG.trace("No managed endpoint registered with id: " + id);
+                    }
+                  
                 } else {
                     me.incrementOutbound();
                 }
