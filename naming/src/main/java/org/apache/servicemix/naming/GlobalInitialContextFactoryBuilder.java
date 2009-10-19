@@ -18,6 +18,7 @@ package org.apache.servicemix.naming;
 
 import java.util.Hashtable;
 
+import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.spi.InitialContextFactory;
 import javax.naming.spi.InitialContextFactoryBuilder;
@@ -33,6 +34,9 @@ public class GlobalInitialContextFactoryBuilder implements InitialContextFactory
     }
 
     public InitialContextFactory createInitialContextFactory(Hashtable<?, ?> environment) throws NamingException {
+        if (environment != null && environment.get(Context.INITIAL_CONTEXT_FACTORY) !=null) {
+            return null;
+        }
         return new GlobalContextManager();
     }
 
