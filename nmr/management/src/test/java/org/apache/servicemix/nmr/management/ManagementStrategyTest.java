@@ -18,6 +18,8 @@ package org.apache.servicemix.nmr.management;
 
 import java.util.EventObject;
 import java.util.HashMap;
+import java.lang.reflect.UndeclaredThrowableException;
+
 
 import javax.management.MBeanServer;
 import javax.management.NotCompliantMBeanException;
@@ -273,6 +275,16 @@ public class ManagementStrategyTest extends Assert { //TestCase {
 
     @Test
     public void testRepeatManageManagedEndpoint() throws Exception {
+        doTestManageManagedEndpoint(new NotCompliantMBeanException());
+    }
+
+    @Test
+    public void testManageManagedEndpointWithUndeclaredThrowable() throws Exception {
+        Exception ex = new NotCompliantMBeanException();
+        doTestManageManagedEndpoint(new UndeclaredThrowableException(ex));
+    }
+
+    private void doTestManageManagedEndpoint(Exception ex) throws Exception {
         ObjectName name = new ObjectName(ENDPOINT_NAME);
         ObjectInstance instance = new ObjectInstance(name, Nameable.class.getName());
         InternalEndpoint internal = control.createMock(InternalEndpoint.class);
@@ -280,7 +292,6 @@ public class ManagementStrategyTest extends Assert { //TestCase {
         ManagedEndpoint endpoint = 
             new ManagedEndpoint(internal, props, strategy);
         expect(internal.getId()).andReturn("endpoint_foo");
-        Exception ex = new NotCompliantMBeanException();
         expect(mbeanServer.registerMBean(isA(ManagedEndpoint.class), eq(name))).andThrow(ex);
         RequiredModelMBean mbean = control.createMock(RequiredModelMBean.class);
         expect(mbeanServer.instantiate(RequiredModelMBean.class.getName())).andReturn(mbean);

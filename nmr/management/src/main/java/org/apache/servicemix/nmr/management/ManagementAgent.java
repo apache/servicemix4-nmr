@@ -20,6 +20,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.EventObject;
 import java.util.Set;
 import java.util.HashSet;
+import java.lang.reflect.UndeclaredThrowableException;
 
 import javax.jbi.component.ComponentContext;
 import javax.management.InstanceNotFoundException;
@@ -229,28 +230,32 @@ public class ManagementAgent implements ManagementStrategy, DisposableBean {
     public void register(Object obj, ObjectName name, boolean forceRegistration) throws JMException {
         try {
             registerMBeanWithServer(obj, name, forceRegistration);
-        } catch (UndeclaredThrowableException e) {
-        	if (e.getCause() instanceof NotCompliantMBeanException) {
-        		setModelMBeanInfo(obj, name, forceRegistration);
-        	}
-        } catch (NotCompliantMBeanException e1) {
-        	setModelMBeanInfo(obj, name, forceRegistration);
+        } catch (NotCompliantMBeanException e) {
+            registerViaAnnotations(obj, name, forceRegistration);
+        } catch (UndeclaredThrowableException ute) {
+            if (ute.getCause() instanceof NotCompliantMBeanException) {
+                registerViaAnnotations(obj, name, forceRegistration);
+            } else if (ute.getCause() instanceof RuntimeException) {
+                throw (RuntimeException)ute.getCause();
+            } else {
+                throw new JMException(ute.getCause().getMessage());
+            }
         }
     }
 
-	private void setModelMBeanInfo(Object obj, ObjectName name,
-			boolean forceRegistration) throws JMException, ReflectionException,
-			MBeanException, InstanceNotFoundException {
-		ModelMBeanInfo mbi = assembler.getMBeanInfo(obj, name.toString());
-		RequiredModelMBean mbean = (RequiredModelMBean) mbeanServer.instantiate(RequiredModelMBean.class.getName());
-		mbean.setModelMBeanInfo(mbi);
-		try {
-			mbean.setManagedResource(obj, "ObjectReference");
-		} catch (InvalidTargetObjectTypeException itotex) {
-			throw new JMException(itotex.getMessage());
-		}
-		registerMBeanWithServer(mbean, name, forceRegistration);
-	}
+    protected void registerViaAnnotations(Object obj, ObjectName name, boolean forceRegistration) throws JMException {
+        // If this is not a "normal" MBean, then try to deploy it using JMX
+        // annotations
+        ModelMBeanInfo mbi = assembler.getMBeanInfo(obj, name.toString());
+        RequiredModelMBean mbean = (RequiredModelMBean) mbeanServer.instantiate(RequiredModelMBean.class.getName());
+        mbean.setModelMBeanInfo(mbi);
+        try {
+            mbean.setManagedResource(obj, "ObjectReference");
+        } catch (InvalidTargetObjectTypeException itotex) {
+            throw new JMException(itotex.getMessage());
+        }
+        registerMBeanWithServer(mbean, name, forceRegistration);
+    }
 
     public void unregister(ObjectName name) throws JMException {
         mbeanServer.unregisterMBean(name);
