@@ -32,6 +32,7 @@
         <!-- those two bundles are currently required for servicemix-utils to resolve -->
         <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${servicemix.specs.version}</bundle>
         <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jbi-api-1.0/${servicemix.specs.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.0/${servicemix.specs.version}</bundle>
         <bundle>mvn:org.apache.servicemix/servicemix-utils/${servicemix.utils.version}</bundle>
         <bundle>mvn:org.apache.servicemix.document/org.apache.servicemix.document/${pom.version}</bundle>
         <bundle>mvn:org.fusesource.commonman/commons-management/${commons.management.version}</bundle>
