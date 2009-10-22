@@ -18,6 +18,7 @@ package org.apache.servicemix.nmr.management;
 
 import java.util.EventObject;
 import java.util.HashMap;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
 
 
@@ -280,8 +281,15 @@ public class ManagementStrategyTest extends Assert { //TestCase {
 
     @Test
     public void testManageManagedEndpointWithUndeclaredThrowable() throws Exception {
-        Exception ex = new NotCompliantMBeanException();
-        doTestManageManagedEndpoint(new UndeclaredThrowableException(ex));
+        Exception ncmbe = new NotCompliantMBeanException();
+        doTestManageManagedEndpoint(new UndeclaredThrowableException(ncmbe));
+    }
+
+    @Test
+    public void testManageManagedEndpointWithInvocationTargetException() throws Exception {
+        Exception ncmbe = new NotCompliantMBeanException();
+        InvocationTargetException ite = new InvocationTargetException(ncmbe);
+        doTestManageManagedEndpoint(new UndeclaredThrowableException(ite));
     }
 
     private void doTestManageManagedEndpoint(Exception ex) throws Exception {

@@ -233,11 +233,14 @@ public class ManagementAgent implements ManagementStrategy, DisposableBean {
         } catch (NotCompliantMBeanException e) {
             registerViaAnnotations(obj, name, forceRegistration);
         } catch (UndeclaredThrowableException ute) {
-            if (ute.getCause() instanceof NotCompliantMBeanException) {
+            if (ute.getCause() instanceof NotCompliantMBeanException
+                || ute.getCause().getCause() instanceof NotCompliantMBeanException) {
                 registerViaAnnotations(obj, name, forceRegistration);
             } else if (ute.getCause() instanceof RuntimeException) {
+                LOG.warn("MBean registration failed: ", ute.getCause());
                 throw (RuntimeException)ute.getCause();
             } else {
+                LOG.warn("MBean registration failed: ", ute.getCause());
                 throw new JMException(ute.getCause().getMessage());
             }
         }
