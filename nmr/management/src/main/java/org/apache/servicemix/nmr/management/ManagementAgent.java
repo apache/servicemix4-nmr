@@ -20,7 +20,6 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.EventObject;
 import java.util.Set;
 import java.util.HashSet;
-import java.lang.reflect.UndeclaredThrowableException;
 
 import javax.jbi.component.ComponentContext;
 import javax.management.InstanceNotFoundException;
