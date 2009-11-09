@@ -497,6 +497,11 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
                 ((SharedLibraryImpl) lib).removeComponent(component);
             }
             components.remove(component.getName());
+            try {
+				getManagementStrategy().unmanageObject(component);
+			} catch (Exception e) {
+				LOGGER.error("Error unmanage component: " + component.getName(), e);
+			}
         }
     }
 
@@ -505,6 +510,11 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
             serviceAssemblies.remove(assembly.getName());
             pendingAssemblies.remove(assembly);
             unregisterServices(assembly.getBundle());
+            try {
+				getManagementStrategy().unmanageObject(assembly);
+			} catch (Exception e) {
+				LOGGER.error("Error unmanage service assembly: " + assembly.getName(), e);
+			}
             for (ServiceUnitImpl su : assembly.getServiceUnitsList()) {
                 su.getComponentImpl().removeServiceUnit(su);
             }
@@ -515,6 +525,11 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
         if (library != null) {
             // TODO: shutdown all components
             sharedLibraries.remove(library.getName());
+            try {
+				getManagementStrategy().unmanageObject(library);
+			} catch (Exception e) {
+				LOGGER.error("Error unmanage sharedlibrary: " + library.getName(), e);
+			}
         }
     }
 
