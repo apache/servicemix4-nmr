@@ -63,11 +63,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>org.apache.servicemix</groupId>
             <artifactId>servicemix-common</artifactId>
             <scope>test</scope>
@@ -81,10 +76,6 @@
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.wsdl4j</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>
