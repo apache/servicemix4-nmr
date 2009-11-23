@@ -176,7 +176,7 @@ public class ChannelImplTest extends TestCase {
         assertEquals(Status.Error, e.getStatus());
     }
     
-    public void xtestChangeThreadNameForSyncExchange() throws Exception {
+    public void testChangeThreadNameForSyncExchange() throws Exception {
         final BlockingEndpoint blocking = new BlockingEndpoint();
         final CountDownLatch sent = new CountDownLatch(1);
         final Map<String, Object> props = ServiceHelper.createMap(Endpoint.NAME, "blocking");
