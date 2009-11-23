@@ -51,9 +51,11 @@
         </service-properties>
     </service>
 
+    <ext:property-placeholder placeholder-prefix="$[" placeholder-suffix="]" />
+
     <cm:property-placeholder persistent-id="org.apache.servicemix.jbi.cluster.config">
         <cm:default-properties>
-            <cm:property name="clusterName" value="${servicemix.name}"/>
+            <cm:property name="clusterName" value="$[karaf.name]"/>
             <cm:property name="destinationName" value="org.apache.servicemix.jbi.cluster"/>
         </cm:default-properties>
     </cm:property-placeholder>
