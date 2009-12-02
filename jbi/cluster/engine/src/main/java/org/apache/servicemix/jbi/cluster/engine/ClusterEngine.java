@@ -643,7 +643,7 @@ public class ClusterEngine extends ServiceRegistryImpl<ClusterRegistration>
                 // Re-process JBI addressing
                 DeliveryChannelImpl.createTarget(getChannel().getNMR(), exchange);
                 // TODO: read exchange properties
-                Message msg = (Message) ((ObjectMessage) message).getObject();
+                Message msg = unmarshallMessage(message);
                 exchange.setIn(msg);
                 exchanges.put(exchange.getId(), exchange);
                 if (pendingExchanges.incrementAndGet() >= maxPendingExchanges) {
@@ -668,7 +668,7 @@ public class ClusterEngine extends ServiceRegistryImpl<ClusterRegistration>
                 if (exchange == null) {
                     throw new IllegalStateException("Exchange not found for id " + corrId);
                 }
-                Message msg = (Message) ((ObjectMessage) message).getObject();
+                Message msg = unmarshallMessage(message);
                 exchange.setOut(msg);
                 exchanges.put(exchange.getId(), exchange);
                 exchange.setProperty(PROPERTY_CORR_ID + "." + name, exchange.getId());
@@ -688,7 +688,7 @@ public class ClusterEngine extends ServiceRegistryImpl<ClusterRegistration>
                 if (exchange == null) {
                     throw new IllegalStateException("Exchange not found for id " + corrId);
                 }
-                Message msg = (Message) ((ObjectMessage) message).getObject();
+                Message msg = unmarshallMessage(message);
                 exchange.setFault(msg);
                 exchanges.put(exchange.getId(), exchange);
                 exchange.setProperty(PROPERTY_CORR_ID + "." + name, exchange.getId());
@@ -893,4 +893,15 @@ public class ClusterEngine extends ServiceRegistryImpl<ClusterRegistration>
         }
     }
 
+    protected Message unmarshallMessage(javax.jms.Message message) throws JMSException {
+        Message msg = null;
+        ClassLoader oldCl = Thread.currentThread().getContextClassLoader();
+        try {
+            Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
+            msg = (Message) ((ObjectMessage) message).getObject();
+        } finally {
+            Thread.currentThread().setContextClassLoader(oldCl);
+        }
+        return msg;
+    }
 }
