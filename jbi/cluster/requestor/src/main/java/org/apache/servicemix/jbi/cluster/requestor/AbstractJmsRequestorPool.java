@@ -75,8 +75,20 @@ public abstract class AbstractJmsRequestorPool extends AbstractMessageListenerCo
      * @see org.springframework.scheduling.commonj.WorkManagerTaskExecutor
      */
     public void setTaskExecutor(TaskExecutor taskExecutor) {
-        this.taskExecutor = taskExecutor;
+        synchronized (this.lifecycleMonitor) {
+            this.taskExecutor = taskExecutor;
+        }
     }
+    
+    public TaskExecutor getTaskExecutor() {
+        synchronized (this.lifecycleMonitor) {
+            if (this.taskExecutor == null) {
+                this.taskExecutor = createDefaultTaskExecutor();
+            }
+        }
+        return this.taskExecutor;
+    }
+
 
     /**
      * Specify the interval between recovery attempts, in <b>milliseconds</b>.
@@ -93,11 +105,7 @@ public abstract class AbstractJmsRequestorPool extends AbstractMessageListenerCo
 
     public void initialize() {
         // Prepare taskExecutor and maxMessagesPerTask.
-        synchronized (this.lifecycleMonitor) {
-            if (this.taskExecutor == null) {
-                this.taskExecutor = createDefaultTaskExecutor();
-            }
-        }
+    	getTaskExecutor();
 
         // Proceed with actual listener initialization.
         super.initialize();
@@ -120,7 +128,7 @@ public abstract class AbstractJmsRequestorPool extends AbstractMessageListenerCo
      * @see #setTaskExecutor
      */
     protected void doRescheduleTask(Object task) {
-        this.taskExecutor.execute((Runnable) task);
+    	getTaskExecutor().execute((Runnable) task);
     }
 
     //-------------------------------------------------------------------------
