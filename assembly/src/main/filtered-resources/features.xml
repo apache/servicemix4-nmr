@@ -17,6 +17,7 @@
       limitations under the License.
 -->
 <features>
+    <repository>mvn:org.apache.felix.karaf/apache-felix-karaf/${felix.karaf.version}/xml/features</repository>
     <feature name="naming" version="${version}">
         <bundle>mvn:org.apache.servicemix.naming/org.apache.servicemix.naming/${pom.version}</bundle>
     </feature>
