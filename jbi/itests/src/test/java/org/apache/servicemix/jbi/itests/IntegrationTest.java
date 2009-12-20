@@ -49,6 +49,9 @@ import static org.ops4j.pax.exam.CoreOptions.options;
 import static org.ops4j.pax.exam.CoreOptions.systemPackages;
 import static org.ops4j.pax.exam.CoreOptions.systemProperty;
 import static org.ops4j.pax.exam.CoreOptions.equinox;
+import static org.ops4j.pax.exam.CoreOptions.when;
+import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.localRepository;
+
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.CoreOptions;
 import org.ops4j.pax.exam.options.MavenArtifactProvisionOption;
@@ -231,6 +234,11 @@ public class IntegrationTest extends AbstractIntegrationTest {
             systemProperty("karaf.base").value("target/karaf.home"),
             systemProperty("karaf.startLocalConsole").value("false"),
             systemProperty("karaf.startRemoteShell").value("false"),
+            when ((System.getProperty("maven.repo.local")!=null) || (System.getProperty("localRepository")!=null)).useOptions(
+                localRepository(System.getProperty("maven.repo.local", System.getProperty("localRepository", ""))),
+                systemProperty("localRepository").value(System.getProperty("maven.repo.local", System.getProperty("localRepository", "")))
+            ),
+            
 
             // hack system packages
             systemPackages("org.apache.felix.karaf.main.spi;version=1.0.0", "org.apache.felix.karaf.jaas.boot;version=0.9.0"),
