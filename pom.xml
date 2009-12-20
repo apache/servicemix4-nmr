@@ -116,7 +116,7 @@
       <mina.version>2.0.0-M6</mina.version>
       <pax.exam.version>1.2.0</pax.exam.version>
       <pax.logging.version>1.4</pax.logging.version>
-      <pax.runner.version>1.1.1</pax.runner.version>
+      <pax.runner.version>1.2.1</pax.runner.version>
       <servicemix3.version>3.3</servicemix3.version>
       <servicemix.eip.version>2009.02-SNAPSHOT</servicemix.eip.version>
       <servicemix.http.version>2009.02-SNAPSHOT</servicemix.http.version>
