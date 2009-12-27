@@ -238,6 +238,9 @@ public class IntegrationTest extends AbstractIntegrationTest {
                 localRepository(System.getProperty("maven.repo.local", System.getProperty("localRepository", ""))),
                 systemProperty("localRepository").value(System.getProperty("maven.repo.local", System.getProperty("localRepository", "")))
             ),
+            systemProperty("org.ops4j.pax.url.mvn.defaultRepositories").value("file:"
+                + System.getProperty("maven.repo.local", System.getProperty("localRepository", ""))
+                + "@snapshots"),
             
 
             // hack system packages
