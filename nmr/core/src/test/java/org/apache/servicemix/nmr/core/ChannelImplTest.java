@@ -225,7 +225,9 @@ public class ChannelImplTest extends TestCase {
         ThreadInfo[]  threadInfos = threads.getThreadInfo(threads.getAllThreadIds(), 0);
 
         for (ThreadInfo threadInfo : threadInfos) {
-            if (threadInfo.getThreadName().contains(id)) {
+            if (threadInfo != null &&
+                    threadInfo.getThreadName() != null &&
+                    threadInfo.getThreadName().contains(id)) {
                 return threadInfo;
             }
         }
