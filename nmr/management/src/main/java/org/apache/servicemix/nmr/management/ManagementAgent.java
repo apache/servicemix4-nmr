@@ -39,6 +39,7 @@ import javax.management.modelmbean.InvalidTargetObjectTypeException;
 
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.blueprint.container.ServiceUnavailableException;
 import org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler;
 import org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource;
 import org.springframework.beans.factory.DisposableBean;
@@ -117,7 +118,13 @@ public class ManagementAgent implements ManagementStrategy, DisposableBean {
      */
     public void unmanageNamedObject(Object name) throws Exception {
         if (name instanceof ObjectName) {
-            unregister((ObjectName)name);
+            try {
+                unregister((ObjectName)name);
+            } catch (ServiceUnavailableException sue) {
+                // due to timing / shutdown ordering issue that we may
+                // ignore as not unregistering from an already shutdown 
+                // blueprint container is quite harmless
+            }
         }
     }
     
