@@ -118,13 +118,7 @@ public class ManagementAgent implements ManagementStrategy, DisposableBean {
      */
     public void unmanageNamedObject(Object name) throws Exception {
         if (name instanceof ObjectName) {
-            try {
-                unregister((ObjectName)name);
-            } catch (ServiceUnavailableException sue) {
-                // due to timing / shutdown ordering issue that we may
-                // ignore as not unregistering from an already shutdown 
-                // blueprint container is quite harmless
-            }
+            unregister((ObjectName)name);
         }
     }
     
@@ -217,6 +211,10 @@ public class ManagementAgent implements ManagementStrategy, DisposableBean {
                 } catch (JMException jmex) {
                     LOG.info("Exception unregistering MBean", jmex);
                     caught++;
+                } catch (ServiceUnavailableException sue) {
+                    // due to timing / shutdown ordering issue that we may
+                    // ignore as not unregistering from an already shutdown 
+                    // blueprint container is quite harmless
                 }
             }
             if (caught > 0) {
