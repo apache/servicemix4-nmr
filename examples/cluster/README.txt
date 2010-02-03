@@ -102,8 +102,20 @@ Then, create two new instances of ServiceMix Kernel and start then using the fol
 
 smx@root:/> admin:create smx1
 smx@root:/> admin:start smx1
+
+Install the cluster-example-smx1 using the command
+
+karaf@root> admin:connect smx1
+karaf@smx1> features:install cluster-example-smx1
+
 smx@root:/> admin:create smx2
 smx@root:/> admin:start smx2
+
+Install the cluster-example-smx2 using the command
+
+karaf@root> admin:connect smx2
+karaf@smx2> features:install cluster-example-smx2
+
 
 Wait for the two new instances to be fully started.  This can be easily checked by running the
 following command:
@@ -113,6 +125,16 @@ smx@root:/> admin:list
 Both instances should be displayed as either "Starting" or "Started", so you just need to wait
 a bit until both are displayed as "Started".
 
+REMARK : As the quartz.xml and camel.xml bundles are loaded before quartz/camel, it could be necessary to 
+stop/start the bundle quartz.xml (smx1) and camel.xml (smx2) using commands :
+
+karaf@root> admin:connect smx1
+karaf@smx1> stop bundle id of quartz.xml
+karaf@smx1> start bundle id of quartz.xml
+
+karaf@root> admin:connect smx2
+karaf@smx1> stop bundle id of camel.xml
+karaf@smx1> start bundle id of camel.xml
 
 
 Now, we can make sure the example is working as designed by connecting to the "smx2" instance
