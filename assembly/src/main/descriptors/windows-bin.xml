@@ -32,11 +32,13 @@
               <exclude>bin/**</exclude>
               <exclude>demos/**</exclude>
               <exclude>etc/org.apache.felix.karaf.features.cfg</exclude>
+              <exclude>etc/org.ops4j.pax.logging.cfg</exclude>
               <exclude>etc/config.properties</exclude>
-              <exclude>LICENSE.txt</exclude>
-              <exclude>NOTICE.txt</exclude>
-              <exclude>README.txt</exclude>
-              <exclude>RELEASE-NOTES.txt</exclude>
+              <exclude>LICENSE</exclude>
+              <exclude>NOTICE</exclude>
+              <exclude>README</exclude>
+              <exclude>RELEASE-NOTES</exclude>
+              <exclude>manual*</exclude>
             </excludes>
         </fileSet>
 
@@ -55,8 +57,8 @@
             <directory>${basedir}/..</directory>
             <outputDirectory>/</outputDirectory>
             <includes>
-                <include>README.txt</include>
-                <include>RELEASE*.txt</include>
+                <include>README</include>
+                <include>RELEASE*</include>
             </includes>
             <lineEnding>dos</lineEnding>
         </fileSet>
@@ -116,14 +118,14 @@
         <file>
             <source>${basedir}/target/maven-shared-archive-resources/META-INF/LICENSE</source>
             <outputDirectory>/</outputDirectory>
-            <destName>LICENSE.txt</destName>
+            <destName>LICENSE</destName>
             <fileMode>0644</fileMode>
             <lineEnding>dos</lineEnding>
         </file>
         <file>
             <source>${basedir}/target/maven-shared-archive-resources/META-INF/NOTICE</source>
             <outputDirectory>/</outputDirectory>
-            <destName>NOTICE.txt</destName>
+            <destName>NOTICE</destName>
             <fileMode>0644</fileMode>
             <lineEnding>dos</lineEnding>
         </file>
