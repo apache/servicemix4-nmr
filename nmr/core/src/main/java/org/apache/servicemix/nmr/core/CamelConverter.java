@@ -26,9 +26,16 @@ import org.apache.camel.util.ReflectionInjector;
  * A converter using Camel underneath
  */
 class CamelConverter implements Converter {
+    
+    final DefaultTypeConverter tc;
 
-    final DefaultTypeConverter tc = new DefaultTypeConverter(new DefaultPackageScanClassResolver(),
-        new ReflectionInjector(), new DefaultFactoryFinderResolver().resolveDefaultFactoryFinder(new DefaultClassResolver()));
+    protected CamelConverter() throws Exception {
+        tc = new DefaultTypeConverter(
+                new DefaultPackageScanClassResolver(),
+                new ReflectionInjector(),
+                new DefaultFactoryFinderResolver().resolveDefaultFactoryFinder(new DefaultClassResolver()));
+        tc.start();
+    }
 
     public <T> T convert(Object body, Class<T> type) {
         return tc.convertTo(type, body);
