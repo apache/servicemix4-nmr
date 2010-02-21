@@ -117,11 +117,11 @@
       <pax.exam.version>1.2.0</pax.exam.version>
       <pax.logging.version>1.4</pax.logging.version>
       <pax.runner.version>1.2.1</pax.runner.version>
-      <servicemix3.version>3.3</servicemix3.version>
-      <servicemix.eip.version>2009.02</servicemix.eip.version>
-      <servicemix.http.version>2009.02</servicemix.http.version>
-      <servicemix.jsr181.version>2009.02</servicemix.jsr181.version>
-      <servicemix.shared.version>2009.02</servicemix.shared.version>
+      <servicemix3.version>3.3.1</servicemix3.version>
+      <servicemix.eip.version>2010.01-SNAPSHOT</servicemix.eip.version>
+      <servicemix.http.version>2010.01-SNAPSHOT</servicemix.http.version>
+      <servicemix.jsr181.version>2010.01-SNAPSHOT</servicemix.jsr181.version>
+      <servicemix.shared.version>2010.01-SNAPSHOT</servicemix.shared.version>
       <servicemix.legal.version>1.0</servicemix.legal.version>
       <servicemix.specs.version>1.4.0</servicemix.specs.version>
       <servicemix.utils.version>1.2.0</servicemix.utils.version>
