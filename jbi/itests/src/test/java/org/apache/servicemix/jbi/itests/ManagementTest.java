@@ -303,7 +303,7 @@ public class ManagementTest extends AbstractIntegrationTest {
         	mavenBundle("org.apache.xbean", "xbean-naming"),
         	mavenBundle("org.apache.servicemix.naming", "org.apache.servicemix.naming"),
             mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.ant"),
-			mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.javax.mail"),
+			   mavenBundle("javax.mail", "mail"),
             mavenBundle("org.codehaus.woodstox", "stax2-api"),
             mavenBundle("org.codehaus.woodstox", "woodstox-core-asl"),
             mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.wsdl4j"),

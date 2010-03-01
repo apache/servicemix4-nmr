@@ -54,7 +54,7 @@
         <feature version="${version}">transaction</feature>
         <feature version="${version}">nmr</feature>
         <bundle>mvn:org.apache.xbean/xbean-classloader/${xbean.version}</bundle>
-        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.javax.mail/${javax.mail.version}</bundle>
+        <bundle>mvn:javax.mail/mail/${javax.mail.version}</bundle>
         <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.0/${servicemix.specs.version}</bundle>
         <bundle>mvn:org.codehaus.woodstox/stax2-api/${woodstox.stax2api.version}</bundle>
         <bundle>mvn:org.codehaus.woodstox/woodstox-core-asl/${woodstox.version}</bundle>
