@@ -80,6 +80,15 @@
             <directory>${basedir}/target/features-repo</directory>
             <outputDirectory>system</outputDirectory>
         </fileSet>
+
+        <!-- temporary workaround waiting for Karaf 1.4.0 which will provide the correct felix framework version -->
+        <fileSet>
+            <directory>target/dependencies</directory>
+            <includes>
+               <include>org.apache.felix.framework-${felix.framework.version}.jar</include>
+            </includes>
+            <outputDirectory>system/org/apache/felix/org.apache.felix.framework/${felix.framework.version}</outputDirectory>
+        </fileSet>
   
         <!-- Copy over jar files -->
         <fileSet>
