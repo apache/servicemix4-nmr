@@ -33,12 +33,6 @@
     <name>Apache ServiceMix NMR :: Assembly</name>
 
     <dependencies>
-        <!-- normaly, felix framework is provided by karaf distribution -->
-        <!-- this is a temporary workaround waiting for karaf 1.4.0 -->
-        <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.framework</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.apache.felix.karaf</groupId>
             <artifactId>apache-felix-karaf</artifactId>
