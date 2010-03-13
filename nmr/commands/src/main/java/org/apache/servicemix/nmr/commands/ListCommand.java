@@ -16,7 +16,10 @@
  */
 package org.apache.servicemix.nmr.commands;
 
+import java.util.Set;
+
 import org.apache.servicemix.nmr.api.Endpoint;
+import org.apache.servicemix.nmr.api.NMR;
 import org.apache.felix.gogo.commands.Command;
 import org.osgi.framework.ServiceReference;
 
@@ -29,11 +32,15 @@ public class ListCommand extends NmrCommandSupport {
     protected Object doExecute() throws Exception {
         System.out.println("Endpoints");
         System.out.println("---------");
-        ServiceReference[] references = getBundleContext().getAllServiceReferences(Endpoint.class.getName(), null);
-        if (references != null) {
-            for (ServiceReference ref : references) {
-                String name = (String) ref.getProperty(Endpoint.NAME);
-                System.out.println(name);
+        ServiceReference reference = getBundleContext().getServiceReference(NMR.class.getName());
+        if (reference != null) {
+            NMR nmr = (NMR)getBundleContext().getService(reference);
+            if (nmr != null) {
+            	Set<Endpoint> endpoints = nmr.getEndpointRegistry().getServices();
+            	for (Endpoint endpoint : endpoints) {
+            		String name = (String)nmr.getEndpointRegistry().getProperties(endpoint).get(Endpoint.NAME);
+            		System.out.println(name);
+            	}
             }
         }
         System.out.println();
