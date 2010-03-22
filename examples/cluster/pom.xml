@@ -33,7 +33,7 @@
 
     <properties>
         <servicemix.nmr.version>${pom.version}</servicemix.nmr.version>
-        <servicemix.features.version>4.1.0-SNAPSHOT</servicemix.features.version>
+        <servicemix.features.version>4.2.0</servicemix.features.version>
     </properties>
 
     <build>

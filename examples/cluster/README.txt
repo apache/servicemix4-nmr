@@ -91,9 +91,9 @@ If this example is shipped with ServiceMix , you can skip the below features:add
 
 Note that the maven url below may need to be changed.  It is pointing to the released version
 of Apache ServiceMix 4.x and the version may need to be modified. Something like:
-   mvn:org.apache.servicemix.features/apache-servicemix/4.1.0-SNAPSHOT/xml/features
+   mvn:org.apache.servicemix.features/apache-servicemix/4.2.0/xml/features
 
-smx@root:/> features:addUrl mvn:org.apache.servicemix/apache-servicemix/4.1.0-SNAPSHOT/xml/features
+smx@root:/> features:addUrl mvn:org.apache.servicemix/apache-servicemix/4.2.0/xml/features
 
 smx@root:/> features:install activemq
 smx@root:/> activemq:create-broker
