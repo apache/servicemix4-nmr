@@ -15,6 +15,86 @@
  * limitations under the License.
  */
 
+                   Apache ServiceMix NMR 1.2.0
+                   ===========================
+
+  Overview
+  --------
+
+  ServiceMix NMR 1.2.0 contains many bug fixes as well as feature enhancements.  ServiceMix Kernel has been moved to the
+  Apache Felix project and renamed as Apache Felix Karaf.  This release of NMR uses Karaf 1.4.0.  This brings with it
+  some changes to the command line syntax and a more standardized approach to the command line implementation by using
+  the Apache Felix Gogo project.  This release also now includes full support for OSGi fragment bundles as provided by
+  the Felix 2.0.4 release.
+
+  This release also implements some of the Enterprise OSGi 4.2 specifications, with more to follow in subsequent
+  releases.
+
+  See the change log below for more informations.
+
+  Changelog
+  ---------
+
+  The following list shows the bug fixes and enhancements included in this release:
+
+
+Release Notes - ServiceMix NMR - Version 1.2.0
+
+
+** Bug
+    * [SMX4NMR-133] - Deadlock when starting the org.apache.servicemix.jbi.deployer bundle
+    * [SMX4NMR-134] - Upgrade NMR to Spring DM 1.20-rc1
+    * [SMX4NMR-135] - NMR core doesn't export the converter package
+    * [SMX4NMR-136] - AssemblyReferencesListener throws NPE when SA is unknown for a given endpoint
+    * [SMX4NMR-141] - NMR windows assembly incorrectly packaging the unix scripts
+    * [SMX4NMR-142] - Component task result from ServiceUnitManager.deploy is ignored
+    * [SMX4NMR-143] - Incorrect type in object name for component LifeCyle MBeans
+    * [SMX4NMR-152] - refactor testing/support to make it work with karaf
+    * [SMX4NMR-155] - When deploying JBI examples, error message 'A pseudo attribute name is expected' appears
+    * [SMX4NMR-156] - ManagementTest fails when using localRepository from settings.xml
+    * [SMX4NMR-157] - add null check to avoid NPE when shutdown SA
+    * [SMX4NMR-159] - JBI ant tasks not using the right jmx service url
+    * [SMX4NMR-160] - Management agent cannot be easily extended
+    * [SMX4NMR-162] - ClassNotFoundException on Spring PlatformTransactionManager after restart
+    * [SMX4NMR-163] - NMR assembly failing to build due to missing cglib dependency
+    * [SMX4NMR-164] - JBI deployments can't use JNDI context class from embedded jar
+    * [SMX4NMR-165] - NotCompliantMBeanException when ManagedEndpoint registered via ManagementStrategy
+    * [SMX4NMR-166] - ManagementAgent.register method should catch UndeclaredThrowableException also
+    * [SMX4NMR-167] - ensure stax-api bundle get loaded before servicemix-utils bundle
+    * [SMX4NMR-168] - jbi-cluster endpoint name is '${servicemix.name}'
+    * [SMX4NMR-169] - NMR cluster example is not working correctly
+    * [SMX4NMR-170] - NMR distribution exports jaas with wrong version
+    * [SMX4NMR-171] - when stop a bundle, the underlying counterpart JBI sa/component/sharedlib instance in the bundle should be removed from jmx server
+    * [SMX4NMR-172] - Incorrect configuration for default clusterName in jbi.cluster.config bundle
+    * [SMX4NMR-173] -  [clustering] Replicated messages not received by other cluster members
+    * [SMX4NMR-174] - [clustering] Classloading failure on unmarshalling incoming replicated messages
+    * [SMX4NMR-175] - [clustering] Replicated messages inadvertently consumed by other multicast-enabled brokers on the network
+    * [SMX4NMR-177] - ChannelImplTest intermittently fails on AIX: NullPointerException
+    * [SMX4NMR-182] - Spurious ServiceUnavailableException on shutdown of ManagementAgent
+    * [SMX4NMR-183] - nmr:list command can't list all endpoint registered to the EndpointRegister.
+
+** Improvement
+    * [SMX4NMR-154] - Redo the branding for NMR
+    * [SMX4NMR-161] - suppress the noisy warning message ement.ManagementEndpointRegistry   94 | No managed endpoint registered with id
+    * [SMX4NMR-178] - Upgrade to ActiveMQ 5.3
+
+
+** Task
+    * [SMX4NMR-140] - Refactor management infrastructure to eliminate duplication and allow for easier pluggability
+    * [SMX4NMR-144] - Switch from servicemix-kernel to karaf
+    * [SMX4NMR-145] - porting example nmr with karaf
+    * [SMX4NMR-149] - Switch-over to blueprint over-wrote some management refactoring changes to spring config
+    * [SMX4NMR-158] - Updated the README.txt of the examples with latest kernel and servicemix feature
+    * [SMX4NMR-180] - Upgrade to Camel 2.2.0
+
+** Test
+    * [SMX4NMR-146] - Enable MangementTest with karaf
+    * [SMX4NMR-147] - Enable IntegrationTest with karaf
+    * [SMX4NMR-151] - Assert registration of expected MBeans in management integration test
+    * [SMX4NMR-153] - Dereferencing failure during Blueprint Service shutdown
+    * [SMX4NMR-181] - JBI itests' ManagementTest intermittently fails on slower CI build machines
+
+
                   Apache ServiceMix NMR 1.0.0
                   ===========================
 
