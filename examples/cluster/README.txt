@@ -108,6 +108,8 @@ Install the cluster-example-smx1 using the command
 karaf@root> admin:connect smx1
 karaf@smx1> features:install cluster-example-smx1
 
+Disconnect from smx1 ( logout or ^D )
+
 smx@root:/> admin:create smx2
 smx@root:/> admin:start smx2
 
@@ -116,6 +118,7 @@ Install the cluster-example-smx2 using the command
 karaf@root> admin:connect smx2
 karaf@smx2> features:install cluster-example-smx2
 
+Disconnect from smx2 ( logout or ^D )
 
 Wait for the two new instances to be fully started.  This can be easily checked by running the
 following command:
