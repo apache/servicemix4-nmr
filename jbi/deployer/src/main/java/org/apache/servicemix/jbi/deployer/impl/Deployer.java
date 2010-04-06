@@ -411,7 +411,9 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
         props.put(NAME, sharedLibraryDesc.getIdentification().getName());
         LOGGER.debug("Registering JBI Shared Library");
         registerService(bundle, SharedLibrary.class.getName(), sl, props);
-        getManagementStrategy().manageObject(sl);
+        if (!getManagementStrategy().isManaged(sl, null)) {
+        	getManagementStrategy().manageObject(sl);
+        }
         // Check pending bundles
         checkPendingInstallers();
         return sl;
@@ -438,7 +440,9 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
         if (!wrappedComponents.containsKey(name)) {
             registerService(bundle, javax.jbi.component.Component.class.getName(), innerComponent, props);
         }
-        getManagementStrategy().manageObject(component);
+        if (!getManagementStrategy().isManaged(component, null)) {
+        	getManagementStrategy().manageObject(component);
+        }
         return component;
     }
 
@@ -456,7 +460,10 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
         // register the service assembly in the OSGi registry
         LOGGER.debug("Registering JBI service assembly");
         registerService(bundle, ServiceAssembly.class.getName(), sa, props);
-        getManagementStrategy().manageObject(sa);
+        if (!getManagementStrategy().isManaged(sa, null)) {
+        	//check if this SA is managed, this is the case that restart SA bundle
+        	getManagementStrategy().manageObject(sa);
+        }
         return sa;
     }
 
