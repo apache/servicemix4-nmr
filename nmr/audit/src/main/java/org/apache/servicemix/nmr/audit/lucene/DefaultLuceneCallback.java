@@ -25,6 +25,7 @@ import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.util.Version;
 
 /**
  * Default Lucene Callback implementation. Used on LuceneAuditor
@@ -48,7 +49,8 @@ public class DefaultLuceneCallback implements LuceneCallback {
 
     public Object doCallback(IndexSearcher is) throws IOException {
         try {
-            QueryParser qp = new QueryParser(field, new StandardAnalyzer());
+            // LUCENE-2002
+            QueryParser qp = new QueryParser(Version.LUCENE_30, field, new StandardAnalyzer(Version.LUCENE_30));
             Query queryObj = qp.parse(query);
             TopDocs topdocs = is.search(queryObj, SEARCH_SIZE);
             int total = topdocs.totalHits;

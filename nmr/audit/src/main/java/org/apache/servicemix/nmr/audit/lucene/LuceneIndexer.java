@@ -56,7 +56,7 @@ public class LuceneIndexer {
 
     public void setDirectoryName(File directoryName) throws IOException {
         this.segmentFile = new File(directoryName, "segments");
-        this.directory = FSDirectory.getDirectory(directoryName.toString(), !this.segmentFile.exists());
+        this.directory = FSDirectory.open(directoryName);
     }
 
     /**
