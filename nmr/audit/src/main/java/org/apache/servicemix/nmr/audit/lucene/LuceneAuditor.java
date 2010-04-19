@@ -176,8 +176,7 @@ public class LuceneAuditor extends AbstractAuditor implements AuditorQueryMBean 
                 if (message != null) {
                     String text = getBodyAsText(message);
                     if (text != null) {
-                        // LUCENE-1960
-                        d.add(new Field(types[i].toString().toLowerCase() + "." + FIELD_CONTENT, text, Field.Store.YES, Field.Index.ANALYZED));
+                        d.add(new Field(types[i].toString().toLowerCase() + "." + FIELD_CONTENT, text, Field.Store.COMPRESS, Field.Index.ANALYZED));
                     }
                     addMessageHeadersToDocument(message, d, types[i]);
                 }

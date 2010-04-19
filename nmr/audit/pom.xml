@@ -54,8 +54,8 @@
             <version>${felix.karaf.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.servicemix.bundles</groupId>
-            <artifactId>org.apache.servicemix.bundles.lucene</artifactId>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
             <optional>true</optional>
         </dependency>
         <dependency>
