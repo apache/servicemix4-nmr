@@ -65,6 +65,13 @@ public interface Endpoint {
     String UNTARGETABLE = "UNTARGETABLE";
 
     /**
+     * If this property is set to <code>true</code>, the injected
+     * Channel will be configured to bypass the thread pool
+     * for Exchange delivery
+     */
+    String CHANNEL_SYNC_DELIVERY = "CHANNEL_SYNC_DELIVERY";
+
+    /**
      * Set the channel so that the endpoint can send exchanges back
      * when they are processed or act as a consumer itself.
      * This method will be called by the NMR while the endpoint is registered.

@@ -52,7 +52,7 @@ public class ServiceMix implements NMR {
      */
     public void init() {
         if (executorFactory == null) {
-            executorFactory = new ExecutorFactoryImpl();
+            createExecutorFactory();
         }
         if (endpoints == null) {
             EndpointRegistryImpl reg = new EndpointRegistryImpl(this);
@@ -173,7 +173,7 @@ public class ServiceMix implements NMR {
 
     /**
      * Set the wire registry
-     * 
+     *
      * @param wires the wire registry
      */
     public void setWireRegistry(WireRegistry wires) {
@@ -188,10 +188,10 @@ public class ServiceMix implements NMR {
     public ManagementStrategy getManagementStrategy() {
         return managementStrategy;
     }
- 
+
     /**
      * Set the management strategy
-     * 
+     *
      * @param managementStrategy the management strategy
      */
     public void setManagementStrategy(ManagementStrategy managementStrategy) {
@@ -206,21 +206,30 @@ public class ServiceMix implements NMR {
     public String getId() {
         return id;
     }
- 
+
     /**
      * Set the NMR id
-     * 
+     *
      * @param id the NMR id
      */
     public void setId(String id) {
         this.id = id;
     }
 
+    /*
+     * Create the default ExecutorFactory
+     */
+    private void createExecutorFactory() {
+        ExecutorFactoryImpl impl = new ExecutorFactoryImpl();
+        impl.getDefaultConfig().setBypassIfSynchronous(true);
+        executorFactory = impl;
+    }
+
     private void fireEvent(EventObject event) {
-        try { 
+        try {
             getManagementStrategy().notify(event);
         } catch (Exception e) {
             // ignore
-        }  
+        }
     }
 }

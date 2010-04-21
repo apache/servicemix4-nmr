@@ -121,9 +121,12 @@ public class EndpointRegistryImpl implements EndpointRegistry {
             }
             name = EXECUTOR_PREFIX + name;
             Executor executor = executorFactory.createExecutor(name);
+
             // Create channel
             ChannelImpl channel = new ChannelImpl(wrapper, executor, nmr);
+            channel.setShouldRunSynchronously(isChannelSyncDelivery(properties));
             wrapper.setChannel(channel);
+            
             wrappers.put(wrapper, endpoint);
             registry.register(wrapper, properties);
             for (EndpointListener listener : nmr.getListenerRegistry().getListeners(EndpointListener.class)) {
@@ -135,6 +138,13 @@ public class EndpointRegistryImpl implements EndpointRegistry {
                 }
             }
         }
+    }
+
+    /*
+     * Should the Channel use sync delivery?
+     */
+    private boolean isChannelSyncDelivery(Map<String, ?> properties) {
+        return Boolean.TRUE.equals(properties.get(Endpoint.CHANNEL_SYNC_DELIVERY));
     }
 
     /**

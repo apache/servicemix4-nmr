@@ -75,6 +75,17 @@ public class EndpointRegistryImplTest extends TestCase {
         assertNotNull(r.choose(registry));
         assertFalse(r.choose(registry).iterator().hasNext());
     }
+    
+    public void testRegisterWithSyncChannel() throws Exception {
+        DummyEndpoint endpoint = new DummyEndpoint();
+
+        Map<String, Object> properties = ServiceHelper.createMap(Endpoint.NAME, "endpoint-id");
+        properties.put(Endpoint.CHANNEL_SYNC_DELIVERY, true);
+
+        registry.register(endpoint, properties);
+        assertTrue("Injected channel should have shouldRunSynchronously enabled",
+                   endpoint.channel.isShouldRunSynchronously());
+    }
 
     public void testLdapFilter() throws Exception {
         System.setProperty("org.osgi.vendor.framework", "org.apache.servicemix.nmr.core");
@@ -174,7 +185,10 @@ public class EndpointRegistryImplTest extends TestCase {
     }
 
     protected static class DummyEndpoint implements Endpoint {
+        private ChannelImpl channel;
+
         public void setChannel(Channel channel) {
+            this.channel = (ChannelImpl) channel;
         }
         public void process(Exchange exchange) {
         }
