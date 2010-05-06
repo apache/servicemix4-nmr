@@ -21,14 +21,14 @@
            xmlns:cm="http://geronimo.apache.org/blueprint/xmlns/blueprint-cm/v1.0.0"
            xmlns:ext="http://geronimo.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0">
 
-    <bean id="clusterEngine" class="org.apache.servicemix.jbi.cluster.engine.ClusterEngine">
-        <property name="pool">
-            <bean class="org.apache.servicemix.jbi.cluster.requestor.ActiveMQJmsRequestorPool">
-                <property name="connectionFactory" ref="connectionFactory" />
-                <property name="destinationName" value="${destinationName}" />
-            </bean>
-        </property>
+    <bean id="clusterEngine" class="org.apache.servicemix.jbi.cluster.engine.ClusterEngine" init-method="afterPropertiesSet" destroy-method="destroy">
+        <property name="pool" ref="pool" />
         <property name="name" value="${clusterName}" />
+    </bean>
+
+    <bean id="pool" class="org.apache.servicemix.jbi.cluster.requestor.ActiveMQJmsRequestorPool" init-method="afterPropertiesSet" destroy-method="destroy">
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="destinationName" value="${destinationName}" />
     </bean>
 
     <reference-list id="clusterRegistrations"

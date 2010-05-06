@@ -77,7 +77,7 @@ public class ActiveMQJmsRequestorPool extends AbstractPollingRequestorPool imple
             try {
                 refreshSharedConnection();
             } catch (JMSException e) {
-                e.printStackTrace();
+                logger.debug("Error while refreshing shared connection", e);
             }
         }
         recreateConsumers(true);

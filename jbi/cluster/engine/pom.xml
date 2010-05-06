@@ -126,7 +126,6 @@
                         <Import-Package>
                             *
                         </Import-Package>
-                        <Spring-Context>*;publish-context:=false;create-asynchronously:=true</Spring-Context>
                     </instructions>
                 </configuration>
             </plugin>
