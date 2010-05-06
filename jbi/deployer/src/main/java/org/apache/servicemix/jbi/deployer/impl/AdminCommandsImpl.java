@@ -24,6 +24,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import javax.jbi.management.LifeCycleMBean;
+import javax.management.ObjectName;
 
 import org.apache.servicemix.jbi.deployer.AdminCommandsService;
 import org.apache.servicemix.jbi.deployer.Component;
@@ -445,14 +446,24 @@ public class AdminCommandsImpl implements AdminCommandsService, Nameable {
     }
 
     public void init() throws Exception {
-        deployer.getManagementStrategy().manageObject(this);
+    	try {
+    		deployer.getManagementStrategy().manageObject(this);
+    	} catch (Exception e) {
+    		//means somehow the previous AdminCommandsService not dereference successfully, 
+    		//this could be caused by a race between the AdminCommandsImpl destroy-method 
+    		//being called and Blueprint itself being shutdown.
+    		//so we try to dereference it again at this point
+        	ObjectName objectName = deployer.getManagementStrategy().getManagedObjectName(this, null, ObjectName.class);
+        	deployer.getManagementStrategy().unmanageNamedObject(objectName);
+        	deployer.getManagementStrategy().manageObject(this);
+    	}
     }
 
     public void destroy() throws Exception {
         try {
-            deployer.getManagementStrategy().unmanageObject(this);
+        	deployer.getManagementStrategy().unmanageObject(this);
         } catch (Exception e) {
-            // ignore ServiceUnavailableException thrown by Blueprint
+        	// ignore ServiceUnavailableException thrown by Blueprint
             // Service on dereference of ManagementStrategy proxy if its
             // already in the process of itself shutting down
         }
