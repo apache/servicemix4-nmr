@@ -95,7 +95,7 @@ public class SimpleClusterRegistration implements ClusterRegistration {
         if (endpoint instanceof Endpoint) {
             nmrEndpoint = (Endpoint) endpoint;
         }
-        if (implement(endpoint.getClass(), SMX_COMMON_ENDPOINT_CLASS_NAME)) {
+        if (endpoint != null && implement(endpoint.getClass(), SMX_COMMON_ENDPOINT_CLASS_NAME)) {
             serviceName = (QName) invoke(endpoint, "getService");
             endpointName = (String) invoke(endpoint,  "getEndpoint");
         }
