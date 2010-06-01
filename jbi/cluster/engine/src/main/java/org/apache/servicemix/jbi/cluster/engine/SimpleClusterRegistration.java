@@ -121,7 +121,7 @@ public class SimpleClusterRegistration implements ClusterRegistration {
             }
             String f;
             if (filters.size() == 1) {
-                f = filters.get(0);
+                f = "(" + filters.get(0) + ")";
             } else {
                 StringBuilder sb = new StringBuilder();
                 sb.append("(&");
