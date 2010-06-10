@@ -71,17 +71,35 @@ public class ActiveMQJmsRequestorPool extends AbstractPollingRequestorPool imple
         return true;
     }
 
+    public void destroy() {
+        if (sharedConnectionEnabled()) {
+            removeExceptionListener();
+        }
+        super.destroy();
+    }
+
     public void onException(JMSException exception) {
         handleListenerException(exception);
         if (sharedConnectionEnabled()) {
             try {
+                removeExceptionListener();
                 refreshSharedConnection();
-            } catch (JMSException e) {
+            } catch (Exception e) {
                 logger.debug("Error while refreshing shared connection", e);
             }
         }
         recreateConsumers(true);
     }
+
+    private void removeExceptionListener() {
+        try {
+            getSharedConnection().setExceptionListener(null);
+        } catch (JMSException e) {
+            logger.debug("Unable to remove exception listener", e);
+        } catch (SharedConnectionNotInitializedException e) {
+            // ignore this -- there was no need to unset the exception listener in the first place
+        }
+    }    
 
     protected Connection createConnection() throws JMSException {
         Connection con =  getConnectionFactory().createConnection();
