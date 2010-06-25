@@ -102,10 +102,10 @@ public class ReferenceFactory implements FactoryBean, InitializingBean, BundleCo
                 props.put(Endpoint.NAME, name);
             }
             if (itf != null) {
-                props.put(Endpoint.INTERFACE_NAME, itf);
+                props.put(Endpoint.INTERFACE_NAME, itf.toString());
             }
             if (service != null) {
-                props.put(Endpoint.SERVICE_NAME, service);
+                props.put(Endpoint.SERVICE_NAME, service.toString());
                 if (endpoint != null) {
                     props.put(Endpoint.ENDPOINT_NAME, endpoint);
                 }
