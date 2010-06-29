@@ -49,7 +49,7 @@
                 <artifactId>maven-bundle-plugin</artifactId>
                 <configuration>
                     <instructions>
-                        <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Import-Package>org.apache.commons.logging, org.apache.servicemix.nmr.api</Import-Package>
                         <Private-Package>org.apache.servicemix.nmr.examples.nmr.endpoint</Private-Package>
                     </instructions>

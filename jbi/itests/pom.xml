@@ -76,7 +76,7 @@
         <dependency>
             <groupId>org.apache.servicemix.platform.testing</groupId>
             <artifactId>org.apache.servicemix.platform.testing.support</artifactId>
-            <version>${pom.version}</version>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -319,8 +319,8 @@
             </plugin>
             <!-- Copy shared library and component -->
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>dependency-maven-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
                         <id>copy-components</id>

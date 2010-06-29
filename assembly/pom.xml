@@ -189,7 +189,7 @@
     <build>
         <resources>
             <resource>
-                <directory>${pom.basedir}/src/main/filtered-resources</directory>
+                <directory>${project.basedir}/src/main/filtered-resources</directory>
                 <filtering>true</filtering>
                 <includes>
                     <include>**/*</include>
@@ -349,7 +349,7 @@
                             <descriptors>
                                 <descriptor>src/main/descriptors/unix-bin.xml</descriptor>
                             </descriptors>
-                            <finalName>${pom.artifactId}-${pom.version}</finalName>
+                            <finalName>${project.artifactId}-${project.version}</finalName>
                             <tarLongFileMode>gnu</tarLongFileMode>
                         </configuration>
                     </execution>
@@ -363,7 +363,7 @@
                             <descriptors>
                                 <descriptor>src/main/descriptors/windows-bin.xml</descriptor>
                             </descriptors>
-                            <finalName>${pom.artifactId}-${pom.version}</finalName>
+                            <finalName>${project.artifactId}-${project.version}</finalName>
                         </configuration>
                     </execution>
                     <execution>

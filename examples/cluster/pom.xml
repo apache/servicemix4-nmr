@@ -32,7 +32,7 @@
     <name>Apache ServiceMix NMR Example:: Cluster</name>
 
     <properties>
-        <servicemix.nmr.version>${pom.version}</servicemix.nmr.version>
+        <servicemix.nmr.version>${project.version}</servicemix.nmr.version>
         <servicemix.features.version>4.2.0</servicemix.features.version>
     </properties>
 
