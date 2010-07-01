@@ -225,10 +225,14 @@ public class IntegrationTest extends AbstractIntegrationTest {
 
     @Configuration
     public static Option[] configuration() {
+        String baseDir = System.getProperty("basedir");
+        if (baseDir == null) {
+            baseDir = new File(".").getAbsolutePath();
+        }
         Option[] options = options(
             // this is how you set the default log level when using pax logging (logProfile)
             systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("INFO"),
-            systemProperty("basedir").value(System.getProperty("basedir")),
+            systemProperty("basedir").value(baseDir),
             systemProperty("karaf.name").value("root"),
             systemProperty("karaf.home").value("target/karaf.home"),
             systemProperty("karaf.base").value("target/karaf.home"),
@@ -244,7 +248,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
             
 
             // hack system packages
-            systemPackages("org.apache.felix.karaf.main.spi;version=1.0.0", "org.apache.felix.karaf.jaas.boot;version=0.9.0"),
+            systemPackages("org.apache.felix.karaf.main.spi;version=1.6.0", "org.apache.felix.karaf.jaas.boot;version=1.6.0"),
             bootClasspathLibrary(mavenBundle("org.apache.felix.karaf.jaas", "org.apache.felix.karaf.jaas.boot")).afterFramework(),
             bootClasspathLibrary(mavenBundle("org.apache.felix.karaf", "org.apache.felix.karaf.main")).afterFramework(),
             bootClasspathLibrary(mavenBundle("org.apache.geronimo.specs", "geronimo-jta_1.1_spec")).beforeFramework(),
@@ -255,7 +259,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
             // Felix Config Admin
             mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
             // Blueprint
-            mavenBundle("org.apache.geronimo.blueprint", "geronimo-blueprint"),
+            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
             // Pax mvn handler
             mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
 

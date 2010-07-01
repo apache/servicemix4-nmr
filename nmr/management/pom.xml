@@ -49,11 +49,17 @@
             <artifactId>org.apache.servicemix.nmr.spring</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint</artifactId>
+            <version>${aries.blueprint.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.osgi</groupId>
             <artifactId>spring-osgi-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix</groupId>
+            <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <scope>provided</scope>
         </dependency>

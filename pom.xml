@@ -90,16 +90,15 @@
       <easymock.version>2.4</easymock.version>
       <equinox.version>3.5.1.v20090827</equinox.version>
       <felix.configadmin.version>1.2.4</felix.configadmin.version>
-      <felix.plugin.version>2.0.1</felix.plugin.version>
-      <felix.framework.version>2.0.4</felix.framework.version>
-      <felix.osgi.version>1.4.0</felix.osgi.version>
-      <felix.compendium.version>1.4.0</felix.compendium.version>
-      <felix.bundlerepository.version>1.2.0</felix.bundlerepository.version>
-      <felix.prefs.version>1.0.2</felix.prefs.version>
-      <felix.karaf.version>1.4.0</felix.karaf.version>
-      <felix.fileinstall.version>2.0.8</felix.fileinstall.version>
-      <felix.gogo.version>0.2.2</felix.gogo.version>
-      <geronimo.blueprint.version>1.0.0</geronimo.blueprint.version>
+      <felix.plugin.version>2.1.0</felix.plugin.version>
+      <felix.framework.version>3.0.1</felix.framework.version>
+      <felix.bundlerepository.version>1.6.4</felix.bundlerepository.version>
+      <felix.prefs.version>1.0.4</felix.prefs.version>
+      <felix.karaf.version>1.6.0</felix.karaf.version>
+      <felix.fileinstall.version>3.0.0</felix.fileinstall.version>
+      <felix.gogo.version>0.4.0</felix.gogo.version>
+      <osgi.core.version>4.2.0</osgi.core.version>
+      <aries.blueprint.version>0.1-incubating</aries.blueprint.version>
       <geronimo.j2ee.connector.version>2.0.0</geronimo.j2ee.connector.version>
       <geronimo.jms.version>1.1.1</geronimo.jms.version>
       <geronimo.jta.version>1.1.1</geronimo.jta.version>
@@ -116,8 +115,8 @@
       <lucene.version>2.4.1</lucene.version>
       <mina.version>2.0.0-M6</mina.version>
       <pax.exam.version>1.2.0</pax.exam.version>
-      <pax.logging.version>1.4</pax.logging.version>
-      <pax.runner.version>1.2.1</pax.runner.version>
+      <pax.logging.version>1.5.2</pax.logging.version>
+      <pax.runner.version>1.4.0</pax.runner.version>
       <servicemix3.version>3.3.1</servicemix3.version>
       <servicemix.eip.version>2010.01</servicemix.eip.version>
       <servicemix.http.version>2010.01</servicemix.http.version>
@@ -252,6 +251,16 @@
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
           <version>${commons.logging.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.osgi</groupId>
+          <artifactId>org.osgi.core</artifactId>
+          <version>${osgi.core.version}</version>
+      </dependency>
+      <dependency>
+          <groupId>org.osgi</groupId>
+          <artifactId>org.osgi.compendium</artifactId>
+          <version>${osgi.core.version}</version>
       </dependency>
       <dependency>
           <groupId>org.apache.geronimo.specs</groupId>
@@ -423,6 +432,21 @@
           <groupId>org.apache.felix</groupId>
           <artifactId>org.apache.felix.prefs</artifactId>
           <version>${felix.prefs.version}</version>
+          <exclusions>
+              <exclusion>
+                  <groupId>org.apache.felix</groupId>
+                  <artifactId>org.osgi.core</artifactId>
+              </exclusion>
+              <exclusion>
+                  <groupId>org.apache.felix</groupId>
+                  <artifactId>org.osgi.compendium</artifactId>
+              </exclusion>
+          </exclusions>
+      </dependency>
+      <dependency>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>org.apache.felix.configadmin</artifactId>
+          <version>${felix.configadmin.version}</version>
       </dependency>
       <dependency>
           <groupId>org.apache.felix</groupId>
@@ -433,21 +457,6 @@
           <groupId>org.apache.felix</groupId>
           <artifactId>org.apache.felix.framework</artifactId>
           <version>${felix.framework.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>org.apache.felix</groupId>
-          <artifactId>org.osgi.compendium</artifactId>
-          <version>${felix.compendium.version}</version>
-          <exclusions>
-              <exclusion>
-                  <groupId>org.apache.felix</groupId>
-                  <artifactId>org.osgi.foundation</artifactId>
-              </exclusion>
-              <exclusion>
-                  <groupId>org.apache.felix</groupId>
-                  <artifactId>javax.servlet</artifactId>
-              </exclusion>
-          </exclusions>
       </dependency>
       <dependency>
           <groupId>org.apache.servicemix.specs</groupId>
@@ -499,11 +508,6 @@
           <groupId>org.springframework.osgi</groupId>
           <artifactId>spring-osgi-annotation</artifactId>
           <version>${spring.osgi.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>org.apache.felix</groupId>
-          <artifactId>org.osgi.core</artifactId>
-          <version>${felix.osgi.version}</version>
       </dependency>
       <dependency>
           <groupId>org.apache.geronimo.specs</groupId>

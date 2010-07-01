@@ -37,15 +37,13 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.felix</groupId>
+            <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <version>1.2.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix</groupId>
+            <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
-            <version>1.2.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

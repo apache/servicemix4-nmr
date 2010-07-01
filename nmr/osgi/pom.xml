@@ -45,17 +45,17 @@
             <artifactId>org.apache.servicemix.nmr.spring</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.geronimo.blueprint</groupId>
-            <artifactId>geronimo-blueprint</artifactId>
-            <version>${geronimo.blueprint.version}</version>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint</artifactId>
+            <version>${aries.blueprint.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix</groupId>
+            <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix</groupId>
+            <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
             <scope>provided</scope>
         </dependency>

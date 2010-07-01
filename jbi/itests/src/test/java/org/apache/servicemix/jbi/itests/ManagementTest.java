@@ -86,6 +86,7 @@ public class ManagementTest extends AbstractIntegrationTest {
             // Expected
         }
 
+        System.err.println(admin.shutdownComponent("servicemix-jsr181"));
         System.err.println(admin.uninstallComponent("servicemix-jsr181"));
 
         System.err.println(admin.installComponent(smxJsr181, null, false));
@@ -245,10 +246,15 @@ public class ManagementTest extends AbstractIntegrationTest {
 
     @Configuration
     public static Option[] configuration() {
+        String baseDir = System.getProperty("basedir");
+        if (baseDir == null) {
+            baseDir = new File(".").getAbsolutePath();
+        }
+
         Option[] options = options(
             // this is how you set the default log level when using pax logging (logProfile)
             systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("DEBUG"),
-            systemProperty("basedir").value(System.getProperty("basedir")),
+            systemProperty("basedir").value(baseDir),
             systemProperty("karaf.name").value("root"),
             systemProperty("karaf.home").value("target/karaf.home"),
             systemProperty("karaf.base").value("target/karaf.home"),
@@ -271,7 +277,7 @@ public class ManagementTest extends AbstractIntegrationTest {
             // Felix Config Admin
             mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
             // Blueprint
-            mavenBundle("org.apache.geronimo.blueprint", "geronimo-blueprint"),
+            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
             // Pax mvn handler
             mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
 

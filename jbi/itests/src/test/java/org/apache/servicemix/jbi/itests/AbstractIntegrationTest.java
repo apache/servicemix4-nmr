@@ -126,7 +126,30 @@ public abstract class AbstractIntegrationTest {
         if (version != null) {
             m.version(version);
         } else {
-            m.versionAsInProject();
+            try {
+                m.versionAsInProject();
+            } catch (RuntimeException t) {
+                //in eclipse, the dependencies.properties may not be avail since it's not
+                //generated into a source directory (directly into classes).
+                //thus, try and load it manually
+                
+                try {
+                    File file = new File("META-INF/maven/dependencies.properties");
+                    if (!file.exists()) {
+                        file = new File("target/classes/META-INF/maven/dependencies.properties");
+                    }
+                    if (file.exists()) {
+                        Properties dependencies = new Properties();
+                        dependencies.load(new FileInputStream(file));
+                        version = dependencies.getProperty( groupId + "/" + artifactId + "/version" );
+                        m.version(version);
+                    } else {
+                        throw t;
+                    }
+                } catch (Throwable t2) {
+                    throw t;
+                }
+            }
         }
         if (classifier != null) {
             m.classifier(classifier);
