@@ -111,7 +111,7 @@
       <jencks.version>2.2</jencks.version>
       <jline.version>0.9.94</jline.version>
       <junit.version>3.8.2_1</junit.version>
-      <log4j.version>1.2.14</log4j.version>
+      <log4j.version>1.2.16</log4j.version>
       <lucene.version>2.4.1</lucene.version>
       <mina.version>2.0.0-M6</mina.version>
       <pax.exam.version>1.2.0</pax.exam.version>
