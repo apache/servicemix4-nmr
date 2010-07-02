@@ -37,9 +37,9 @@
             <artifactId>org.apache.servicemix.jbi.deployer</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.karaf.shell</groupId>
-            <artifactId>org.apache.felix.karaf.shell.console</artifactId>
-            <version>${felix.karaf.version}</version>
+            <groupId>org.apache.karaf.shell</groupId>
+            <artifactId>org.apache.karaf.shell.console</artifactId>
+            <version>${karaf.version}</version>
         </dependency>
     </dependencies>
 
@@ -54,7 +54,7 @@
                         <Import-Package>
                             org.osgi.service.command,
                             org.apache.felix.gogo.commands,
-                            org.apache.felix.karaf.shell.console,
+                            org.apache.karaf.shell.console,
                             *
                         </Import-Package>
                         <Export-Package>${project.artifactId}*;version=${project.version}</Export-Package>

@@ -26,12 +26,12 @@
 
         <!-- Expanded Karaf -->
         <fileSet>
-            <directory>${basedir}/target/dependencies/win/apache-felix-karaf-${felix.karaf.version}</directory>
+            <directory>${basedir}/target/dependencies/win/apache-karaf-${karaf.version}</directory>
             <outputDirectory>/</outputDirectory>
             <excludes>
               <exclude>bin/**</exclude>
               <exclude>demos/**</exclude>
-              <exclude>etc/org.apache.felix.karaf.features.cfg</exclude>
+              <exclude>etc/org.apache.karaf.features.cfg</exclude>
               <exclude>etc/org.ops4j.pax.logging.cfg</exclude>
               <exclude>etc/config.properties</exclude>
               <exclude>LICENSE</exclude>
@@ -44,7 +44,7 @@
 
         <!-- Copy over bin/admin.bat separately to get the correct file mode -->
         <fileSet>
-            <directory>${basedir}/target/dependencies/win/apache-felix-karaf-${felix.karaf.version}</directory>
+            <directory>${basedir}/target/dependencies/win/apache-karaf-${karaf.version}</directory>
             <outputDirectory>/</outputDirectory>
             <includes>
               <include>bin/admin.bat</include>
@@ -104,7 +104,7 @@
 
     <files>
         <file>
-            <source>${basedir}/target/dependencies/win/apache-felix-karaf-${felix.karaf.version}/bin/karaf.bat</source>
+            <source>${basedir}/target/dependencies/win/apache-karaf-${karaf.version}/bin/karaf.bat</source>
             <outputDirectory>/bin/</outputDirectory>
             <destName>nmr.bat</destName>
             <fileMode>0755</fileMode>

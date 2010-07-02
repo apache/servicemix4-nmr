@@ -63,8 +63,8 @@
         <!-- Put this dependency before the following one to avoid a classloader problem
              when running junit tests -->
         <dependency>
-            <groupId>org.apache.felix.karaf</groupId>
-            <artifactId>org.apache.felix.karaf.main</artifactId>
+            <groupId>org.apache.karaf</groupId>
+            <artifactId>org.apache.karaf.main</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

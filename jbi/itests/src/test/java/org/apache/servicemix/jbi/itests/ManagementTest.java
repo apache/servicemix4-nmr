@@ -266,9 +266,9 @@ public class ManagementTest extends AbstractIntegrationTest {
             ),
 
             // hack system packages
-            systemPackages("org.apache.felix.karaf.main.spi;version=1.0.0", "org.apache.felix.karaf.jaas.boot;version=0.9.0"),
-            bootClasspathLibrary(mavenBundle("org.apache.felix.karaf.jaas", "org.apache.felix.karaf.jaas.boot")).afterFramework(),
-            bootClasspathLibrary(mavenBundle("org.apache.felix.karaf", "org.apache.felix.karaf.main")).afterFramework(),
+            systemPackages("org.apache.karaf.main.spi;version=1.0.0", "org.apache.karaf.jaas.boot;version=0.9.0"),
+            bootClasspathLibrary(mavenBundle("org.apache.karaf.jaas", "org.apache.karaf.jaas.boot")).afterFramework(),
+            bootClasspathLibrary(mavenBundle("org.apache.karaf", "org.apache.karaf.main")).afterFramework(),
             bootClasspathLibrary(mavenBundle("org.apache.geronimo.specs", "geronimo-jta_1.1_spec")).beforeFramework(),
 
             // Log
@@ -284,12 +284,12 @@ public class ManagementTest extends AbstractIntegrationTest {
             // Bundles
             mavenBundle("org.apache.mina", "mina-core"),
             mavenBundle("org.apache.sshd", "sshd-core"),
-            mavenBundle("org.apache.felix.karaf.jaas", "org.apache.felix.karaf.jaas.config"),
+            mavenBundle("org.apache.karaf.jaas", "org.apache.karaf.jaas.config"),
             mavenBundle("org.apache.felix.gogo", "org.apache.felix.gogo.runtime"),
-            mavenBundle("org.apache.felix.karaf.shell", "org.apache.felix.karaf.shell.console"),
-            mavenBundle("org.apache.felix.karaf.shell", "org.apache.felix.karaf.shell.osgi"),
-            mavenBundle("org.apache.felix.karaf.shell", "org.apache.felix.karaf.shell.log").noStart(),
-            mavenBundle("org.apache.felix.karaf", "org.apache.felix.karaf.management"),
+            mavenBundle("org.apache.karaf.shell", "org.apache.karaf.shell.console"),
+            mavenBundle("org.apache.karaf.shell", "org.apache.karaf.shell.osgi"),
+            mavenBundle("org.apache.karaf.shell", "org.apache.karaf.shell.log").noStart(),
+            mavenBundle("org.apache.karaf", "org.apache.karaf.management"),
             
             equinox(),
 
