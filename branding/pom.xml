@@ -54,7 +54,6 @@
                         <Export-Package>
                             org.apache.karaf.branding        
                         </Export-Package>
-                        <Spring-Context>*;publish-context:=false</Spring-Context>
                     </instructions>
                 </configuration>
             </plugin>

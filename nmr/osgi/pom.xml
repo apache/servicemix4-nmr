@@ -99,6 +99,7 @@
                             org.fusesource.commons.management,
                             *
                         </Import-Package>
+                        <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                     </instructions>
                 </configuration>
             </plugin>

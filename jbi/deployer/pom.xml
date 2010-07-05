@@ -138,6 +138,7 @@
                             org.apache.geronimo.transaction.manager;resolution:=optional,
                             org.springframework.transaction;resolution:=optional,
                             org.apache.servicemix.jbi.runtime.impl,
+                            org.apache.tools.ant*;resolution:=optional,
                             *
                         </Import-Package>
                         <Include-Resource>
@@ -146,7 +147,10 @@
                             org/apache/xbean/classloader/NamedClassLoader.class=target/classes/org/apache/xbean/classloader/NamedClassLoader.class,
                             org/apache/xbean/classloader/DestroyableClassLoader.class=target/classes/org/apache/xbean/classloader/DestroyableClassLoader.class
                         </Include-Resource>
-                        <Export-Package>org.apache.servicemix.jbi.deployer*</Export-Package>
+                        <Export-Package>
+                            ${project.artifactId}*;version="${project.version}";-noimport:=true
+                        </Export-Package>
+                        <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                     </instructions>
                 </configuration>
             </plugin>

@@ -127,6 +127,8 @@
                             org.springframework.osgi*;resolution:=optional,
                             *
                         </Import-Package>
+                        <Export-Package>${project.artifactId}*;version=${project.version};-noimport:=true</Export-Package>
+                        <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                     </instructions>
                 </configuration>
             </plugin>

@@ -93,11 +93,10 @@
                             org.springframework.*;resolution:=optional,
                             *
                         </Import-Package>
-                        <Export-Package>
-                            ${project.artifactId},${project.artifactId}.factory;-noimport:=true
-                        </Export-Package>
                         <Private-Package>${project.artifactId}.impl</Private-Package>
                         <Bundle-Activator>org.apache.servicemix.document.impl.Activator</Bundle-Activator>
+                        <Export-Package>${project.artifactId}*;version=${project.version};-noimport:=true</Export-Package>
+                        <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                     </instructions>
                 </configuration>
             </plugin>

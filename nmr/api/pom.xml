@@ -53,9 +53,8 @@
                     <instructions>
                         <Bundle-Name>${project.name}</Bundle-Name>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>
-                            ${project.artifactId},${project.artifactId}.service,${project.artifactId}.event,${project.artifactId}.internal,${project.artifactId}.security
-                        </Export-Package>
+                        <Export-Package>${project.artifactId}*;version=${project.version};-noimport:=true</Export-Package>
+                        <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                     </instructions>
                 </configuration>
             </plugin>
