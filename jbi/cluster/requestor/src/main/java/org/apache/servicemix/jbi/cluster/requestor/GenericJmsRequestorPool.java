@@ -16,25 +16,14 @@
  */
 package org.apache.servicemix.jbi.cluster.requestor;
 
-import java.util.Map;
-import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.transaction.TransactionManager;
-import javax.transaction.Transaction;
-import javax.jms.Connection;
+import java.util.Set;
 import javax.jms.JMSException;
 import javax.jms.Session;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageProducer;
-import javax.jms.Message;
 
-import org.springframework.jms.support.JmsUtils;
-import org.springframework.jms.JmsException;
-import org.springframework.util.Assert;
 import org.springframework.scheduling.SchedulingAwareRunnable;
+import org.springframework.util.Assert;
 
 /**
  * A pool of session / consumer / producer.

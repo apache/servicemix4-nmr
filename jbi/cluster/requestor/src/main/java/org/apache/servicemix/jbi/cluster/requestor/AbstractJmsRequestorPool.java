@@ -16,31 +16,21 @@
  */
 package org.apache.servicemix.jbi.cluster.requestor;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
 import javax.jms.Connection;
+import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
-import javax.jms.Session;
-import javax.jms.Queue;
 import javax.jms.MessageProducer;
+import javax.jms.Session;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.springframework.jms.support.destination.DestinationResolver;
-import org.springframework.jms.support.destination.DynamicDestinationResolver;
-import org.springframework.jms.support.destination.CachingDestinationResolver;
-import org.springframework.jms.support.JmsUtils;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.listener.AbstractMessageListenerContainer;
+import org.springframework.jms.support.JmsUtils;
+import org.springframework.jms.support.destination.CachingDestinationResolver;
+import org.springframework.jms.support.destination.DestinationResolver;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
-import org.springframework.core.task.TaskExecutor;
-import org.springframework.core.task.SimpleAsyncTaskExecutor;
-import org.springframework.scheduling.SchedulingTaskExecutor;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 public abstract class AbstractJmsRequestorPool extends AbstractMessageListenerContainer {
 

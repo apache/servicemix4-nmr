@@ -48,15 +48,12 @@ import org.apache.servicemix.nmr.core.ServiceRegistryImpl;
 import org.apache.servicemix.jbi.runtime.impl.MessageExchangeImpl;
 import org.apache.servicemix.jbi.runtime.impl.ServiceEndpointImpl;
 import org.apache.servicemix.jbi.runtime.impl.DeliveryChannelImpl;
-import org.apache.servicemix.jbi.runtime.impl.AbstractComponentContext;
 import org.apache.servicemix.jbi.cluster.requestor.JmsRequestor;
 import org.apache.servicemix.jbi.cluster.requestor.Transacted;
 import org.apache.servicemix.jbi.cluster.requestor.JmsRequestorListener;
 import org.apache.servicemix.jbi.cluster.requestor.JmsRequestorPool;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.DisposableBean;
 
 /**
  * Throttling
@@ -169,7 +166,7 @@ import org.springframework.beans.factory.DisposableBean;
  *
  */
 public class ClusterEngine extends ServiceRegistryImpl<ClusterRegistration>
-                             implements Endpoint, InitializingBean, DisposableBean, EndpointListener, ExchangeListener {
+                             implements Endpoint, EndpointListener, ExchangeListener {
 
     /**
      * Default maximum number of pending exchanges

@@ -18,17 +18,15 @@ package org.apache.servicemix.jbi.cluster.requestor;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
 import javax.jms.Connection;
-import javax.jms.Session;
+import javax.jms.JMSException;
+import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
-import javax.jms.Message;
-import javax.jms.JMSException;
+import javax.jms.Session;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
-import org.springframework.util.Assert;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.support.JmsUtils;
 

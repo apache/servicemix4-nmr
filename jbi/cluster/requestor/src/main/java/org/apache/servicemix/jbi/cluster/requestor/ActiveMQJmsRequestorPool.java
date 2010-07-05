@@ -16,32 +16,25 @@
  */
 package org.apache.servicemix.jbi.cluster.requestor;
 
-import java.util.Queue;
-import java.util.List;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.lang.reflect.Method;
-
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.XASession;
-import javax.jms.ConnectionFactory;
-import javax.jms.ExceptionListener;
-import javax.jms.Connection;
 import javax.transaction.xa.XAResource;
 
-import org.apache.activemq.MessageAvailableListener;
-import org.apache.activemq.MessageAvailableConsumer;
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.ActiveMQSession;
-import org.apache.activemq.pool.PooledConnectionFactory;
+import org.apache.activemq.MessageAvailableConsumer;
+import org.apache.activemq.MessageAvailableListener;
 import org.apache.activemq.pool.PooledSession;
 import org.springframework.jms.JmsException;
-import org.springframework.jms.connection.ConnectionFactoryUtils;
-import org.springframework.util.Assert;
 
 public class ActiveMQJmsRequestorPool extends AbstractPollingRequestorPool implements ExceptionListener {
 

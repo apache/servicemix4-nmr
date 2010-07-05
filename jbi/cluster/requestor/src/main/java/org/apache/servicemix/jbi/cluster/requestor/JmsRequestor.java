@@ -16,7 +16,6 @@
  */
 package org.apache.servicemix.jbi.cluster.requestor;
 
-import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
 import javax.transaction.Transaction;
