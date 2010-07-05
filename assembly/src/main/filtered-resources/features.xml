@@ -28,9 +28,6 @@
     </feature>
     <feature name="nmr" version="${version}">
         <feature>document</feature>
-        <!-- those two bundles are currently required for servicemix-utils to resolve -->
-        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${servicemix.specs.version}</bundle>
-        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.0/${servicemix.specs.version}</bundle>
         <bundle>mvn:org.apache.servicemix/servicemix-utils/${servicemix.utils.version}</bundle>
         <bundle>mvn:org.fusesource.commonman/commons-management/${commons.management.version}</bundle>
         <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.api/${pom.version}</bundle>
@@ -44,15 +41,15 @@
     </feature>
     <feature name="nmr-audit" version="${version}">
         <feature version="${version}">nmr</feature>
-        <bundle>mvn:org.apache.servicemix/servicemix-utils/${servicemix.utils.version}</bundle>
         <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.audit/${pom.version}</bundle>
     </feature>
     <feature name="jbi" version="${version}">
         <feature version="${version}">naming</feature>
         <feature version="${version}">transaction</feature>
         <feature version="${version}">nmr</feature>
-        <bundle>mvn:javax.mail/mail/${javax.mail.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${servicemix.specs.version}</bundle>
         <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jbi-api-1.0/${servicemix.specs.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.0/${servicemix.specs.version}</bundle>
         <bundle>mvn:org.codehaus.woodstox/stax2-api/${woodstox.stax2api.version}</bundle>
         <bundle>mvn:org.codehaus.woodstox/woodstox-core-asl/${woodstox.version}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.wsdl4j/${wsdl4j.version}</bundle>
