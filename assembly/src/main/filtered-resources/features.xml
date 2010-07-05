@@ -24,7 +24,7 @@
         <bundle>mvn:org.apache.servicemix.transaction/org.apache.servicemix.transaction/${version}</bundle>
     </feature>
     <feature name="document" version="${version}">
-        <feature>spring-dm</feature>
+        <feature>spring2-dm</feature>
         <bundle>mvn:org.apache.servicemix.document/org.apache.servicemix.document/${pom.version}</bundle>
     </feature>
     <feature name="nmr" version="${version}">
@@ -66,7 +66,7 @@
     </feature>
     <feature name="jbi-cluster" version="${version}">
         <feature version="${version}">jbi</feature>
-        <feature>spring</feature>
+        <feature version="${spring.version}">spring</feature>
         <bundle>mvn:org.apache.geronimo.specs/geronimo-jms_1.1_spec/${geronimo.jms.version}</bundle>
         <bundle>mvn:org.springframework/spring-jms/${spring.version}</bundle>
         <bundle>mvn:org.apache.servicemix.jbi.cluster/org.apache.servicemix.jbi.cluster.requestor/${pom.version}</bundle>
