@@ -40,7 +40,6 @@ import org.apache.servicemix.nmr.api.Type;
 import org.apache.servicemix.nmr.api.Message;
 import org.apache.servicemix.nmr.audit.AbstractAuditor;
 import org.apache.servicemix.nmr.audit.AuditorException;
-import org.springframework.beans.factory.InitializingBean;
 
 /**
  * Basic implementation of ServiceMix auditor on a jdbc store.
@@ -57,7 +56,7 @@ import org.springframework.beans.factory.InitializingBean;
  * @version $Revision: 550578 $
  * @since 2.1
  */
-public class JdbcAuditor extends AbstractAuditor implements InitializingBean {
+public class JdbcAuditor extends AbstractAuditor {
 
     private DataSource dataSource;
     private boolean autoStart = true;
