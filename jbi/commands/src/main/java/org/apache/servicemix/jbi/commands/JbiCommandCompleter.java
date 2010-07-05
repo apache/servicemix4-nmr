@@ -28,12 +28,11 @@ import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.impl.Deployer;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import org.springframework.osgi.context.BundleContextAware;
 
 /**
  * {@link org.apache.karaf.shell.console.Completer} for JBI artifacts.
  */
-public class JbiCommandCompleter implements Completer, BundleContextAware {
+public class JbiCommandCompleter implements Completer {
 
     private BundleContext bundleContext;
 

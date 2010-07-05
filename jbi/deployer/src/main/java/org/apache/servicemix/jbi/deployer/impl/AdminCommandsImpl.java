@@ -32,10 +32,8 @@ import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
 import org.apache.servicemix.jbi.deployer.SharedLibrary;
 import org.apache.servicemix.jbi.deployer.utils.ManagementSupport;
+import org.apache.servicemix.jbi.deployer.utils.StringUtils;
 import org.apache.servicemix.nmr.management.Nameable;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.util.StringUtils;
 
 public class AdminCommandsImpl implements AdminCommandsService, Nameable {
 

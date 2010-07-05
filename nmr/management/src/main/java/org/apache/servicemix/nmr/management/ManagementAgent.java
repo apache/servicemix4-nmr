@@ -18,31 +18,17 @@ package org.apache.servicemix.nmr.management;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.EventObject;
-import java.util.Set;
 import java.util.HashSet;
-
-import javax.jbi.component.ComponentContext;
-import javax.management.InstanceNotFoundException;
-import javax.management.MBeanException;
+import java.util.Set;
+import javax.management.InstanceAlreadyExistsException;
+import javax.management.JMException;
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
-import javax.management.JMException;
 import javax.management.NotCompliantMBeanException;
 import javax.management.ObjectInstance;
-import javax.management.InstanceAlreadyExistsException;
-import javax.management.ReflectionException;
+import javax.management.ObjectName;
 import javax.management.StandardMBean;
-import javax.management.modelmbean.ModelMBeanInfo;
-import javax.management.modelmbean.RequiredModelMBean;
-import javax.management.modelmbean.InvalidTargetObjectTypeException;
 
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceRegistration;
-import org.osgi.service.blueprint.container.ServiceUnavailableException;
-import org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler;
-import org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource;
-import org.springframework.beans.factory.DisposableBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.nmr.management.stats.CountStatistic;
@@ -50,24 +36,24 @@ import org.apache.servicemix.nmr.management.stats.TimeStatistic;
 import org.fusesource.commons.management.ManagementStrategy;
 import org.fusesource.commons.management.Statistic;
 import org.fusesource.commons.management.Statistic.UpdateMode;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
+import org.osgi.service.blueprint.container.ServiceUnavailableException;
 
 /**
  */
-public class ManagementAgent implements ManagementStrategy, DisposableBean {
+public class ManagementAgent implements ManagementStrategy {
 
     private static final transient Log LOG = LogFactory.getLog(ManagementAgent.class);
 
     private boolean enabled;
     private MBeanServer mbeanServer;
-    private MetadataMBeanInfoAssembler assembler;
     private Set<ObjectName> mbeans = new HashSet<ObjectName>();
     private NamingStrategy namingStrategy;
     private BundleContext bundleContext;
     private ServiceRegistration serviceRegistration;
 
     public ManagementAgent() {
-        assembler = new MetadataMBeanInfoAssembler();
-        assembler.setAttributeSource(new AnnotationJmxAttributeSource());
     }
 
     /**
@@ -234,13 +220,8 @@ public class ManagementAgent implements ManagementStrategy, DisposableBean {
     public void register(Object obj, ObjectName name, boolean forceRegistration) throws JMException {
         try {
             registerMBeanWithServer(obj, name, forceRegistration);
-        } catch (NotCompliantMBeanException e) {
-            registerViaAnnotations(obj, name, forceRegistration);
         } catch (UndeclaredThrowableException ute) {
-            if (ute.getCause() instanceof NotCompliantMBeanException
-                || ute.getCause().getCause() instanceof NotCompliantMBeanException) {
-                registerViaAnnotations(obj, name, forceRegistration);
-            } else if (ute.getCause() instanceof RuntimeException) {
+            if (ute.getCause() instanceof RuntimeException) {
                 LOG.warn("MBean registration failed: ", ute.getCause());
                 throw (RuntimeException)ute.getCause();
             } else {
@@ -248,20 +229,6 @@ public class ManagementAgent implements ManagementStrategy, DisposableBean {
                 throw new JMException(ute.getCause().getMessage());
             }
         }
-    }
-
-    protected void registerViaAnnotations(Object obj, ObjectName name, boolean forceRegistration) throws JMException {
-        // If this is not a "normal" MBean, then try to deploy it using JMX
-        // annotations
-        ModelMBeanInfo mbi = assembler.getMBeanInfo(obj, name.toString());
-        RequiredModelMBean mbean = (RequiredModelMBean) mbeanServer.instantiate(RequiredModelMBean.class.getName());
-        mbean.setModelMBeanInfo(mbi);
-        try {
-            mbean.setManagedResource(obj, "ObjectReference");
-        } catch (InvalidTargetObjectTypeException itotex) {
-            throw new JMException(itotex.getMessage());
-        }
-        registerMBeanWithServer(mbean, name, forceRegistration);
     }
 
     public void unregister(ObjectName name) throws JMException {
@@ -304,9 +271,6 @@ public class ManagementAgent implements ManagementStrategy, DisposableBean {
                  ? (customName != null
                     ? namingStrategy.getCustomObjectName(customName, ((Nameable)mo).getName())
                     : namingStrategy.getObjectName((Nameable)mo))
-                 : mo instanceof ComponentContext
-                   ? namingStrategy.getCustomObjectName(customName, 
-                                                        ((ComponentContext)mo).getComponentName())
                    : null;
     }
 

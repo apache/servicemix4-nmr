@@ -35,7 +35,6 @@ import org.apache.servicemix.jbi.deployer.descriptor.ServiceUnitDesc;
 import org.apache.servicemix.jbi.deployer.handler.Transformer;
 import org.apache.servicemix.jbi.deployer.utils.ManagementSupport;
 import org.osgi.framework.BundleContext;
-import org.springframework.osgi.context.BundleContextAware;
 
 public class DeploymentService implements DeploymentServiceMBean {
 

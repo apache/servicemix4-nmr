@@ -39,13 +39,13 @@ import org.apache.servicemix.jbi.deployer.artifacts.ComponentImpl;
 import org.apache.servicemix.jbi.deployer.descriptor.ComponentDesc;
 import org.apache.servicemix.jbi.deployer.descriptor.Descriptor;
 import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryList;
+import org.apache.servicemix.jbi.deployer.utils.BundleDelegatingClassLoader;
 import org.apache.servicemix.jbi.deployer.utils.FileUtil;
 import org.apache.servicemix.jbi.deployer.utils.ManagementSupport;
 import org.apache.xbean.classloader.MultiParentClassLoader;
 import org.apache.servicemix.nmr.management.Nameable;
 import org.osgi.framework.Bundle;
 import org.osgi.service.prefs.BackingStoreException;
-import org.springframework.osgi.util.BundleDelegatingClassLoader;
 
 public class ComponentInstaller extends AbstractInstaller implements InstallerMBean, Nameable {
 
@@ -283,8 +283,8 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
         } else {
             parents = new ClassLoader[2];
         }
-        parents[parents.length - 2] = BundleDelegatingClassLoader.createBundleClassLoaderFor(bundle, getClass().getClassLoader());
-        parents[parents.length - 1] = BundleDelegatingClassLoader.createBundleClassLoaderFor(getBundleContext().getBundle(0));
+        parents[parents.length - 2] = new BundleDelegatingClassLoader(bundle, getClass().getClassLoader());
+        parents[parents.length - 1] = new BundleDelegatingClassLoader(getBundleContext().getBundle(0));
 
         // Create urls
         List<URL> urls = new ArrayList<URL>();

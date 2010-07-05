@@ -300,10 +300,7 @@ public class ManagementStrategyTest extends Assert { //TestCase {
         ManagedEndpoint endpoint = 
             new ManagedEndpoint(internal, props, strategy);
         expect(internal.getId()).andReturn("endpoint_foo");
-        expect(mbeanServer.registerMBean(isA(ManagedEndpoint.class), eq(name))).andThrow(ex);
-        RequiredModelMBean mbean = control.createMock(RequiredModelMBean.class);
-        expect(mbeanServer.instantiate(RequiredModelMBean.class.getName())).andReturn(mbean);
-        expect(mbeanServer.registerMBean(isA(RequiredModelMBean.class), eq(name))).andReturn(instance);
+        expect(mbeanServer.registerMBean(isA(ManagedEndpoint.class), eq(name))).andReturn(instance);
         control.replay();
         strategy.manageObject(endpoint);
         strategy.manageObject(endpoint);

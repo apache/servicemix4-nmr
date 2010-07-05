@@ -61,6 +61,11 @@
                     <artifactId>org.springframework.core</artifactId>
                 </exclusion>
             </exclusions>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint</artifactId>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -82,9 +87,17 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Export-Package>${project.artifactId},${project.artifactId}.factory</Export-Package>
+                        <Import-Package>
+                            org.osgi.service.blueprint*;resolution:=optional,
+                            org.apache.aries.blueprint*;resolution:=optional,
+                            org.springframework.*;resolution:=optional,
+                            *
+                        </Import-Package>
+                        <Export-Package>
+                            ${project.artifactId},${project.artifactId}.factory;-noimport:=true
+                        </Export-Package>
                         <Private-Package>${project.artifactId}.impl</Private-Package>
-                        <Spring-Context>*;publish-context:=false;create-asynchronously:=true</Spring-Context>
+                        <Bundle-Activator>org.apache.servicemix.document.impl.Activator</Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>

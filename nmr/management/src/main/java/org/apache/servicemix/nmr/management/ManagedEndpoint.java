@@ -18,20 +18,20 @@ package org.apache.servicemix.nmr.management;
 
 import java.util.HashMap;
 import java.util.Map;
+import javax.management.MBeanFeatureInfo;
+import javax.management.MBeanInfo;
+import javax.management.NotCompliantMBeanException;
+import javax.management.StandardMBean;
 
 import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
 import org.fusesource.commons.management.ManagementStrategy;
 import org.fusesource.commons.management.Statistic;
 import org.fusesource.commons.management.Statistic.UpdateMode;
-import org.springframework.jmx.export.annotation.ManagedAttribute;
-import org.springframework.jmx.export.annotation.ManagedOperation;
-import org.springframework.jmx.export.annotation.ManagedResource;
 
 /**
  */
-@ManagedResource(description = "Managed Endpoint", currencyTimeLimit = 15)
-public class ManagedEndpoint {
+public class ManagedEndpoint extends StandardMBean implements ManagedEndpointMBean {
 
     protected final InternalEndpoint endpoint;
     protected final Map<String,?> properties;
@@ -43,7 +43,8 @@ public class ManagedEndpoint {
 
     public ManagedEndpoint(InternalEndpoint endpoint, 
                            Map<String,?> properties, 
-                           ManagementStrategy managementStrategy) {
+                           ManagementStrategy managementStrategy) throws NotCompliantMBeanException {
+        super(ManagedEndpointMBean.class);
         this.endpoint = endpoint;
         this.properties = new HashMap<String,Object>(properties);
         this.managementStrategy = managementStrategy;
@@ -80,7 +81,6 @@ public class ManagedEndpoint {
      *
      * @return the name of the endpoint
      */
-    @ManagedAttribute(description = "Name of the endpoint")
     public String getName() {
         return (String) properties.get(Endpoint.NAME);
     }
@@ -90,7 +90,6 @@ public class ManagedEndpoint {
      *
      * @return the properties of the endpoint
      */
-    @ManagedAttribute(description = "Properties associated to this endpoint")
     public Map<String, ?> getProperties() {
         return properties;
     }
@@ -100,7 +99,6 @@ public class ManagedEndpoint {
      *
      * @return inbound count
      */
-    @ManagedAttribute(description = "Number of exchanges received")
     public long getInboundExchangeCount() {
         return inboundExchanges.getUpdateCount();
     }
@@ -110,7 +108,6 @@ public class ManagedEndpoint {
      *
      * @return the inbound exchange rate
      */
-    @ManagedAttribute(description = "Exchanges received per second")
     public double getInboundExchangeRate() {
         return getRate(inboundExchangeRate);
     }
@@ -120,7 +117,6 @@ public class ManagedEndpoint {
      *
      * @return outbound count
      */
-    @ManagedAttribute(description = "Number of exchanges sent")
     public long getOutboundExchangeCount() {
         return outboundExchanges.getUpdateCount();
     }
@@ -130,7 +126,6 @@ public class ManagedEndpoint {
      *
      * @return the outbound exchange rate
      */
-    @ManagedAttribute(description = "Exchanges sent per second")
     public double getOutboundExchangeRate() {
         return getRate(outboundExchangeRate);
     }
@@ -138,7 +133,6 @@ public class ManagedEndpoint {
     /**
      * reset the Stats
      */
-    @ManagedOperation
     public void reset() {
         inboundExchanges.reset();
         outboundExchanges.reset();
@@ -159,4 +153,39 @@ public class ManagedEndpoint {
         return d / stat.getUpdateCount();
     }
 
+
+    @Override
+    protected String getDescription(MBeanInfo info) {
+        return "Managed Endpoint";
+    }
+
+    @Override
+    protected String getDescription(MBeanFeatureInfo info) {
+
+        if ("name".equalsIgnoreCase(info.getName())) {
+            return "Name of the endpoint";
+        }
+        if ("properties".equalsIgnoreCase(info.getName())) {
+            return "Properties associated to this endpoint";
+        }
+        if ("inboundExchangeCount".equalsIgnoreCase(info.getName())) {
+            return "Number of exchanges received";
+        }
+        if ("inboundExchangeCount".equalsIgnoreCase(info.getName())) {
+            return "Number of exchanges received";
+        }
+        if ("inboundExchangeRate".equalsIgnoreCase(info.getName())) {
+            return "Exchanges received per second";
+        }
+        if ("outboundExchangeCount".equalsIgnoreCase(info.getName())) {
+            return "Number of exchanges sent";
+        }
+        if ("outboundExchangeRate".equalsIgnoreCase(info.getName())) {
+            return "Exchanges sent per second";
+        }
+        if ("reset".equalsIgnoreCase(info.getName())) {
+            return "Reset statistics";
+        }
+        return null;
+    }
 }

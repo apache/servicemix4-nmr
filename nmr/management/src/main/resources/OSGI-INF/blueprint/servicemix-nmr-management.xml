@@ -53,7 +53,8 @@
 
     <!-- Endpoint registry -->   
     <bean id="endpointRegistry" 
-          class="org.apache.servicemix.nmr.management.ManagementEndpointRegistry">
+          class="org.apache.servicemix.nmr.management.ManagementEndpointRegistry"
+          init-method="afterPropertiesSet">
         <property name="managementStrategy" ref="managementStrategyRef"/>
     </bean>
        

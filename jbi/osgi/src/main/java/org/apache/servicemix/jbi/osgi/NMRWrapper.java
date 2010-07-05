@@ -23,8 +23,6 @@ import org.apache.servicemix.nmr.api.WireRegistry;
 import org.apache.servicemix.nmr.api.event.ListenerRegistry;
 import org.apache.servicemix.nmr.api.internal.FlowRegistry;
 import org.osgi.framework.BundleContext;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.osgi.context.BundleContextAware;
 
 /**
  * A NMR wrapper which purpose is to delegate to the OSGi registry

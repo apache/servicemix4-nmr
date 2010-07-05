@@ -129,7 +129,7 @@
       <spring.osgi.version>1.2.0</spring.osgi.version>
       <spring.version>2.5.6.SEC01</spring.version>
       <woodstox.version>4.0.8</woodstox.version>
-      <woodstox.stax2api.version>3.0.1</woodstox.stax2api.version>
+      <woodstox.stax2api.version>3.0.2</woodstox.stax2api.version>
       <wsdl4j.version>1.6.2_2</wsdl4j.version>
       <xbean.version>3.5</xbean.version>
       <geronimo.stax.version>1.0.1</geronimo.stax.version>
@@ -767,6 +767,11 @@
             <groupId>org.ops4j.pax.runner</groupId>
             <artifactId>pax-runner-no-jcl</artifactId>
             <version>${pax.runner.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.aries.blueprint</groupId>
+            <artifactId>org.apache.aries.blueprint</artifactId>
+            <version>${aries.blueprint.version}</version>
         </dependency>
     </dependencies>
   </dependencyManagement>

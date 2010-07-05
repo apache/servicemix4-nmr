@@ -24,7 +24,6 @@ import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.SharedLibrary;
 import org.apache.servicemix.jbi.deployer.impl.Deployer;
-import org.osgi.framework.ServiceReference;
 
 /**
  * Base class for JBI related commands

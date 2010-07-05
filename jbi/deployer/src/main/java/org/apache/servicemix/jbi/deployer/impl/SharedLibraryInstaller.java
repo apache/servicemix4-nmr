@@ -30,11 +30,11 @@ import org.apache.servicemix.jbi.deployer.SharedLibrary;
 import org.apache.servicemix.jbi.deployer.descriptor.ClassPath;
 import org.apache.servicemix.jbi.deployer.descriptor.Descriptor;
 import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryDesc;
+import org.apache.servicemix.jbi.deployer.utils.BundleDelegatingClassLoader;
 import org.apache.servicemix.jbi.deployer.utils.FileUtil;
 import org.apache.servicemix.jbi.deployer.utils.ManagementSupport;
 import org.apache.xbean.classloader.MultiParentClassLoader;
 import org.osgi.service.prefs.BackingStoreException;
-import org.springframework.osgi.util.BundleDelegatingClassLoader;
 
 public class SharedLibraryInstaller extends AbstractInstaller {
 
@@ -108,7 +108,7 @@ public class SharedLibraryInstaller extends AbstractInstaller {
     protected ClassLoader createClassLoader() {
         SharedLibraryDesc library = descriptor.getSharedLibrary();
         // Make the current ClassLoader the parent
-        ClassLoader parent = BundleDelegatingClassLoader.createBundleClassLoaderFor(bundle, getClass().getClassLoader());
+        ClassLoader parent = new BundleDelegatingClassLoader(bundle, getClass().getClassLoader());
         boolean parentFirst = library.isParentFirstClassLoaderDelegation();
         ClassPath cp = library.getSharedLibraryClassPath();
         String[] classPathNames = cp.getPathElements();

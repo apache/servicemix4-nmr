@@ -53,6 +53,7 @@ import org.apache.servicemix.jbi.deployer.descriptor.ServiceAssemblyDesc;
 import org.apache.servicemix.jbi.deployer.descriptor.ServiceUnitDesc;
 import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryDesc;
 import org.apache.servicemix.jbi.deployer.descriptor.Target;
+import org.apache.servicemix.jbi.deployer.utils.OsgiStringUtils;
 import org.apache.servicemix.jbi.runtime.ComponentWrapper;
 import org.apache.servicemix.jbi.runtime.Environment;
 import org.apache.servicemix.nmr.api.event.ListenerRegistry;
@@ -67,7 +68,6 @@ import org.osgi.framework.BundleEvent;
 import org.osgi.service.prefs.Preferences;
 import org.osgi.service.prefs.PreferencesService;
 import org.osgi.util.tracker.ServiceTracker;
-import org.springframework.osgi.util.OsgiStringUtils;
 
 /**
  * Deployer for JBI artifacts

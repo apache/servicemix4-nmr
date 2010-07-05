@@ -28,11 +28,10 @@ import org.apache.servicemix.nmr.api.event.ExchangeListener;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
 import org.apache.servicemix.nmr.api.internal.InternalExchange;
 import org.fusesource.commons.management.ManagementStrategy;
-import org.springframework.beans.factory.InitializingBean;
 
 /**
  */
-public class ManagementEndpointRegistry implements ExchangeListener, InitializingBean {
+public class ManagementEndpointRegistry implements ExchangeListener {
 
     private static final transient Log LOG = LogFactory.getLog(ManagementEndpointRegistry.class);
 

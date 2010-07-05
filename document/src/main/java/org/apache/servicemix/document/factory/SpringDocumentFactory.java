@@ -37,7 +37,7 @@ import org.apache.servicemix.document.DocumentRepository;
  * and also post processes the document-name:xxx url to transform it into a
  * document: url handled by the repository.
  */
-public class DocumentFactory implements FactoryBean, BundleContextAware, InitializingBean, BeanFactoryPostProcessor, BeanNameAware, BeanFactoryAware {
+public class SpringDocumentFactory implements FactoryBean, BundleContextAware, InitializingBean, BeanFactoryPostProcessor, BeanNameAware, BeanFactoryAware {
 
     private BundleContext bundleContext;
     private String document;

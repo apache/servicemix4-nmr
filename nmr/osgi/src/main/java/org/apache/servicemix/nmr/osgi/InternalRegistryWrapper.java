@@ -26,12 +26,11 @@ import org.apache.servicemix.nmr.core.ServiceRegistryImpl;
 import org.apache.servicemix.nmr.core.util.MapToDictionary;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
-import org.springframework.osgi.context.BundleContextAware;
 
 /**
  */
 public class InternalRegistryWrapper extends ServiceRegistryImpl<InternalEndpoint>
-                                     implements ServiceRegistry<InternalEndpoint>, BundleContextAware {
+                                     implements ServiceRegistry<InternalEndpoint> {
 
     private BundleContext bundleContext;
     private Map<Endpoint, ServiceRegistration> registrations = new ConcurrentHashMap();

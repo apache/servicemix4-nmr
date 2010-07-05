@@ -40,7 +40,6 @@ import javax.xml.namespace.QName;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 
-import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.descriptor.ComponentDesc;
 import org.apache.servicemix.jbi.deployer.descriptor.InstallationDescriptorExtension;
 import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryList;

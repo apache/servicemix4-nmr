@@ -32,7 +32,7 @@
     <bean id="documentRepository" class="org.apache.servicemix.document.impl.DocumentRepositoryImpl">
     </bean>
 
-    <bean id="doc" class="org.apache.servicemix.document.factory.DocumentFactory">
+    <bean id="doc" class="org.apache.servicemix.document.factory.SpringDocumentFactory">
         <property name="repository" ref="documentRepository" />
         <property name="document">
             <value>

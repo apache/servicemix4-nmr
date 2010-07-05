@@ -16,6 +16,8 @@
  */
 package org.apache.servicemix.nmr.osgi;
 
+import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.servicemix.nmr.api.service.ServiceRegistry;
@@ -23,10 +25,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.osgi.context.BundleContextAware;
-import org.springframework.osgi.util.OsgiServiceReferenceUtils;
 
 /**
  * A simple spring factory bean that will create an OSGi service tracker and notify the configured registry
@@ -75,7 +73,7 @@ public class OsgiServiceRegistryTracker<T> implements ServiceTrackerCustomizer {
 
     public Object addingService(ServiceReference reference) {
         T service = (T) bundleContext.getService(reference);
-        Map properties = OsgiServiceReferenceUtils.getServicePropertiesSnapshotAsMap(reference);
+        Map properties = getServicePropertiesSnapshotAsMap(reference);
         registry.register(service, properties);
         return service;
     }
@@ -84,7 +82,29 @@ public class OsgiServiceRegistryTracker<T> implements ServiceTrackerCustomizer {
     }
 
     public void removedService(ServiceReference reference, Object service) {
-        Map properties = OsgiServiceReferenceUtils.getServicePropertiesSnapshotAsMap(reference);
+        Map properties = getServicePropertiesSnapshotAsMap(reference);
         registry.unregister((T) service, properties);
     }
+
+    /**
+     * Returns a {@link Map} containing the properties available for the given
+     * service reference. This method takes a snapshot of the properties; future
+     * changes to the service properties will not be reflected in the returned
+     * dictionary.
+     *
+     * @param reference OSGi service reference
+     * @return a <code>Map</code> containing the service reference properties
+     *         taken as a snapshot
+     */
+    public static Map getServicePropertiesSnapshotAsMap(ServiceReference reference) {
+        String[] keys = reference.getPropertyKeys();
+        Map map = new LinkedHashMap(keys.length);
+        for (int i = 0; i < keys.length; i++) {
+            map.put(keys[i], reference.getProperty(keys[i]));
+        }
+        // mark it as read-only
+        map = Collections.unmodifiableMap(map);
+        return map;
+    }
+
 }
