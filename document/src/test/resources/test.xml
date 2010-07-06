@@ -21,18 +21,22 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:osgi="http://www.springframework.org/schema/osgi"
        xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:doc="http://servicemix.apache.org/schema/document"
        xsi:schemaLocation="
   http://www.springframework.org/schema/beans
   http://www.springframework.org/schema/beans/spring-beans.xsd
   http://www.springframework.org/schema/util
   http://www.springframework.org/schema/util/spring-util.xsd
   http://www.springframework.org/schema/osgi
-  http://www.springframework.org/schema/osgi/spring-osgi.xsd">
+  http://www.springframework.org/schema/osgi/spring-osgi.xsd
+  http://servicemix.apache.org/schema/document
+  http://servicemix.apache.org/schema/document/document.xsd
+  ">
 
     <bean id="documentRepository" class="org.apache.servicemix.document.impl.DocumentRepositoryImpl">
     </bean>
 
-    <bean id="doc" class="org.apache.servicemix.document.factory.SpringDocumentFactory">
+    <bean id="doc" class="org.apache.servicemix.document.impl.spring.SpringDocumentFactory">
         <property name="repository" ref="documentRepository" />
         <property name="document">
             <value>
@@ -41,8 +45,16 @@
         </property>
     </bean>
 
+    <doc:document id="doc2" repository="documentRepository">
+        Hey guy !
+    </doc:document>
+
     <bean id="uri" class="java.net.URI" factory-method="create">
         <constructor-arg value="document-name:doc" />
+    </bean>
+
+    <bean id="uri2" class="java.net.URI" factory-method="create">
+        <constructor-arg value="document-name:doc2" />
     </bean>
 
 </beans>

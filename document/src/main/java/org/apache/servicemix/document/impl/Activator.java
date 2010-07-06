@@ -35,6 +35,11 @@ public class Activator implements BundleActivator {
                             new String[] { DocumentRepository.class.getName(), URLStreamHandlerService.class.getName() },
                             new DocumentRepositoryImpl(),
                             properties);
+        try {
+            org.apache.servicemix.document.impl.blueprint.NamespaceHandler.register(context);
+        } catch (Throwable t) {
+            // Ignore
+        }
     }
 
     public void stop(BundleContext context) throws Exception {

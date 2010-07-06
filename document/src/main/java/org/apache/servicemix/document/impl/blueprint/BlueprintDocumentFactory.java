@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.servicemix.document.factory;
+package org.apache.servicemix.document.impl.blueprint;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,15 +27,12 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.blueprint.container.ComponentDefinitionException;
 import org.osgi.service.blueprint.reflect.*;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.BeanFactory;
 
 public class BlueprintDocumentFactory implements ComponentDefinitionRegistryProcessor {
 
     private BundleContext bundleContext;
     private String document;
     private String documentId;
-    private BeanFactory beanFactory;
     private String beanName;
     private DocumentRepository repository;
 
@@ -45,10 +42,6 @@ public class BlueprintDocumentFactory implements ComponentDefinitionRegistryProc
 
     public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
-    }
-
-    public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-        this.beanFactory = beanFactory;
     }
 
     public void setBeanName(String beanName) {
