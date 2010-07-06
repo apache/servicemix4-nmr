@@ -17,6 +17,7 @@
 package org.apache.servicemix.jbi.commands;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -69,7 +70,7 @@ public class JbiCommandCompleter implements Completer {
             }
             return artifacts;
         } catch (Exception e) {
-            return null;
+            return Collections.emptySet();
         }
     }
 
