@@ -24,6 +24,7 @@ import junit.framework.TestCase;
 import org.apache.servicemix.jbi.deployer.artifacts.AbstractLifecycleJbiArtifact.State;
 import org.apache.servicemix.jbi.deployer.descriptor.DescriptorFactory;
 import org.apache.servicemix.jbi.deployer.descriptor.ServiceAssemblyDesc;
+import org.apache.servicemix.jbi.deployer.impl.Storage;
 import org.apache.servicemix.jbi.runtime.impl.DeliveryChannelImpl;
 import org.apache.servicemix.jbi.runtime.impl.EndpointImpl;
 import org.apache.servicemix.nmr.api.Endpoint;
@@ -131,15 +132,15 @@ public class AssemblyReferencesListenerTest extends TestCase {
 
     private ServiceAssemblyImpl createServiceAssembly() {
         ServiceAssemblyDesc descriptor = DescriptorFactory.buildDescriptor(DescriptorFactory.class.getResource("serviceAssembly.xml")).getServiceAssembly();
-        final Preferences prefs = createMock(Preferences.class);
-        expect(prefs.get("state", State.Shutdown.name())).andReturn(State.Shutdown.name()).anyTimes();
-        replay(prefs);
+        final Storage storage = createMock(Storage.class);
+        expect(storage.get("state", State.Shutdown.name())).andReturn(State.Shutdown.name()).anyTimes();
+        replay(storage);
         final Component component = createMock(Component.class);
         replay(component);
 
-        ComponentImpl comp = new ComponentImpl(null, null, component, prefs, false, null);
+        ComponentImpl comp = new ComponentImpl(null, null, component, storage, false, null);
         ServiceUnitImpl su = new ServiceUnitImpl(descriptor.getServiceUnits()[0], null, comp);
-        ServiceAssemblyImpl sa = new ServiceAssemblyImpl(null, descriptor, Collections.singletonList(su), prefs, new AssemblyReferencesListener(), false);
+        ServiceAssemblyImpl sa = new ServiceAssemblyImpl(null, descriptor, Collections.singletonList(su), storage, new AssemblyReferencesListener(), false);
         return sa;
     }
 }

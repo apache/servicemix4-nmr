@@ -17,6 +17,7 @@
 package org.apache.servicemix.jbi.deployer.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,6 @@ import org.apache.servicemix.jbi.deployer.utils.FileUtil;
 import org.apache.servicemix.jbi.deployer.utils.ManagementSupport;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleException;
-import org.osgi.service.prefs.BackingStoreException;
 
 public class ServiceAssemblyInstaller extends AbstractInstaller {
 
@@ -151,8 +151,8 @@ public class ServiceAssemblyInstaller extends AbstractInstaller {
         }
         // Remove preferences
         try {
-            deletePreferences();
-        } catch (BackingStoreException e) {
+            deleteStorage();
+        } catch (IOException e) {
             LOGGER.warn("Error cleaning persistent state for component: " + getName(), e);
         }
         // Uninstall bundle
@@ -239,8 +239,8 @@ public class ServiceAssemblyInstaller extends AbstractInstaller {
                 bundle.stop();
                 bundle.uninstall();
                 try {
-                    deletePreferences();
-                } catch (BackingStoreException e) {
+                    deleteStorage();
+                } catch (IOException e) {
                     LOGGER.warn("Error cleaning persistent state for service assembly: " + getName(), e);
                 }
             }

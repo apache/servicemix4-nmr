@@ -45,7 +45,6 @@ import org.apache.servicemix.jbi.deployer.utils.ManagementSupport;
 import org.apache.xbean.classloader.MultiParentClassLoader;
 import org.apache.servicemix.nmr.management.Nameable;
 import org.osgi.framework.Bundle;
-import org.osgi.service.prefs.BackingStoreException;
 
 public class ComponentInstaller extends AbstractInstaller implements InstallerMBean, Nameable {
 
@@ -231,8 +230,8 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
         deployer.unregisterComponent(comp);
         // Remove preferences
         try {
-            deletePreferences();
-        } catch (BackingStoreException e) {
+            deleteStorage();
+        } catch (IOException e) {
             LOGGER.warn("Error cleaning persistent state for component: " + getName(), e);
         }
         // Uninstall bundle

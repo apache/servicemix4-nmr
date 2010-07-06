@@ -17,6 +17,7 @@
 package org.apache.servicemix.jbi.deployer.impl;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Dictionary;
@@ -102,8 +103,6 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
 
     private File jbiRootDir;
 
-    private PreferencesService preferencesService;
-
     private boolean autoStart = true;
 
     private ServiceTracker deployedComponentsTracker;
@@ -122,6 +121,8 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
     
     private MBeanServer mbeanServer;
 
+    private Storage storage;
+
     public Deployer() throws JBIException {
         // TODO: control that using properties
         jbiRootDir = new File(System.getProperty("karaf.base"), "data/jbi");
@@ -137,14 +138,6 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
 
     public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
-    }
-
-    public PreferencesService getPreferencesService() {
-        return preferencesService;
-    }
-
-    public void setPreferencesService(PreferencesService preferencesService) {
-        this.preferencesService = preferencesService;
     }
 
     public boolean isAutoStart() {
@@ -228,6 +221,14 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
     }
 
     public void init() throws Exception {
+        // Init storage
+        SimpleStorage s = new SimpleStorage(bundleContext.getDataFile("storage.properties"));
+        try {
+            s.load();
+        } catch (IOException e) {
+            LOGGER.warn("Error loading JBI artifacts state", e);
+        }
+        this.storage = s;
         // Track bundles
         bundleContext.addBundleListener(this);
         for (Bundle bundle : bundleContext.getBundles()) {
@@ -421,8 +422,7 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
 
     public ComponentImpl registerComponent(Bundle bundle, ComponentDesc componentDesc, javax.jbi.component.Component innerComponent, SharedLibrary[] sharedLibraries) throws Exception {
         String name = componentDesc.getIdentification().getName();
-        Preferences prefs = preferencesService.getUserPreferences(name);
-        ComponentImpl component = new ComponentImpl(bundle, componentDesc, innerComponent, prefs, autoStart, sharedLibraries);
+        ComponentImpl component = new ComponentImpl(bundle, componentDesc, innerComponent, storage.getStorage(name), autoStart, sharedLibraries);
         component.setListenerRegistry(listenerRegistry);
         // populate props from the component meta-data
         Dictionary<String, String> props = new Hashtable<String, String>();
@@ -448,8 +448,9 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
 
     public ServiceAssemblyImpl registerServiceAssembly(Bundle bundle, ServiceAssemblyDesc serviceAssemblyDesc, List<ServiceUnitImpl> sus) throws Exception {
         // Now create the SA and initialize it
-        Preferences prefs = preferencesService.getUserPreferences(serviceAssemblyDesc.getIdentification().getName());
-        ServiceAssemblyImpl sa = new ServiceAssemblyImpl(bundle, serviceAssemblyDesc, sus, prefs, endpointListener, autoStart);
+        ServiceAssemblyImpl sa = new ServiceAssemblyImpl(bundle, serviceAssemblyDesc, sus, 
+                                                         storage.getStorage(serviceAssemblyDesc.getIdentification().getName()),
+                                                         endpointListener, autoStart);
         sa.setShutdownTimeout(shutdownTimeout);
         sa.setListenerRegistry(listenerRegistry);
         sa.init();
@@ -552,6 +553,11 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
         }
         return null;
     }
+
+    public Storage getStorage(String name) {
+        return storage.getStorage(name);
+    }
+
 
     //===============================================================================
     //

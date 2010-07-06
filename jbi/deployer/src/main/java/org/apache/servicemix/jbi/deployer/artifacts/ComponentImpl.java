@@ -19,7 +19,6 @@ package org.apache.servicemix.jbi.deployer.artifacts;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
-
 import javax.jbi.JBIException;
 import javax.jbi.component.ComponentContext;
 import javax.jbi.component.ComponentLifeCycle;
@@ -28,19 +27,18 @@ import javax.jbi.messaging.MessageExchange;
 import javax.jbi.servicedesc.ServiceEndpoint;
 import javax.management.ObjectName;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.DocumentFragment;
-
 import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
 import org.apache.servicemix.jbi.deployer.SharedLibrary;
-import org.apache.servicemix.jbi.deployer.events.LifeCycleEvent;
 import org.apache.servicemix.jbi.deployer.descriptor.ComponentDesc;
 import org.apache.servicemix.jbi.deployer.descriptor.DescriptorFactory;
+import org.apache.servicemix.jbi.deployer.events.LifeCycleEvent;
+import org.apache.servicemix.jbi.deployer.impl.Storage;
 import org.apache.servicemix.jbi.runtime.ComponentWrapper;
 import org.apache.servicemix.nmr.management.Nameable;
 import org.osgi.framework.Bundle;
-import org.osgi.service.prefs.Preferences;
+import org.w3c.dom.Document;
+import org.w3c.dom.DocumentFragment;
 
 /**
  */
@@ -57,13 +55,13 @@ public class ComponentImpl extends AbstractLifecycleJbiArtifact implements Compo
     public ComponentImpl(Bundle bundle,
                          ComponentDesc componentDesc,
                          javax.jbi.component.Component component,
-                         Preferences prefs,
+                         Storage storage,
                          boolean autoStart,
                          SharedLibrary[] sharedLibraries) {
         this.bundle = bundle;
         this.componentDesc = componentDesc;
         this.component = new ComponentWrapper(component);
-        this.prefs = prefs;
+        this.storage = storage;
         this.runningState = loadState(autoStart ? State.Started : State.Shutdown);
         this.serviceUnits = new HashSet<ServiceUnitImpl>();
         this.sharedLibraries = sharedLibraries;

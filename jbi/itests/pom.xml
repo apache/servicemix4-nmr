@@ -163,11 +163,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.apache.felix.prefs</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.apache.xbean</groupId>
             <artifactId>xbean-classloader</artifactId>
             <scope>test</scope>

@@ -34,7 +34,6 @@ import org.apache.servicemix.jbi.deployer.utils.BundleDelegatingClassLoader;
 import org.apache.servicemix.jbi.deployer.utils.FileUtil;
 import org.apache.servicemix.jbi.deployer.utils.ManagementSupport;
 import org.apache.xbean.classloader.MultiParentClassLoader;
-import org.osgi.service.prefs.BackingStoreException;
 
 public class SharedLibraryInstaller extends AbstractInstaller {
 
@@ -95,8 +94,8 @@ public class SharedLibraryInstaller extends AbstractInstaller {
         deployer.unregisterSharedLibrary(library);
         // Remove preferences
         try {
-            deletePreferences();
-        } catch (BackingStoreException e) {
+            deleteStorage();
+        } catch (IOException e) {
             LOGGER.warn("Error cleaning persistent state for component: " + getName(), e);
         }
         // Uninstall bundle

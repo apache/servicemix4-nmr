@@ -94,7 +94,6 @@
       <felix.plugin.version>2.1.0</felix.plugin.version>
       <felix.framework.version>3.0.1</felix.framework.version>
       <felix.bundlerepository.version>1.6.4</felix.bundlerepository.version>
-      <felix.prefs.version>1.0.4</felix.prefs.version>
       <karaf.version>1.99.0-SNAPSHOT</karaf.version>
       <felix.fileinstall.version>3.0.0</felix.fileinstall.version>
       <felix.gogo.version>0.4.0</felix.gogo.version>
@@ -427,21 +426,6 @@
           <groupId>org.apache.servicemix.bundles</groupId>
           <artifactId>org.apache.servicemix.bundles.cglib</artifactId>
           <version>${cglib.version}</version>
-      </dependency>
-      <dependency>
-          <groupId>org.apache.felix</groupId>
-          <artifactId>org.apache.felix.prefs</artifactId>
-          <version>${felix.prefs.version}</version>
-          <exclusions>
-              <exclusion>
-                  <groupId>org.apache.felix</groupId>
-                  <artifactId>org.osgi.core</artifactId>
-              </exclusion>
-              <exclusion>
-                  <groupId>org.apache.felix</groupId>
-                  <artifactId>org.osgi.compendium</artifactId>
-              </exclusion>
-          </exclusions>
       </dependency>
       <dependency>
           <groupId>org.apache.felix</groupId>

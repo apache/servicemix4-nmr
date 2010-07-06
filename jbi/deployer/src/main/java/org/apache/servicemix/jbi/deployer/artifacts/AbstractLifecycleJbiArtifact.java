@@ -16,16 +16,16 @@
  */
 package org.apache.servicemix.jbi.deployer.artifacts;
 
+import java.io.IOException;
 import javax.jbi.management.LifeCycleMBean;
 import javax.jbi.JBIException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.servicemix.jbi.deployer.impl.Storage;
 import org.apache.servicemix.nmr.api.event.ListenerRegistry;
 import org.apache.servicemix.jbi.deployer.events.LifeCycleEvent;
 import org.apache.servicemix.jbi.deployer.events.LifeCycleListener;
-import org.osgi.service.prefs.BackingStoreException;
-import org.osgi.service.prefs.Preferences;
 
 public abstract class AbstractLifecycleJbiArtifact implements LifeCycleMBean {
 
@@ -41,7 +41,7 @@ public abstract class AbstractLifecycleJbiArtifact implements LifeCycleMBean {
     protected final Log LOGGER = LogFactory.getLog(getClass());
 
     protected State state = State.Unknown;
-    protected Preferences prefs;
+    protected Storage storage;
     protected State runningState;
     protected ListenerRegistry listenerRegistry;
 
@@ -75,14 +75,14 @@ public abstract class AbstractLifecycleJbiArtifact implements LifeCycleMBean {
     }
 
     protected State loadState(State def) {
-        return State.valueOf(this.prefs.get(STATE, def.name()));
+        return State.valueOf(this.storage.get(STATE, def.name()));
     }
 
     protected void saveState() {
-        this.prefs.put(STATE, state.name());
+        this.storage.put(STATE, state.name());
         try {
-            this.prefs.flush();
-        } catch (BackingStoreException e) {
+            this.storage.save();
+        } catch (IOException e) {
             LOGGER.warn("Unable to persist state", e);
         }
         this.runningState = state;

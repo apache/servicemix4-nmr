@@ -29,6 +29,7 @@ import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.artifacts.AbstractLifecycleJbiArtifact.State;
 import org.apache.servicemix.jbi.deployer.descriptor.DescriptorFactory;
 import org.apache.servicemix.jbi.deployer.descriptor.ServiceAssemblyDesc;
+import org.apache.servicemix.jbi.deployer.impl.Storage;
 import org.apache.servicemix.nmr.api.Wire;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
@@ -43,16 +44,16 @@ public class ServiceAssemblyImplTest extends TestCase {
 
     public void testStartAssemblyWithStoppedComponents() throws Exception {
         ServiceAssemblyDesc descriptor = DescriptorFactory.buildDescriptor(DescriptorFactory.class.getResource("serviceAssembly.xml")).getServiceAssembly();
-        final Preferences prefs = createMock(Preferences.class);
-        expect(prefs.get("state", State.Shutdown.name())).andReturn(State.Shutdown.name()).anyTimes();
-        replay(prefs);
+        final Storage storage = createMock(Storage.class);
+        expect(storage.get("state", State.Shutdown.name())).andReturn(State.Shutdown.name()).anyTimes();
+        replay(storage);
         final Component component = createMock(Component.class);
         replay(component);
 
-        ComponentImpl comp = new ComponentImpl(null, null, component, prefs, false, null);
+        ComponentImpl comp = new ComponentImpl(null, null, component, storage, false, null);
         comp.state = State.Shutdown;
         ServiceUnitImpl su = new ServiceUnitImpl(descriptor.getServiceUnits()[0], null, comp);
-        ServiceAssemblyImpl sa = new ServiceAssemblyImpl(null, descriptor, Collections.singletonList(su), prefs, new AssemblyReferencesListener(), false);
+        ServiceAssemblyImpl sa = new ServiceAssemblyImpl(null, descriptor, Collections.singletonList(su), storage, new AssemblyReferencesListener(), false);
         sa.state = State.Shutdown;
         
         try {
@@ -65,16 +66,16 @@ public class ServiceAssemblyImplTest extends TestCase {
     
     public void testWiringOnServiceAssemblyConnections() throws Exception {
         ServiceAssemblyDesc descriptor = DescriptorFactory.buildDescriptor(DescriptorFactory.class.getResource("serviceAssembly.xml")).getServiceAssembly();
-        final Preferences prefs = createMock(Preferences.class);
-        expect(prefs.get("state", State.Shutdown.name())).andReturn(State.Shutdown.name());
-        prefs.put("state", State.Started.name());
-        prefs.flush();
-        prefs.put("state", State.Stopped.name());
-        prefs.flush();
-        replay(prefs);
+        final Storage storage = createMock(Storage.class);
+        expect(storage.get("state", State.Shutdown.name())).andReturn(State.Shutdown.name());
+        storage.put("state", State.Started.name());
+        storage.save();
+        storage.put("state", State.Stopped.name());
+        storage.save();
+        replay(storage);
 
         final List<ServiceRegistration> wires = new LinkedList<ServiceRegistration>();
-        ServiceAssembly sa = new ServiceAssemblyImpl(null, descriptor, new ArrayList<ServiceUnitImpl>(), prefs, new AssemblyReferencesListener(), false) {
+        ServiceAssembly sa = new ServiceAssemblyImpl(null, descriptor, new ArrayList<ServiceUnitImpl>(), storage, new AssemblyReferencesListener(), false) {
             @Override
             protected ServiceRegistration registerWire(Wire wire) {
                 ServiceRegistration registration = createMock(ServiceRegistration.class);

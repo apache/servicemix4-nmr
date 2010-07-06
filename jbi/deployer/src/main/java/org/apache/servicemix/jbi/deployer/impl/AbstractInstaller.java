@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Enumeration;
-
 import javax.jbi.JBIException;
 import javax.management.ObjectName;
 
@@ -37,8 +36,6 @@ import org.apache.servicemix.jbi.deployer.utils.FileUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
-import org.osgi.service.prefs.BackingStoreException;
-import org.osgi.service.prefs.Preferences;
 
 /**
  * Installers are used to controll the installation / deployment process of JBI artifacts
@@ -84,23 +81,23 @@ public abstract class AbstractInstaller {
     public abstract String getName();
 
     public void init() throws Exception {
-        Preferences prefs = getPreferences();
-        long lastInstall = prefs.getLong(LAST_INSTALL, 0);
+        Storage storage = getStorage();
+        long lastInstall = Long.parseLong(storage.get(LAST_INSTALL, "0"));
         isFirstInstall = lastInstall == 0; 
         isModified = lastInstall == 0 || getBundle().getLastModified() > lastInstall;
         if (isModified && installRoot != null) {
             extractBundle(installRoot, getBundle(), "/");
             lastInstall = getBundle().getLastModified();
-            prefs.put(AbstractLifecycleJbiArtifact.STATE, isAutoStart()
+            storage.put(AbstractLifecycleJbiArtifact.STATE, isAutoStart()
                             ? AbstractLifecycleJbiArtifact.State.Started.name()
                             : AbstractLifecycleJbiArtifact.State.Shutdown.name());
         }
     }
 
     protected void postInstall() throws Exception {
-        Preferences prefs = getPreferences();
-        prefs.putLong(LAST_INSTALL, getBundle().getLastModified());
-        prefs.flush();
+        Storage prefs = getStorage();
+        prefs.put(LAST_INSTALL, Long.toString(getBundle().getLastModified()));
+        prefs.save();
     }
 
     public abstract ObjectName install() throws JBIException;
@@ -150,14 +147,14 @@ public abstract class AbstractInstaller {
         return new File(base, "data/generated-bundles");
     }
 
-    protected Preferences getPreferences() {
-        return deployer.getPreferencesService().getUserPreferences(getName());
+    protected Storage getStorage() {
+        return deployer.getStorage(getName());
     }
 
-    protected void deletePreferences() throws BackingStoreException {
-        Preferences prefs = getPreferences();
-        prefs.clear();
-        prefs.flush();
+    protected void deleteStorage() throws IOException {
+        Storage storage = getStorage();
+        storage.clear();
+        storage.save();
     }
 
     public boolean isAutoStart() {

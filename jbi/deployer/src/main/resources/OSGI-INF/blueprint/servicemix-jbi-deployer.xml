@@ -28,7 +28,6 @@
         <property name="environment" ref="environment" />
         <property name="managementStrategy" ref="managementStrategy" />
         <property name="mbeanServer" ref="mbeanServer" />
-        <property name="preferencesService" ref="preferencesService" />
         <property name="shutdownTimeout" value="${shutdownTimeout}" />
         <property name="bundleContext" ref="blueprintBundleContext"/>
     </bean>
@@ -103,10 +102,6 @@
     <reference id="mbeanServer"
                interface="javax.management.MBeanServer"
                availability="mandatory" />
-
-    <!-- Preferences Service -->
-    <reference id="preferencesService"
-               interface="org.osgi.service.prefs.PreferencesService" />
 
     <cm:property-placeholder persistent-id="org.apache.servicemix.jbi">
         <cm:default-properties>
