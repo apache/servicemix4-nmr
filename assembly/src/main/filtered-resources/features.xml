@@ -20,8 +20,8 @@
     <feature name="naming" version="${version}">
         <bundle>mvn:org.apache.servicemix.naming/org.apache.servicemix.naming/${pom.version}</bundle>
     </feature>
-    <feature name="transaction" version="${version}">
-        <bundle>mvn:org.apache.servicemix.transaction/org.apache.servicemix.transaction/${version}</bundle>
+    <feature name="transaction" version="${aries.transaction.version}">
+        <bundle>mvn:org.apache.aries.transaction/org.apache.aries.transaction.manager/${aries.transaction.version}</bundle>
     </feature>
     <feature name="document" version="${version}">
         <bundle>mvn:org.apache.servicemix.document/org.apache.servicemix.document/${pom.version}</bundle>
