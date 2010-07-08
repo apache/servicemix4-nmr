@@ -108,6 +108,8 @@ public class AbstractIntegrationTest extends AbstractConfigurableBundleCreatorTe
             getBundle("org.springframework", "spring-context"),
             getBundle("org.springframework", "spring-aop"),
             getBundle("org.springframework", "spring-test"),
+            getBundle("org.springframework", "spring-asm"),
+            getBundle("org.springframework", "spring-expression"),
             getBundle("org.springframework.osgi", "spring-osgi-core"),
             getBundle("org.springframework.osgi", "spring-osgi-io"),
             getBundle("org.springframework.osgi", "spring-osgi-extender"),
