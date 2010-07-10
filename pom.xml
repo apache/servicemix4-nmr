@@ -76,6 +76,8 @@
 
 
   <properties>
+      <eclipse.output.directory>${basedir}/eclipse-classes</eclipse.output.directory>
+
       <activemq.version>5.3.2</activemq.version>
       <ant.version>1.7.0_3</ant.version>
       <aopalliance.version>1.0_3</aopalliance.version>
@@ -785,9 +787,9 @@
             <plugin>
               <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-eclipse-plugin</artifactId>
-              <version>2.4</version>
+              <version>2.6</version>
               <configuration>
-                <outputDirectory>${basedir}/eclipse-classes</outputDirectory>
+                <outputDirectory>${eclipse.output.directory}</outputDirectory>
                 <downloadSources>true</downloadSources>
                 <downloadJavadocs>true</downloadJavadocs>
               </configuration>
