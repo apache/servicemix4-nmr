@@ -24,11 +24,11 @@ package org.apache.servicemix.nmr.core.util;
 import java.util.Enumeration;
 import java.util.Iterator;
 
-public class IteratorToEnumeration implements Enumeration {
+public class IteratorToEnumeration<V> implements Enumeration<V> {
 
-    private final Iterator m_iter;
+    private final Iterator<V> m_iter;
 
-    public IteratorToEnumeration(Iterator iter) {
+    public IteratorToEnumeration(Iterator<V> iter) {
         if (iter == null) {
             throw new IllegalArgumentException("Source iterator must not be null");
         }
@@ -39,7 +39,7 @@ public class IteratorToEnumeration implements Enumeration {
         return m_iter.hasNext();
     }
 
-    public Object nextElement() {
+    public V nextElement() {
         return m_iter.next();
     }
 }

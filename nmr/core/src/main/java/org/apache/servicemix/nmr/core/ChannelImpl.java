@@ -217,12 +217,6 @@ public class ChannelImpl implements InternalChannel {
                 public boolean shouldRunSynchronously() {
                     return shouldRunSynchronously;
                 }
-                public boolean cantBlock() {
-                    return false;
-                }
-                public boolean isLongRunning() {
-                    return false;
-                }
             });
         } catch (RejectedExecutionException e) {
             if (closed.get()) {

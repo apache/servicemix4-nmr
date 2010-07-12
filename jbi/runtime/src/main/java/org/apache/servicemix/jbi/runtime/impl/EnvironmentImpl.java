@@ -97,7 +97,7 @@ public class EnvironmentImpl implements Environment {
         return namingContexts;
     }
 
-    public void setNamingContexts(List namingContexts) {
+    public void setNamingContexts(List<InitialContext> namingContexts) {
         this.namingContexts = namingContexts;
     }
 }

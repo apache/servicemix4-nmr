@@ -36,6 +36,7 @@ public class FileAuditorTest extends AbstractAuditorTest {
 
     public void testFileAuditor() throws Exception {
         ReceiverEndpoint receiver = createReceiver(nmr, false, false);
+        assertNotNull(receiver);
 
         FileAuditor auditor = new FileAuditor();
         auditor.setDirectory(DIRECTORY);

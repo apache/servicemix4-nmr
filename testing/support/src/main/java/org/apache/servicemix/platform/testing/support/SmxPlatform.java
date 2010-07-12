@@ -146,16 +146,16 @@ public class SmxPlatform implements OsgiPlatform {
         Bundle systemBundle = (Bundle) platform;
 
         // call getBundleContext
-        final Method getContext = systemBundle.getClass().getMethod("getBundleContext", null);
+        final Method getContext = systemBundle.getClass().getMethod("getBundleContext");
 
-        AccessController.doPrivileged(new PrivilegedAction() {
+        AccessController.doPrivileged(new PrivilegedAction<Object>() {
 
             public Object run() {
                 getContext.setAccessible(true);
                 return null;
             }
         });
-        context = (BundleContext) getContext.invoke(systemBundle, null);
+        context = (BundleContext) getContext.invoke(systemBundle);
     }
 
     public void stop() throws Exception {
@@ -398,6 +398,7 @@ public class SmxPlatform implements OsgiPlatform {
             */
         }
 
+        @SuppressWarnings("unchecked")
         public Enumeration<URL> getResources(final String name) throws IOException {
             //System.err.println("GetResources: " + name);
             Enumeration[] tmp = new Enumeration[2];

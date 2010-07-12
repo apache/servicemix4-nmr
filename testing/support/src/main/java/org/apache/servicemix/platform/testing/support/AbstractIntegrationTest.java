@@ -204,6 +204,7 @@ public class AbstractIntegrationTest extends AbstractConfigurableBundleCreatorTe
         final List<T> services = new ArrayList<T>();
 
         ServiceListener listener = new ServiceListener() {
+            @SuppressWarnings("unchecked")
             public void serviceChanged(ServiceEvent event) {
                 if (event.getType() == ServiceEvent.REGISTERED) {
                     services.add((T) bundleContext.getService(event.getServiceReference()));

@@ -68,7 +68,8 @@ public class IntegrationTest extends TestCase {
         ep.setTarget(new ExchangeTarget());
         ep.getTarget().setService(new QName("target"));
         eip.setEndpoints(new EIPEndpoint[] { ep });
-        eip.init(new ComponentContextImpl(reg, new SimpleComponentWrapper(eip), new HashMap()));
+        eip.init(new ComponentContextImpl(reg, new SimpleComponentWrapper(eip),
+                                          new HashMap<String, Object>()));
         eip.getLifeCycle().start();
 
         Channel channel = smx.createChannel();

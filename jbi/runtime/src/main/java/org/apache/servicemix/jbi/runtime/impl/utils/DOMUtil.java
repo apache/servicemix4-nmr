@@ -53,7 +53,7 @@ public final class DOMUtil {
     
     private static final Log LOG = LogFactory.getLog(DOMUtil.class);
     private static DocumentBuilderFactory dbf;
-    private static Queue builders = new ConcurrentLinkedQueue();
+    private static Queue<DocumentBuilder> builders = new ConcurrentLinkedQueue<DocumentBuilder>();
 
     
     private DOMUtil() {

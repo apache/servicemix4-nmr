@@ -36,6 +36,7 @@ public class ListenerRegistryImpl extends ServiceRegistryImpl<Listener> implemen
      */
     public <T extends Listener> Iterable<T> getListeners(final Class<T> type) {
         return new Iterable<T>() {
+            @SuppressWarnings("unchecked")
             public Iterator<T> iterator() {
                 return new FilterIterator(getServices().iterator(), new Filter() {
                     public boolean match(Object endpoint) {

@@ -18,6 +18,7 @@ package org.apache.servicemix.document.impl.blueprint;
 
 import java.net.URL;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
@@ -61,9 +62,7 @@ public class NamespaceHandler implements org.apache.aries.blueprint.NamespaceHan
     }
 
     public Set<Class> getManagedClasses() {
-        return new HashSet<Class>(Arrays.asList(
-                        BlueprintDocumentFactory.class
-        ));
+        return new HashSet<Class>(Collections.singletonList(BlueprintDocumentFactory.class));
     }
 
     public Metadata parse(Element element, ParserContext context) {

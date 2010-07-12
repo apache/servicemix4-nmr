@@ -119,7 +119,7 @@ public class InstallationContextImpl implements InstallationContext, ComponentCo
      * @return a list of String objects, each of which contains a class path elements. The list must contain at least
      *         one class path element.
      */
-    public List getClassPathElements() {
+    public List<String> getClassPathElements() {
         return classPathElements;
     }
 
@@ -212,12 +212,15 @@ public class InstallationContextImpl implements InstallationContext, ComponentCo
         if (classPathElements.isEmpty()) {
             throw new IllegalArgumentException("classPathElements is empty");
         }
+        List<String> tmp = new ArrayList<String>(classPathElements.size());
         for (Iterator iter = classPathElements.iterator(); iter.hasNext();) {
             Object obj = iter.next();
             if (!(obj instanceof String)) {
                 throw new IllegalArgumentException("classPathElements must contain element of type String");
             }
+            
             String element = (String) obj;
+            tmp.add(element);
             String sep = "\\".equals(File.separator) ? "/" : "\\";
             int offset = element.indexOf(sep);
             if (offset > -1) {
@@ -228,7 +231,7 @@ public class InstallationContextImpl implements InstallationContext, ComponentCo
                 throw new IllegalArgumentException("classPathElements should not contain absolute paths");
             }
         }
-        this.classPathElements = new ArrayList<String>(classPathElements);
+        this.classPathElements = tmp;
     }
 
     public ServiceEndpoint activateEndpoint(QName serviceName, String endpointName) throws JBIException {

@@ -44,7 +44,6 @@ public class MessageImpl implements Message {
     private Subject securitySubject;
     private Map<String, Object> headers;
     private Map<String, Object> attachments;
-    private static transient Converter converter;
 
     public MessageImpl() {
     }

@@ -29,12 +29,13 @@ import java.util.Map;
  * This is a simple class that implements a <tt>Dictionary</tt>
  * from a <tt>Map</tt>. The resulting dictionary is immutatable.
  */
-public class MapToDictionary extends Dictionary {
+public class MapToDictionary<K, V> extends Dictionary<K, V> {
     /**
      * Map source.
      */
-    private final Map m_map;
+    private final Map<K, V> m_map;
 
+    @SuppressWarnings("unchecked")
     public MapToDictionary(Map map) {
         if (map == null) {
             throw new IllegalArgumentException("Source map cannot be null.");
@@ -42,11 +43,11 @@ public class MapToDictionary extends Dictionary {
         m_map = map;
     }
 
-    public Enumeration elements() {
-        return new IteratorToEnumeration(m_map.values().iterator());
+    public Enumeration<V> elements() {
+        return new IteratorToEnumeration<V>(m_map.values().iterator());
     }
 
-    public Object get(Object key) {
+    public V get(Object key) {
         return m_map.get(key);
     }
 
@@ -54,15 +55,15 @@ public class MapToDictionary extends Dictionary {
         return m_map.isEmpty();
     }
 
-    public Enumeration keys() {
-        return new IteratorToEnumeration(m_map.keySet().iterator());
+    public Enumeration<K> keys() {
+        return new IteratorToEnumeration<K>(m_map.keySet().iterator());
     }
 
-    public Object put(Object key, Object value) {
+    public V put(K key, V value) {
         throw new UnsupportedOperationException();
     }
 
-    public Object remove(Object key) {
+    public V remove(Object key) {
         throw new UnsupportedOperationException();
     }
 

@@ -57,6 +57,7 @@ public class LuceneAuditorTest extends AbstractAuditorTest {
 
     public void testInsertUpdate() throws Exception {
         AbstractAuditorTest.ReceiverEndpoint receiver = createReceiver(nmr, false, false);
+        assertNotNull(receiver);
 
         JdbcAuditor jdbcAuditor = new JdbcAuditor();
         jdbcAuditor.setDataSource(dataSource);

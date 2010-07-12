@@ -155,7 +155,7 @@ public class URIResolverTest extends TestCase {
 
     public void testSplit2Bad() {
         try {
-            String[] parts = URIResolver.split2("urn");
+            URIResolver.split2("urn");
             fail();
         } catch (IllegalArgumentException e) {
             // ok
@@ -200,13 +200,13 @@ public class URIResolverTest extends TestCase {
 
     public void testSplit3Bad() {
         try {
-            String[] parts = URIResolver.split3("urn");
+            URIResolver.split3("urn");
             fail();
         } catch (IllegalArgumentException e) {
             // ok
         }
         try {
-            String[] parts = URIResolver.split3("urn:test");
+            URIResolver.split3("urn:test");
             fail();
         } catch (IllegalArgumentException e) {
             // ok

@@ -23,15 +23,10 @@ public class PipelineEndpoint implements Endpoint {
 
     private Channel channel;
 
-    private Reference transformer;
     private Reference target;
 
     public void setChannel(Channel channel) {
         this.channel = channel;
-    }
-
-    public void setTransformer(Reference transformer) {
-        this.transformer = transformer;
     }
 
     public void setTarget(Reference target) {

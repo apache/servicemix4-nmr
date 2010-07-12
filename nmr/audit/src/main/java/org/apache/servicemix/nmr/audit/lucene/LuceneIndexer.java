@@ -23,6 +23,7 @@ import org.apache.lucene.analysis.SimpleAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.IndexWriter.MaxFieldLength;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
@@ -40,8 +41,6 @@ public class LuceneIndexer {
 
     protected Directory directory;
 
-    private File segmentFile;
-
     public LuceneIndexer() {
         IndexWriter.setDefaultWriteLockTimeout(Lock.LOCK_OBTAIN_WAIT_FOREVER);
     }
@@ -55,8 +54,15 @@ public class LuceneIndexer {
     }
 
     public void setDirectoryName(File directoryName) throws IOException {
-        this.segmentFile = new File(directoryName, "segments");
-        this.directory = FSDirectory.getDirectory(directoryName.toString(), !this.segmentFile.exists());
+        File segmentFile = new File(directoryName, "segments");
+        
+        this.directory = FSDirectory.getDirectory(directoryName, null);
+        if (!segmentFile.exists()) {
+            IndexWriter iw = new IndexWriter(this.directory, new SimpleAnalyzer(),
+                                             true, IndexWriter.MaxFieldLength.UNLIMITED);
+            iw.commit();
+            iw.close();
+        }
     }
 
     /**

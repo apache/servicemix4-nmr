@@ -44,7 +44,6 @@ public class UserPrincipalTest extends TestCase {
         assertEquals(p1.hashCode(), p2.hashCode());
     }
 
-    @SuppressWarnings("PMD.PositionLiteralsFirstInComparisons")
     public void testEquals() {
         UserPrincipal p1 = new UserPrincipal("FOO");
         UserPrincipal p2 = new UserPrincipal("FOO");

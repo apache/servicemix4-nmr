@@ -49,7 +49,8 @@ public class JdbcAuditorTest extends AbstractAuditorTest {
 
     public void testInsertUpdate() throws Exception {
         AbstractAuditorTest.ReceiverEndpoint receiver = createReceiver(nmr, false, false);
-
+        assertNotNull(receiver);
+        
         JdbcAuditor auditor = new JdbcAuditor();
         auditor.setDataSource(dataSource);
         auditor.afterPropertiesSet();

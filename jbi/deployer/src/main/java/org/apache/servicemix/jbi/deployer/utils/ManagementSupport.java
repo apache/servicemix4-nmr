@@ -159,7 +159,7 @@ public final class ManagementSupport {
         return failure(task, info, null, null);
     }
 
-    public static RuntimeException failure(String task, List componentResults) {
+    public static RuntimeException failure(String task, List<Element> componentResults) {
         return failure(task, null, null, componentResults);
     }
 

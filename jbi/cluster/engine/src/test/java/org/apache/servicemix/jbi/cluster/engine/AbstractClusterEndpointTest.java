@@ -215,6 +215,7 @@ public abstract class AbstractClusterEndpointTest extends AutoFailTestSupport {
         }
 
         public void process(Exchange exchange) {
+            @SuppressWarnings("unchecked")
             Holder<Exchange> holder = (Holder<Exchange>) exchange.getProperty("correlated");
             Exchange correlated = holder != null ? holder.get() : null;
             if (exchange.getStatus() == Status.Error) {

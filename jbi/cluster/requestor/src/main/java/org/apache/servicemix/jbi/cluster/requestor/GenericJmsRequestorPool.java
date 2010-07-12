@@ -45,7 +45,8 @@ public class GenericJmsRequestorPool extends AbstractPollingRequestorPool {
 
     private int idleTaskExecutionLimit = 1;
 
-    private final Set scheduledInvokers = new HashSet();
+    private final Set<AsyncMessageListenerInvoker> scheduledInvokers 
+        = new HashSet<AsyncMessageListenerInvoker>();
 
     private int activeInvokerCount = 0;
 

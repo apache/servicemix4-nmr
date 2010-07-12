@@ -38,7 +38,7 @@ public class InstallComponentTask extends JbiTask {
 
     private String paramsFile;
 
-    private List nestedParams;
+    private List<Param> nestedParams;
 
     private boolean deferExceptions;
 
@@ -75,7 +75,7 @@ public class InstallComponentTask extends JbiTask {
     public Param createParam() {
         Param p = new Param();
         if (nestedParams == null) {
-            nestedParams = new ArrayList();
+            nestedParams = new ArrayList<Param>();
         }
         nestedParams.add(p);
         return p;

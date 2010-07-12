@@ -23,6 +23,7 @@ import javax.naming.directory.Attributes;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.ModificationItem;
 import javax.naming.directory.SearchControls;
+import javax.naming.directory.SearchResult;
 import javax.naming.spi.NamingManager;
 
 /**
@@ -327,35 +328,35 @@ public class InitialContextWrapper implements DirContext {
         return ((DirContext)findContext(name)).getSchemaClassDefinition(name);
     }
 
-    public NamingEnumeration search(Name name, Attributes matchingAttributes, String[] attributesToReturn) throws NamingException {
+    public NamingEnumeration<SearchResult> search(Name name, Attributes matchingAttributes, String[] attributesToReturn) throws NamingException {
         return ((DirContext)findContext(name)).search(name, matchingAttributes, attributesToReturn);
     }
 
-    public NamingEnumeration search(String name, Attributes matchingAttributes, String[] attributesToReturn) throws NamingException {
+    public NamingEnumeration<SearchResult> search(String name, Attributes matchingAttributes, String[] attributesToReturn) throws NamingException {
         return ((DirContext)findContext(name)).search(name, matchingAttributes, attributesToReturn);
     }
 
-    public NamingEnumeration search(Name name, Attributes matchingAttributes) throws NamingException {
+    public NamingEnumeration<SearchResult> search(Name name, Attributes matchingAttributes) throws NamingException {
         return ((DirContext)findContext(name)).search(name, matchingAttributes);
     }
 
-    public NamingEnumeration search(String name, Attributes matchingAttributes) throws NamingException {
+    public NamingEnumeration<SearchResult> search(String name, Attributes matchingAttributes) throws NamingException {
         return ((DirContext)findContext(name)).search(name, matchingAttributes);
     }
 
-    public NamingEnumeration search(Name name, String filter, SearchControls cons) throws NamingException {
+    public NamingEnumeration<SearchResult> search(Name name, String filter, SearchControls cons) throws NamingException {
         return ((DirContext)findContext(name)).search(name, filter, cons);
     }
 
-    public NamingEnumeration search(String name, String filter, SearchControls cons) throws NamingException {
+    public NamingEnumeration<SearchResult> search(String name, String filter, SearchControls cons) throws NamingException {
         return ((DirContext)findContext(name)).search(name, filter, cons);
     }
 
-    public NamingEnumeration search(Name name, String filterExpr, Object[] filterArgs, SearchControls cons) throws NamingException {
+    public NamingEnumeration<SearchResult> search(Name name, String filterExpr, Object[] filterArgs, SearchControls cons) throws NamingException {
         return ((DirContext)findContext(name)).search(name, filterExpr, filterArgs, cons);
     }
 
-    public NamingEnumeration search(String name, String filterExpr, Object[] filterArgs, SearchControls cons) throws NamingException {
+    public NamingEnumeration<SearchResult> search(String name, String filterExpr, Object[] filterArgs, SearchControls cons) throws NamingException {
         return ((DirContext)findContext(name)).search(name, filterExpr, filterArgs, cons);
     }
 }

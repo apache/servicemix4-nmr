@@ -33,7 +33,8 @@ public class InternalRegistryWrapper extends ServiceRegistryImpl<InternalEndpoin
                                      implements ServiceRegistry<InternalEndpoint> {
 
     private BundleContext bundleContext;
-    private Map<Endpoint, ServiceRegistration> registrations = new ConcurrentHashMap();
+    private Map<Endpoint, ServiceRegistration> registrations 
+        = new ConcurrentHashMap<Endpoint, ServiceRegistration>();
 
     public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;

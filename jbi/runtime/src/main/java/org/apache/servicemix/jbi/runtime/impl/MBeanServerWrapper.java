@@ -96,16 +96,19 @@ public class MBeanServerWrapper implements MBeanServer {
         return delegate.createMBean(className, name, loaderName, params, signature);
     }
 
+    @SuppressWarnings("deprecation")
     public ObjectInputStream deserialize(ObjectName name, byte[] data)
             throws InstanceNotFoundException, OperationsException {
         return delegate.deserialize(name, data);
     }
 
+    @SuppressWarnings("deprecation")
     public ObjectInputStream deserialize(String className, byte[] data)
             throws OperationsException, ReflectionException {
         return delegate.deserialize(className, data);
     }
 
+    @SuppressWarnings("deprecation")
     public ObjectInputStream deserialize(String className,
             ObjectName loaderName, byte[] data)
             throws InstanceNotFoundException, OperationsException,

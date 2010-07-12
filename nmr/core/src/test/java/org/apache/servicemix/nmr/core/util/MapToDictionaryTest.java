@@ -27,12 +27,12 @@ public class MapToDictionaryTest extends TestCase {
 
     public void testConstructorWithNullArgument() {
         try {
-            new MapToDictionary(null);
+            new MapToDictionary<String, String>(null);
             fail();
         } catch (IllegalArgumentException e) {
         }
         try {
-            new IteratorToEnumeration(null);
+            new IteratorToEnumeration<String>(null);
             fail();
         } catch (IllegalArgumentException e) {
         }
@@ -42,7 +42,7 @@ public class MapToDictionaryTest extends TestCase {
         Map<Integer, Boolean> map = new TreeMap<Integer, Boolean>();
         map.put(3, true);
         map.put(5, false);
-        Dictionary<Integer, Boolean> dic = new MapToDictionary(map);
+        Dictionary<Integer, Boolean> dic = new MapToDictionary<Integer, Boolean>(map);
         assertTrue(2 == dic.size());
         assertTrue(true == dic.get(3));
         assertTrue(false == dic.get(5));

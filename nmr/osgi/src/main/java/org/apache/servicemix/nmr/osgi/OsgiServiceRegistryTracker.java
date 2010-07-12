@@ -71,6 +71,7 @@ public class OsgiServiceRegistryTracker<T> implements ServiceTrackerCustomizer {
         tracker.close();
     }
 
+    @SuppressWarnings("unchecked")
     public Object addingService(ServiceReference reference) {
         T service = (T) bundleContext.getService(reference);
         Map properties = getServicePropertiesSnapshotAsMap(reference);
@@ -81,6 +82,7 @@ public class OsgiServiceRegistryTracker<T> implements ServiceTrackerCustomizer {
     public void modifiedService(ServiceReference reference, Object service) {
     }
 
+    @SuppressWarnings("unchecked")
     public void removedService(ServiceReference reference, Object service) {
         Map properties = getServicePropertiesSnapshotAsMap(reference);
         registry.unregister((T) service, properties);
@@ -98,7 +100,7 @@ public class OsgiServiceRegistryTracker<T> implements ServiceTrackerCustomizer {
      */
     public static Map getServicePropertiesSnapshotAsMap(ServiceReference reference) {
         String[] keys = reference.getPropertyKeys();
-        Map map = new LinkedHashMap(keys.length);
+        Map<String, Object> map = new LinkedHashMap<String, Object>(keys.length);
         for (int i = 0; i < keys.length; i++) {
             map.put(keys[i], reference.getProperty(keys[i]));
         }
