@@ -310,7 +310,8 @@ public class IntegrationTest extends AbstractIntegrationTest {
 			mavenBundle("org.apache.servicemix.nmr", "org.apache.servicemix.nmr.management"),
             mavenBundle("org.apache.servicemix.jbi", "org.apache.servicemix.jbi.runtime"),
             mavenBundle("org.apache.servicemix.jbi", "org.apache.servicemix.jbi.deployer"),
-            mavenBundle("org.apache.servicemix.jbi", "org.apache.servicemix.jbi.osgi")
+            mavenBundle("org.apache.servicemix.jbi", "org.apache.servicemix.jbi.osgi"),
+            mavenBundle("org.apache.servicemix", "servicemix-common")
         );
         return options;
     }
