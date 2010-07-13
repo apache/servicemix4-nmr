@@ -77,7 +77,12 @@
             <groupId>org.fusesource.commonman</groupId>
             <artifactId>commons-management</artifactId>
             <version>${commons.management.version}</version>
-        </dependency>
+        </dependency> 
+        <dependency>
+          <groupId>org.apache.servicemix</groupId>
+          <artifactId>servicemix-common</artifactId>
+      </dependency>
+
     </dependencies>
 
     <build>

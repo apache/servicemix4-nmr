@@ -34,7 +34,7 @@ import javax.management.MBeanServer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.deployer.Component;
-import org.apache.servicemix.jbi.deployer.DeployedAssembly;
+import org.apache.servicemix.common.osgi.DeployedAssembly;
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.SharedLibrary;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
@@ -252,8 +252,10 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
         deployedComponentsTracker.open();
         // Track deployed service assemblies
         deployedAssembliesTracker = new ServiceTracker(bundleContext, DeployedAssembly.class.getName(), null) {
+        	
             public Object addingService(ServiceReference serviceReference) {
-                Object o = super.addingService(serviceReference);
+            	Object o = super.addingService(serviceReference);
+                
                 registerDeployedServiceAssembly(serviceReference, (DeployedAssembly) o);
                 return o;
             }

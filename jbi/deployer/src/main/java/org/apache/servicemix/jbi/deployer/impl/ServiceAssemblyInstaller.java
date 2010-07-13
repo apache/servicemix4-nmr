@@ -26,9 +26,9 @@ import javax.jbi.JBIException;
 import javax.jbi.management.LifeCycleMBean;
 import javax.management.ObjectName;
 
+import org.apache.servicemix.common.osgi.DeployedAssembly;
 import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
-import org.apache.servicemix.jbi.deployer.DeployedAssembly;
 import org.apache.servicemix.jbi.deployer.artifacts.ComponentImpl;
 import org.apache.servicemix.jbi.deployer.artifacts.ServiceAssemblyImpl;
 import org.apache.servicemix.jbi.deployer.artifacts.ServiceUnitImpl;
