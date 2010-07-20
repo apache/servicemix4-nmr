@@ -22,12 +22,10 @@
            xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.0.0">
 
     <!-- JBI Deployer -->
-    <bean id="deployer" class="org.apache.servicemix.jbi.deployer.impl.Deployer" init-method="init" destroy-method="destroy">
+    <bean id="deployer" class="org.apache.servicemix.jbi.deployer.impl.Deployer" init-method="init" destroy-method="destroy" depends-on="managementStrategy">
         <property name="autoStart" value="true" />
         <property name="endpointListener" ref="endpointListener" />
         <property name="environment" ref="environment" />
-        <property name="managementStrategy" ref="managementStrategy" />
-        <property name="mbeanServer" ref="mbeanServer" />
         <property name="shutdownTimeout" value="${shutdownTimeout}" />
         <property name="bundleContext" ref="blueprintBundleContext"/>
     </bean>
@@ -77,31 +75,31 @@
     <!-- Expose AdminCommandsService in OSGi -->
     <service ref="adminCommandsService" interface="org.apache.servicemix.jbi.deployer.AdminCommandsService" />
 
-    <!-- Retrieve ManagementStrategy from OSGi service registry -->
-    <reference id="managementStrategy" interface="org.fusesource.commons.management.ManagementStrategy" />
-
     <!-- Environment -->
     <bean id="environment" class="org.apache.servicemix.jbi.runtime.impl.EnvironmentImpl">
-        <property name="transactionManagers" ref="transactionManagers" />
-        <property name="mbeanServer" ref="mbeanServer" />
-        <property name="namingContext" ref="namingContext" />
+        <property name="bundleContext" ref="blueprintBundleContext"/>
+        <property name="namingContext" ref="namingContext"/>
     </bean>
 
+    <!-- Retrieve ManagementStrategy from OSGi service registry -->
+    <reference id="managementStrategy" interface="org.fusesource.commons.management.ManagementStrategy">
+        <reference-listener ref="environment" bind-method="bindManagementStrategy" unbind-method="unbindManagementStrategy"/>
+    </reference>
+
+    <!-- Retrieve ManagementStrategy from OSGi service registry -->
+    <reference id="mbeanServer" interface="javax.management.MBeanServer">
+        <reference-listener ref="environment" bind-method="bindMBeanServer" unbind-method="unbindMBeanServer"/>
+    </reference>
+
     <!-- Reference to the Transaction Manager -->
-    <reference-list id="transactionManagers"
-                    interface="javax.transaction.TransactionManager"
-                    availability="optional"
-                    ext:proxy-method="greedy"/>
+    <reference id="transactionManager" interface="javax.transaction.TransactionManager" availability="optional">
+        <reference-listener ref="environment" bind-method="bindTransactionManager" unbind-method="unbindTransactionManager"/>
+    </reference>
 
     <!-- The InitialContext -->
     <bean id="namingContext" class="javax.naming.InitialContext">
         <argument><null/></argument>
     </bean>
-
-    <!-- MBeanServer -->
-    <reference id="mbeanServer"
-               interface="javax.management.MBeanServer"
-               availability="mandatory" />
 
     <cm:property-placeholder persistent-id="org.apache.servicemix.jbi">
         <cm:default-properties>

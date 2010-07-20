@@ -55,21 +55,15 @@ import org.apache.servicemix.nmr.management.Nameable;
 public class InstallationContextImpl implements InstallationContext, ComponentContext, MBeanNames {
 
     private ComponentDesc descriptor;
-    private ManagementStrategy managementStrategy;
-    private MBeanServer mbeanServer;
     private Environment environment;
     private File installRoot;
     private List<String> classPathElements = Collections.emptyList();
     private boolean install = true;
 
     public InstallationContextImpl(ComponentDesc descriptor,
-                                   Environment environment,
-                                   ManagementStrategy managementStrategy,
-                                   MBeanServer mbeanServer) {
+                                   Environment environment) {
         this.descriptor = descriptor;
         this.environment = environment;
-        this.managementStrategy = managementStrategy;
-        this.mbeanServer = mbeanServer;
         if (descriptor.getComponentClassPath() != null
                 && descriptor.getComponentClassPath().getPathElements() != null
                 && descriptor.getComponentClassPath().getPathElements().length > 0) {
@@ -296,44 +290,40 @@ public class InstallationContextImpl implements InstallationContext, ComponentCo
 
     public ObjectName createCustomComponentMBeanName(String customName) {
         ObjectName name = null;
-        if (managementStrategy != null) {
-            Nameable nameable = new Nameable() {
-                public String getName() {
-                    return descriptor.getIdentification().getName();
-                }                    
-                public String getParent() {
-                    return null;
-                }
-                public String getMainType() {
-                    return null;
-                }
-                public String getSubType() {
-                    return null;
-                }
-                public String getVersion() {
-                    return null;
-                }
-                public Class getPrimaryInterface() {
-                    return null;
-                }
-            };
-            try {
-                name = managementStrategy.getManagedObjectName(nameable, customName, ObjectName.class);
-            } catch (Exception e){
-                // ignore
+        Nameable nameable = new Nameable() {
+            public String getName() {
+                return descriptor.getIdentification().getName();
             }
+            public String getParent() {
+                return null;
+            }
+            public String getMainType() {
+                return null;
+            }
+            public String getSubType() {
+                return null;
+            }
+            public String getVersion() {
+                return null;
+            }
+            public Class getPrimaryInterface() {
+                return null;
+            }
+        };
+        try {
+            name = environment.getManagedObjectName(nameable, customName);
+        } catch (Exception e){
+            // ignore
         }
         return name;
     }
 
     public String getJmxDomainName() {
         String name = null;
-        if (managementStrategy != null) {
-            try {
-                name = managementStrategy.getManagedObjectName(null, null, String.class);
-            } catch (Exception e) {
-                // ignore
-            }
+        try {
+            name = environment.getJmxDomainName();
+        } catch (Exception e) {
+            // ignore
         }
         return name;
     }
@@ -385,7 +375,7 @@ public class InstallationContextImpl implements InstallationContext, ComponentCo
     }
 
     public MBeanServer getMBeanServer() {
-        return mbeanServer;
+        return environment.getMBeanServer();
     }
 
     public InitialContext getNamingContext() {

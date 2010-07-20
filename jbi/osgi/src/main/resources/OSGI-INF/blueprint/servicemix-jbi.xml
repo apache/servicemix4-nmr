@@ -28,21 +28,16 @@
     </type-converters>
 
     <!-- JBI Component Registry -->
-    <bean id="componentRegistry" class="org.apache.servicemix.jbi.runtime.impl.ComponentRegistryImpl">
+    <bean id="componentRegistry" class="org.apache.servicemix.jbi.runtime.impl.ComponentRegistryImpl" depends-on="managementStrategy">
         <property name="nmr" ref="nmrWrapper" />
         <property name="documentRepository" ref="documentRepository" />
-        <property name="managementStrategy" ref="managementStrategy" />
         <property name="environment" ref="environment" />
     </bean>
 
-    <!-- Retrieve ManagementStrategy from OSGi service registry -->
-    <reference id="managementStrategy" interface="org.fusesource.commons.management.ManagementStrategy" />
-
     <!-- Environment -->
     <bean id="environment" class="org.apache.servicemix.jbi.runtime.impl.EnvironmentImpl">
-        <property name="transactionManagers" ref="transactionManagers" />
-        <property name="mbeanServers" ref="mbeanServers" />
-        <property name="namingContext" ref="namingContext" />
+        <property name="bundleContext" ref="blueprintBundleContext"/>
+        <property name="namingContext" ref="namingContext"/>
     </bean>
 
     <bean id="nmrWrapper" class="org.apache.servicemix.jbi.osgi.NMRWrapper" init-method="init">
@@ -66,16 +61,21 @@
     <reference id="documentRepository"
                     interface="org.apache.servicemix.document.DocumentRepository" />
 
-    <!-- Reference to the Transaction Manager -->
-    <reference-list id="transactionManagers"
-                    interface="javax.transaction.TransactionManager"
-                    availability="optional"
-                    ext:proxy-method="greedy"/>
+    <!-- Retrieve ManagementStrategy from OSGi service registry -->
+    <reference id="managementStrategy" interface="org.fusesource.commons.management.ManagementStrategy">
+        <reference-listener ref="environment" bind-method="bindManagementStrategy" unbind-method="unbindManagementStrategy"/>
+    </reference>
 
-    <!-- Reference to the JMX server -->
-    <reference-list id="mbeanServers"
-                    interface="javax.management.MBeanServer"
-                    availability="optional"/>
+    <!-- Retrieve ManagementStrategy from OSGi service registry -->
+    <reference id="mbeanServer" interface="javax.management.MBeanServer">
+        <reference-listener ref="environment" bind-method="bindMBeanServer" unbind-method="unbindMBeanServer"/>
+    </reference>
+
+    <!-- Reference to the Transaction Manager -->
+    <reference id="transactionManager" interface="javax.transaction.TransactionManager" availability="optional">
+        <reference-listener ref="environment" bind-method="bindTransactionManager" unbind-method="unbindTransactionManager"/>
+    </reference>
+
 
     <!-- The InitialContext -->
     <bean id="namingContext" class="javax.naming.InitialContext">

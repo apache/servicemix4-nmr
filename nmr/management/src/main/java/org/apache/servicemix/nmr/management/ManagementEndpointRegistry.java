@@ -28,6 +28,9 @@ import org.apache.servicemix.nmr.api.event.ExchangeListener;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
 import org.apache.servicemix.nmr.api.internal.InternalExchange;
 import org.fusesource.commons.management.ManagementStrategy;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  */
@@ -35,43 +38,124 @@ public class ManagementEndpointRegistry implements ExchangeListener {
 
     private static final transient Log LOG = LogFactory.getLog(ManagementEndpointRegistry.class);
 
+    private BundleContext bundleContext;
     private ManagementStrategy managementStrategy;
-    private Map<String, ManagedEndpoint> endpoints;
+    private final Map<String, InternalEndpoint> internalEndpoints;
+    private final Map<String, ManagedEndpoint> endpoints;
+    private ServiceTracker managementStrategyTracker;
+    private ServiceTracker endpointTracker;
 
     public ManagementEndpointRegistry() {
         endpoints = new ConcurrentHashMap<String, ManagedEndpoint>();
+        internalEndpoints = new ConcurrentHashMap<String, InternalEndpoint>();
     }
 
-    public ManagementStrategy getManagementAgent() {
-        return managementStrategy;
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
     }
 
-    public void setManagementStrategy(ManagementStrategy managementStrategy) {
-        this.managementStrategy = managementStrategy;
+    public void init() {
+        if (bundleContext == null) {
+            throw new IllegalArgumentException("bundleContext must be set");
+        }
+        managementStrategyTracker = new ServiceTracker(bundleContext, ManagementStrategy.class.getName(), null) {
+            @Override
+            public Object addingService(ServiceReference reference) {
+                ManagementStrategy newMs = (ManagementStrategy) super.addingService(reference);
+                if (getService() == null) {
+                    bindManagementStrategy(newMs);
+                }
+                return newMs;
+            }
+
+            @Override
+            public void removedService(ServiceReference reference, Object service) {
+                ManagementStrategy newMs = (ManagementStrategy) getService();
+                bindManagementStrategy(newMs);
+                super.removedService(reference, service);
+            }
+        };
+        managementStrategyTracker.open();
+        endpointTracker = new ServiceTracker(bundleContext, InternalEndpoint.class.getName(), null) {
+            @Override
+            public Object addingService(ServiceReference reference) {
+                InternalEndpoint endpoint = (InternalEndpoint) super.addingService(reference);
+                register(endpoint);
+                return endpoint;
+            }
+
+            @Override
+            public void removedService(ServiceReference reference, Object service) {
+                InternalEndpoint endpoint = (InternalEndpoint) service;
+                unregister(endpoint);
+                super.removedService(reference, service);
+            }
+        };
+        endpointTracker.open();
     }
 
-    public void register(InternalEndpoint endpoint, Map<String, ?> properties) {
-        try {
-            LOG.info("Registering endpoint: " + endpoint + " with properties " + properties);
-            ManagedEndpoint ep = new ManagedEndpoint(endpoint, properties, managementStrategy);
-            endpoints.put(endpoint.getId(), ep);
-            managementStrategy.manageObject(ep);
-        } catch (Exception e) {
-            LOG.warn("Unable to register managed endpoint: " + e, e);
+    public void destroy() {
+        unregisterAll();
+        managementStrategyTracker.close();
+        endpointTracker.close();
+    }
+
+    public void bindManagementStrategy(ManagementStrategy ms) {
+        LOG.debug("Using new management strategy: " + ms);
+        unregisterAll();
+        managementStrategy = ms;
+        registerAll();
+    }
+
+    protected void registerAll() {
+        if (managementStrategy != null) {
+            for (String id : internalEndpoints.keySet()) {
+                registerEndpoint(internalEndpoints.get(id));
+            }
         }
     }
 
-    public void unregister(InternalEndpoint endpoint, Map<String, ?> properties) {
-        if (endpoint ==  null) {
-            return;
+    protected void unregisterAll() {
+        if (managementStrategy != null) {
+            for (String id : internalEndpoints.keySet()) {
+                unregisterEndpoint(internalEndpoints.get(id));
+            }
         }
-        try {
-            LOG.info("Unregistering endpoint: " + endpoint + " with properties " + properties);
-            ManagedEndpoint ep = endpoints.remove(endpoint.getId());
-            managementStrategy.unmanageObject(ep);
-        } catch (Exception e) {
-            LOG.warn("Unable to unregister managed endpoint: " + e, e);
+    }
+
+    protected void registerEndpoint(InternalEndpoint iep) {
+        if (managementStrategy != null) {
+            try {
+                LOG.info("Registering endpoint: " + iep + " with properties " + iep.getMetaData());
+                ManagedEndpoint ep = new ManagedEndpoint(iep, managementStrategy);
+                endpoints.put(iep.getId(), ep);
+                managementStrategy.manageObject(ep);
+            } catch (Exception e) {
+                LOG.warn("Unable to register managed endpoint: " + e, e);
+            }
         }
+    }
+
+    private void unregisterEndpoint(InternalEndpoint iep) {
+        if (managementStrategy != null) {
+            try {
+                LOG.info("Unregistering endpoint: " + iep + " with properties " + iep.getMetaData());
+                ManagedEndpoint ep = endpoints.remove(iep.getId());
+                managementStrategy.unmanageObject(ep);
+            } catch (Exception e) {
+                LOG.warn("Unable to unregister managed endpoint: " + e, e);
+            }
+        }
+    }
+
+    public void register(InternalEndpoint endpoint) {
+        internalEndpoints.put(endpoint.getId(), endpoint);
+        registerEndpoint(endpoint);
+    }
+
+    public void unregister(InternalEndpoint endpoint) {
+        internalEndpoints.remove(endpoint.getId());
+        unregisterEndpoint(endpoint);
     }
 
     public void exchangeSent(Exchange exchange) {
@@ -138,9 +222,4 @@ public class ManagementEndpointRegistry implements ExchangeListener {
         }
     }
 
-    public void afterPropertiesSet() throws Exception {
-        if (managementStrategy == null) {
-            throw new IllegalArgumentException("managementStrategy must not be null");
-        }
-    }
 }

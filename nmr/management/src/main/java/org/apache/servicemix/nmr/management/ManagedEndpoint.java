@@ -34,7 +34,6 @@ import org.fusesource.commons.management.Statistic.UpdateMode;
 public class ManagedEndpoint extends StandardMBean implements ManagedEndpointMBean {
 
     protected final InternalEndpoint endpoint;
-    protected final Map<String,?> properties;
     protected final Statistic inboundExchanges;
     protected final Statistic outboundExchanges;
     protected final Statistic inboundExchangeRate;
@@ -42,11 +41,9 @@ public class ManagedEndpoint extends StandardMBean implements ManagedEndpointMBe
     protected final ManagementStrategy managementStrategy;
 
     public ManagedEndpoint(InternalEndpoint endpoint, 
-                           Map<String,?> properties, 
                            ManagementStrategy managementStrategy) throws NotCompliantMBeanException {
         super(ManagedEndpointMBean.class);
         this.endpoint = endpoint;
-        this.properties = new HashMap<String,Object>(properties);
         this.managementStrategy = managementStrategy;
         this.inboundExchanges = managementStrategy.createStatistic("inboundExchanges", 
                                                                    this, 
@@ -82,7 +79,7 @@ public class ManagedEndpoint extends StandardMBean implements ManagedEndpointMBe
      * @return the name of the endpoint
      */
     public String getName() {
-        return (String) properties.get(Endpoint.NAME);
+        return (String) getProperties().get(Endpoint.NAME);
     }
 
     /**
@@ -91,7 +88,7 @@ public class ManagedEndpoint extends StandardMBean implements ManagedEndpointMBe
      * @return the properties of the endpoint
      */
     public Map<String, ?> getProperties() {
-        return properties;
+        return endpoint.getMetaData();
     }
 
     /**

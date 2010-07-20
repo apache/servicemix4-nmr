@@ -113,14 +113,10 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
     
     private int shutdownTimeout;
 
-    // Helper beans
-    private ManagementStrategy managementStrategy;
     private Environment environment;
 
     private ListenerRegistry listenerRegistry;
     
-    private MBeanServer mbeanServer;
-
     private Storage storage;
 
     public Deployer() throws JBIException {
@@ -154,22 +150,6 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
 
     public AssemblyReferencesListener getEndpointListener() {
         return endpointListener;
-    }
-
-    public ManagementStrategy getManagementStrategy() {
-        return managementStrategy;
-    }
-
-    public void setManagementStrategy(ManagementStrategy managementStrategy) {
-        this.managementStrategy = managementStrategy;
-    }
-    
-    public MBeanServer getMbeanServer() {
-        return mbeanServer;
-    }
-
-    public void setMbeanServer(MBeanServer mbeanServer) {
-        this.mbeanServer = mbeanServer;
     }
 
     public void setEnvironment(Environment environment) {
@@ -414,8 +394,8 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
         props.put(NAME, sharedLibraryDesc.getIdentification().getName());
         LOGGER.debug("Registering JBI Shared Library");
         registerService(bundle, SharedLibrary.class.getName(), sl, props);
-        if (!getManagementStrategy().isManaged(sl, null)) {
-        	getManagementStrategy().manageObject(sl);
+        if (!getEnvironment().isManaged(sl)) {
+        	getEnvironment().manageObject(sl);
         }
         // Check pending bundles
         checkPendingInstallers();
@@ -442,8 +422,8 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
         if (!wrappedComponents.containsKey(name)) {
             registerService(bundle, javax.jbi.component.Component.class.getName(), innerComponent, props);
         }
-        if (!getManagementStrategy().isManaged(component, null)) {
-        	getManagementStrategy().manageObject(component);
+        if (!getEnvironment().isManaged(component)) {
+        	getEnvironment().manageObject(component);
         }
         return component;
     }
@@ -463,9 +443,9 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
         // register the service assembly in the OSGi registry
         LOGGER.debug("Registering JBI service assembly");
         registerService(bundle, ServiceAssembly.class.getName(), sa, props);
-        if (!getManagementStrategy().isManaged(sa, null)) {
+        if (!getEnvironment().isManaged(sa)) {
         	//check if this SA is managed, this is the case that restart SA bundle
-        	getManagementStrategy().manageObject(sa);
+        	getEnvironment().manageObject(sa);
         }
         return sa;
     }
@@ -508,7 +488,7 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
             }
             components.remove(component.getName());
             try {
-				getManagementStrategy().unmanageObject(component);
+				getEnvironment().unmanageObject(component);
 			} catch (Exception e) {
 				LOGGER.error("Error unmanage component: " + component.getName(), e);
 			}
@@ -521,7 +501,7 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
             pendingAssemblies.remove(assembly);
             unregisterServices(assembly.getBundle());
             try {
-				getManagementStrategy().unmanageObject(assembly);
+				getEnvironment().unmanageObject(assembly);
 			} catch (Exception e) {
 				LOGGER.error("Error unmanage service assembly: " + assembly.getName(), e);
 			}
@@ -536,7 +516,7 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
             // TODO: shutdown all components
             sharedLibraries.remove(library.getName());
             try {
-				getManagementStrategy().unmanageObject(library);
+				getEnvironment().unmanageObject(library);
 			} catch (Exception e) {
 				LOGGER.error("Error unmanage sharedlibrary: " + library.getName(), e);
 			}
@@ -635,7 +615,7 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
         // propagate lifecycle event to management strategy
         // 
         try {
-            getManagementStrategy().notify(event);
+            getEnvironment().notify(event);
         } catch (Exception e) {
             // ignore
         }

@@ -16,88 +16,208 @@
  */
 package org.apache.servicemix.jbi.runtime.impl;
 
-import java.util.List;
-
-import javax.naming.InitialContext;
+import java.util.EventObject;
+import java.util.HashSet;
+import java.util.Set;
 import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.naming.InitialContext;
 
 import org.apache.servicemix.jbi.runtime.Environment;
+import org.fusesource.commons.management.ManagementStrategy;
+import org.fusesource.commons.management.Statistic;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 
 /**
  */
 public class EnvironmentImpl implements Environment {
 
+    private BundleContext bundleContext;
     private Object transactionManager;
-    private List transactionManagers;
     private InitialContext namingContext;
-    private List<InitialContext> namingContexts;
-    private MBeanServer mbeanServer;
-    private List<MBeanServer> mbeanServers;
+
+    private ManagementStrategyWrapper managementStrategy = new ManagementStrategyWrapper();
+    private ManagementStrategy currentMs;
+    private ServiceReference currentMsRef;
+    private MBeanServerWrapper mbeanServer = new MBeanServerWrapper(null, managementStrategy);
+
+    public void setBundleContext(BundleContext bundleContext) {
+        this.bundleContext = bundleContext;
+    }
+
+    public ManagementStrategy getManagementStrategy() {
+        return managementStrategy;
+    }
+
+    public void bindManagementStrategy(ManagementStrategy ms) {
+        managementStrategy.setDelegate(ms);
+    }
+
+    public void bindManagementStrategy(ServiceReference reference) {
+        ManagementStrategy ms = (ManagementStrategy) bundleContext.getService(reference);
+        managementStrategy.updateRef(currentMs, ms);
+        if (currentMsRef != null) {
+            bundleContext.ungetService(currentMsRef);
+        }
+        currentMs = ms;
+        currentMsRef = reference;
+    }
+
+    public void unbindManagementStrategy(ServiceReference ref) {
+        managementStrategy.updateRef(currentMs, null);
+        if (currentMsRef != null) {
+            bundleContext.ungetService(currentMsRef);
+        }
+        currentMs = null;
+        currentMsRef = null;
+    }
 
     public MBeanServer getMBeanServer() {
-        if (mbeanServer != null) {
-            return mbeanServer;
-        }
-        if (mbeanServers != null && !mbeanServers.isEmpty()) {
-            return mbeanServers.get(0);
-        }
-        return null;
+        return mbeanServer;
     }
 
-    public void setMbeanServer(MBeanServer mbeanServer) {
-        this.mbeanServer = mbeanServer;
+    public void bindMBeanServer(MBeanServer mbs) {
+        mbeanServer.setDelegate(mbs);
     }
 
-    public List<MBeanServer> getMbeanServers() {
-        return mbeanServers;
+    public void unbindMBeanServer(MBeanServer mbs) {
     }
-
-    public void setMbeanServers(List<MBeanServer> mbeanServers) {
-        this.mbeanServers = mbeanServers;
-    }
-
 
     public Object getTransactionManager() {
-        if (transactionManager != null) {
-            return transactionManager;
-        }
-        if (transactionManagers != null && !transactionManagers.isEmpty()) {
-            return transactionManagers.get(0);
-        }
-        return null;
+        return transactionManager;
     }
 
-    public void setTransactionManager(Object transactionManager) {
-        this.transactionManager = transactionManager;
+    public void bindTransactionManager(ServiceReference reference) {
+        transactionManager = bundleContext.getService(reference);
+        bundleContext.ungetService(reference); // do not keep the reference count, as it's done by blueprint
     }
 
-    public List getTransactionManagers() {
-        return transactionManagers;
-    }
-
-    public void setTransactionManagers(List transactionManagers) {
-        this.transactionManagers = transactionManagers;
+    public void unbindTransactionManager(ServiceReference reference) {
+        transactionManager = null;
     }
 
     public InitialContext getNamingContext() {
-        if (namingContext != null) {
-            return namingContext;
-        }
-        if (namingContexts != null && !namingContexts.isEmpty()) {
-            return namingContexts.get(0);
-        }
-        return null;
+        return namingContext;
     }
 
     public void setNamingContext(InitialContext namingContext) {
         this.namingContext = namingContext;
     }
 
-    public List<InitialContext> getNamingContexts() {
-        return namingContexts;
+    public ObjectName getManagedObjectName(Object object) throws Exception {
+        return getManagementStrategy().getManagedObjectName(object, null, ObjectName.class);
     }
 
-    public void setNamingContexts(List<InitialContext> namingContexts) {
-        this.namingContexts = namingContexts;
+    public ObjectName getManagedObjectName(Object object, String customName) throws Exception {
+        return getManagementStrategy().getManagedObjectName(object, customName, ObjectName.class);
+    }
+
+    public String getJmxDomainName() throws Exception {
+        return getManagementStrategy().getManagedObjectName(null, null, String.class);
+    }
+
+    public void manageObject(Object managedObject) throws Exception {
+        getManagementStrategy().manageObject(managedObject);
+    }
+
+    public void unmanageObject(Object managedObject) throws Exception {
+        getManagementStrategy().unmanageObject(managedObject);
+    }
+
+    public void unmanageNamedObject(ObjectName name) throws Exception {
+        getManagementStrategy().unmanageNamedObject(name);
+    }
+
+    public boolean isManaged(Object managedObject) {
+        return getManagementStrategy().isManaged(managedObject, null);
+    }
+
+    public void notify(EventObject event) throws Exception {
+        getManagementStrategy().notify(event);
+    }
+
+
+    public static class ManagementStrategyWrapper implements ManagementStrategy {
+
+        private ManagementStrategy delegate;
+        private boolean isValid;
+        private Set<Object> managedObjects = new HashSet<Object>();
+
+        public synchronized ManagementStrategy getDelegate() {
+            return delegate;
+        }
+
+        public synchronized void setDelegate(ManagementStrategy delegate) {
+            this.delegate = delegate;
+        }
+
+        public synchronized void updateRef(ManagementStrategy oldMs, ManagementStrategy newMs) {
+            if (oldMs != newMs) {
+                if (oldMs != null) {
+                    for (Object managedObject : managedObjects) {
+                        try {
+                            oldMs.unmanageObject(managedObject);
+                        } catch (Exception e) {
+                            // Ignore
+                        }
+                    }
+                }
+                if (newMs != null) {
+                    for (Object managedObject : managedObjects) {
+                        try {
+                            newMs.manageObject(managedObject);
+                        } catch (Exception e) {
+                            // Ignore
+                        }
+                    }
+                }
+            }
+            isValid = newMs != null;
+        }
+
+        public synchronized void manageObject(Object managedObject) throws Exception {
+            if (isValid) {
+                delegate.manageObject(managedObject);
+            }
+            managedObjects.add(managedObject);
+        }
+
+        public synchronized void manageNamedObject(Object managedObject, Object preferedName) throws Exception {
+            delegate.manageNamedObject(managedObject, preferedName);
+        }
+
+        public synchronized <T> T getManagedObjectName(Object managableObject, String customName, Class<T> nameType) throws Exception {
+            return delegate.getManagedObjectName(managableObject, customName, nameType);
+        }
+
+        public synchronized void unmanageObject(Object managedObject) throws Exception {
+            if (isValid) {
+                delegate.unmanageObject(managedObject);
+            }
+            managedObjects.remove(managedObject);
+        }
+
+        public synchronized void unmanageNamedObject(Object name) throws Exception {
+            delegate.unmanageNamedObject(name);
+        }
+
+        public synchronized boolean isManaged(Object managableObject, Object name) {
+            if (isValid) {
+                return delegate.isManaged(managableObject, name);
+            } else if (managableObject != null) {
+                return managedObjects.contains(managableObject);
+            } else {
+                return false;
+            }
+        }
+
+        public synchronized void notify(EventObject event) throws Exception {
+            delegate.notify(event);
+        }
+
+        public synchronized Statistic createStatistic(String name, Object owner, Statistic.UpdateMode updateMode) {
+            return delegate.createStatistic(name, owner, updateMode);
+        }
     }
 }

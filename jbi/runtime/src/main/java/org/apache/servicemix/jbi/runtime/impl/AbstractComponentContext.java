@@ -16,43 +16,41 @@
  */
 package org.apache.servicemix.jbi.runtime.impl;
 
-import java.util.Map;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.logging.Logger;
-import java.io.InputStream;
-import java.io.IOException;
-import java.net.URL;
-
-import javax.jbi.component.ComponentContext;
-import javax.jbi.servicedesc.ServiceEndpoint;
 import javax.jbi.JBIException;
+import javax.jbi.component.ComponentContext;
 import javax.jbi.management.MBeanNames;
 import javax.jbi.messaging.DeliveryChannel;
 import javax.jbi.messaging.MessagingException;
-import javax.xml.namespace.QName;
+import javax.jbi.servicedesc.ServiceEndpoint;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.naming.InitialContext;
+import javax.xml.namespace.QName;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.DocumentFragment;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.servicemix.jbi.runtime.ComponentWrapper;
+import org.apache.servicemix.jbi.runtime.impl.utils.DOMUtil;
+import org.apache.servicemix.jbi.runtime.impl.utils.URIResolver;
+import org.apache.servicemix.jbi.runtime.impl.utils.WSAddressingConstants;
 import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
-import org.apache.servicemix.jbi.runtime.impl.utils.DOMUtil;
-import org.apache.servicemix.jbi.runtime.impl.utils.WSAddressingConstants;
-import org.apache.servicemix.jbi.runtime.impl.utils.URIResolver;
-import org.apache.servicemix.jbi.runtime.ComponentWrapper;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.nmr.management.Nameable;
+import org.w3c.dom.Document;
+import org.w3c.dom.DocumentFragment;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public abstract class AbstractComponentContext implements ComponentContext, MBeanNames {
 
@@ -64,24 +62,8 @@ public abstract class AbstractComponentContext implements ComponentContext, MBea
     protected DeliveryChannel dc;
     protected ComponentRegistryImpl componentRegistry;
 
-    protected MBeanServer mbeanServer;
-    protected InitialContext initialContext;
-    protected Object transactionManager;
-
     public AbstractComponentContext(ComponentRegistryImpl componentRegistry) {
         this.componentRegistry = componentRegistry;
-        if (componentRegistry.getEnvironment() != null) {
-            MBeanServer mbs = componentRegistry.getEnvironment().getMBeanServer();
-            if (componentRegistry.getManagementStrategy() != null) {
-                this.mbeanServer = new MBeanServerWrapper(mbs, componentRegistry.getManagementStrategy());
-            } else {
-                this.mbeanServer = mbs;
-            }
-
-            this.mbeanServer = componentRegistry.getEnvironment().getMBeanServer();
-            this.initialContext = componentRegistry.getEnvironment().getNamingContext();
-            this.transactionManager = componentRegistry.getEnvironment().getTransactionManager();
-        }
     }
 
     public NMR getNmr() {
@@ -245,59 +227,53 @@ public abstract class AbstractComponentContext implements ComponentContext, MBea
     }
 
     public MBeanServer getMBeanServer() {
-        return mbeanServer;
+        return componentRegistry.getEnvironment().getMBeanServer();
     }
 
     public InitialContext getNamingContext() {
-        return initialContext;
+        return componentRegistry.getEnvironment().getNamingContext();
     }
 
     public Object getTransactionManager() {
-        return transactionManager;
+        return componentRegistry.getEnvironment().getTransactionManager();
     }
 
     public ObjectName createCustomComponentMBeanName(String customName) {
         ObjectName name = null;
-        if (componentRegistry.getManagementStrategy() != null) {
-            try {
-                Nameable nameable = new Nameable() {
-                    public String getName() {
-                        return getComponentName();
-                    }                    
-                    public String getParent() {
-                        return null;
-                    }
-                    public String getMainType() {
-                        return null;
-                    }
-                    public String getSubType() {
-                        return null;
-                    }
-                    public String getVersion() {
-                        return null;
-                    }
-                    public Class getPrimaryInterface() {
-                        return null;
-                    }
-                };
-                name = componentRegistry.getManagementStrategy().getManagedObjectName(nameable, 
-                                                                                      customName, 
-                                                                                      ObjectName.class);
-            } catch (Exception e) {
-                // ignore
-            }
+        try {
+            Nameable nameable = new Nameable() {
+                public String getName() {
+                    return getComponentName();
+                }
+                public String getParent() {
+                    return null;
+                }
+                public String getMainType() {
+                    return null;
+                }
+                public String getSubType() {
+                    return null;
+                }
+                public String getVersion() {
+                    return null;
+                }
+                public Class getPrimaryInterface() {
+                    return null;
+                }
+            };
+            name = componentRegistry.getEnvironment().getManagedObjectName(nameable, customName);
+        } catch (Exception e) {
+            // ignore
         }
         return name;
     }
 
     public String getJmxDomainName() {
         String name = null;
-        if (this.componentRegistry.getManagementStrategy() != null) {
-            try {
-                name = componentRegistry.getManagementStrategy().getManagedObjectName(null, null, String.class);
-            } catch (Exception e) {
-                // ignore
-            }
+        try {
+            name = componentRegistry.getEnvironment().getJmxDomainName();
+        } catch (Exception e) {
+            // ignore
         }
         return name;
     }

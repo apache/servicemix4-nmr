@@ -43,7 +43,6 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<ComponentWrapper>
     private DocumentRepository documentRepository;
     private Map<String, ComponentContextImpl> contexts;
     private Environment environment;
-    private ManagementStrategy managementStrategy;
 
     public ComponentRegistryImpl() {
         contexts = new ConcurrentHashMap<String, ComponentContextImpl>();
@@ -65,14 +64,6 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<ComponentWrapper>
         this.environment = environment;
     }
 
-    public ManagementStrategy getManagementStrategy() {
-        return managementStrategy;
-    }
-
-    public void setManagementStrategy(ManagementStrategy managementStrategy) {
-        this.managementStrategy = managementStrategy;
-    }
-    
     public DocumentRepository getDocumentRepository() {
         return documentRepository;
     }

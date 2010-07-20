@@ -18,8 +18,9 @@ package org.apache.servicemix.nmr.management;
 
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.EventObject;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.JMException;
 import javax.management.MBeanServer;
@@ -37,6 +38,7 @@ import org.fusesource.commons.management.ManagementStrategy;
 import org.fusesource.commons.management.Statistic;
 import org.fusesource.commons.management.Statistic.UpdateMode;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.container.ServiceUnavailableException;
 
@@ -48,7 +50,7 @@ public class ManagementAgent implements ManagementStrategy {
 
     private boolean enabled;
     private MBeanServer mbeanServer;
-    private Set<ObjectName> mbeans = new HashSet<ObjectName>();
+    private Map<ObjectName, Object> mbeans = new HashMap<ObjectName, Object>();
     private NamingStrategy namingStrategy;
     private BundleContext bundleContext;
     private ServiceRegistration serviceRegistration;
@@ -59,7 +61,7 @@ public class ManagementAgent implements ManagementStrategy {
     /**
      * @see org.fusesource.commons.management.ManagementStrategy#manageObject(java.lang.Object)
      */
-    public void manageObject(Object managedObject) throws Exception {
+    public synchronized void manageObject(Object managedObject) throws Exception {
         ObjectName objectName = getManagedObjectName(managedObject, null, ObjectName.class);
         manageNamedObject(managedObject, objectName);
     }
@@ -67,7 +69,7 @@ public class ManagementAgent implements ManagementStrategy {
     /**
      * @see org.fusesource.commons.management.ManagementStrategy#getManagedObjectName(java.lang.Object,java.lang.String,java.lang.Class)
      */
-    public <T> T getManagedObjectName(Object managableObject, 
+    public synchronized <T> T getManagedObjectName(Object managableObject,
                                       String customName, 
                                       Class<T> nameType) throws Exception {
         return String.class.equals(nameType) && managableObject == null && customName == null
@@ -80,11 +82,11 @@ public class ManagementAgent implements ManagementStrategy {
     /**
      * @see org.fusesource.commons.management.ManagementStrategy#manageNamedObject(java.lang.Object,java.lang.Object)
      */
-    public void manageNamedObject(Object managedObject, Object preferredName) throws Exception {
+    public synchronized void manageNamedObject(Object managedObject, Object preferredName) throws Exception {
         managedObject = getTypeSpecificManagedObject(managedObject);
         if (preferredName instanceof ObjectName && managedObject != null) {
             try {
-                register(managedObject, (ObjectName)preferredName);
+                register(managedObject, (ObjectName) preferredName);
             } catch (Exception ex) {
                 throw (JMException) new JMException(ex.getMessage()).initCause(ex);
             }
@@ -94,7 +96,7 @@ public class ManagementAgent implements ManagementStrategy {
     /**
      * @see org.fusesource.commons.management.ManagementStrategy#unmanageObject(java.lang.Object)
      */
-    public void unmanageObject(Object managedObject) throws Exception {
+    public synchronized void unmanageObject(Object managedObject) throws Exception {
         ObjectName objectName = getManagedObjectName(managedObject, null, ObjectName.class);
         unmanageNamedObject(objectName);
     }
@@ -102,16 +104,16 @@ public class ManagementAgent implements ManagementStrategy {
     /**
      * @see org.fusesource.commons.management.ManagementStrategy#unmanageNamedObject(java.lang.Object)
      */
-    public void unmanageNamedObject(Object name) throws Exception {
+    public synchronized void unmanageNamedObject(Object name) throws Exception {
         if (name instanceof ObjectName) {
-            unregister((ObjectName)name);
+            unregister((ObjectName) name);
         }
     }
     
     /**
      * @see org.fusesource.commons.management.ManagementStrategy#isManaged(java.lang.Object,java.lang.Object)
      */
-    public boolean isManaged(Object managableObject, Object name) {
+    public synchronized boolean isManaged(Object managableObject, Object name) {
         try {
             return managableObject != null 
                    ? getMbeanServer().isRegistered(
@@ -168,7 +170,28 @@ public class ManagementAgent implements ManagementStrategy {
     public void setMbeanServer(MBeanServer mbeanServer) {
         this.mbeanServer = mbeanServer;
     }
-    
+
+    public synchronized void bindMBeanServer(ServiceReference reference) throws Exception {
+        if (isEnabled()) {
+            MBeanServer mbeanServer = (MBeanServer) bundleContext.getService(reference);
+            bundleContext.ungetService(reference); // do not keep the reference count, as it's done by blueprint
+            if (mbeanServer != this.mbeanServer) {
+                unregisterObjects();
+                this.mbeanServer = mbeanServer;
+                registerObjects();
+            }
+            registerService();
+        }
+    }
+
+    public synchronized void unbindMBeanServer(ServiceReference reference) {
+        if (isEnabled()) {
+            unregisterObjects();
+            this.mbeanServer = null;
+            unregisterService();
+        }
+    }
+
     public NamingStrategy getNamingStrategy() {
         return namingStrategy;
     }
@@ -177,66 +200,81 @@ public class ManagementAgent implements ManagementStrategy {
         this.namingStrategy = namingStrategy;
     }
     
-    public void init() throws Exception {
-        if (isEnabled()) {
-            registerService();
-        }        
-    }
-           
-
-    public void destroy() throws Exception {
-        // Using the array to hold the busMBeans to avoid the
-        // CurrentModificationException
-        try {
-            Object[] mBeans = mbeans.toArray();
-            int caught = 0;
-            for (Object name : mBeans) {
-                mbeans.remove((ObjectName)name);
-                try {
-                    unregister((ObjectName)name);
-                } catch (JMException jmex) {
-                    LOG.info("Exception unregistering MBean", jmex);
-                    caught++;
-                } catch (ServiceUnavailableException sue) {
-                    // due to timing / shutdown ordering issue that we may
-                    // ignore as not unregistering from an already shutdown 
-                    // blueprint container is quite harmless
-                }
+    protected void registerObjects() {
+        ObjectName[] mBeans = mbeans.keySet().toArray(new ObjectName[mbeans.size()]);
+        int caught = 0;
+        for (ObjectName name : mBeans) {
+            try {
+                register(mbeans.get(name), name);
+            } catch (JMException jmex) {
+                LOG.info("Exception unregistering MBean", jmex);
+                caught++;
+            } catch (ServiceUnavailableException sue) {
+                // due to timing / shutdown ordering issue that we may
+                // ignore as not unregistering from an already shutdown
+                // blueprint container is quite harmless
             }
-            if (caught > 0) {
-                LOG.warn("A number of " + caught
-                        + " exceptions caught while unregistering MBeans during stop operation.  "
-                        + "See INFO log for details.");
-            }
-        } finally {
-            unregisterService();
+        }
+        if (caught > 0) {
+            LOG.warn("A number of " + caught
+                    + " exceptions caught while unregistering MBeans during stop operation.  "
+                    + "See INFO log for details.");
         }
     }
 
-    public void register(Object obj, ObjectName name) throws JMException {
+    protected void register(Object obj, ObjectName name) throws JMException {
         register(obj, name, !(obj instanceof ManagedEndpoint));
     }
 
-    public void register(Object obj, ObjectName name, boolean forceRegistration) throws JMException {
-        try {
-            registerMBeanWithServer(obj, name, forceRegistration);
-        } catch (UndeclaredThrowableException ute) {
-            if (ute.getCause() instanceof RuntimeException) {
-                LOG.warn("MBean registration failed: ", ute.getCause());
-                throw (RuntimeException)ute.getCause();
-            } else {
-                LOG.warn("MBean registration failed: ", ute.getCause());
-                throw new JMException(ute.getCause().getMessage());
+    protected void register(Object obj, ObjectName name, boolean forceRegistration) throws JMException {
+        if (mbeanServer == null) {
+            mbeans.put(name, obj);
+        } else {
+            try {
+                registerMBeanWithServer(obj, name, forceRegistration);
+            } catch (UndeclaredThrowableException ute) {
+                if (ute.getCause() instanceof RuntimeException) {
+                    LOG.warn("MBean registration failed: ", ute.getCause());
+                    throw (RuntimeException)ute.getCause();
+                } else {
+                    LOG.warn("MBean registration failed: ", ute.getCause());
+                    throw new JMException(ute.getCause().getMessage());
+                }
             }
         }
     }
 
-    public void unregister(ObjectName name) throws JMException {
-        mbeanServer.unregisterMBean(name);
+    protected void unregisterObjects() {
+        ObjectName[] mBeans = mbeans.keySet().toArray(new ObjectName[mbeans.size()]);
+        int caught = 0;
+        for (ObjectName name : mBeans) {
+            try {
+                unregister(name);
+            } catch (JMException jmex) {
+                LOG.info("Exception unregistering MBean", jmex);
+                caught++;
+            } catch (ServiceUnavailableException sue) {
+                // due to timing / shutdown ordering issue that we may
+                // ignore as not unregistering from an already shutdown
+                // blueprint container is quite harmless
+            }
+        }
+        if (caught > 0) {
+            LOG.warn("A number of " + caught
+                    + " exceptions caught while unregistering MBeans during stop operation.  "
+                    + "See INFO log for details.");
+        }
     }
 
-    private void registerMBeanWithServer(Object obj, ObjectName name, boolean forceRegistration) throws JMException {
-        ObjectInstance instance = null;
+    protected void unregister(ObjectName name) throws JMException {
+        mbeans.remove(name);
+        if (mbeanServer != null) {
+            mbeanServer.unregisterMBean(name);
+        }
+    }
+
+    protected void registerMBeanWithServer(Object obj, ObjectName name, boolean forceRegistration) throws JMException {
+        ObjectInstance instance;
         try {
             instance = mbeanServer.registerMBean(obj, name);
         } catch (InstanceAlreadyExistsException e) {
@@ -249,7 +287,7 @@ public class ManagementAgent implements ManagementStrategy {
         }
 
         if (instance != null) {
-            mbeans.add(name);
+            mbeans.put(name, obj);
         }
     }
     
@@ -264,7 +302,7 @@ public class ManagementAgent implements ManagementStrategy {
         }
     }
     
-    private ObjectName getTypeSpecificObjectName(Object mo, String customName) throws MalformedObjectNameException {
+    protected ObjectName getTypeSpecificObjectName(Object mo, String customName) throws MalformedObjectNameException {
         return mo instanceof ManagedEndpoint
                ? namingStrategy.getObjectName((ManagedEndpoint)mo)
                : mo instanceof Nameable
@@ -275,7 +313,7 @@ public class ManagementAgent implements ManagementStrategy {
     }
 
     
-    private Object getTypeSpecificManagedObject(Object object) throws NotCompliantMBeanException {
+    protected Object getTypeSpecificManagedObject(Object object) throws NotCompliantMBeanException {
         return object instanceof ManagedEndpoint
                ? object
                : object instanceof Nameable

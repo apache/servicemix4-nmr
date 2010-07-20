@@ -95,7 +95,7 @@ public class ServiceAssemblyInstaller extends AbstractInstaller {
             }
             postInstall();
             ServiceAssembly sa = deployer.registerServiceAssembly(bundle, descriptor.getServiceAssembly(), sus);
-            return deployer.getManagementStrategy().getManagedObjectName(sa, null, ObjectName.class);
+            return deployer.getEnvironment().getManagedObjectName(sa);
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
             throw new JBIException(e);

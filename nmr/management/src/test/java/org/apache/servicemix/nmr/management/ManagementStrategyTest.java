@@ -42,6 +42,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 
 public class ManagementStrategyTest extends Assert { //TestCase {
@@ -298,7 +299,7 @@ public class ManagementStrategyTest extends Assert { //TestCase {
         InternalEndpoint internal = control.createMock(InternalEndpoint.class);
         HashMap<String, Object> props = new HashMap<String, Object>();
         ManagedEndpoint endpoint = 
-            new ManagedEndpoint(internal, props, strategy);
+            new ManagedEndpoint(internal, strategy);
         expect(internal.getId()).andReturn("endpoint_foo");
         expect(mbeanServer.registerMBean(isA(ManagedEndpoint.class), eq(name))).andReturn(instance);
         control.replay();
@@ -328,30 +329,33 @@ public class ManagementStrategyTest extends Assert { //TestCase {
     
     @Test
     public void testEnableDisable() throws Exception {
-
         ServiceRegistration sr = createMock(ServiceRegistration.class);
         sr.unregister();
         BundleContext ctx = createMock(BundleContext.class);
         expect(ctx.registerService("org.fusesource.commons.management.ManagementStrategy",
                                    strategy, null)).andReturn(sr);
-        replay(ctx, sr);
+        ServiceReference ref = createMock(ServiceReference.class);
+        MBeanServer mbs = createMock(MBeanServer.class);
+        expect(ctx.getService(ref)).andReturn(mbs);
+        expect(ctx.ungetService(ref)).andReturn(false);
+        replay(ctx, sr, ref, mbs);
 
         strategy.setEnabled(true);
         assertTrue(strategy.isEnabled());
         strategy.setBundleContext(ctx);
         assertSame(ctx, strategy.getBundleContext());
-        strategy.init();
-        strategy.destroy();
-        verify(ctx, sr);
+        strategy.bindMBeanServer(ref);
+        strategy.unbindMBeanServer(ref);
+        verify(ctx, sr, ref, mbs);
 
         reset(ctx, sr);
         replay(ctx, sr);
         strategy = setUpStrategy();
         strategy.setEnabled(false);
         assertFalse(strategy.isEnabled());
-        strategy.init();
-        strategy.destroy();
-        verify(ctx, sr);
+        strategy.bindMBeanServer(ref);
+        strategy.unbindMBeanServer(ref);
+        verify(ctx, sr, ref, mbs);
 
     }
 

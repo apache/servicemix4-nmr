@@ -24,7 +24,9 @@
     <!-- MBeanServer -->
     <reference id="mbeanServer"
                interface="javax.management.MBeanServer"
-               availability="mandatory"/>
+               availability="mandatory">
+        <reference-listener ref="managementStrategy" bind-method="bindMBeanServer" unbind-method="unbindMBeanServer"/>
+    </reference>
  
 
     <bean id="namingStrategy" class="org.apache.servicemix.nmr.management.DefaultNamingStrategy">
@@ -34,36 +36,36 @@
     <!-- ManagementStrategy -->
     <bean id="managementStrategy"
           class="org.apache.servicemix.nmr.management.ManagementAgent"
-          init-method="init"
-          destroy-method="destroy">
+          depends-on="mbeanServer">
         <property name="bundleContext" ref="blueprintBundleContext"/>
         <property name="enabled" value="${enabled}"/>
         <property name="namingStrategy" ref="namingStrategy" />
-        <property name="mbeanServer" ref="mbeanServer" />
     </bean>
 
     <!-- Service registration for the management strategy is done in
          ManagementAgent.init() so that is can be made optional depending
          on the value returned by isEnabled().  This means that we must
          get a separate reference to the management strategy so it can 
-         be injected into the management endpoint registry. --> 
+         be injected into the management endpoint registry.
     <reference id="managementStrategyRef"
                interface="org.fusesource.commons.management.ManagementStrategy" 
-               availability="optional"/>
+               availability="optional">
+        <reference-listener ref="endpointRegistry" bind-method="bindManagementStrategy" unbind-method="unbindManagementStrategy"/>
+    </reference>        --> 
 
-    <!-- Endpoint registry -->   
+    <!-- Endpoint registry -->
     <bean id="endpointRegistry" 
           class="org.apache.servicemix.nmr.management.ManagementEndpointRegistry"
-          init-method="afterPropertiesSet">
-        <property name="managementStrategy" ref="managementStrategyRef"/>
+          init-method="init" destroy-method="destroy">
+        <property name="bundleContext" ref="blueprintBundleContext"/>
     </bean>
        
-    <!-- List of endpoints -->
+    <!-- List of endpoints
     <reference-list id="endpoints"
                     interface="org.apache.servicemix.nmr.api.internal.InternalEndpoint"
                     availability="optional">
         <reference-listener ref="endpointRegistry" bind-method="register" unbind-method="unregister" />
-    </reference-list>
+    </reference-list>      -->
 
     <!-- Exchange listener -->
     <service ref="endpointRegistry">

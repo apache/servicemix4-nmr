@@ -61,9 +61,7 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
         this.installRoot = new File(System.getProperty("karaf.base"), "data/jbi/" + getName() + "/install");
         this.installRoot.mkdirs();
         this.installationContext = new InstallationContextImpl(descriptor.getComponent(), 
-                                                               deployer.getEnvironment(),
-                                                               deployer.getManagementStrategy(),
-                                                               deployer.getMbeanServer());
+                                                               deployer.getEnvironment());
         this.installationContext.setInstallRoot(installRoot);
     }
 
@@ -78,7 +76,7 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
 
     public void register() throws JMException {
         try {
-            deployer.getManagementStrategy().manageObject(this);
+            deployer.getEnvironment().manageObject(this);
         } catch (Exception ex) {
             throw new JMException(ex.getMessage());
         }
@@ -86,7 +84,7 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
 
     public void unregister() throws JMException {
         try {
-            deployer.getManagementStrategy().unmanageObject(this);
+            deployer.getEnvironment().unmanageObject(this);
         } catch (Exception ex) {
             throw new JMException(ex.getMessage());
         }
@@ -256,7 +254,7 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
     public ObjectName getObjectName() {
         if (objectName == null) {
             try {
-                objectName = deployer.getManagementStrategy().getManagedObjectName(this, null, ObjectName.class);
+                objectName = deployer.getEnvironment().getManagedObjectName(this);
             } catch (Exception e) {
                 // ignore
             }
@@ -319,7 +317,7 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
                 // in case the bootstrap has not done it
                 try {
                     if (extensionMBeanName != null) {
-                        deployer.getManagementStrategy().unmanageObject(extensionMBeanName);
+                        deployer.getEnvironment().unmanageNamedObject(extensionMBeanName);
                     }
                 } catch (Exception e) {
                     // ignore
@@ -424,7 +422,7 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
             }
         }
         Component component = deployer.registerComponent(getBundle(), componentDesc, innerComponent, aLibs);
-        return deployer.getManagementStrategy().getManagedObjectName(component, null, ObjectName.class);
+        return deployer.getEnvironment().getManagedObjectName(component);
     }
 
     public void configure(Properties props) throws Exception {
@@ -433,7 +431,7 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
             if (on == null) {
                 LOGGER.warn("Could not find installation configuration MBean. Installation properties will be ignored.");
             } else {
-                MBeanServer mbs = deployer.getMbeanServer();
+                MBeanServer mbs = deployer.getEnvironment().getMBeanServer();
                 for (Object o : props.keySet()) {
                     String key = (String) o;
                     String val = props.getProperty(key);

@@ -16,7 +16,9 @@
  */
 package org.apache.servicemix.jbi.runtime;
 
+import java.util.EventObject;
 import javax.management.MBeanServer;
+import javax.management.ObjectName;
 import javax.naming.InitialContext;
 
 /**
@@ -29,4 +31,19 @@ public interface Environment {
 
     InitialContext getNamingContext();
 
+    void manageObject(Object managedObject) throws Exception;
+
+    void unmanageObject(Object managedObject) throws Exception;
+
+    void unmanageNamedObject(ObjectName name) throws Exception;
+
+    ObjectName getManagedObjectName(Object object) throws Exception;
+
+    ObjectName getManagedObjectName(Object object, String customName) throws Exception;
+
+    String getJmxDomainName() throws Exception;
+
+    boolean isManaged(Object managedObject);
+
+    void notify(EventObject event) throws Exception;
 }

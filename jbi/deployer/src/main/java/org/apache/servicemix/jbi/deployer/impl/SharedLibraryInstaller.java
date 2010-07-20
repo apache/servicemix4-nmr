@@ -50,7 +50,7 @@ public class SharedLibraryInstaller extends AbstractInstaller {
     public ObjectName install() throws JBIException {
         try {
             SharedLibrary sl = deployer.registerSharedLibrary(bundle, descriptor.getSharedLibrary(), createClassLoader());
-            return deployer.getManagementStrategy().getManagedObjectName(sl, null, ObjectName.class);
+            return deployer.getEnvironment().getManagedObjectName(sl);
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
             throw new JBIException(e);

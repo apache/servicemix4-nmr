@@ -48,12 +48,16 @@ public class MBeanServerWrapper implements MBeanServer {
 
     private MBeanServer delegate;
     private ManagementStrategy strategy;
-    
+
     MBeanServerWrapper(MBeanServer delegate, ManagementStrategy strategy) {
-        this.delegate = delegate;
         this.strategy = strategy;
+        this.delegate = delegate;
     }
-    
+
+    public void setDelegate(MBeanServer delegate) {
+        this.delegate = delegate;
+    }
+
     public void addNotificationListener(ObjectName name,
             NotificationListener listener, NotificationFilter filter,
             Object handback) throws InstanceNotFoundException {

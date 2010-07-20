@@ -51,7 +51,7 @@ public class AdminService implements AdminServiceMBean {
         for (Component component : deployer.getComponents().values()) {
             if (Deployer.TYPE_BINDING_COMPONENT.equals(component.getMainType())) {
                 try {
-                    names.add(deployer.getManagementStrategy().getManagedObjectName(component, null, ObjectName.class));
+                    names.add(deployer.getEnvironment().getManagedObjectName(component));
                 } catch (Exception e) {
                 }
             }
@@ -63,7 +63,7 @@ public class AdminService implements AdminServiceMBean {
         Component component = deployer.getComponent(name);
         if (component != null) {
             try {
-                return deployer.getManagementStrategy().getManagedObjectName(component, null, ObjectName.class);
+                return deployer.getEnvironment().getManagedObjectName(component);
             } catch (Exception e) {
             }
         }
@@ -75,7 +75,7 @@ public class AdminService implements AdminServiceMBean {
         for (Component component : deployer.getComponents().values()) {
             if (Deployer.TYPE_SERVICE_ENGINE.equals(component.getMainType())) {
                 try {
-                    names.add(deployer.getManagementStrategy().getManagedObjectName(component, null, ObjectName.class));
+                    names.add(deployer.getEnvironment().getManagedObjectName(component));
                 } catch (Exception e) {
                 }
             }
