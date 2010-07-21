@@ -122,7 +122,9 @@ public class EnvironmentImpl implements Environment {
     }
 
     public void unmanageObject(Object managedObject) throws Exception {
-        getManagementStrategy().unmanageObject(managedObject);
+        if (getManagementStrategy().isManaged(managedObject, null)) {
+            getManagementStrategy().unmanageObject(managedObject);
+        }
     }
 
     public void unmanageNamedObject(ObjectName name) throws Exception {

@@ -107,11 +107,9 @@ public class IntegrationTest extends AbstractIntegrationTest {
         ServiceAssembly sa = getOsgiService(ServiceAssembly.class);
         assertNotNull(sa);
 
-        Thread.sleep(500);
-        
         final List<Throwable> errors = new CopyOnWriteArrayList<Throwable>();
         final int nbThreads = 2;
-        final int nbMessagesPerThread = 10;
+        final int nbMessagesPerThread = 2;
         final CountDownLatch latch = new CountDownLatch(nbThreads * nbMessagesPerThread);
         for (int i = 0; i < nbThreads; i++) {
             new Thread() {
