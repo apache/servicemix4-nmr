@@ -33,12 +33,13 @@
               <exclude>demos/**</exclude>
               <exclude>etc/org.apache.karaf.features.cfg</exclude>
               <exclude>etc/org.ops4j.pax.logging.cfg</exclude>
-              <exclude>etc/config.properties</exclude>
+              <exclude>etc/custom.properties</exclude>
+              <exclude>etc/users.properties</exclude>
               <exclude>LICENSE</exclude>
               <exclude>NOTICE</exclude>
               <exclude>README</exclude>
               <exclude>RELEASE-NOTES</exclude>
-              <exclude>manual*</exclude>
+              <exclude>karaf-manual*</exclude>
             </excludes>
         </fileSet>
 
@@ -85,7 +86,7 @@
         <fileSet>
             <directory>target/dependencies</directory>
             <includes>
-                <include>servicemix-version.jar</include>
+                <include>nmr-version.jar</include>
             </includes>
             <outputDirectory>/lib/</outputDirectory>
         </fileSet>
@@ -111,7 +112,21 @@
             <lineEnding>dos</lineEnding>
         </file>
         <file>
-            <source>${basedir}/target/dependencies/servicemix-version.jar</source>
+            <source>${basedir}/target/classes/bin/start.bat</source>
+            <outputDirectory>/bin/</outputDirectory>
+            <destName>start.bat</destName>
+            <fileMode>0755</fileMode>
+            <lineEnding>dos</lineEnding>
+        </file>
+        <file>
+            <source>${basedir}/target/classes/bin/stop.bat</source>
+            <outputDirectory>/bin/</outputDirectory>
+            <destName>stop.bat</destName>
+            <fileMode>0755</fileMode>
+            <lineEnding>dos</lineEnding>
+        </file>
+        <file>
+            <source>${basedir}/target/dependencies/nmr-version.jar</source>
             <outputDirectory>/lib/</outputDirectory>
             <fileMode>0644</fileMode>
         </file>
