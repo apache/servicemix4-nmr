@@ -297,7 +297,6 @@ public class ManagementStrategyTest extends Assert { //TestCase {
         ObjectName name = new ObjectName(ENDPOINT_NAME);
         ObjectInstance instance = new ObjectInstance(name, Nameable.class.getName());
         InternalEndpoint internal = control.createMock(InternalEndpoint.class);
-        HashMap<String, Object> props = new HashMap<String, Object>();
         ManagedEndpoint endpoint = 
             new ManagedEndpoint(internal, strategy);
         expect(internal.getId()).andReturn("endpoint_foo");
