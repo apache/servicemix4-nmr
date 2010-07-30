@@ -29,7 +29,7 @@
     <groupId>org.apache.servicemix.jbi</groupId>
     <artifactId>org.apache.servicemix.jbi.deployer</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache ServiceMix JBI Deployer</name>
+    <name>Apache ServiceMix :: JBI :: Deployer</name>
 
     <dependencies>
         <dependency>

@@ -29,7 +29,7 @@
     <groupId>org.apache.servicemix.nmr.examples</groupId>
     <artifactId>org.apache.servicemix.nmr.examples.nmr</artifactId>
     <packaging>pom</packaging>
-    <name>Apache ServiceMix NMR Example:: NMR endpoint and Client</name>
+    <name>Apache ServiceMix :: NMR :: Examples :: Endpoint and Client</name>
 
     <modules>
         <module>endpoint</module>

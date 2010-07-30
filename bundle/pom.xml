@@ -30,7 +30,7 @@
     <groupId>org.apache.servicemix.nmr</groupId>
     <artifactId>org.apache.servicemix.nmr.bundle</artifactId>
     <packaging>jar</packaging>
-    <name>Apache ServiceMix NMR :: Bundle</name>
+    <name>Apache ServiceMix :: NMR :: Bundle</name>
 
     <properties>
         <maven.test.skip>true</maven.test.skip>

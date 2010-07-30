@@ -30,7 +30,7 @@
     <groupId>org.apache.servicemix.nmr.examples.interceptors</groupId>
     <artifactId>exchange</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache ServiceMix NMR Example:: Exchange Listener</name>
+    <name>Apache ServiceMix :: NMR :: Examples :: Interceptors :: Exchange Listener</name>
 
     <dependencies>
         <dependency>

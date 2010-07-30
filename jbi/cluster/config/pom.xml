@@ -29,7 +29,7 @@
     <groupId>org.apache.servicemix.jbi.cluster</groupId>
     <artifactId>org.apache.servicemix.jbi.cluster.config</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache ServiceMix JBI Clustering Config</name>
+    <name>Apache ServiceMix :: JBI :: Clustering :: Config</name>
 
     <dependencies>
         <dependency>

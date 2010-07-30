@@ -29,7 +29,7 @@
     <groupId>org.apache.servicemix.nmr</groupId>
     <artifactId>org.apache.servicemix.nmr.audit</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache ServiceMix NMR Audit</name>
+    <name>Apache ServiceMix :: NMR :: Audit</name>
 
     <dependencies>
         <dependency>

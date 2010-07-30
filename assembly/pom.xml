@@ -30,7 +30,7 @@
     <groupId>org.apache.servicemix.nmr</groupId>
     <artifactId>apache-servicemix-nmr</artifactId>
     <packaging>pom</packaging>
-    <name>Apache ServiceMix NMR :: Assembly</name>
+    <name>Apache ServiceMix :: NMR :: Assembly</name>
 
     <dependencies>
         <dependency>

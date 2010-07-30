@@ -33,7 +33,7 @@
     <groupId>org.apache.servicemix.nmr</groupId>
     <artifactId>org.apache.servicemix.nmr.management</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache ServiceMix NMR Management</name>
+    <name>Apache ServiceMix :: NMR :: Management</name>
 
     <dependencies>
         <dependency>

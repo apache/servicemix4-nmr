@@ -29,7 +29,7 @@
     <groupId>org.apache.servicemix.nmr.examples</groupId>
     <artifactId>org.apache.servicemix.nmr.examples.cluster</artifactId>
     <packaging>pom</packaging>
-    <name>Apache ServiceMix NMR Example:: Cluster</name>
+    <name>Apache ServiceMix :: NMR :: Examples :: Cluster</name>
 
     <properties>
         <servicemix.nmr.version>${project.version}</servicemix.nmr.version>

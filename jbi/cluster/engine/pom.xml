@@ -29,7 +29,7 @@
     <groupId>org.apache.servicemix.jbi.cluster</groupId>
     <artifactId>org.apache.servicemix.jbi.cluster.engine</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache ServiceMix JBI Clustering Engine</name>
+    <name>Apache ServiceMix :: JBI :: Clustering :: Engine</name>
 
     <dependencies>
         <dependency>

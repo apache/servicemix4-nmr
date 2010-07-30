@@ -29,7 +29,7 @@
     <groupId>org.apache.servicemix.document</groupId>
     <artifactId>org.apache.servicemix.document</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache ServiceMix Document</name>
+    <name>Apache ServiceMix :: Document</name>
 
     <dependencies>
         <dependency>

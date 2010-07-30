@@ -29,7 +29,7 @@
     <groupId>org.apache.servicemix.nmr</groupId>
     <artifactId>org.apache.servicemix.nmr.commands</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache ServiceMix NMR Commands</name>
+    <name>Apache ServiceMix :: NMR :: Commands</name>
 
     <dependencies>
         <dependency>

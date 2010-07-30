@@ -29,7 +29,7 @@
     <groupId>org.apache.servicemix.jbi</groupId>
     <artifactId>org.apache.servicemix.jbi.itests</artifactId>
     <packaging>jar</packaging>
-    <name>Apache ServiceMix JBI Integration Tests</name>
+    <name>Apache ServiceMix :: JBI :: Integration Tests</name>
 
     <properties>
         <ant.version>1.7.0_1</ant.version>

@@ -29,7 +29,7 @@
     <groupId>org.apache.servicemix.nmr</groupId>
     <artifactId>org.apache.servicemix.nmr.spring</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache ServiceMix NMR Spring</name>
+    <name>Apache ServiceMix :: NMR :: Spring</name>
 
     <dependencies>
         <dependency>

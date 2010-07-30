@@ -29,7 +29,7 @@
     <groupId>org.apache.servicemix.jbi</groupId>
     <artifactId>org.apache.servicemix.jbi.runtime</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache ServiceMix JBI Runtime</name>
+    <name>Apache ServiceMix :: JBI :: Runtime</name>
 
     <dependencies>
         <dependency>

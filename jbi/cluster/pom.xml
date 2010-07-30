@@ -29,7 +29,7 @@
     <groupId>org.apache.servicemix.jbi.cluster</groupId>
     <artifactId>cluster</artifactId>
     <packaging>pom</packaging>
-    <name>Apache ServiceMix JBI Clustering</name>
+    <name>Apache ServiceMix :: JBI :: Clustering</name>
 
     <modules>
         <module>requestor</module>

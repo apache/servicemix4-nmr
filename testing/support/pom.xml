@@ -30,7 +30,7 @@
     <artifactId>org.apache.servicemix.platform.testing.support</artifactId>
     <packaging>bundle</packaging>
     <version>1.3.0-SNAPSHOT</version>
-    <name>Apache ServiceMix :: Testing - Support</name>
+    <name>Apache ServiceMix :: Testing :: Support</name>
 
     <properties>
         <aopalliance.version>1.0_1</aopalliance.version>

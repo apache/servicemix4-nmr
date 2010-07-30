@@ -29,7 +29,7 @@
     <groupId>org.apache.servicemix.testing</groupId>
     <artifactId>testing</artifactId>
     <packaging>pom</packaging>
-    <name>Apache ServiceMix Testing</name>
+    <name>Apache ServiceMix :: Testing</name>
 
     <modules>
         <module>support</module>

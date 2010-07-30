@@ -29,7 +29,7 @@
     <groupId>org.apache.servicemix.naming</groupId>
     <artifactId>org.apache.servicemix.naming</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache ServiceMix Naming</name>
+    <name>Apache ServiceMix :: Naming</name>
 
     <properties>
         <xbean-version>3.5</xbean-version>

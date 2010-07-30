@@ -29,7 +29,7 @@
     <groupId>org.apache.servicemix.jbi</groupId>
     <artifactId>org.apache.servicemix.jbi.commands</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache ServiceMix JBI Commands</name>
+    <name>Apache ServiceMix :: JBI :: Commands</name>
 
     <dependencies>
         <dependency>

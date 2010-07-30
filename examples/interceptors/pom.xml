@@ -29,7 +29,7 @@
     <groupId>org.apache.servicemix.nmr.examples</groupId>
     <artifactId>org.apache.servicemix.nmr.examples.interceptors</artifactId>
     <packaging>pom</packaging>
-    <name>Apache Servicemix NMR Examples:: Interceptors</name>
+    <name>Apache Servicemix :: NMR :: Examples :: Interceptors</name>
 
     <modules>
         <module>exchange</module>

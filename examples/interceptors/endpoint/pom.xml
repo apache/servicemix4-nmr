@@ -30,7 +30,7 @@
     <groupId>org.apache.servicemix.nmr.examples.interceptors</groupId>
     <artifactId>endpoint</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache ServiceMix NMR Example:: Endpoint Listener</name>
+    <name>Apache ServiceMix :: NMR :: Examples :: Interceptors :: Endpoint Listener</name>
 
     <dependencies>
         <dependency>

@@ -29,7 +29,7 @@
     <groupId>org.apache.servicemix.nmr</groupId>
     <artifactId>org.apache.servicemix.nmr.osgi</artifactId>
     <packaging>bundle</packaging>
-    <name>Apache ServiceMix NMR OSGi</name>
+    <name>Apache ServiceMix :: NMR :: OSGi</name>
 
     <dependencies>
         <dependency>
