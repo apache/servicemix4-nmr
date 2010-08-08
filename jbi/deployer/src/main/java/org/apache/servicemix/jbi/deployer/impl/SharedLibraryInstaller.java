@@ -39,7 +39,7 @@ public class SharedLibraryInstaller extends AbstractInstaller {
 
     public SharedLibraryInstaller(Deployer deployer, Descriptor descriptor, File jbiArtifact, boolean autoStart) {
         super(deployer, descriptor, jbiArtifact, autoStart);
-        installRoot = new File(System.getProperty("karaf.base"), "data/jbi/" + getName() + "/install");
+        installRoot = new File(System.getProperty("karaf.base"), System.getProperty("jbi.cache", "data/jbi/") + getName() + "/install");
         installRoot.mkdirs();
     }
 

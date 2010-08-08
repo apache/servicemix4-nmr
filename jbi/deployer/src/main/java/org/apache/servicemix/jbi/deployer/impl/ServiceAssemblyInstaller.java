@@ -45,7 +45,7 @@ public class ServiceAssemblyInstaller extends AbstractInstaller {
 
     public ServiceAssemblyInstaller(Deployer deployer, Descriptor descriptor, File jbiArtifact, boolean autoStart) {
         super(deployer, descriptor, jbiArtifact, autoStart);
-        this.installRoot = new File(System.getProperty("karaf.base"), "data/jbi/" + getName() + "/install");
+        this.installRoot = new File(System.getProperty("karaf.base"), System.getProperty("jbi.cache", "data/jbi/") + getName() + "/install");
         this.installRoot.mkdirs();
     }
 
