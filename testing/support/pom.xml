@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <!--
 
@@ -32,18 +33,10 @@
     <version>1.3.0-SNAPSHOT</version>
     <name>Apache ServiceMix :: Testing :: Support</name>
 
-    <properties>
-        <aopalliance.version>1.0_1</aopalliance.version>
-        <asm.version>2.2.3_1</asm.version>
-        <jaxp.ri.version>1.4.2_1</jaxp.ri.version>
-        <pax.url.version>1.1.0</pax.url.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>
             <artifactId>org.apache.aries.blueprint</artifactId>
-            <version>${aries.blueprint.version}</version>
         </dependency>
 
         <dependency>
@@ -53,7 +46,6 @@
         <dependency>
             <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.framework</artifactId>
-            <version>${felix.framework.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.felix</groupId>
@@ -78,12 +70,10 @@
         <dependency>
             <groupId>org.ops4j.pax.logging</groupId>
             <artifactId>pax-logging-api</artifactId>
-            <version>${pax.logging.version}</version>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.logging</groupId>
             <artifactId>pax-logging-service</artifactId>
-            <version>${pax.logging.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>log4j</groupId>
@@ -110,7 +100,6 @@
         <dependency>
             <groupId>org.springframework.osgi</groupId>
             <artifactId>spring-osgi-annotation</artifactId>
-            <version>${spring.osgi.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
@@ -119,17 +108,14 @@
         <dependency>
             <groupId>org.apache.servicemix.specs</groupId>
             <artifactId>org.apache.servicemix.specs.jaxp-api-1.4</artifactId>
-            <version>${servicemix.specs.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.aopalliance</artifactId>
-            <version>${aopalliance.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.asm</artifactId>
-            <version>${asm.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
@@ -142,12 +128,10 @@
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>
             <artifactId>org.apache.servicemix.bundles.jaxp-ri</artifactId>
-            <version>${jaxp.ri.version}</version>
         </dependency>
         <dependency>
             <groupId>org.ops4j.pax.url</groupId>
             <artifactId>pax-url-mvn</artifactId>
-            <version>${pax.url.version}</version>
         </dependency>
     </dependencies>
 
