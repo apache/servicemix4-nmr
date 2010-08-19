@@ -36,6 +36,7 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.Message;
 import org.apache.servicemix.nmr.api.Type;
+import org.apache.servicemix.nmr.api.internal.InternalExchange;
 import org.apache.servicemix.nmr.core.NmrRuntimeException;
 
 public class ExchangeUtils {
@@ -140,6 +141,8 @@ public class ExchangeUtils {
                 Transformer transformer = TransformerFactory.newInstance().newTransformer();
                 transformer.transform((DOMSource) object, new StreamResult(buffer));
                 result = buffer.toString();
+            } else if (object instanceof InternalExchange) {
+            	result = "";
             } else if (object != null) {
                 result = object.toString();
             } else {
