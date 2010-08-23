@@ -133,9 +133,9 @@
         <cm:default-properties>
             <cm:property name="nmrId" value="org.apache.servicemix.NMR"/>
             <cm:property name="allowCoreThreadsTimeout" value="true"/>
-            <cm:property name="threadPoolCorePoolSize" value="1"/>
-            <cm:property name="threadPoolMaximumPoolSize" value="16"/>
-            <cm:property name="threadPoolQueueSize" value="256"/>
+            <cm:property name="threadPoolCorePoolSize" value="4"/>
+            <cm:property name="threadPoolMaximumPoolSize" value="-1"/>
+            <cm:property name="threadPoolQueueSize" value="1024"/>
             <cm:property name="bypassIfSynchronous" value="true"/>
         </cm:default-properties>
     </cm:property-placeholder>
