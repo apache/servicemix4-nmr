@@ -94,15 +94,15 @@
       <geronimo.transaction.version>2.1.3</geronimo.transaction.version>
       
       <!-- Bundles -->
-      <ant.bundle.version>1.7.0_4-SNAPSHOT</ant.bundle.version>
-      <aopalliance.bundle.version>1.0_4-SNAPSHOT</aopalliance.bundle.version>
-      <asm.bundle.version>2.2.3_4-SNAPSHOT</asm.bundle.version>
-      <cglib.bundle.version>2.1_3_5-SNAPSHOT</cglib.bundle.version>
-      <commons-io.bundle.version>1.3.2_2-SNAPSHOT</commons-io.bundle.version>
-      <howl.bundle.version>1.0.1-1_2-SNAPSHOT</howl.bundle.version>
-      <jaxp-ri.bundle.version>1.4.2_4-SNAPSHOT</jaxp-ri.bundle.version>
-      <junit.bundle.version>4.7_2-SNAPSHOT</junit.bundle.version>
-      <wsdl4j.bundle.version>1.6.2_3-SNAPSHOT</wsdl4j.bundle.version>
+      <ant.bundle.version>1.7.0_4</ant.bundle.version>
+      <aopalliance.bundle.version>1.0_4</aopalliance.bundle.version>
+      <asm.bundle.version>2.2.3_4</asm.bundle.version>
+      <cglib.bundle.version>2.1_3_6</cglib.bundle.version>
+      <commons-io.bundle.version>1.3.2_4</commons-io.bundle.version>
+      <howl.bundle.version>1.0.1-1_2</howl.bundle.version>
+      <jaxp-ri.bundle.version>1.4.2_4</jaxp-ri.bundle.version>
+      <junit.bundle.version>4.7_2</junit.bundle.version>
+      <wsdl4j.bundle.version>1.6.2_3</wsdl4j.bundle.version>
       
       <!-- Components and SMX Resources -->
       <servicemix3.version>3.3.1</servicemix3.version>
