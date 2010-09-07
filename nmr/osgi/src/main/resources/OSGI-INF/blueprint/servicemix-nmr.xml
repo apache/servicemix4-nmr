@@ -120,22 +120,32 @@
         <property name="defaultConfig">
             <bean class="org.apache.servicemix.executors.impl.ExecutorConfig">
                 <property name="allowCoreThreadsTimeout" value="${allowCoreThreadsTimeout}" />
-                <property name="corePoolSize" value="${threadPoolCorePoolSize}"/>
-                <property name="maximumPoolSize" value="${threadPoolMaximumPoolSize}"/>
-                <property name="queueSize" value="${threadPoolQueueSize}"/>
+                <property name="corePoolSize" value="${corePoolSize}"/>
+                <property name="maximumPoolSize" value="${maximumPoolSize}"/>
+                <property name="queueSize" value="${queueSize}"/>
                 <property name="bypassIfSynchronous" value="${bypassIfSynchronous}" />
             </bean>
         </property>
     </bean>
+
+    <bean id="executorConfigurator" class="org.apache.servicemix.nmr.osgi.ExecutorConfigurator">
+        <property name="executorFactory" ref="executorFactory"/>
+    </bean>
+
+    <service ref="executorConfigurator" interface="org.osgi.service.cm.ManagedService">
+        <service-properties>
+            <entry key="service.pid" value="org.apache.servicemix.nmr"/>
+        </service-properties>
+    </service>
 
     <!-- Property place holder -->
     <cm:property-placeholder persistent-id="org.apache.servicemix.nmr">
         <cm:default-properties>
             <cm:property name="nmrId" value="org.apache.servicemix.NMR"/>
             <cm:property name="allowCoreThreadsTimeout" value="true"/>
-            <cm:property name="threadPoolCorePoolSize" value="4"/>
-            <cm:property name="threadPoolMaximumPoolSize" value="-1"/>
-            <cm:property name="threadPoolQueueSize" value="1024"/>
+            <cm:property name="corePoolSize" value="4"/>
+            <cm:property name="maximumPoolSize" value="-1"/>
+            <cm:property name="queueSize" value="1024"/>
             <cm:property name="bypassIfSynchronous" value="true"/>
         </cm:default-properties>
     </cm:property-placeholder>
