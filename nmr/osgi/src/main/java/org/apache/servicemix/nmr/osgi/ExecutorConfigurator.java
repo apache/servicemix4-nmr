@@ -31,14 +31,14 @@ import org.osgi.service.cm.ManagedService;
  */
 public class ExecutorConfigurator implements ManagedService {
 
-    private ExecutorFactoryImpl factory;
+    private ExecutorFactoryImpl executorFactory;
 
-    public ExecutorFactoryImpl getFactory() {
-        return factory;
+    public ExecutorFactoryImpl getExecutorFactory() {
+        return executorFactory;
     }
 
-    public void setFactory(ExecutorFactoryImpl factory) {
-        this.factory = factory;
+    public void setExecutorFactory(ExecutorFactoryImpl factory) {
+        this.executorFactory = factory;
     }
 
     public void updated(Dictionary properties) throws ConfigurationException {
@@ -84,8 +84,8 @@ public class ExecutorConfigurator implements ManagedService {
                 defaultConfig.setBypassIfSynchronous(getBool(properties, key));
             }
         }
-        factory.setDefaultConfig(defaultConfig);
-        factory.setConfigs(configs);
+        executorFactory.setDefaultConfig(defaultConfig);
+        executorFactory.setConfigs(configs);
     }
 
     private ExecutorConfig getConfig(Map<String, ExecutorConfig> configs, String key) {
