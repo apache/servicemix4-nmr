@@ -44,44 +44,46 @@ public class ExecutorConfigurator implements ManagedService {
     public void updated(Dictionary properties) throws ConfigurationException {
         ExecutorConfig defaultConfig = new ExecutorConfig();
         Map<String, ExecutorConfig> configs = new HashMap<String, ExecutorConfig>();
-        for (Enumeration e = properties.keys(); e.hasMoreElements();) {
-            String key = (String) e.nextElement();
-            if (key.endsWith(".corePoolSize")) {
-                getConfig(configs, key).setCorePoolSize(getInt(properties, key));
-            } else if (key.endsWith(".maximumPoolSize")) {
-                getConfig(configs, key).setMaximumPoolSize(getInt(properties, key));
-            } else if (key.endsWith(".keepAliveTime")) {
-                getConfig(configs, key).setKeepAliveTime(getLong(properties, key));
-            } else if (key.endsWith(".threadDaemon")) {
-                getConfig(configs, key).setThreadDaemon(getBool(properties, key));
-            } else if (key.endsWith(".threadPriority")) {
-                getConfig(configs, key).setThreadPriority(getInt(properties, key));
-            } else if (key.endsWith(".queueSize")) {
-                getConfig(configs, key).setQueueSize(getInt(properties, key));
-            } else if (key.endsWith(".shutdownDelay")) {
-                getConfig(configs, key).setShutdownDelay(getLong(properties, key));
-            } else if (key.endsWith(".allowCoreThreadsTimeout")) {
-                getConfig(configs, key).setAllowCoreThreadsTimeout(getBool(properties, key));
-            } else if (key.endsWith(".bypassIfSynchronous")) {
-                getConfig(configs, key).setBypassIfSynchronous(getBool(properties, key));
-            } else if (key.equals("corePoolSize")) {
-                defaultConfig.setCorePoolSize(getInt(properties, key));
-            } else if (key.equals("maximumPoolSize")) {
-                defaultConfig.setMaximumPoolSize(getInt(properties, key));
-            } else if (key.equals("keepAliveTime")) {
-                defaultConfig.setKeepAliveTime(getLong(properties, key));
-            } else if (key.equals("threadDaemon")) {
-                defaultConfig.setThreadDaemon(getBool(properties, key));
-            } else if (key.equals("threadPriority")) {
-                defaultConfig.setThreadPriority(getInt(properties, key));
-            } else if (key.equals("queueSize")) {
-                defaultConfig.setQueueSize(getInt(properties, key));
-            } else if (key.equals("shutdownDelay")) {
-                defaultConfig.setShutdownDelay(getLong(properties, key));
-            } else if (key.equals("allowCoreThreadsTimeout")) {
-                defaultConfig.setAllowCoreThreadsTimeout(getBool(properties, key));
-            } else if (key.equals("bypassIfSynchronous")) {
-                defaultConfig.setBypassIfSynchronous(getBool(properties, key));
+        if (properties != null) {
+            for (Enumeration e = properties.keys(); e.hasMoreElements();) {
+                String key = (String) e.nextElement();
+                if (key.endsWith(".corePoolSize")) {
+                    getConfig(configs, key).setCorePoolSize(getInt(properties, key));
+                } else if (key.endsWith(".maximumPoolSize")) {
+                    getConfig(configs, key).setMaximumPoolSize(getInt(properties, key));
+                } else if (key.endsWith(".keepAliveTime")) {
+                    getConfig(configs, key).setKeepAliveTime(getLong(properties, key));
+                } else if (key.endsWith(".threadDaemon")) {
+                    getConfig(configs, key).setThreadDaemon(getBool(properties, key));
+                } else if (key.endsWith(".threadPriority")) {
+                    getConfig(configs, key).setThreadPriority(getInt(properties, key));
+                } else if (key.endsWith(".queueSize")) {
+                    getConfig(configs, key).setQueueSize(getInt(properties, key));
+                } else if (key.endsWith(".shutdownDelay")) {
+                    getConfig(configs, key).setShutdownDelay(getLong(properties, key));
+                } else if (key.endsWith(".allowCoreThreadsTimeout")) {
+                    getConfig(configs, key).setAllowCoreThreadsTimeout(getBool(properties, key));
+                } else if (key.endsWith(".bypassIfSynchronous")) {
+                    getConfig(configs, key).setBypassIfSynchronous(getBool(properties, key));
+                } else if (key.equals("corePoolSize")) {
+                    defaultConfig.setCorePoolSize(getInt(properties, key));
+                } else if (key.equals("maximumPoolSize")) {
+                    defaultConfig.setMaximumPoolSize(getInt(properties, key));
+                } else if (key.equals("keepAliveTime")) {
+                    defaultConfig.setKeepAliveTime(getLong(properties, key));
+                } else if (key.equals("threadDaemon")) {
+                    defaultConfig.setThreadDaemon(getBool(properties, key));
+                } else if (key.equals("threadPriority")) {
+                    defaultConfig.setThreadPriority(getInt(properties, key));
+                } else if (key.equals("queueSize")) {
+                    defaultConfig.setQueueSize(getInt(properties, key));
+                } else if (key.equals("shutdownDelay")) {
+                    defaultConfig.setShutdownDelay(getLong(properties, key));
+                } else if (key.equals("allowCoreThreadsTimeout")) {
+                    defaultConfig.setAllowCoreThreadsTimeout(getBool(properties, key));
+                } else if (key.equals("bypassIfSynchronous")) {
+                    defaultConfig.setBypassIfSynchronous(getBool(properties, key));
+                }
             }
         }
         executorFactory.setDefaultConfig(defaultConfig);
