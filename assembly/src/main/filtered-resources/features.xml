@@ -33,15 +33,17 @@
         <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.api/${pom.version}</bundle>
         <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.core/${pom.version}</bundle>
         <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.osgi/${pom.version}</bundle>
-        <!--
-        <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.spring/${pom.version}</bundle>
-        -->
         <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.commands/${pom.version}</bundle>
         <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.management/${pom.version}</bundle>
     </feature>
     <feature name="nmr-audit" version="${version}">
         <feature version="${version}">nmr</feature>
         <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.audit/${pom.version}</bundle>
+    </feature>
+    <feature name="woodstox" version="${woodstox.version}">
+        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.0/${servicemix.specs.version}</bundle>
+        <bundle>mvn:org.codehaus.woodstox/stax2-api/${woodstox.stax2-api.version}</bundle>
+        <bundle>mvn:org.codehaus.woodstox/woodstox-core-asl/${woodstox.version}</bundle>
     </feature>
     <feature name="jbi" version="${version}">
         <feature version="${version}">naming</feature>
@@ -70,10 +72,5 @@
     <feature name="examples-nmr" version="${version}">
         <bundle>mvn:org.apache.servicemix.nmr.examples/org.apache.servicemix.nmr.examples.nmr.endpoint/${pom.version}</bundle>
         <bundle>mvn:org.apache.servicemix.nmr.examples/org.apache.servicemix.nmr.examples.nmr.client/${pom.version}</bundle>
-    </feature>
-    <feature name="woodstox" version="${woodstox.version}">
-        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.0/${servicemix.specs.version}</bundle>
-        <bundle>mvn:org.codehaus.woodstox/stax2-api/${woodstox.stax2-api.version}</bundle>
-        <bundle>mvn:org.codehaus.woodstox/woodstox-core-asl/${woodstox.version}</bundle>
     </feature>
 </features>
