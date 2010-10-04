@@ -83,21 +83,15 @@
       <camel.version>2.4.0</camel.version>
       
       <!-- Geronimo -->
-      <geronimo.j2ee.connector.version>2.0.0</geronimo.j2ee.connector.version>
       <geronimo-jms.version>1.1.1</geronimo-jms.version>
       <geronimo-jta.version>1.1.1</geronimo-jta.version>
       <geronimo-servlet.version>1.1.2</geronimo-servlet.version>
-      <geronimo.stax.version>1.0.1</geronimo.stax.version>
-      <geronimo.transaction.version>2.1.3</geronimo.transaction.version>
       
       <!-- Bundles -->
       <ant.bundle.version>1.7.0_4</ant.bundle.version>
       <aopalliance.bundle.version>1.0_4</aopalliance.bundle.version>
       <asm.bundle.version>2.2.3_4</asm.bundle.version>
       <cglib.bundle.version>2.1_3_6</cglib.bundle.version>
-      <commons-io.bundle.version>1.3.2_4</commons-io.bundle.version>
-      <howl.bundle.version>1.0.1-1_2</howl.bundle.version>
-      <jaxp-ri.bundle.version>1.4.2_4</jaxp-ri.bundle.version>
       <junit.bundle.version>4.7_2</junit.bundle.version>
       <wsdl4j.bundle.version>1.6.2_3</wsdl4j.bundle.version>
       
@@ -115,7 +109,6 @@
       <pax.exam.version>1.2.2</pax.exam.version>
       <pax.logging.version>1.5.3</pax.logging.version>
       <pax.url.version>1.1.3</pax.url.version>
-      <pax.runner.version>1.5.0</pax.runner.version>
       
       <!-- Spring -->
       <spring.version>3.0.3.RELEASE</spring.version>
@@ -125,12 +118,10 @@
       <commons-logging.version>1.1.1</commons-logging.version>
       <commons-management.version>1.0</commons-management.version>
       <derby.version>10.5.3.0_1</derby.version>
-      <depends.maven.plugin.version>1.2</depends.maven.plugin.version>
       <easymock.version>2.4</easymock.version>
       <hsqldb.version>1.8.0.7</hsqldb.version>
       <javax.mail.version>1.4.3</javax.mail.version>
       <jencks.version>2.2</jencks.version>
-      <jline.version>0.9.94</jline.version>
       <junit.version>4.7</junit.version>
       <log4j.version>1.2.16</log4j.version>
       <lucene.version>2.4.1</lucene.version>
@@ -139,8 +130,25 @@
       <woodstox.version>4.0.8</woodstox.version>
       <woodstox.stax2-api.version>3.0.2</woodstox.stax2-api.version>
       <xbean.version>3.5</xbean.version>
+
+      <!-- Maven Plugins -->
+      <depends-maven-plugin.version>1.2</depends-maven-plugin.version>
       
   </properties>
+  
+  <repositories>
+    <repository>
+      <id>java.net.m2</id>
+      <name>Java.net Maven2 Repository</name>
+      <url>http://download.java.net/maven/2</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
   <dependencyManagement>
     <dependencies>
@@ -740,7 +748,7 @@
               <plugin>
                   <groupId>org.apache.servicemix.tooling</groupId>
                   <artifactId>depends-maven-plugin</artifactId>
-                  <version>${depends.maven.plugin.version}</version>
+                  <version>${depends-maven-plugin.version}</version>
               </plugin>
               <plugin>
                   <groupId>org.apache.maven.plugins</groupId>
