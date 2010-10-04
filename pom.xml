@@ -133,6 +133,11 @@
 
       <!-- Maven Plugins -->
       <depends-maven-plugin.version>1.2</depends-maven-plugin.version>
+      <!-- 
+        Fix the assembly plugin version to avoid:
+        http://jira.codehaus.org/browse/MASSEMBLY-462
+      -->
+      <maven-assembly-plugin.version>2.2-beta-4</maven-assembly-plugin.version>
       
   </properties>
   
@@ -740,6 +745,7 @@
               <plugin>
                   <groupId>org.apache.maven.plugins</groupId>
                   <artifactId>maven-assembly-plugin</artifactId>
+                  <version>${maven-assembly-plugin.version}</version>
               </plugin>
               <plugin>
                   <groupId>org.apache.maven.plugins</groupId>
