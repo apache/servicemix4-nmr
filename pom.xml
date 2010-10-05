@@ -129,7 +129,7 @@
       <sshd.version>0.3.0</sshd.version>
       <woodstox.version>4.0.8</woodstox.version>
       <woodstox.stax2-api.version>3.0.2</woodstox.stax2-api.version>
-      <xbean.version>3.5</xbean.version>
+      <xbean.version>3.7</xbean.version>
 
       <!-- Maven Plugins -->
       <depends-maven-plugin.version>1.2</depends-maven-plugin.version>

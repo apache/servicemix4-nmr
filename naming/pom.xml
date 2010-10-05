@@ -32,10 +32,6 @@
     <packaging>bundle</packaging>
     <name>Apache ServiceMix :: Naming</name>
 
-    <properties>
-        <xbean-version>3.5</xbean-version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -68,7 +64,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Export-Package>org.apache.xbean.naming.*;version="${xbean-version}"</Export-Package>
+                        <Export-Package>org.apache.xbean.naming.*;version="${xbean.version}"</Export-Package>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Activator>org.apache.servicemix.naming.Activator</Bundle-Activator>
                         <Export-Service>javax.naming.spi.InitialContextFactoryBuilder</Export-Service>
