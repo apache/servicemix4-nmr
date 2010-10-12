@@ -28,104 +28,106 @@
 
     <!-- ServiceMix NMR -->
     <bean id="servicemix" class="org.apache.servicemix.nmr.core.ServiceMix"
-         init-method="init"
-         destroy-method="shutdown">
-        <property name="endpointRegistry" ref="endpointRegistry" />
-        <property name="listenerRegistry" ref="listenerRegistry" />
-        <property name="flowRegistry" ref="flowRegistry" />
-        <property name="wireRegistry" ref="wireRegistry" />
-        <property name="executorFactory" ref="executorFactory" />
-        <property name="managementStrategy" ref="managementStrategy" />
-        <property name="id" value="${nmrId}" />
+          init-method="init"
+          destroy-method="shutdown">
+        <property name="endpointRegistry" ref="endpointRegistry"/>
+        <property name="listenerRegistry" ref="listenerRegistry"/>
+        <property name="flowRegistry" ref="flowRegistry"/>
+        <property name="wireRegistry" ref="wireRegistry"/>
+        <property name="executorFactory" ref="executorFactory"/>
+        <property name="managementStrategy" ref="managementStrategy"/>
+        <property name="id" value="${nmrId}"/>
     </bean>
     <service ref="servicemix" interface="org.apache.servicemix.nmr.api.NMR"/>
 
     <!-- Retrieve ManagementStrategy from OSGi service registry -->
-    <reference id="managementStrategy" interface="org.fusesource.commons.management.ManagementStrategy" />
+    <reference id="managementStrategy" interface="org.fusesource.commons.management.ManagementStrategy"/>
 
     <!-- Flow registry and service tracker -->
     <bean id="flowRegistry" class="org.apache.servicemix.nmr.core.FlowRegistryImpl">
-        <property name="registry" ref="endpointRegistry" />
-        <property name="authorizationService" ref="authorizationService" />
+        <property name="registry" ref="endpointRegistry"/>
+        <property name="authorizationService" ref="authorizationService"/>
         <property name="nonOsgiFlows">
             <list>
-                <bean class="org.apache.servicemix.nmr.core.StraightThroughFlow" />
+                <bean class="org.apache.servicemix.nmr.core.StraightThroughFlow"/>
             </list>
         </property>
     </bean>
-    <bean id="endpointTracker" class="org.apache.servicemix.nmr.osgi.OsgiServiceRegistryTracker" init-method="init" destroy-method="destroy">
-        <property name="interface" value="org.apache.servicemix.nmr.api.internal.Flow" />
-        <property name="registry" ref="listenerRegistry" />
-        <property name="bundleContext" ref="blueprintBundleContext" />
+    <bean id="endpointTracker" class="org.apache.servicemix.nmr.osgi.OsgiServiceRegistryTracker" init-method="init"
+          destroy-method="destroy">
+        <property name="interface" value="org.apache.servicemix.nmr.api.internal.Flow"/>
+        <property name="registry" ref="listenerRegistry"/>
+        <property name="bundleContext" ref="blueprintBundleContext"/>
     </bean>
 
     <!-- Listener registry and service tracker -->
-    <bean id="listenerRegistry" class="org.apache.servicemix.nmr.core.ListenerRegistryImpl" />
+    <bean id="listenerRegistry" class="org.apache.servicemix.nmr.core.ListenerRegistryImpl"/>
     <bean class="org.apache.servicemix.nmr.osgi.OsgiServiceRegistryTracker" init-method="init" destroy-method="destroy">
-        <property name="interface" value="org.apache.servicemix.nmr.api.event.Listener" />
-        <property name="registry" ref="listenerRegistry" />
-        <property name="bundleContext" ref="blueprintBundleContext" />
+        <property name="interface" value="org.apache.servicemix.nmr.api.event.Listener"/>
+        <property name="registry" ref="listenerRegistry"/>
+        <property name="bundleContext" ref="blueprintBundleContext"/>
     </bean>
 
     <!-- Endpoint registry and service tracker -->
     <bean id="endpointRegistry" class="org.apache.servicemix.nmr.core.EndpointRegistryImpl">
-        <property name="nmr" ref="servicemix" />
-        <property name="registry" ref="internalEndpointRegistry" />
-        <property name="executorFactory" ref="executorFactory" />
+        <property name="nmr" ref="servicemix"/>
+        <property name="registry" ref="internalEndpointRegistry"/>
+        <property name="executorFactory" ref="executorFactory"/>
     </bean>
     <bean id="internalEndpointRegistry" class="org.apache.servicemix.nmr.osgi.InternalRegistryWrapper">
         <property name="bundleContext" ref="blueprintBundleContext"/>
     </bean>
     <bean class="org.apache.servicemix.nmr.osgi.OsgiServiceRegistryTracker" init-method="init" destroy-method="destroy">
-        <property name="interface" value="org.apache.servicemix.nmr.api.Endpoint" />
-        <property name="registry" ref="endpointRegistry" />
+        <property name="interface" value="org.apache.servicemix.nmr.api.Endpoint"/>
+        <property name="registry" ref="endpointRegistry"/>
         <property name="bundleContext" ref="blueprintBundleContext"/>
     </bean>
 
     <!-- Wire registry and service tracker -->
     <bean id="wireRegistry" class="org.apache.servicemix.nmr.core.WireRegistryImpl"/>
     <bean class="org.apache.servicemix.nmr.osgi.OsgiServiceRegistryTracker" init-method="init" destroy-method="destroy">
-        <property name="interface" value="org.apache.servicemix.nmr.api.Wire" />
-        <property name="registry" ref="wireRegistry" />
+        <property name="interface" value="org.apache.servicemix.nmr.api.Wire"/>
+        <property name="registry" ref="wireRegistry"/>
         <property name="bundleContext" ref="blueprintBundleContext"/>
     </bean>
 
     <!-- AuthorizationService -->
-    <bean id="authorizationService" class="org.apache.servicemix.nmr.core.security.DefaultAuthorizationService" />
-    <service ref="authorizationService" interface="org.apache.servicemix.nmr.api.security.AuthorizationService" />
+    <bean id="authorizationService" class="org.apache.servicemix.nmr.core.security.DefaultAuthorizationService"/>
+    <service ref="authorizationService" interface="org.apache.servicemix.nmr.api.security.AuthorizationService"/>
 
     <!-- AuthorizationEntries -->
     <reference-list id="authorizationEntries"
                     interface="org.apache.servicemix.nmr.api.security.AuthorizationEntry"
                     availability="optional">
-        <reference-listener ref="authorizationService" bind-method="register" unbind-method="unregister" />
+        <reference-listener ref="authorizationService" bind-method="register" unbind-method="unregister"/>
     </reference-list>
 
     <!-- Default authorization entry -->
     <service interface="org.apache.servicemix.nmr.api.security.AuthorizationEntry">
         <bean class="org.apache.servicemix.nmr.core.security.DefaultAuthorizationEntry">
-            <property name="endpoint" value="*" />
-            <property name="rank" value="-2147483648" />
-            <property name="roles" value="*" />
-            <property name="type" value="Set" />
+            <property name="endpoint" value="*"/>
+            <property name="rank" value="-2147483648"/>
+            <property name="roles" value="*"/>
+            <property name="type" value="Set"/>
         </bean>
     </service>
 
     <!-- AuthenticationService -->
-    <bean id="authenticationService" class="org.apache.servicemix.nmr.core.security.JaasAuthenticationService" />
-    <service ref="authenticationService" interface="org.apache.servicemix.nmr.api.security.AuthenticationService" />
+    <bean id="authenticationService" class="org.apache.servicemix.nmr.core.security.JaasAuthenticationService"/>
+    <service ref="authenticationService" interface="org.apache.servicemix.nmr.api.security.AuthenticationService"/>
 
     <!-- ExecutorFactory -->
     <bean id="executorFactory" class="org.apache.servicemix.executors.impl.ExecutorFactoryImpl">
         <property name="defaultConfig">
             <bean class="org.apache.servicemix.executors.impl.ExecutorConfig">
-                <property name="allowCoreThreadsTimeout" value="${allowCoreThreadsTimeout}" />
+                <property name="allowCoreThreadsTimeout" value="${allowCoreThreadsTimeout}"/>
                 <property name="corePoolSize" value="${corePoolSize}"/>
                 <property name="maximumPoolSize" value="${maximumPoolSize}"/>
                 <property name="queueSize" value="${queueSize}"/>
-                <property name="bypassIfSynchronous" value="${bypassIfSynchronous}" />
+                <property name="bypassIfSynchronous" value="${bypassIfSynchronous}"/>
             </bean>
         </property>
+        <property name="managementStrategy" ref="managementStrategy"/>
     </bean>
 
     <bean id="executorConfigurator" class="org.apache.servicemix.nmr.osgi.ExecutorConfigurator">
