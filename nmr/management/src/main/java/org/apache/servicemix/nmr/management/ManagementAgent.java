@@ -19,7 +19,6 @@ package org.apache.servicemix.nmr.management;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.EventObject;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.management.InstanceAlreadyExistsException;
 import javax.management.JMException;
@@ -65,22 +64,22 @@ public class ManagementAgent implements ManagementStrategy {
         ObjectName objectName = getManagedObjectName(managedObject, null, ObjectName.class);
         manageNamedObject(managedObject, objectName);
     }
-    
+
     /**
-     * @see org.fusesource.commons.management.ManagementStrategy#getManagedObjectName(java.lang.Object,java.lang.String,java.lang.Class)
+     * @see org.fusesource.commons.management.ManagementStrategy#getManagedObjectName(java.lang.Object, java.lang.String, java.lang.Class)
      */
     public synchronized <T> T getManagedObjectName(Object managableObject,
-                                      String customName, 
-                                      Class<T> nameType) throws Exception {
+                                                   String customName,
+                                                   Class<T> nameType) throws Exception {
         return String.class.equals(nameType) && managableObject == null && customName == null
-               ? nameType.cast(namingStrategy.getJmxDomainName())
-               : ObjectName.class.equals(nameType) 
-                 ? nameType.cast(getTypeSpecificObjectName(managableObject, customName))
-                 : null;
+                ? nameType.cast(namingStrategy.getJmxDomainName())
+                : ObjectName.class.equals(nameType)
+                ? nameType.cast(getTypeSpecificObjectName(managableObject, customName))
+                : null;
     }
 
     /**
-     * @see org.fusesource.commons.management.ManagementStrategy#manageNamedObject(java.lang.Object,java.lang.Object)
+     * @see org.fusesource.commons.management.ManagementStrategy#manageNamedObject(java.lang.Object, java.lang.Object)
      */
     public synchronized void manageNamedObject(Object managedObject, Object preferredName) throws Exception {
         managedObject = getTypeSpecificManagedObject(managedObject);
@@ -92,7 +91,7 @@ public class ManagementAgent implements ManagementStrategy {
             }
         }
     }
-    
+
     /**
      * @see org.fusesource.commons.management.ManagementStrategy#unmanageObject(java.lang.Object)
      */
@@ -109,32 +108,32 @@ public class ManagementAgent implements ManagementStrategy {
             unregister((ObjectName) name);
         }
     }
-    
+
     /**
-     * @see org.fusesource.commons.management.ManagementStrategy#isManaged(java.lang.Object,java.lang.Object)
+     * @see org.fusesource.commons.management.ManagementStrategy#isManaged(java.lang.Object, java.lang.Object)
      */
     public synchronized boolean isManaged(Object managableObject, Object name) {
         try {
-            return managableObject != null 
-                   ? getMbeanServer().isRegistered(
-                         getManagedObjectName(managableObject, null, ObjectName.class))
-                   : name != null && name instanceof ObjectName
-                     ? getMbeanServer().isRegistered((ObjectName)name)
-                     : false;
+            return managableObject != null
+                    ? getMbeanServer().isRegistered(
+                    getManagedObjectName(managableObject, null, ObjectName.class))
+                    : name != null && name instanceof ObjectName
+                    ? getMbeanServer().isRegistered((ObjectName) name)
+                    : false;
         } catch (Exception e) {
             return false;
-        }    
+        }
     }
 
     /**
-     * @see org.fusesource.commons.management.ManagementStrategy#createStatistic(java.lang.String,java.lang.Object,UpdateMode)
+     * @see org.fusesource.commons.management.ManagementStrategy#createStatistic(java.lang.String, java.lang.Object, UpdateMode)
      */
     public Statistic createStatistic(String name, Object owner, UpdateMode updateMode) {
         return updateMode == UpdateMode.COUNTER
-               ? new TimeStatistic(name, null)
-               : updateMode == UpdateMode.VALUE
-                 ? new CountStatistic(name, null)
-                 : null;
+                ? new TimeStatistic(name, null)
+                : updateMode == UpdateMode.VALUE
+                ? new CountStatistic(name, null)
+                : null;
     }
 
     /**
@@ -150,19 +149,19 @@ public class ManagementAgent implements ManagementStrategy {
     public void setBundleContext(BundleContext ctx) {
         bundleContext = ctx;
     }
-    
+
     public BundleContext getBundleContext() {
         return bundleContext;
     }
-    
+
     public void setEnabled(boolean b) {
         enabled = b;
-    }    
-    
+    }
+
     public boolean isEnabled() {
         return enabled;
     }
-    
+
     public MBeanServer getMbeanServer() {
         return mbeanServer;
     }
@@ -199,7 +198,7 @@ public class ManagementAgent implements ManagementStrategy {
     public void setNamingStrategy(NamingStrategy namingStrategy) {
         this.namingStrategy = namingStrategy;
     }
-    
+
     protected void registerObjects() {
         ObjectName[] mBeans = mbeans.keySet().toArray(new ObjectName[mbeans.size()]);
         int caught = 0;
@@ -235,7 +234,7 @@ public class ManagementAgent implements ManagementStrategy {
             } catch (UndeclaredThrowableException ute) {
                 if (ute.getCause() instanceof RuntimeException) {
                     LOG.warn("MBean registration failed: ", ute.getCause());
-                    throw (RuntimeException)ute.getCause();
+                    throw (RuntimeException) ute.getCause();
                 } else {
                     LOG.warn("MBean registration failed: ", ute.getCause());
                     throw new JMException(ute.getCause().getMessage());
@@ -290,10 +289,10 @@ public class ManagementAgent implements ManagementStrategy {
             mbeans.put(name, obj);
         }
     }
-    
-    protected void registerService() {        
+
+    protected void registerService() {
         serviceRegistration = getBundleContext().registerService("org.fusesource.commons.management.ManagementStrategy",
-                                                                 this, null);                
+                this, null);
     }
 
     protected void unregisterService() {
@@ -301,23 +300,23 @@ public class ManagementAgent implements ManagementStrategy {
             serviceRegistration.unregister();
         }
     }
-    
+
     protected ObjectName getTypeSpecificObjectName(Object mo, String customName) throws MalformedObjectNameException {
         return mo instanceof ManagedEndpoint
-               ? namingStrategy.getObjectName((ManagedEndpoint)mo)
-               : mo instanceof Nameable
-                 ? (customName != null
-                    ? namingStrategy.getCustomObjectName(customName, ((Nameable)mo).getName())
-                    : namingStrategy.getObjectName((Nameable)mo))
-                   : null;
+                ? namingStrategy.getObjectName((ManagedEndpoint) mo)
+                : mo instanceof Nameable
+                ? (customName != null
+                ? namingStrategy.getCustomObjectName(customName, ((Nameable) mo).getName())
+                : namingStrategy.getObjectName((Nameable) mo))
+                : null;
     }
 
-    
+
     protected Object getTypeSpecificManagedObject(Object object) throws NotCompliantMBeanException {
         return object instanceof ManagedEndpoint
-               ? object
-               : object instanceof Nameable
-                 ? new StandardMBean(object, ((Nameable)object).getPrimaryInterface())
-                 : null;
+                ? object
+                : object instanceof Nameable
+                ? new StandardMBean(object, ((Nameable) object).getPrimaryInterface())
+                : object;
     }
 }
