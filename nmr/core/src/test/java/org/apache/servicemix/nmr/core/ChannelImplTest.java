@@ -177,23 +177,10 @@ public class ChannelImplTest extends TestCase {
     }
     
     public void testChangeThreadNameForSyncExchange() throws Exception {
-        final BlockingEndpoint blocking = new BlockingEndpoint();
-        final CountDownLatch sent = new CountDownLatch(1);
+        final BlockingEndpoint blocking = new BlockingEndpoint(1);
         final Map<String, Object> props = ServiceHelper.createMap(Endpoint.NAME, "blocking");
         nmr.getEndpointRegistry().register(blocking, props);
-        nmr.getListenerRegistry().register(new ExchangeListener() {
 
-            public void exchangeDelivered(Exchange exchange) {}
-
-            public void exchangeFailed(Exchange exchange) {}
-
-            public void exchangeSent(Exchange exchange) {
-                sent.countDown();                
-            }
-            
-        }, null);
-        
-        
         final CountDownLatch done = new CountDownLatch(1);
         final Channel channel = nmr.createChannel();
         final Exchange exchange = channel.createExchange(Pattern.InOnly);
@@ -207,14 +194,16 @@ public class ChannelImplTest extends TestCase {
         });
         thread.start();
         
-        //let's wait a sec for the exchange to be sent
-        sent.await(5, TimeUnit.SECONDS);
+        // let's wait a sec for the exchange to be received by the blocking endpoint
+        blocking.expected.await(5, TimeUnit.SECONDS);
         assertNotNull(exchange);
         assertNotNull("There should be a thread waiting for the exchange", 
                       findThread(exchange.getId()));
-        
+
+        // things are looking ok so far - let's allow the blocking endpoint to continue
         blocking.lock.release();
-        //let's wait another sec for the exchange to be done
+
+        // let's wait another sec for the exchange to be done
         done.await(5, TimeUnit.SECONDS);
         assertNull("There shouldn't be any thread waiting for the exchange",
                    findThread(exchange.getId()));
@@ -261,10 +250,19 @@ public class ChannelImplTest extends TestCase {
     
     private static class BlockingEndpoint implements Endpoint {
 
+        private final CountDownLatch expected;
         private Semaphore lock = new Semaphore(0);
         private Channel channel;
 
+        public BlockingEndpoint(int expected) {
+            super();
+            this.expected = new CountDownLatch(expected);
+        }
+
         public void process(Exchange exchange) {
+            // one less exchange to be expected
+            expected.countDown();
+
             //let's make the endpoint block until we release it
             try {
                 lock.acquire();
