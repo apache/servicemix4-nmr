@@ -80,7 +80,7 @@
       <activemq.version>5.4.1</activemq.version>
       
       <!-- Camel -->
-      <camel.version>2.4.0</camel.version>
+      <camel.version>2.5-SNAPSHOT</camel.version>
       
       <!-- Geronimo -->
       <geronimo-jms.version>1.1.1</geronimo-jms.version>
