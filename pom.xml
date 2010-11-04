@@ -96,7 +96,7 @@
       <wsdl4j.bundle.version>1.6.2_3</wsdl4j.bundle.version>
       
       <!-- Components and SMX Resources -->
-      <servicemix3.version>3.3.1</servicemix3.version>
+      <servicemix3.version>3.3.2</servicemix3.version>
       <servicemix-eip.version>2010.02-SNAPSHOT</servicemix-eip.version>
       <servicemix-http.version>2010.02-SNAPSHOT</servicemix-http.version>
       <servicemix-jsr181.version>2010.02-SNAPSHOT</servicemix-jsr181.version>
