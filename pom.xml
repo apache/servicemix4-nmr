@@ -73,7 +73,7 @@
       <felix.fileinstall.version>3.0.2</felix.fileinstall.version>
       <felix.gogo.version>0.4.0</felix.gogo.version>
       <felix.plugin.version>2.1.0</felix.plugin.version>
-      <karaf.version>2.1.1</karaf.version>
+      <karaf.version>2.1.2</karaf.version>
       <osgi.core.version>4.2.0</osgi.core.version>
       
       <!-- ActiveMQ -->
