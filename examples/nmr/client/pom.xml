@@ -66,7 +66,7 @@
                                         org.apache.servicemix.nmr.api, 
                                         org.apache.servicemix.nmr.api.service,
                                         org.osgi.framework,
-                                        org.springframework.beans.factory
+                                        org.springframework.beans.factory;version="${spring.import.range}"
                         </Import-Package>
                         <Private-Package>org.apache.servicemix.nmr.examples.nmr.client</Private-Package>
                     </instructions>

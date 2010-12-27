@@ -137,7 +137,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Import-Package>
                             javax.management,
-                            org.springframework.jmx.support,
+                            org.springframework.jmx.support;version="${spring.import.range}",
                             org.apache.felix*;resolution:=optional,
                             org.apache.servicemix.platform.main;resolution:=optional,
                             org.apache.servicemix.platform.main.spi;resolution:=optional;version="1.0.0",

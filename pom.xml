@@ -112,6 +112,7 @@
       
       <!-- Spring -->
       <spring.version>3.0.4.RELEASE</spring.version>
+      <spring.import.range>[2.5,4)</spring.import.range>
       <spring.osgi.version>1.2.0</spring.osgi.version>
       
       <!-- Other Dependencies -->

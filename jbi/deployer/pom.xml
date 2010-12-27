@@ -136,7 +136,7 @@
                             javax.transaction,
                             javax.management.loading,
                             org.apache.geronimo.transaction.manager;resolution:=optional,
-                            org.springframework.transaction;resolution:=optional,
+                            org.springframework.transaction;version="${spring.import.range}";resolution:=optional,
                             org.apache.servicemix.jbi.runtime.impl,
                             org.apache.tools.ant*;resolution:=optional,
                             *

@@ -126,6 +126,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Import-Package>
                             org.springframework.osgi*;resolution:=optional,
+                            org.springframework.beans.factory;version="${spring.import.range}",
                             *
                         </Import-Package>
                         <Export-Package>${project.artifactId}*;version=${project.version};-noimport:=true</Export-Package>

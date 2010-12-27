@@ -101,7 +101,7 @@
                         <Import-Package>
                             org.osgi.service.blueprint*;resolution:=optional,
                             org.apache.aries.blueprint*;resolution:=optional,
-                            org.springframework.*;resolution:=optional,
+                            org.springframework.*;version="${spring.import.range}";resolution:=optional,
                             *
                         </Import-Package>
                         <Private-Package>${project.artifactId}.impl</Private-Package>

@@ -104,7 +104,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>${project.artifactId}*;version=${project.version};-noimport:=true</Export-Package>
                         <Import-Package>
-                            org.springframework*;resolution:=optional;version="[2.5,4)",
+                            org.springframework*;resolution:=optional;version="${spring.import.range}",
                             *
                         </Import-Package>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
