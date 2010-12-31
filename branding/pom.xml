@@ -24,13 +24,12 @@
     <parent>
         <groupId>org.apache.servicemix.nmr</groupId>
         <artifactId>nmr-parent</artifactId>
-        <version>1.3.1-SNAPSHOT</version>
+        <version>1.4.0-SNAPSHOT</version>
     </parent>
 
     <groupId>org.apache.servicemix.nmr</groupId>
     <artifactId>org.apache.servicemix.nmr.branding</artifactId>
     <packaging>bundle</packaging>
-    <version>1.3.1-SNAPSHOT</version>
     <name>Apache ServiceMix :: NMR :: Branding Support</name>
 
     <build>
