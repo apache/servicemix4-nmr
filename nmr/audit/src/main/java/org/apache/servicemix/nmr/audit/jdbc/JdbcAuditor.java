@@ -71,7 +71,8 @@ public class JdbcAuditor extends AbstractAuditor {
         return "JDBC Auditing Service";
     }
     
-    public void afterPropertiesSet() throws Exception {
+    public JDBCAdapter createAdapter() throws AuditorException {
+        JDBCAdapter jdbcAdapter;
         if (this.dataSource == null) {
             throw new IllegalArgumentException("dataSource should not be null");
         }
@@ -87,22 +88,25 @@ public class JdbcAuditor extends AbstractAuditor {
                 connection.setAutoCommit(false);
                 restoreAutoCommit = true;
             }
-            adapter = JDBCAdapterFactory.getAdapter(connection);
+            jdbcAdapter = JDBCAdapterFactory.getAdapter(connection);
             if (statements == null) {
                 statements = new Statements();
                 statements.setStoreTableName(tableName);
             }
-            adapter.setStatements(statements);
+            jdbcAdapter.setStatements(statements);
             if (createDataBase) {
-                adapter.doCreateTables(connection);
+                jdbcAdapter.doCreateTables(connection);
             }
             connection.commit();
         } catch (SQLException e) {
-            throw (IOException) new IOException("Exception while creating database").initCause(e); 
+            throw (AuditorException) new AuditorException("Exception while creating database").initCause(e);
+        } catch (IOException e) {
+           throw (AuditorException) new AuditorException("Exception while creating database").initCause(e);
         } finally {
             close(connection, restoreAutoCommit);
         }
         this.tccl = Thread.currentThread().getContextClassLoader();
+        return jdbcAdapter;
     }
     
     public void exchangeSent(Exchange exchange) {
@@ -193,6 +197,9 @@ public class JdbcAuditor extends AbstractAuditor {
     }
 
     protected void store(Connection connection, String id, byte[] data) throws Exception {
+        if(adapter == null)
+           adapter = createAdapter();
+
         if (adapter.doLoadData(connection, id) != null) {
             adapter.doUpdateData(connection, id, data);
         } else {
@@ -213,6 +220,8 @@ public class JdbcAuditor extends AbstractAuditor {
      */
     public int getExchangeCount() throws AuditorException {
         Connection connection = null;
+        if(adapter == null)
+           adapter=createAdapter();
         try {
             connection = dataSource.getConnection();
             return adapter.doGetCount(connection);
@@ -227,6 +236,8 @@ public class JdbcAuditor extends AbstractAuditor {
      * @see org.apache.servicemix.nmr.audit.AuditorMBean#getExchangeIds(int, int)
      */
     public String[] getExchangeIdsByRange(int fromIndex, int toIndex) throws AuditorException {
+        if(adapter == null)
+           adapter=createAdapter();
         if (fromIndex < 0) {
             throw new IllegalArgumentException("fromIndex should be greater or equal to zero");
         }
@@ -253,6 +264,9 @@ public class JdbcAuditor extends AbstractAuditor {
      */
     public Exchange[] getExchangesByIds(String[] ids) throws AuditorException {
         Exchange[] exchanges = new Exchange[ids.length];
+        if(adapter == null)
+           adapter=createAdapter();
+
         Connection connection = null;
         try {
             connection = dataSource.getConnection();
@@ -272,6 +286,8 @@ public class JdbcAuditor extends AbstractAuditor {
      */
     public int deleteExchangesByIds(String[] ids) throws AuditorException {
         Connection connection = null;
+        if(adapter == null)
+           adapter=createAdapter();
         boolean restoreAutoCommit = false;
         try {
             connection = dataSource.getConnection();
@@ -324,5 +340,4 @@ public class JdbcAuditor extends AbstractAuditor {
             }
         }
     }
-
 }

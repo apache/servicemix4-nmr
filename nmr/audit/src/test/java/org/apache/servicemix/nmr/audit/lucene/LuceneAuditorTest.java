@@ -61,7 +61,6 @@ public class LuceneAuditorTest extends AbstractAuditorTest {
 
         JdbcAuditor jdbcAuditor = new JdbcAuditor();
         jdbcAuditor.setDataSource(dataSource);
-        jdbcAuditor.afterPropertiesSet();
         LuceneAuditor auditor = new LuceneAuditor();
         auditor.setDelegatedAuditor(jdbcAuditor);
         LuceneIndexer indexer = new LuceneIndexer();

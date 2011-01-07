@@ -53,7 +53,6 @@ public class JdbcAuditorTest extends AbstractAuditorTest {
         
         JdbcAuditor auditor = new JdbcAuditor();
         auditor.setDataSource(dataSource);
-        auditor.afterPropertiesSet();
         nmr.getListenerRegistry().register(auditor, null);
 
         auditor.deleteAllExchanges();
