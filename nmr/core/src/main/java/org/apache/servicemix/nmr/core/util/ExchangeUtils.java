@@ -69,9 +69,11 @@ public class ExchangeUtils {
             }
             sb.append("  ]").append('\n');
         }
-        display(exchange, Type.In, sb);
-        display(exchange, Type.Out, sb);
-        display(exchange, Type.Fault, sb);
+        if (displayContent) {
+            display(exchange, Type.In, sb);
+            display(exchange, Type.Out, sb);
+            display(exchange, Type.Fault, sb);
+        }
         if (exchange.getError() != null) {
             sb.append("  error: [").append('\n');
             StringWriter sw = new StringWriter();
