@@ -68,6 +68,7 @@ public class ExchangeUtilsTest extends TestCase {
         assertTrue(msg.getBody() instanceof StringSource);
         assertNotNull(msg.getAttachment("id"));
         assertTrue(msg.getAttachment("id") instanceof BufferedInputStream);
+        assertTrue(str.indexOf("<hello/>") == -1);
 
         str = e.display(true);
         LOG.info(str);
@@ -75,6 +76,7 @@ public class ExchangeUtilsTest extends TestCase {
         assertTrue(msg.getBody() instanceof StringSource);
         assertNotNull(msg.getAttachment("id"));
         assertTrue(msg.getAttachment("id") instanceof ByteArrayInputStream);
+        assertTrue(str.indexOf("<hello/>") != -1);
     }
 
     private Document parse(String str) throws Exception {
