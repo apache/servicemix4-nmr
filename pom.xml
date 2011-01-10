@@ -54,7 +54,7 @@
 
   <issueManagement>
       <system>jira</system>
-      <url>http://issues.apache.org/activemq/browse/SMX4NMR</url>
+      <url>http://issues.apache.org/jira/browse/SMX4NMR</url>
   </issueManagement>
 
   <prerequisites>
