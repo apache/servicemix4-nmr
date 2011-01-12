@@ -106,12 +106,12 @@
       <servicemix-utils.version>1.3.0</servicemix-utils.version>
       
       <!-- PAX -->
-      <pax.exam.version>1.2.2</pax.exam.version>
+      <pax.exam.version>1.2.3</pax.exam.version>
       <pax.logging.version>1.5.3</pax.logging.version>
-      <pax.url.version>1.2.1</pax.url.version>
+      <pax.url.version>1.2.4</pax.url.version>
       
       <!-- Spring -->
-      <spring.version>3.0.4.RELEASE</spring.version>
+      <spring.version>3.0.5.RELEASE</spring.version>
       <spring.import.range>[2.5,4)</spring.import.range>
       <spring.osgi.version>1.2.0</spring.osgi.version>
       
