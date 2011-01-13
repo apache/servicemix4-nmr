@@ -16,15 +16,15 @@
  */
 package org.apache.servicemix.nmr.osgi;
 
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.servicemix.executors.impl.ExecutorConfig;
 import org.apache.servicemix.executors.impl.ExecutorFactoryImpl;
 import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
+
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A managed service that will update the configurations based on the ConfigAdmin configuration
@@ -42,7 +42,9 @@ public class ExecutorConfigurator implements ManagedService {
     }
 
     public void updated(Dictionary properties) throws ConfigurationException {
-        ExecutorConfig defaultConfig = new ExecutorConfig();
+        if (executorFactory.getDefaultConfig() == null) {
+            executorFactory.setDefaultConfig(new ExecutorConfig(true, null));
+        }
         Map<String, ExecutorConfig> configs = new HashMap<String, ExecutorConfig>();
         if (properties != null) {
             for (Enumeration e = properties.keys(); e.hasMoreElements();) {
@@ -66,27 +68,26 @@ public class ExecutorConfigurator implements ManagedService {
                 } else if (key.endsWith(".bypassIfSynchronous")) {
                     getConfig(configs, key).setBypassIfSynchronous(getBool(properties, key));
                 } else if (key.equals("corePoolSize")) {
-                    defaultConfig.setCorePoolSize(getInt(properties, key));
+                    executorFactory.getDefaultConfig().setCorePoolSize(getInt(properties, key));
                 } else if (key.equals("maximumPoolSize")) {
-                    defaultConfig.setMaximumPoolSize(getInt(properties, key));
+                    executorFactory.getDefaultConfig().setMaximumPoolSize(getInt(properties, key));
                 } else if (key.equals("keepAliveTime")) {
-                    defaultConfig.setKeepAliveTime(getLong(properties, key));
+                    executorFactory.getDefaultConfig().setKeepAliveTime(getLong(properties, key));
                 } else if (key.equals("threadDaemon")) {
-                    defaultConfig.setThreadDaemon(getBool(properties, key));
+                    executorFactory.getDefaultConfig().setThreadDaemon(getBool(properties, key));
                 } else if (key.equals("threadPriority")) {
-                    defaultConfig.setThreadPriority(getInt(properties, key));
+                    executorFactory.getDefaultConfig().setThreadPriority(getInt(properties, key));
                 } else if (key.equals("queueSize")) {
-                    defaultConfig.setQueueSize(getInt(properties, key));
+                    executorFactory.getDefaultConfig().setQueueSize(getInt(properties, key));
                 } else if (key.equals("shutdownDelay")) {
-                    defaultConfig.setShutdownDelay(getLong(properties, key));
+                    executorFactory.getDefaultConfig().setShutdownDelay(getLong(properties, key));
                 } else if (key.equals("allowCoreThreadsTimeout")) {
-                    defaultConfig.setAllowCoreThreadsTimeout(getBool(properties, key));
+                    executorFactory.getDefaultConfig().setAllowCoreThreadsTimeout(getBool(properties, key));
                 } else if (key.equals("bypassIfSynchronous")) {
-                    defaultConfig.setBypassIfSynchronous(getBool(properties, key));
+                    executorFactory.getDefaultConfig().setBypassIfSynchronous(getBool(properties, key));
                 }
             }
         }
-        executorFactory.setDefaultConfig(defaultConfig);
         executorFactory.setConfigs(configs);
     }
 
@@ -94,7 +95,7 @@ public class ExecutorConfigurator implements ManagedService {
         String name = key.substring(0, key.lastIndexOf('.'));
         ExecutorConfig config = configs.get(name);
         if (config == null) {
-            config = new ExecutorConfig();
+            config = new ExecutorConfig(false, executorFactory.getDefaultConfig());
             configs.put(name, config);
         }
         return config;

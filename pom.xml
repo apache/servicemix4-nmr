@@ -103,7 +103,7 @@
       <servicemix-shared.version>2010.02</servicemix-shared.version>
       <servicemix.legal.version>1.0</servicemix.legal.version>
       <servicemix.specs.version>1.6.0</servicemix.specs.version>
-      <servicemix-utils.version>1.3.0</servicemix-utils.version>
+      <servicemix-utils.version>1.4.0-SNAPSHOT</servicemix-utils.version>
       
       <!-- PAX -->
       <pax.exam.version>1.2.3</pax.exam.version>
