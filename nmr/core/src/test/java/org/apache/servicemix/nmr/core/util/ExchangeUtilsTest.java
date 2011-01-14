@@ -16,23 +16,21 @@
  */
 package org.apache.servicemix.nmr.core.util;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
-
-import javax.xml.namespace.QName;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.parsers.DocumentBuilderFactory;
-
-import org.w3c.dom.Document;
-
 import junit.framework.TestCase;
-import org.apache.servicemix.nmr.api.Exchange;
-import org.apache.servicemix.nmr.api.Pattern;
-import org.apache.servicemix.nmr.api.Status;
-import org.apache.servicemix.nmr.api.Message;
-import org.apache.servicemix.nmr.core.ExchangeImpl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.servicemix.nmr.api.Exchange;
+import org.apache.servicemix.nmr.api.Message;
+import org.apache.servicemix.nmr.api.Pattern;
+import org.apache.servicemix.nmr.api.Status;
+import org.apache.servicemix.nmr.core.ExchangeImpl;
+import org.w3c.dom.Document;
+
+import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.dom.DOMSource;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 
 public class ExchangeUtilsTest extends TestCase {
 
@@ -77,6 +75,17 @@ public class ExchangeUtilsTest extends TestCase {
         assertNotNull(msg.getAttachment("id"));
         assertTrue(msg.getAttachment("id") instanceof ByteArrayInputStream);
         assertTrue(str.indexOf("<hello/>") != -1);
+
+        // now switch to suppression mode
+        System.setProperty(ExchangeUtils.SYSTEM_PROPERTY_SUPPRESS_CONTENT, "true");
+
+        str = e.display(true);
+        LOG.info(str);
+        assertNotNull(msg.getBody());
+        assertTrue(msg.getBody() instanceof StringSource);
+        assertNotNull(msg.getAttachment("id"));
+        assertTrue(msg.getAttachment("id") instanceof ByteArrayInputStream);
+        assertTrue(str.indexOf("<hello/>") == -1);
     }
 
     private Document parse(String str) throws Exception {

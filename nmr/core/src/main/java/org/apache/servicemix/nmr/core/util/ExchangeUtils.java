@@ -16,37 +16,37 @@
  */
 package org.apache.servicemix.nmr.core.util;
 
-import java.util.Arrays;
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.PrintWriter;
-
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.dom.DOMResult;
-import javax.xml.transform.Source;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.stream.StreamResult;
-
 import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.Message;
 import org.apache.servicemix.nmr.api.Type;
 import org.apache.servicemix.nmr.api.internal.InternalExchange;
 import org.apache.servicemix.nmr.core.NmrRuntimeException;
 
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.*;
+import java.util.Arrays;
+
 public class ExchangeUtils {
 
     public static final int MAX_MSG_DISPLAY_SIZE = 1500;
 
+    protected static final String SYSTEM_PROPERTY_SUPPRESS_CONTENT = "servicemix.nmr.suppressContentLogging";
+
+    private static boolean suppressContent = Boolean.parseBoolean(System.getProperty(SYSTEM_PROPERTY_SUPPRESS_CONTENT, "false"));
+    
     public static String display(Exchange exchange, boolean displayContent) {
-        if (displayContent) {
+
+        suppressContent = Boolean.parseBoolean(System.getProperty(SYSTEM_PROPERTY_SUPPRESS_CONTENT, "false"));
+
+        if (displayContent && !suppressContent) {
             ensureReReadable(exchange);
         }
+
         StringBuffer sb = new StringBuffer();
         sb.append("[\n");
         sb.append("  id:        ").append(exchange.getId()).append('\n');
@@ -69,7 +69,7 @@ public class ExchangeUtils {
             }
             sb.append("  ]").append('\n');
         }
-        if (displayContent) {
+        if (displayContent && !suppressContent) {
             display(exchange, Type.In, sb);
             display(exchange, Type.Out, sb);
             display(exchange, Type.Fault, sb);
