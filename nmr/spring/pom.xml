@@ -102,6 +102,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Description>${project.description}</Bundle-Description>
                         <Export-Package>${project.artifactId}*;version=${project.version};-noimport:=true</Export-Package>
                         <Import-Package>
                             org.springframework*;resolution:=optional;version="${spring.import.range}",

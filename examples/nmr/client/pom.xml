@@ -62,6 +62,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Description>${project.description}</Bundle-Description>
                         <Import-Package>org.apache.commons.logging, 
                                         org.apache.servicemix.nmr.api, 
                                         org.apache.servicemix.nmr.api.service,

@@ -124,6 +124,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Description>${project.description}</Bundle-Description>
                         <Import-Package>
                             org.springframework.osgi*;resolution:=optional,
                             org.springframework.beans.factory;version="${spring.import.range}",

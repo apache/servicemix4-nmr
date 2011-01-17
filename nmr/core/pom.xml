@@ -108,6 +108,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Description>${project.description}</Bundle-Description>
                         <Import-Package>
                             org.apache.camel.*;resolution:=optional,
                             *

@@ -83,6 +83,7 @@
                 <configuration>
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                        <Bundle-Description>${project.description}</Bundle-Description>
                         <Import-Package>
                             org.apache.servicemix.document,
                             org.apache.servicemix.executors,
