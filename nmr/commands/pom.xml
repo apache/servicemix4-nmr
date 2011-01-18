@@ -32,6 +32,8 @@
     <packaging>bundle</packaging>
     <name>Apache ServiceMix :: NMR :: Commands</name>
 
+    <description>NMR commands: nmr:list</description>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>

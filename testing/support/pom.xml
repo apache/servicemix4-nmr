@@ -32,6 +32,8 @@
     <packaging>bundle</packaging>
     <name>Apache ServiceMix :: Testing :: Support</name>
 
+    <description>Apache ServiceMix NMR: Test support classes</description>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.aries.blueprint</groupId>

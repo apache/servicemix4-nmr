@@ -32,6 +32,8 @@
     <packaging>bundle</packaging>
     <name>Apache ServiceMix :: Naming</name>
 
+    <description>OSGi-aware JNDI implementation</description>
+
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>

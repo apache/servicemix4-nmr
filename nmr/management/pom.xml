@@ -36,6 +36,8 @@
     <packaging>bundle</packaging>
     <name>Apache ServiceMix :: NMR :: Management</name>
 
+    <description>Apache ServiceMix NMR: JMX MBeans and helper classes</description>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>

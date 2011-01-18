@@ -32,6 +32,8 @@
     <packaging>bundle</packaging>
     <name>Apache ServiceMix :: NMR :: Spring</name>
 
+    <description>Apache ServiceMix NMR: Helper classes for integrating with the Spring Framework</description>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>

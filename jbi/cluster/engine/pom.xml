@@ -32,6 +32,8 @@
     <packaging>bundle</packaging>
     <name>Apache ServiceMix :: JBI :: Clustering :: Engine</name>
 
+    <description>JBI cluster engine: cluster engine implementation</description>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>

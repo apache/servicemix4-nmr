@@ -32,6 +32,8 @@
     <packaging>bundle</packaging>
     <name>Apache ServiceMix :: JBI :: Runtime</name>
 
+    <description>JBI implementation: Implementation classes for the JBI 1.0 specification</description>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>

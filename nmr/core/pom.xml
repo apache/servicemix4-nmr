@@ -32,6 +32,8 @@
     <packaging>bundle</packaging>
     <name>Apache ServiceMix :: NMR :: Core</name>
 
+    <description>Implementation classes for the Apache ServiceMix NMR</description>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.felix</groupId>

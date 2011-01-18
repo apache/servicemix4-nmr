@@ -32,6 +32,8 @@
     <packaging>bundle</packaging>
     <name>Apache ServiceMix :: JBI :: Commands</name>
 
+    <description>JBI commands: jbi:list, jbi:shutdown, jbi:start and jbi:stop</description>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.servicemix.jbi</groupId>

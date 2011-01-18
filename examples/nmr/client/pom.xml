@@ -31,6 +31,8 @@
     <artifactId>org.apache.servicemix.nmr.examples.nmr.client</artifactId>
     <packaging>bundle</packaging>
     <name>Apache ServiceMix :: NMR :: Examples :: Endpoint and Client :: Client</name>
+
+    <description>Example bundle for registering and interacting with the NMR as a client</description>
   
     <dependencies>
         <dependency>

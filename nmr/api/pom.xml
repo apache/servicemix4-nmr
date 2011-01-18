@@ -32,6 +32,8 @@
     <packaging>bundle</packaging>
     <name>Apache ServiceMix :: NMR :: API</name>
 
+    <description>Apache ServiceMix NMR: API for the NMR</description>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.servicemix.bundles</groupId>

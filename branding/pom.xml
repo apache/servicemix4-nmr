@@ -32,6 +32,8 @@
     <packaging>bundle</packaging>
     <name>Apache ServiceMix :: NMR :: Branding Support</name>
 
+    <description>Branding for the Apache ServiceMix NMR assembly</description>
+
     <build>
         <resources>
             <resource>

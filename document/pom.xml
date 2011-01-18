@@ -32,6 +32,8 @@
     <packaging>bundle</packaging>
     <name>Apache ServiceMix :: Document</name>
 
+    <description>OSGi-aware document repository and document: URL handler implementation</description>
+
     <dependencies>
         <dependency>
             <groupId>commons-logging</groupId>

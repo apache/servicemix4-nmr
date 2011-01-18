@@ -32,6 +32,8 @@
     <packaging>bundle</packaging>
     <name>Apache ServiceMix :: NMR :: Examples :: Interceptors :: Exchange Listener</name>
 
+    <description>Example for using NMR ExchangeListener interface</description>
+
     <dependencies>
         <dependency>
             <groupId>commons-logging</groupId>

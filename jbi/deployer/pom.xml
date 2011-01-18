@@ -32,6 +32,8 @@
     <packaging>bundle</packaging>
     <name>Apache ServiceMix :: JBI :: Deployer</name>
 
+    <description>Deployer for JBI artifacts</description>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.servicemix.specs</groupId>

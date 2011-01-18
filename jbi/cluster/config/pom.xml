@@ -32,6 +32,8 @@
     <packaging>bundle</packaging>
     <name>Apache ServiceMix :: JBI :: Clustering :: Config</name>
 
+    <description>JBI cluster engine: default cluster engine configuration</description>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.servicemix.jbi.cluster</groupId>

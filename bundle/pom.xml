@@ -32,6 +32,8 @@
     <packaging>jar</packaging>
     <name>Apache ServiceMix :: NMR :: Bundle</name>
 
+    <description>Basic NMR and JBI support, packaged in a single bundle.</description>
+
     <properties>
         <maven.test.skip>true</maven.test.skip>
         <createSourcesJar>false</createSourcesJar>

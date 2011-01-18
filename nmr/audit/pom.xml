@@ -32,6 +32,8 @@
     <packaging>bundle</packaging>
     <name>Apache ServiceMix :: NMR :: Audit</name>
 
+    <description>Apache ServiceMix NMR: file-, jdbc- and lucene-based auditor implementations</description>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.servicemix</groupId>

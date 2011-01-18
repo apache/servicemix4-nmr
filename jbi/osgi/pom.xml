@@ -32,6 +32,8 @@
     <packaging>bundle</packaging>
     <name>Apache ServiceMix :: JBI :: OSGi</name>
 
+    <description>JBI implementation: OSGi specific classes and configuration</description>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.servicemix.specs</groupId>

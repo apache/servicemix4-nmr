@@ -31,6 +31,9 @@
     <artifactId>org.apache.servicemix.nmr.examples.nmr.endpoint</artifactId>
     <packaging>bundle</packaging>
     <name>Apache ServiceMix :: NMR :: Examples :: Endpoint and Client :: Endpoint</name>
+
+    <description>Example bundle for registering and implementing a new NMR endpoint</description>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.servicemix.nmr</groupId>

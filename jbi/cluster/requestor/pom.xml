@@ -32,6 +32,8 @@
     <packaging>bundle</packaging>
     <name>Apache ServiceMix :: JBI :: Clustering :: Requestor</name>
 
+    <description>JBI cluster engine: JMS Requestor helper classes for cluster engine</description>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
