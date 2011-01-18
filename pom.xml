@@ -131,7 +131,7 @@
       <woodstox.version>4.0.8</woodstox.version>
       <woodstox.stax2-api.version>3.0.2</woodstox.stax2-api.version>
       <xbean.version>3.7</xbean.version>
-
+      <equinox.version>3.6.0.v20100517</equinox.version>
       <!-- Maven Plugins -->
       <depends-maven-plugin.version>1.2</depends-maven-plugin.version>
       <!-- 
@@ -521,6 +521,20 @@
             <groupId>org.springframework.osgi</groupId>
             <artifactId>spring-osgi-test</artifactId>
             <version>${spring.osgi.version}</version>
+            <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework.osgi</groupId>
+                        <artifactId>asm.osgi</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.junit</groupId>
+                        <artifactId>com.springsource.junit</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.objectweb.asm</groupId>
+                        <artifactId>com.springsource.org.objectweb.asm</artifactId>
+                    </exclusion>
+             </exclusions>
         </dependency>
         
         <!-- PAX Exam -->
@@ -682,7 +696,11 @@
             <artifactId>jencks</artifactId>
             <version>${jencks.version}</version>
         </dependency>
-        
+        <dependency>
+            <groupId>org.eclipse.osgi</groupId>
+            <artifactId>org.eclipse.osgi</artifactId>
+            <version>${equinox.version}</version>
+        </dependency>
     </dependencies>
   </dependencyManagement>
 
