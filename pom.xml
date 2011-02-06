@@ -97,7 +97,7 @@
       
       <!-- Components and SMX Resources -->
       <servicemix3.version>3.3.2</servicemix3.version>
-      <servicemix.components.version>2011.01-SNAPSHOT</servicemix.components.version>
+      <servicemix.components.version>2011.01</servicemix.components.version>
       <servicemix-eip.version>${servicemix.components.version}</servicemix-eip.version>
       <servicemix-http.version>${servicemix.components.version}</servicemix-http.version>
       <servicemix-jsr181.version>${servicemix.components.version}</servicemix-jsr181.version>
