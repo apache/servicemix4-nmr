@@ -40,8 +40,8 @@
             <artifactId>org.apache.servicemix.nmr.api</artifactId>
         </dependency>
         <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -65,11 +65,12 @@
                     <instructions>
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Description>${project.description}</Bundle-Description>
-                        <Import-Package>org.apache.commons.logging, 
-                                        org.apache.servicemix.nmr.api, 
-                                        org.apache.servicemix.nmr.api.service,
-                                        org.osgi.framework,
-                                        org.springframework.beans.factory;version="${spring.import.range}"
+                        <Import-Package>
+                            org.slf4j,
+                            org.apache.servicemix.nmr.api,
+                            org.apache.servicemix.nmr.api.service,
+                            org.osgi.framework,
+                            org.springframework.beans.factory;version="${spring.import.range}"
                         </Import-Package>
                         <Private-Package>org.apache.servicemix.nmr.examples.nmr.client</Private-Package>
                     </instructions>

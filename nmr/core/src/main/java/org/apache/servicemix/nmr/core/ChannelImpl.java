@@ -23,8 +23,6 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.nmr.api.AbortedException;
 import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.Exchange;
@@ -38,6 +36,8 @@ import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
 import org.apache.servicemix.nmr.api.internal.InternalExchange;
 import org.apache.servicemix.executors.Executor;
 import org.apache.servicemix.executors.ExecutorAwareRunnable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The {@link org.apache.servicemix.nmr.api.Channel} implementation.
@@ -49,7 +49,7 @@ import org.apache.servicemix.executors.ExecutorAwareRunnable;
  */
 public class ChannelImpl implements InternalChannel {
 
-    private static final Log LOG = LogFactory.getLog(NMR.class);
+    private final Logger logger = LoggerFactory.getLogger(NMR.class);
 
     private final InternalEndpoint endpoint;
     private final Executor executor;
@@ -192,11 +192,8 @@ public class ChannelImpl implements InternalChannel {
             throw new ChannelClosedException();
         }
         // Log the exchange
-        if (LOG.isTraceEnabled()) {
-            LOG.trace("Channel " + name + " delivering exchange: " + exchange.display(true));
-        } else if (LOG.isDebugEnabled()) {
-            LOG.debug("Channel " + name + " delivering exchange: " + exchange.display(false));
-        }
+        logger.trace("Channel {} delivering exchange: {}", name, exchange.display(true));
+        logger.debug("Channel {} delivering exchange: {}", name, exchange.display(false));
         // Handle case where the exchange has been sent synchronously
         Semaphore lock = exchange.getRole() == Role.Provider ? exchange.getConsumerLock(false)
                 : exchange.getProviderLock(false);
@@ -268,11 +265,8 @@ public class ChannelImpl implements InternalChannel {
             throw new ChannelClosedException();
         }
         // Log the exchange
-        if (LOG.isTraceEnabled()) {
-            LOG.trace("Channel " + name + " dispatching exchange: " + exchange.display(true));
-        } else if (LOG.isDebugEnabled()) {
-            LOG.debug("Channel " + name + " dispatching exchange: " + exchange.display(false));
-        }
+        logger.trace("Channel {} dispatching exchange: {}", name, exchange.display(true));
+        logger.debug("Channel {} dispatching exchange: {}", name, exchange.display(false));
         // Set source endpoint
         if (exchange.getSource() == null) {
             exchange.setSource(endpoint);
@@ -290,7 +284,7 @@ public class ChannelImpl implements InternalChannel {
     }
 
     protected void handleFailure(InternalExchange exchange, RuntimeException e, boolean dispatch) {
-        LOG.warn("Error processing exchange " + exchange, e);
+        logger.warn("Error processing exchange {}", exchange, e);
         if (dispatch) {
             exchange.setError(e);
             for (ExchangeListener l : nmr.getListenerRegistry().getListeners(ExchangeListener.class)) {

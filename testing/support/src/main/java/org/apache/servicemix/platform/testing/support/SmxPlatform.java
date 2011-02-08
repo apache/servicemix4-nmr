@@ -36,8 +36,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.felix.framework.Felix;
 import org.apache.felix.framework.util.CompoundEnumeration;
 import org.apache.felix.framework.util.FelixConstants;
@@ -46,13 +44,15 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.osgi.test.platform.FelixPlatform;
 import org.springframework.osgi.test.platform.OsgiPlatform;
 import org.springframework.util.ClassUtils;
 
 public class SmxPlatform implements OsgiPlatform {
 
-    private static final Log log = LogFactory.getLog(FelixPlatform.class);
+    private final Logger logger = LoggerFactory.getLogger(FelixPlatform.class);
 
     private static final String FELIX_CONF_FILE = "config.properties";
 
@@ -181,9 +181,7 @@ public class SmxPlatform implements OsgiPlatform {
             tempFileName = File.createTempFile("org.sfw.osgi", suffix);
         }
         catch (IOException ex) {
-            if (log.isWarnEnabled()) {
-                log.warn("Could not create temporary directory, returning a temp folder inside the current folder", ex);
-            }
+            logger.warn("Could not create temporary directory, returning a temp folder inside the current folder", ex);
             return new File("./tmp-test");
         }
 
@@ -202,8 +200,7 @@ public class SmxPlatform implements OsgiPlatform {
         Properties props = new Properties();
         felixStorageDir = createTempDir("felix");
         props.setProperty(FRAMEWORK_STORAGE, this.felixStorageDir.getAbsolutePath());
-        if (log.isTraceEnabled())
-            log.trace("felix storage dir is " + felixStorageDir.getAbsolutePath());
+        logger.trace("felix storage dir is {}", felixStorageDir.getAbsolutePath());
 
         return props;
     }

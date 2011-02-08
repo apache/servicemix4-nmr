@@ -118,7 +118,7 @@ public class ComponentImpl extends AbstractLifecycleJbiArtifact implements Compo
     }
 
     public void start(boolean saveState) throws JBIException {
-        LOGGER.info("Starting component " + getName());
+        logger.info("Starting component " + getName());
         if (state != State.Started) {
             if (state == State.Shutdown) {
                 component.getLifeCycle().init(null);
@@ -150,7 +150,7 @@ public class ComponentImpl extends AbstractLifecycleJbiArtifact implements Compo
     }
 
     public void stop(boolean saveState) throws JBIException {
-        LOGGER.info("Stopping component " + getName());
+        logger.info("Stopping component " + getName());
         if (state == State.Started) {
             fireEvent(LifeCycleEvent.LifeCycleEventType.Stopping);
             // Stop component
@@ -172,7 +172,7 @@ public class ComponentImpl extends AbstractLifecycleJbiArtifact implements Compo
     }
 
     public void shutDown(boolean saveState, boolean force) throws JBIException {
-        LOGGER.info("Shutting down component " + getName());
+        logger.info("Shutting down component " + getName());
         if (state == State.Started) {
             stop(saveState);
         }

@@ -20,12 +20,12 @@ import java.io.IOException;
 import javax.jbi.management.LifeCycleMBean;
 import javax.jbi.JBIException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.deployer.impl.Storage;
 import org.apache.servicemix.nmr.api.event.ListenerRegistry;
 import org.apache.servicemix.jbi.deployer.events.LifeCycleEvent;
 import org.apache.servicemix.jbi.deployer.events.LifeCycleListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractLifecycleJbiArtifact implements LifeCycleMBean {
 
@@ -38,7 +38,7 @@ public abstract class AbstractLifecycleJbiArtifact implements LifeCycleMBean {
         Shutdown,
     }
 
-    protected final Log LOGGER = LogFactory.getLog(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected State state = State.Unknown;
     protected Storage storage;
@@ -83,7 +83,7 @@ public abstract class AbstractLifecycleJbiArtifact implements LifeCycleMBean {
         try {
             this.storage.save();
         } catch (IOException e) {
-            LOGGER.warn("Unable to persist state", e);
+            logger.warn("Unable to persist state", e);
         }
         this.runningState = state;
     }

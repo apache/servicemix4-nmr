@@ -52,7 +52,7 @@ public class SharedLibraryInstaller extends AbstractInstaller {
             SharedLibrary sl = deployer.registerSharedLibrary(bundle, descriptor.getSharedLibrary(), createClassLoader());
             return deployer.getEnvironment().getManagedObjectName(sl);
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            logger.error(e.getMessage());
             throw new JBIException(e);
         }
     }
@@ -96,7 +96,7 @@ public class SharedLibraryInstaller extends AbstractInstaller {
         try {
             deleteStorage();
         } catch (IOException e) {
-            LOGGER.warn("Error cleaning persistent state for component: " + getName(), e);
+            logger.warn("Error cleaning persistent state for component: " + getName(), e);
         }
         // Uninstall bundle
         uninstallBundle();
@@ -115,7 +115,7 @@ public class SharedLibraryInstaller extends AbstractInstaller {
         for (String classPathName : classPathNames) {
             File f = new File(installRoot, classPathName);
             if (!f.exists()) {
-                LOGGER.warn("Shared library classpath entry not found: '" + classPathName + "'");
+                logger.warn("Shared library classpath entry not found: '" + classPathName + "'");
             }
             try {
                 urls.add(f.getCanonicalFile().toURL());

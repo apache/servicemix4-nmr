@@ -22,10 +22,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.nmr.api.ServiceMixException;
 import org.apache.servicemix.nmr.api.service.ServiceRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A very basic implementation of a ServiceRegistry that can be
@@ -35,7 +35,7 @@ public class ServiceRegistryImpl<T> implements ServiceRegistry<T> {
 
     private ConcurrentMap<T, Map<String, ?>> registry = new ConcurrentHashMap<T, Map<String, ?>>();
 
-    private final Log logger = LogFactory.getLog(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public void register(T service, Map<String, ?> properties) {
         assert service != null : "service should not be null";

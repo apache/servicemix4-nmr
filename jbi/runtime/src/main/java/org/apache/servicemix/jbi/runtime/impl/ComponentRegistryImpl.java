@@ -22,22 +22,21 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.jbi.JBIException;
 import javax.jbi.component.ComponentContext;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.document.DocumentRepository;
 import org.apache.servicemix.jbi.runtime.ComponentRegistry;
 import org.apache.servicemix.jbi.runtime.Environment;
 import org.apache.servicemix.jbi.runtime.ComponentWrapper;
 import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.nmr.core.ServiceRegistryImpl;
-import org.fusesource.commons.management.ManagementStrategy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Registry of JBI components objects
  */
 public class ComponentRegistryImpl extends ServiceRegistryImpl<ComponentWrapper>  implements ComponentRegistry {
 
-    private static final Log LOGGER = LogFactory.getLog(ComponentRegistryImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(ComponentRegistryImpl.class);
 
     private NMR nmr;
     private DocumentRepository documentRepository;
@@ -80,7 +79,7 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<ComponentWrapper>
      */
     @Override
     protected void doRegister(ComponentWrapper component, Map<String, ?> properties) throws JBIException {
-        LOGGER.info("JBI component registered with properties: " + properties);
+        logger.info("JBI component registered with properties: {}", properties);
         ClassLoader cl = Thread.currentThread().getContextClassLoader();
         Thread.currentThread().setContextClassLoader(component.getClass().getClassLoader());
         try {
@@ -90,7 +89,7 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<ComponentWrapper>
             if (name != null) {
                 contexts.put(name, context);
             } else {
-                LOGGER.warn("Component has no name!");
+                logger.warn("Component has no name!");
             }
         } finally {
             Thread.currentThread().setContextClassLoader(cl);
@@ -104,7 +103,7 @@ public class ComponentRegistryImpl extends ServiceRegistryImpl<ComponentWrapper>
      */
     @Override
     protected void doUnregister(ComponentWrapper component, Map<String, ?> properties)throws JBIException {
-        LOGGER.info("JBI component unregistered with properties: " + properties);
+        logger.info("JBI component unregistered with properties: {}", properties);
         String name = properties != null ? (String) properties.get(NAME) : null;
         if (name != null) {
             ComponentContextImpl context = contexts.remove(name);

@@ -24,19 +24,19 @@ import javax.jbi.JBIException;
 import javax.jbi.management.ComponentLifeCycleMBean;
 import javax.jbi.management.DeploymentException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
 import org.apache.servicemix.jbi.deployer.descriptor.ServiceUnitDesc;
 import org.apache.servicemix.jbi.deployer.utils.ManagementSupport;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
 public class ServiceUnitImpl implements ServiceUnit {
 
-    protected final Log LOGGER = LogFactory.getLog(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private ServiceUnitDesc serviceUnitDesc;
 

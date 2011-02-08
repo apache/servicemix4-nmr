@@ -20,8 +20,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.SharedLibrary;
 import org.apache.servicemix.jbi.deployer.descriptor.DescriptorFactory;
@@ -29,13 +27,15 @@ import org.apache.servicemix.jbi.deployer.descriptor.SharedLibraryDesc;
 import org.apache.servicemix.jbi.deployer.impl.AdminService;
 import org.apache.servicemix.nmr.management.Nameable;
 import org.osgi.framework.Bundle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * SharedLibrary object
  */
 public class SharedLibraryImpl implements SharedLibrary, Nameable {
 
-    protected final Log LOGGER = LogFactory.getLog(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private SharedLibraryDesc library;
     private Bundle bundle;

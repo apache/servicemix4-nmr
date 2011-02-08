@@ -19,8 +19,6 @@ package org.apache.servicemix.nmr.management;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.Role;
 import org.apache.servicemix.nmr.api.Status;
@@ -31,12 +29,14 @@ import org.fusesource.commons.management.ManagementStrategy;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  */
 public class ManagementEndpointRegistry implements ExchangeListener {
 
-    private static final transient Log LOG = LogFactory.getLog(ManagementEndpointRegistry.class);
+    private final Logger logger = LoggerFactory.getLogger(ManagementEndpointRegistry.class);
 
     private BundleContext bundleContext;
     private ManagementStrategy managementStrategy;
@@ -101,7 +101,7 @@ public class ManagementEndpointRegistry implements ExchangeListener {
     }
 
     public void bindManagementStrategy(ManagementStrategy ms) {
-        LOG.debug("Using new management strategy: " + ms);
+        logger.debug("Using new management strategy: {}", ms);
         unregisterAll();
         managementStrategy = ms;
         registerAll();
@@ -126,12 +126,12 @@ public class ManagementEndpointRegistry implements ExchangeListener {
     protected void registerEndpoint(InternalEndpoint iep) {
         if (managementStrategy != null) {
             try {
-                LOG.info("Registering endpoint: " + iep + " with properties " + iep.getMetaData());
+                logger.info("Registering endpoint: {} with properties {}", iep, iep.getMetaData());
                 ManagedEndpoint ep = new ManagedEndpoint(iep, managementStrategy);
                 endpoints.put(iep.getId(), ep);
                 managementStrategy.manageObject(ep);
             } catch (Exception e) {
-                LOG.warn("Unable to register managed endpoint: " + e, e);
+                logger.warn("Unable to register managed endpoint.", e);
             }
         }
     }
@@ -139,11 +139,11 @@ public class ManagementEndpointRegistry implements ExchangeListener {
     private void unregisterEndpoint(InternalEndpoint iep) {
         if (managementStrategy != null) {
             try {
-                LOG.info("Unregistering endpoint: " + iep + " with properties " + iep.getMetaData());
+                logger.info("Unregistering endpoint: {} with properties {}", iep, iep.getMetaData());
                 ManagedEndpoint ep = endpoints.remove(iep.getId());
                 managementStrategy.unmanageObject(ep);
             } catch (Exception e) {
-                LOG.warn("Unable to unregister managed endpoint: " + e, e);
+                logger.warn("Unable to unregister managed endpoint.", e);
             }
         }
     }
@@ -160,56 +160,46 @@ public class ManagementEndpointRegistry implements ExchangeListener {
 
     public void exchangeSent(Exchange exchange) {
         try {
-            if (LOG.isTraceEnabled()) {
-                LOG.trace("Sending exchange: " + exchange);
-            }
+            logger.trace("Sending exchange: {}", exchange);
             if (exchange.getStatus() == Status.Active &&
                     exchange.getRole() == Role.Consumer &&
                     exchange.getOut(false) == null &&
                     exchange.getFault(false) == null &&
                     exchange instanceof InternalExchange) {
                 String id = ((InternalExchange) exchange).getSource().getId();
-                if (LOG.isTraceEnabled()) {
-                    LOG.trace("Source endpoint: " + id + " (known endpoints: " + endpoints + ")");
-                }
+                logger.trace("Source endpoint: {} (known endpoints: {})", id, endpoints);
                 ManagedEndpoint me = endpoints.get(id);
                 if (me == null) {
-                	if (LOG.isTraceEnabled()) {
-                        LOG.trace("No managed endpoint registered with id: " + id);
-                    }
+                	logger.trace("No managed endpoint registered with id: {}", id);
                   
                 } else {
                     me.incrementOutbound();
                 }
             }
         } catch (Throwable t) {
-            LOG.warn("Caught exception while processing exchange: " + t, t);
+            logger.warn("Caught exception while processing exchange.", t);
         }
     }
 
     public void exchangeDelivered(Exchange exchange) {
         try {
-            if (LOG.isTraceEnabled()) {
-                LOG.trace("Receiving exchange: " + exchange);
-            }
+            logger.trace("Receiving exchange: {}", exchange);
             if (exchange.getStatus() == Status.Active &&
                     exchange.getRole() == Role.Provider &&
                     exchange.getOut(false) == null &&
                     exchange.getFault(false) == null &&
                     exchange instanceof InternalExchange) {
                 String id = ((InternalExchange) exchange).getDestination().getId();
-                if (LOG.isTraceEnabled()) {
-                    LOG.trace("Dest endpoint: " + id + " (known endpoints: " + endpoints + ")");
-                }
+                logger.trace("Dest endpoint: {} (known endpoints: {})", id, endpoints);
                 ManagedEndpoint me = endpoints.get(id);
                 if (me == null) {
-                    LOG.warn("No managed endpoint registered with id: " + id);
+                    logger.warn("No managed endpoint registered with id: {}", id);
                 } else {
                     me.incrementInbound();
                 }
             }
         } catch (Throwable t) {
-            LOG.warn("Caught exception while processing exchange: " + t, t);
+            logger.warn("Caught exception while processing exchange.", t);
         }
     }
 
@@ -218,7 +208,7 @@ public class ManagementEndpointRegistry implements ExchangeListener {
         try {
             managementStrategy.notify(event);
         } catch (Exception ex) {
-            LOG.warn("ExchangeFailedEvent notification failed", ex);
+            logger.warn("ExchangeFailedEvent notification failed", ex);
         }
     }
 

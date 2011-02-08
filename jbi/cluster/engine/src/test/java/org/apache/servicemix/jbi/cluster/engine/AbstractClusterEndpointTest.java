@@ -23,13 +23,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.io.File;
 import java.net.ServerSocket;
-import java.lang.management.ManagementFactory;
 
 import javax.jms.ConnectionFactory;
 import javax.xml.namespace.QName;
 import javax.transaction.TransactionManager;
 
-import junit.framework.TestCase;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.Service;
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -51,9 +49,9 @@ import org.apache.servicemix.jbi.runtime.ExchangeCompletedListener;
 import org.apache.servicemix.jbi.cluster.requestor.Transacted;
 import org.apache.servicemix.jbi.cluster.requestor.GenericJmsRequestorPool;
 import org.apache.servicemix.jbi.cluster.requestor.AbstractPollingRequestorPool;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
 import org.jencks.GeronimoPlatformTransactionManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.beans.factory.DisposableBean;
@@ -63,7 +61,7 @@ public abstract class AbstractClusterEndpointTest extends AutoFailTestSupport {
     public static final String PROXY_ENDPOINT_NAME = "proxy";
     public static final String RECEIVER_ENDPOINT_NAME = "receiver";
 
-    private final Log LOG = LogFactory.getLog(getClass());
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected NMR nmr1;
     protected NMR nmr2;
@@ -76,9 +74,9 @@ public abstract class AbstractClusterEndpointTest extends AutoFailTestSupport {
 
     @Override
     protected void setUp() throws Exception {
-        LOG.info("============================================================");
-        LOG.info("     Starting test: " + this.toString());
-        LOG.info("============================================================");
+        logger.info("============================================================");
+        logger.info("     Starting test: {}", this.toString());
+        logger.info("============================================================");
         super.setUp();
         ExchangeImpl.getConverter();
         this.port = findFreePort();

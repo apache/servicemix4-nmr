@@ -97,7 +97,7 @@ public class ServiceAssemblyInstaller extends AbstractInstaller {
             ServiceAssembly sa = deployer.registerServiceAssembly(bundle, descriptor.getServiceAssembly(), sus);
             return deployer.getEnvironment().getManagedObjectName(sa);
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            logger.error(e.getMessage());
             throw new JBIException(e);
         }
     }
@@ -153,7 +153,7 @@ public class ServiceAssemblyInstaller extends AbstractInstaller {
         try {
             deleteStorage();
         } catch (IOException e) {
-            LOGGER.warn("Error cleaning persistent state for component: " + getName(), e);
+            logger.warn("Error cleaning persistent state for component: " + getName(), e);
         }
         // Uninstall bundle
         uninstallBundle();
@@ -174,7 +174,7 @@ public class ServiceAssemblyInstaller extends AbstractInstaller {
                 try {
                     su.undeploy();
                 } catch (Exception e) {
-                    LOGGER.warn("Problem undeploying SU " + su.getName());
+                    logger.warn("Problem undeploying SU " + su.getName());
                 }
             }
         }
@@ -202,14 +202,14 @@ public class ServiceAssemblyInstaller extends AbstractInstaller {
             // Create service unit object
             ServiceUnitImpl su = deployer.createServiceUnit(sud, suRootDir, component);
             try {
-                LOGGER.debug("Deploying SU " + su.getName());
+                logger.debug("Deploying SU " + su.getName());
                 if (isModified) {
                     su.deploy();
                 }
                 // Add it to the list
                 sus.add(su);
             } catch (Throwable e) {
-                LOGGER.error("Error deploying SU " + su.getName(), e);
+                logger.error("Error deploying SU " + su.getName(), e);
                 failure = new Exception("Error deploying SU " + su.getName(), e);
                 break;
             }
@@ -218,10 +218,10 @@ public class ServiceAssemblyInstaller extends AbstractInstaller {
         if (failure != null) {
             for (ServiceUnitImpl su : sus) {
                 try {
-                    LOGGER.debug("Undeploying SU " + su.getName());
+                    logger.debug("Undeploying SU " + su.getName());
                     su.undeploy();
                 } catch (Exception e) {
-                    LOGGER.warn("Error undeploying SU " + su.getName(), e);
+                    logger.warn("Error undeploying SU " + su.getName(), e);
                 }
             }
             throw failure;
@@ -234,18 +234,18 @@ public class ServiceAssemblyInstaller extends AbstractInstaller {
             Bundle bundle = getBundle();
 
             if (bundle == null) {
-                LOGGER.warn("Could not find Bundle for Service Assembly: " + getName());
+                logger.warn("Could not find Bundle for Service Assembly: " + getName());
             } else {
                 bundle.stop();
                 bundle.uninstall();
                 try {
                     deleteStorage();
                 } catch (IOException e) {
-                    LOGGER.warn("Error cleaning persistent state for service assembly: " + getName(), e);
+                    logger.warn("Error cleaning persistent state for service assembly: " + getName(), e);
                 }
             }
         } catch (BundleException e) {
-            LOGGER.error("failed to uninstall Service Assembly: " + getName(), e);
+            logger.error("failed to uninstall Service Assembly: " + getName(), e);
             throw new JBIException(e);
         }
     }

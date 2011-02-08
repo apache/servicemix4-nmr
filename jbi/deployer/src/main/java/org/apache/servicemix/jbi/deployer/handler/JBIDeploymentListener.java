@@ -22,10 +22,10 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.deployer.descriptor.DescriptorFactory;
 import org.apache.felix.fileinstall.ArtifactTransformer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A JBI DeploymentListener which transforms plain JBI artifacts to OSGi bundles.
@@ -34,7 +34,7 @@ import org.apache.felix.fileinstall.ArtifactTransformer;
  */
 public class JBIDeploymentListener implements ArtifactTransformer {
 
-    private static final Log Logger = LogFactory.getLog(JBIDeploymentListener.class);
+    private final Logger logger = LoggerFactory.getLogger(JBIDeploymentListener.class);
 
     /**
      * Check if the file is a recognized JBI artifact that needs to be
@@ -90,7 +90,7 @@ public class JBIDeploymentListener implements ArtifactTransformer {
             return destFile;
 
         } catch (Exception e) {
-            Logger.error("Failed in transforming the JBI artifact to be OSGified. error is: " + e);
+            logger.error("Failed in transforming the JBI artifact to be OSGified", e);
             return null;
         }
     }

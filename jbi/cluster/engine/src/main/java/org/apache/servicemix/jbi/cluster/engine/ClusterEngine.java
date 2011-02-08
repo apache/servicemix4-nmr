@@ -52,8 +52,8 @@ import org.apache.servicemix.jbi.cluster.requestor.JmsRequestor;
 import org.apache.servicemix.jbi.cluster.requestor.Transacted;
 import org.apache.servicemix.jbi.cluster.requestor.JmsRequestorListener;
 import org.apache.servicemix.jbi.cluster.requestor.JmsRequestorPool;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Throttling
@@ -256,7 +256,7 @@ public class ClusterEngine extends ServiceRegistryImpl<ClusterRegistration>
      */
     protected static final String PROPERTY_SENDER_CLUSTER_NAME = "SenderClusterName";
 
-    protected static final Log logger = LogFactory.getLog(ClusterEngine.class);
+    protected final Logger logger = LoggerFactory.getLogger(ClusterEngine.class);
 
     protected boolean rollbackOnErrors = true;
     protected String name;
@@ -335,9 +335,7 @@ public class ClusterEngine extends ServiceRegistryImpl<ClusterRegistration>
 
     public void start() throws Exception {
         if (started.compareAndSet(false, true)) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Starting cluster endpoint: " + name);
-            }
+            logger.debug("Starting cluster endpoint: {}", name);
             pool.setListener(new JmsRequestorListener() {
                 public void onMessage(JmsRequestor requestor) throws Exception {
                     process(requestor);
@@ -350,9 +348,7 @@ public class ClusterEngine extends ServiceRegistryImpl<ClusterRegistration>
 
     public void destroy() throws Exception {
         if (started.compareAndSet(true, false)) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Stopping cluster endpoint: " + name);
-            }
+            logger.debug("Stopping cluster endpoint: {}", name);
             // TODO: We should first stop receiving new requests, then wait for all pending exchanges to be processed
 //            maxPendingExchanges = 0;
 //            if (pauseConsumption.compareAndSet(false, true)) {
@@ -367,18 +363,14 @@ public class ClusterEngine extends ServiceRegistryImpl<ClusterRegistration>
 
     public void pause() {
         if (pauseConsumption.compareAndSet(false, true)) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Pausing cluster endpoint: " + name);
-            }
+            logger.debug("Pausing cluster endpoint: {}", name);
             invalidateSelector();
         }
     }
 
     public void resume() {
         if (pauseConsumption.compareAndSet(true, false)) {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Resuming cluster endpoint: " + name);
-            }
+            logger.debug("Resuming cluster endpoint: {}", name);
             invalidateSelector();
         }
     }

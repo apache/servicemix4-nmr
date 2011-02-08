@@ -16,13 +16,10 @@
  */
 package org.apache.servicemix.nmr.management.stats;
 
-import org.apache.servicemix.nmr.management.stats.CountStatistic;
-
 
 public class CountStatisticTest extends StatisticTestSupport {
 
-    private static final org.apache.commons.logging.Log LOG = org.apache.commons.logging.LogFactory
-            .getLog(CountStatisticTest.class);
+    private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(CountStatisticTest.class);
 
     /**
      * Use case for CountStatisticImple class.
@@ -53,7 +50,7 @@ public class CountStatisticTest extends StatisticTestSupport {
 
         assertLastTimeNotStartTime(stat);
 
-        LOG.info("Counter is: " + stat);
+        logger.info("Counter is: {}", stat);
 
         stat.reset();
 

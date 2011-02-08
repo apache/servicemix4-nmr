@@ -16,10 +16,10 @@
  */
 package org.apache.servicemix.nmr.audit;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.event.ExchangeListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Base class for ServiceMix auditors implementations.
@@ -30,7 +30,7 @@ import org.apache.servicemix.nmr.api.event.ExchangeListener;
  */
 public abstract class AbstractAuditor implements AuditorMBean, ExchangeListener {
 
-    protected final Log log = LogFactory.getLog(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
     
     /* (non-Javadoc)
      * @see org.apache.servicemix.nmr.audit.AuditorMBean#getExchangeCount()

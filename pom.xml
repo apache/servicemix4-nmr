@@ -117,7 +117,6 @@
       <spring.osgi.version>1.2.0</spring.osgi.version>
       
       <!-- Other Dependencies -->
-      <commons-logging.version>1.1.1</commons-logging.version>
       <commons-management.version>1.0</commons-management.version>
       <derby.version>10.5.3.0_1</derby.version>
       <easymock.version>2.4</easymock.version>
@@ -128,6 +127,7 @@
       <log4j.version>1.2.16</log4j.version>
       <lucene.version>2.4.1</lucene.version>
       <mina.version>2.0.0-M6</mina.version>
+      <slf4j.version>1.5.8</slf4j.version>
       <sshd.version>0.3.0</sshd.version>
       <woodstox.version>4.0.8</woodstox.version>
       <woodstox.stax2-api.version>3.0.2</woodstox.stax2-api.version>
@@ -613,11 +613,6 @@
         
         <!-- Dependencies -->
         <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging</artifactId>
-            <version>${commons-logging.version}</version>
-        </dependency>
-        <dependency>
             <groupId>hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
             <version>${hsqldb.version}</version>
@@ -701,6 +696,16 @@
             <groupId>org.eclipse.osgi</groupId>
             <artifactId>org.eclipse.osgi</artifactId>
             <version>${equinox.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${slf4j.version}</version>
         </dependency>
     </dependencies>
   </dependencyManagement>

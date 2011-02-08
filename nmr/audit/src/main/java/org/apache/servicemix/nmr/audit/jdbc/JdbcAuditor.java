@@ -126,7 +126,7 @@ public class JdbcAuditor extends AbstractAuditor {
                 close(connection, restoreAutoCommit);
             }
         } catch (Exception e) {
-            log.error("Could not persist exchange", e);
+            logger.error("Could not persist exchange", e);
         }
     }
 
@@ -192,7 +192,7 @@ public class JdbcAuditor extends AbstractAuditor {
             added = nonSerializableClasses.add(o.getClass().getName());
         }
         if (added) {
-            log.warn("Properties of types '" + o.getClass().getName() + "' will be removed from the audit log as they are not serializable");
+            logger.warn("Properties of types '" + o.getClass().getName() + "' will be removed from the audit logger as they are not serializable");
         }
     }
 

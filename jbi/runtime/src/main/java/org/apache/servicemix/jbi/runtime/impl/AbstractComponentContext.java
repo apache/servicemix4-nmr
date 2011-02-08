@@ -36,8 +36,6 @@ import javax.management.ObjectName;
 import javax.naming.InitialContext;
 import javax.xml.namespace.QName;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.runtime.ComponentWrapper;
 import org.apache.servicemix.jbi.runtime.impl.utils.DOMUtil;
 import org.apache.servicemix.jbi.runtime.impl.utils.URIResolver;
@@ -46,6 +44,7 @@ import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
 import org.apache.servicemix.nmr.management.Nameable;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Element;
@@ -57,7 +56,7 @@ public abstract class AbstractComponentContext implements ComponentContext, MBea
     public static final String INTERNAL_ENDPOINT = "jbi.internal";
     public static final String EXTERNAL_ENDPOINT = "jbi.external";
 
-    private static final Log LOG = LogFactory.getLog(AbstractComponentContext.class);
+    private final org.slf4j.Logger logger = LoggerFactory.getLogger(AbstractComponentContext.class);
 
     protected DeliveryChannel dc;
     protected ComponentRegistryImpl componentRegistry;
@@ -416,7 +415,7 @@ public abstract class AbstractComponentContext implements ComponentContext, MBea
                 }
             }
         } catch (Exception e) {
-            LOG.debug("Unable to resolve EPR: " + e);
+            logger.debug("Unable to resolve EPR: {}", e);
         }
         return null;
     }

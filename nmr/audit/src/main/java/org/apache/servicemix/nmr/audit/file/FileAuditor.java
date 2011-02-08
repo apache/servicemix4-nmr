@@ -25,8 +25,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.Status;
 import org.apache.servicemix.nmr.audit.AbstractAuditor;
@@ -42,7 +40,6 @@ import org.apache.servicemix.util.FileUtil;
  */
 public class FileAuditor extends AbstractAuditor {
 
-    private static final Log LOG = LogFactory.getLog(FileAuditor.class);
     private File directory;
     private FileAuditorStrategy strategy = new FileAuditorStrategyImpl();
 
@@ -54,7 +51,7 @@ public class FileAuditor extends AbstractAuditor {
      */
     public void setDirectory(File directory) {
         if (!directory.exists()) {
-            LOG.info("Creating directory " + directory);
+            logger.info("Creating directory {}", directory);
             directory.mkdirs();
         }
         this.directory = directory;
@@ -71,7 +68,7 @@ public class FileAuditor extends AbstractAuditor {
                 os.close();
             }
         } catch (Exception e) {
-            LOG.error(String.format("Error occurred while storing message %s", exchange.getId()), e);
+            logger.error("Error occurred while storing message {}", exchange.getId(), e);
         }
     }
 

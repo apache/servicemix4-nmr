@@ -16,22 +16,22 @@
  */
 package org.apache.servicemix.nmr.examples.nmr.endpoint;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.nmr.api.Channel;
 import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.Status;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class EchoEndpoint implements Endpoint {
 
-    private static final transient Log LOG = LogFactory.getLog(EchoEndpoint.class);
+    private final Logger logger = LoggerFactory.getLogger(EchoEndpoint.class);
 
     private Channel channel;
 
     public void process(Exchange exchange) {
         if (exchange.getStatus().equals(Status.Active)) {
-            LOG.info("Received in EchoEndpoint: " + exchange.getIn().getBody());
+            logger.info("Received in EchoEndpoint: {}", exchange.getIn().getBody());
             exchange.getOut().setBody("Echo" + exchange.getIn().getBody(), String.class);
             channel.send(exchange);
         }

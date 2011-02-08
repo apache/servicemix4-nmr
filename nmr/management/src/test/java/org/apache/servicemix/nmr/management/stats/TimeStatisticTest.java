@@ -18,8 +18,7 @@ package org.apache.servicemix.nmr.management.stats;
 
 public class TimeStatisticTest extends StatisticTestSupport {
 
-    private static final org.apache.commons.logging.Log LOG = org.apache.commons.logging.LogFactory
-            .getLog(TimeStatisticTest.class);
+    private final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(TimeStatisticTest.class);
 
     /**
      * Use case for TimeStatisticImpl class.
@@ -55,7 +54,7 @@ public class TimeStatisticTest extends StatisticTestSupport {
 
         assertLastTimeNotStartTime(stat);
 
-        LOG.info("Stat is: " + stat);
+        logger.info("Stat is: {}", stat);
 
         stat.reset();
 

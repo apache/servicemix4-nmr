@@ -15,8 +15,8 @@
  */
 package org.apache.servicemix.platform.testing.support;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Simple counting class which can be incremented or decremented in a
@@ -62,7 +62,7 @@ public class Counter {
 
 	private int counter = 0;
 
-	private static final Log log = LogFactory.getLog(Counter.class);
+	private final Logger logger = LoggerFactory.getLogger(Counter.class);
 
 	private final String name;
 
@@ -79,8 +79,7 @@ public class Counter {
 	 */
 	public synchronized void increment() {
 		counter++;
-		if (log.isTraceEnabled())
-			log.trace("counter [" + name + "] incremented to " + counter);
+		logger.trace("counter [{}] incremented to {}", name, counter);
 	}
 
 	/**
@@ -88,8 +87,7 @@ public class Counter {
 	 */
 	public synchronized void decrement() {
 		counter--;
-		if (log.isTraceEnabled())
-			log.trace("counter [" + name + "] decremented to " + counter);
+		logger.trace("counter [{}] decremented to {}", name, counter);
 		notifyAll();
 	}
 

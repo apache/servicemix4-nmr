@@ -27,8 +27,6 @@ import java.util.Enumeration;
 import javax.jbi.JBIException;
 import javax.management.ObjectName;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.deployer.artifacts.AbstractLifecycleJbiArtifact;
 import org.apache.servicemix.jbi.deployer.descriptor.Descriptor;
 import org.apache.servicemix.jbi.deployer.handler.Transformer;
@@ -36,6 +34,8 @@ import org.apache.servicemix.jbi.deployer.utils.FileUtil;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Installers are used to controll the installation / deployment process of JBI artifacts
@@ -47,7 +47,7 @@ public abstract class AbstractInstaller {
 
     public static final String LAST_INSTALL = "jbi.deployer.install";
 
-    protected final Log LOGGER = LogFactory.getLog(getClass());
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     protected Deployer deployer;
     protected Descriptor descriptor;
@@ -122,7 +122,7 @@ public abstract class AbstractInstaller {
                 try {
                     is.close();
                 } catch (IOException io) {
-                    LOGGER.info("Failed to close stream. " + io, io);
+                    logger.info("Failed to close stream.", io);
                 }
             }
             throw e;

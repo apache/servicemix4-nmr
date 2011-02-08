@@ -22,9 +22,8 @@ import java.lang.management.ThreadMXBean;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import junit.framework.TestCase;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Enforces a test case to run for only an allotted time to prevent them from
@@ -36,7 +35,7 @@ import org.apache.commons.logging.LogFactory;
 public abstract class AutoFailTestSupport extends TestCase {
     public static final int EXIT_SUCCESS = 0;
     public static final int EXIT_ERROR = 1;
-    private static final Log LOG = LogFactory.getLog(AutoFailTestSupport.class);
+    private final Logger logger = LoggerFactory.getLogger(AutoFailTestSupport.class);
 
     private long maxTestTime = 5 * 60 * 1000; // 5 mins by default
     private Thread autoFailThread;
@@ -80,16 +79,13 @@ public abstract class AutoFailTestSupport extends TestCase {
                     // Check if the test was able to tear down succesfully,
                     // which usually means, it has finished its run.
                     if (!isTestSuccess.get()) {
-                        LOG.error("Test case has exceeded the maximum allotted time to run of: " + getMaxTestTime() + " ms.");
-                        LOG.fatal("Test case has exceeded the maximum allotted time to run of: " + getMaxTestTime() + " ms.");
+                        logger.error("Test case has exceeded the maximum allotted time to run of: {} ms", getMaxTestTime());
                         
-                        if (LOG.isDebugEnabled()) {
-                            ThreadMXBean threads = ManagementFactory.getThreadMXBean();
-                            ThreadInfo[]  threadInfos = threads.getThreadInfo(threads.getAllThreadIds(), 50);
+                        ThreadMXBean threads = ManagementFactory.getThreadMXBean();
+                        ThreadInfo[]  threadInfos = threads.getThreadInfo(threads.getAllThreadIds(), 50);
     
-                            for (ThreadInfo threadInfo : threadInfos) {
-                                LOG.debug(threadInfo);
-                            }
+                        for (ThreadInfo threadInfo : threadInfos) {
+                            logger.debug("{}", threadInfo);
                         }
 
                         System.exit(EXIT_ERROR);
@@ -99,10 +95,10 @@ public abstract class AutoFailTestSupport extends TestCase {
         }, "AutoFailThread");
 
         if (verbose) {
-            LOG.info("Starting auto fail thread...");
+            logger.info("Starting auto fail thread...");
         }
 
-        LOG.info("Starting auto fail thread...");
+        logger.info("Starting auto fail thread...");
         autoFailThread.start();
     }
 
@@ -116,10 +112,10 @@ public abstract class AutoFailTestSupport extends TestCase {
             isTestSuccess.set(true);
 
             if (verbose) {
-                LOG.info("Stopping auto fail thread...");
+                logger.info("Stopping auto fail thread...");
             }
 
-            LOG.info("Stopping auto fail thread...");
+            logger.info("Stopping auto fail thread...");
             autoFailThread.interrupt();
         }
     }

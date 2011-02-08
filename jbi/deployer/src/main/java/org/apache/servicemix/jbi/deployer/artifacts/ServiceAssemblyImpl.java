@@ -266,7 +266,7 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
     }
 
     protected void transition(Action action, State to) throws JBIException {
-        LOGGER.info("Changing SA state to " + to);
+        logger.info("Changing SA state to " + to);
         State from = state;
         List<ServiceUnitImpl> success = new ArrayList<ServiceUnitImpl>();
         for (ServiceUnitImpl su : serviceUnits) {
@@ -335,9 +335,9 @@ public class ServiceAssemblyImpl extends AbstractLifecycleJbiArtifact implements
             @Override
             public void run() {
                 try {
-                    LOGGER.debug("Waiting for " + shutdownTimeout + " milliseconds to a clean shutdown of SA " + ServiceAssemblyImpl.this.getName());
+                    logger.debug("Waiting for " + shutdownTimeout + " milliseconds to a clean shutdown of SA " + ServiceAssemblyImpl.this.getName());
                     if (!semaphore.tryAcquire(shutdownTimeout, TimeUnit.MILLISECONDS)) {
-                        LOGGER.warn("Unable to do a clean shutdown of SA " + ServiceAssemblyImpl.this.getName() + ", canceling all sync exchanges");
+                        logger.warn("Unable to do a clean shutdown of SA " + ServiceAssemblyImpl.this.getName() + ", canceling all sync exchanges");
                         listener.cancelPendingSyncExchanges(ServiceAssemblyImpl.this);                        
                     }
                 } catch (InterruptedException e) {

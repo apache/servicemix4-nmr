@@ -17,13 +17,13 @@
 package org.apache.servicemix.nmr.core.util;
 
 import junit.framework.TestCase;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.Message;
 import org.apache.servicemix.nmr.api.Pattern;
 import org.apache.servicemix.nmr.api.Status;
 import org.apache.servicemix.nmr.core.ExchangeImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import javax.xml.namespace.QName;
@@ -34,7 +34,7 @@ import java.io.ByteArrayInputStream;
 
 public class ExchangeUtilsTest extends TestCase {
 
-    private static final Log LOG = LogFactory.getLog(ExchangeUtilsTest.class);
+    private final Logger logger = LoggerFactory.getLogger(ExchangeUtilsTest.class);
 
     public void testReReadable() throws Exception {
         Exchange e = new ExchangeImpl(Pattern.InOnly);
@@ -61,7 +61,7 @@ public class ExchangeUtilsTest extends TestCase {
         msg.setBody(new StringSource("<hello/>"));
 
         String str = e.display(false);
-        LOG.info(str);
+        logger.info(str);
         assertNotNull(msg.getBody());
         assertTrue(msg.getBody() instanceof StringSource);
         assertNotNull(msg.getAttachment("id"));
@@ -69,7 +69,7 @@ public class ExchangeUtilsTest extends TestCase {
         assertTrue(str.indexOf("<hello/>") == -1);
 
         str = e.display(true);
-        LOG.info(str);
+        logger.info(str);
         assertNotNull(msg.getBody());
         assertTrue(msg.getBody() instanceof StringSource);
         assertNotNull(msg.getAttachment("id"));
@@ -80,7 +80,7 @@ public class ExchangeUtilsTest extends TestCase {
         System.setProperty(ExchangeUtils.SYSTEM_PROPERTY_SUPPRESS_CONTENT, "true");
 
         str = e.display(true);
-        LOG.info(str);
+        logger.info(str);
         assertNotNull(msg.getBody());
         assertTrue(msg.getBody() instanceof StringSource);
         assertNotNull(msg.getAttachment("id"));

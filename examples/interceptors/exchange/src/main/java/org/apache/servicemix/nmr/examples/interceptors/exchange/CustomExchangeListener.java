@@ -20,11 +20,9 @@ import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.Role;
 import org.apache.servicemix.nmr.api.Status;
 import org.apache.servicemix.nmr.api.event.ExchangeListener;
-import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
 import org.apache.servicemix.nmr.api.internal.InternalExchange;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This listener will be called each time an exchange is sent
@@ -32,7 +30,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class CustomExchangeListener implements ExchangeListener {
 
-    private static final transient Log LOG = LogFactory.getLog(CustomExchangeListener.class);
+    private final Logger logger = LoggerFactory.getLogger(CustomExchangeListener.class);
 
     /**
      * Method called each time an exchange is sent
@@ -41,7 +39,7 @@ public class CustomExchangeListener implements ExchangeListener {
      */
     public void exchangeSent(Exchange exchange) {
          try {
-             LOG.info("Sending exchange: " + exchange);
+             logger.info("Sending exchange: {}", exchange);
              // Intercept exchanges
              if (exchange instanceof InternalExchange &&
                  exchange.getStatus() == Status.Active &&
@@ -49,10 +47,10 @@ public class CustomExchangeListener implements ExchangeListener {
                  exchange.getOut(false) == null &&
                  exchange.getFault(false) == null) {
                  String id = ((InternalExchange) exchange).getSource().getId();
-                 LOG.info("Source endpoint: " + id);
+                 logger.info("Source endpoint: {}", id);
              }
          } catch (Throwable t) {
-             LOG.warn("Caught exception while processing exchange: " + t, t);
+             logger.warn("Caught exception while processing exchange: {}", t, t);
          }
     }
 
@@ -63,17 +61,17 @@ public class CustomExchangeListener implements ExchangeListener {
      */
     public void exchangeDelivered(Exchange exchange) {
         try {
-            LOG.info("Receiving exchange: " + exchange);
+            logger.info("Receiving exchange: {}", exchange);
             if (exchange.getStatus() == Status.Active &&
                 exchange.getRole() == Role.Provider &&
                 exchange.getOut(false) == null &&
                 exchange.getFault(false) == null &&
                 exchange instanceof InternalExchange) {
                 String id = ((InternalExchange) exchange).getDestination().getId();
-                LOG.info("Dest endpoint: " + id);
+                logger.info("Dest endpoint: {}", id);
             }
         } catch (Throwable t) {
-            LOG.warn("Caught exception while processing exchange: " + t, t);
+            logger.warn("Caught exception while processing exchange: {}", t, t);
         }
     }
 
@@ -86,7 +84,7 @@ public class CustomExchangeListener implements ExchangeListener {
      * @param exchange the exchange that failed
      */
     public void exchangeFailed(Exchange exchange) {
-        LOG.info("Exchange Failed: " + exchange);
+        logger.info("Exchange Failed: {}", exchange);
     }
 
 }

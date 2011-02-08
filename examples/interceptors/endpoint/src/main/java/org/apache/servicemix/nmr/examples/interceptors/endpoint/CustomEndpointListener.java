@@ -16,12 +16,10 @@
  */
 package org.apache.servicemix.nmr.examples.interceptors.endpoint;
 
-import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.event.EndpointListener;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This listener will be called each time it receives events
@@ -30,7 +28,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class CustomEndpointListener implements EndpointListener {
 
-    private static final transient Log LOG = LogFactory.getLog(CustomEndpointListener.class);
+    private final Logger logger = LoggerFactory.getLogger(CustomEndpointListener.class);
 
     /**
      * An endpoint has been registered
@@ -38,8 +36,7 @@ public class CustomEndpointListener implements EndpointListener {
      * @param endpoint the registered endpoint
      */
     public void endpointRegistered(InternalEndpoint endpoint) {
-        LOG.info("Endpoint Registered: ID: " + endpoint.getId() +
-                 " Meta-Data: " + endpoint.getMetaData().toString());
+        logger.info("Endpoint Registered: ID: {} Meta-Data: {}", endpoint.getId(), endpoint.getMetaData().toString());
     }
 
     /**
@@ -48,8 +45,7 @@ public class CustomEndpointListener implements EndpointListener {
      * @param endpoint the unregistered endpoint
      */
     public void endpointUnregistered(InternalEndpoint endpoint) {
-        LOG.info("Endpoint Unregistered: ID: " + endpoint.getId() +
-                 " Meta-Data: " + endpoint.getMetaData().toString());
+        logger.info("Endpoint Unregistered: ID: {} Meta-Data: {}", endpoint.getId(), endpoint.getMetaData().toString());
     }
 
 }

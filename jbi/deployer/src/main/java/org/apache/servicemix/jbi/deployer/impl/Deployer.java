@@ -29,10 +29,7 @@ import java.util.HashSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jbi.JBIException;
-import javax.management.MBeanServer;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.common.osgi.DeployedAssembly;
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
@@ -59,16 +56,15 @@ import org.apache.servicemix.jbi.runtime.ComponentWrapper;
 import org.apache.servicemix.jbi.runtime.Environment;
 import org.apache.servicemix.nmr.api.event.ListenerRegistry;
 import org.apache.servicemix.nmr.core.ListenerRegistryImpl;
-import org.fusesource.commons.management.ManagementStrategy;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.framework.SynchronousBundleListener;
 import org.osgi.framework.BundleEvent;
-import org.osgi.service.prefs.Preferences;
-import org.osgi.service.prefs.PreferencesService;
 import org.osgi.util.tracker.ServiceTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Deployer for JBI artifacts
@@ -80,7 +76,7 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
     public static final String TYPE_SERVICE_ENGINE = "service-engine";
     public static final String TYPE_BINDING_COMPONENT = "binding-component";
 
-    private static final Log LOGGER = LogFactory.getLog(Deployer.class);
+    private final Logger logger = LoggerFactory.getLogger(Deployer.class);
 
     private BundleContext bundleContext;
     private final Set<Bundle> bundles = new HashSet<Bundle>();
@@ -205,7 +201,7 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
         try {
             s.load();
         } catch (IOException e) {
-            LOGGER.warn("Error loading JBI artifacts state", e);
+            logger.warn("Error loading JBI artifacts state", e);
         }
         this.storage = s;
         // Track bundles
@@ -278,10 +274,10 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
     }
 
     protected boolean match(Bundle bundle) {
-        LOGGER.debug("Checking bundle: '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "'");
+        logger.debug("Checking bundle: '{}'", OsgiStringUtils.nullSafeNameAndSymName(bundle));
         URL url = bundle.getResource(DescriptorFactory.DESCRIPTOR_FILE);
         if (url == null) {
-            LOGGER.debug("Bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' does not contain any JBI descriptor.");
+            logger.debug("Bundle '{}' does not contain any JBI descriptor.", OsgiStringUtils.nullSafeNameAndSymName(bundle));
             return false;
         }
         return true;
@@ -314,13 +310,13 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
                     Descriptor descriptor = DescriptorFactory.buildDescriptor(url);
                     DescriptorFactory.checkDescriptor(descriptor);
                     if (descriptor.getSharedLibrary() != null) {
-                        LOGGER.info("Deploying bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' as a JBI shared library");
+                        logger.info("Deploying bundle '{}' as a JBI shared library", OsgiStringUtils.nullSafeNameAndSymName(bundle));
                         installer = new SharedLibraryInstaller(this, descriptor, null, true);
                     } else if (descriptor.getComponent() != null) {
-                        LOGGER.info("Deploying bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' as a JBI component");
+                        logger.info("Deploying bundle '{}' as a JBI component", OsgiStringUtils.nullSafeNameAndSymName(bundle));
                         installer = new ComponentInstaller(this, descriptor, null, true);
                     } else if (descriptor.getServiceAssembly() != null) {
-                        LOGGER.info("Deploying bundle '" + OsgiStringUtils.nullSafeNameAndSymName(bundle) + "' as a JBI service assembly");
+                        logger.info("Deploying bundle '{}' as a JBI service assembly", OsgiStringUtils.nullSafeNameAndSymName(bundle));
                         installer = new ServiceAssemblyInstaller(this, descriptor, (File) null, true);
                     } else {
                         throw new IllegalStateException("Unrecognized JBI descriptor: " + url);
@@ -336,10 +332,10 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
                     installers.put(bundle, installer);
                 } catch (PendingException e) {
                     pendingInstallers.add(installer);
-                    LOGGER.warn("Requirements not met for JBI artifact in bundle " + OsgiStringUtils.nullSafeNameAndSymName(bundle) + ". Installation pending. " + e);
+                    logger.warn("Requirements not met for JBI artifact in bundle {}. Installation pending. ", OsgiStringUtils.nullSafeNameAndSymName(bundle), e);
                 }
             } catch (Exception e) {
-                LOGGER.error("Error handling bundle start event", e);
+                logger.error("Error handling bundle start event", e);
             } finally {
                 Thread.currentThread().setContextClassLoader(cl);
             }
@@ -354,7 +350,7 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
                 try {
                     installer.stop(true);
                 } catch (Exception e) {
-                    LOGGER.warn("Error shutting down JBI artifact", e);
+                    logger.warn("Error shutting down JBI artifact", e);
                 }
             }
         }
@@ -372,7 +368,7 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
                     installer.uninstall(true);
 
                 } catch (Exception e) {
-                    LOGGER.warn("Error uninstalling JBI artifact", e);
+                    logger.warn("Error uninstalling JBI artifact", e);
                 }
             }
         } else {
@@ -391,7 +387,7 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
         Dictionary<String, String> props = new Hashtable<String, String>();
         // populate props from the library meta-data
         props.put(NAME, sharedLibraryDesc.getIdentification().getName());
-        LOGGER.debug("Registering JBI Shared Library");
+        logger.debug("Registering JBI Shared Library");
         registerService(bundle, SharedLibrary.class.getName(), sl, props);
         if (!getEnvironment().isManaged(sl)) {
         	getEnvironment().manageObject(sl);
@@ -414,7 +410,7 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
         }
         components.put(name, component);
         // register the component in the OSGi registry
-        LOGGER.debug("Registering JBI component");
+        logger.debug("Registering JBI component");
         registerService(bundle, new String[] { Component.class.getName(), ComponentWrapper.class.getName() },
                         component, props);
         // Now, register the inner component
@@ -440,7 +436,7 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
         Dictionary<String, String> props = new Hashtable<String, String>();
         props.put(NAME, serviceAssemblyDesc.getIdentification().getName());
         // register the service assembly in the OSGi registry
-        LOGGER.debug("Registering JBI service assembly");
+        logger.debug("Registering JBI service assembly");
         registerService(bundle, ServiceAssembly.class.getName(), sa, props);
         if (!getEnvironment().isManaged(sa)) {
         	//check if this SA is managed, this is the case that restart SA bundle
@@ -474,13 +470,13 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
                                 installers.remove(bundle);
                             }
                         } catch (Exception e) {
-                            LOGGER.warn("Error uninstalling service assembly", e);
+                            logger.warn("Error uninstalling service assembly", e);
                         }
                     }
                 }
                 unregisterServices(component.getBundle());
             } catch (JBIException e) {
-                LOGGER.warn("Error when shutting down component", e);
+                logger.warn("Error when shutting down component", e);
             }
             for (SharedLibrary lib : component.getSharedLibraries()) {
                 ((SharedLibraryImpl) lib).removeComponent(component);
@@ -489,7 +485,7 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
             try {
 				getEnvironment().unmanageObject(component);
 			} catch (Exception e) {
-				LOGGER.error("Error unmanage component: " + component.getName(), e);
+				logger.error("Error unmanage component: {}", component.getName(), e);
 			}
         }
     }
@@ -502,7 +498,7 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
             try {
 				getEnvironment().unmanageObject(assembly);
 			} catch (Exception e) {
-				LOGGER.error("Error unmanage service assembly: " + assembly.getName(), e);
+				logger.error("Error unmanage service assembly: {}", assembly.getName(), e);
 			}
             for (ServiceUnitImpl su : assembly.getServiceUnitsList()) {
                 su.getComponentImpl().removeServiceUnit(su);
@@ -517,7 +513,7 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
             try {
 				getEnvironment().unmanageObject(library);
 			} catch (Exception e) {
-				LOGGER.error("Error unmanage sharedlibrary: " + library.getName(), e);
+				logger.error("Error unmanage sharedlibrary: {}", library.getName(), e);
 			}
         }
     }
@@ -560,7 +556,7 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
                 } catch (PendingException e) {
                     pendingInstallers.add(installer);
                 } catch (Exception e) {
-                    LOGGER.warn("Error installing JBI artifact", e);
+                    logger.warn("Error installing JBI artifact", e);
                 }
             }
         }
@@ -657,7 +653,7 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
                 installer.install();
                 bundles.add(reference.getBundle());
             } catch (Exception e) {
-                LOGGER.warn("Error registering deployed component", e);
+                logger.warn("Error registering deployed component", e);
             }
 
 //            Preferences prefs = preferencesService.getUserPreferences(name);
@@ -707,11 +703,11 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
                 installers.put(installer.getBundle(), installer);
             } catch (PendingException e) {
                 pendingInstallers.add(installer);
-                LOGGER.warn("Requirements not met for JBI artifact in bundle " + OsgiStringUtils.nullSafeNameAndSymName(reference.getBundle()) + ". Installation pending. " + e);
+                logger.warn("Requirements not met for JBI artifact in bundle {}. Installation pending. ", OsgiStringUtils.nullSafeNameAndSymName(reference.getBundle()), e);
             }
             bundles.add(reference.getBundle());
         } catch (Exception e) {
-            LOGGER.error("Error registering deployed service assembly", e);
+            logger.error("Error registering deployed service assembly", e);
         }
     }
 
@@ -731,7 +727,7 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
                     su.undeploy();
                 }
             } catch (Exception e) {
-                LOGGER.error("Error unregistering deployed service assembly", e);
+                logger.error("Error unregistering deployed service assembly", e);
             } finally {
                 unregisterServiceAssembly(sa);
             }

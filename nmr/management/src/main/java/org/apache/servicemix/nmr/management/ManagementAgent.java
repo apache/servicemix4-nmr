@@ -29,8 +29,6 @@ import javax.management.ObjectInstance;
 import javax.management.ObjectName;
 import javax.management.StandardMBean;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.nmr.management.stats.CountStatistic;
 import org.apache.servicemix.nmr.management.stats.TimeStatistic;
 import org.fusesource.commons.management.ManagementStrategy;
@@ -40,12 +38,14 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.blueprint.container.ServiceUnavailableException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  */
 public class ManagementAgent implements ManagementStrategy {
 
-    private static final transient Log LOG = LogFactory.getLog(ManagementAgent.class);
+    private final Logger logger = LoggerFactory.getLogger(ManagementAgent.class);
 
     private boolean enabled;
     private MBeanServer mbeanServer;
@@ -141,9 +141,7 @@ public class ManagementAgent implements ManagementStrategy {
      * logging Log.
      */
     public void notify(EventObject event) throws Exception {
-        if (LOG.isTraceEnabled()) {
-            LOG.trace(event.toString());
-        }
+        logger.trace(event.toString());
     }
 
     public void setBundleContext(BundleContext ctx) {
@@ -206,7 +204,7 @@ public class ManagementAgent implements ManagementStrategy {
             try {
                 register(mbeans.get(name), name);
             } catch (JMException jmex) {
-                LOG.info("Exception unregistering MBean", jmex);
+                logger.info("Exception unregistering MBean", jmex);
                 caught++;
             } catch (ServiceUnavailableException sue) {
                 // due to timing / shutdown ordering issue that we may
@@ -215,7 +213,7 @@ public class ManagementAgent implements ManagementStrategy {
             }
         }
         if (caught > 0) {
-            LOG.warn("A number of " + caught
+            logger.warn("A number of " + caught
                     + " exceptions caught while unregistering MBeans during stop operation.  "
                     + "See INFO log for details.");
         }
@@ -233,10 +231,10 @@ public class ManagementAgent implements ManagementStrategy {
                 registerMBeanWithServer(obj, name, forceRegistration);
             } catch (UndeclaredThrowableException ute) {
                 if (ute.getCause() instanceof RuntimeException) {
-                    LOG.warn("MBean registration failed: ", ute.getCause());
+                    logger.warn("MBean registration failed: ", ute.getCause());
                     throw (RuntimeException) ute.getCause();
                 } else {
-                    LOG.warn("MBean registration failed: ", ute.getCause());
+                    logger.warn("MBean registration failed: ", ute.getCause());
                     throw new JMException(ute.getCause().getMessage());
                 }
             }
@@ -250,7 +248,7 @@ public class ManagementAgent implements ManagementStrategy {
             try {
                 unregister(name);
             } catch (JMException jmex) {
-                LOG.info("Exception unregistering MBean", jmex);
+                logger.info("Exception unregistering MBean", jmex);
                 caught++;
             } catch (ServiceUnavailableException sue) {
                 // due to timing / shutdown ordering issue that we may
@@ -259,7 +257,7 @@ public class ManagementAgent implements ManagementStrategy {
             }
         }
         if (caught > 0) {
-            LOG.warn("A number of " + caught
+            logger.warn("A number of " + caught
                     + " exceptions caught while unregistering MBeans during stop operation.  "
                     + "See INFO log for details.");
         }

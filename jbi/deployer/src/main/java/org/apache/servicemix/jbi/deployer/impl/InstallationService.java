@@ -23,17 +23,17 @@ import javax.jbi.management.DeploymentException;
 import javax.jbi.management.InstallationServiceMBean;
 import javax.management.ObjectName;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.deployer.SharedLibrary;
 import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.descriptor.Descriptor;
 import org.apache.servicemix.jbi.deployer.handler.Transformer;
 import org.apache.servicemix.jbi.deployer.utils.ManagementSupport;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class InstallationService implements InstallationServiceMBean {
 
-    private static final Log LOG = LogFactory.getLog(InstallationService.class);
+    private final Logger logger = LoggerFactory.getLogger(InstallationService.class);
 
     private Deployer deployer;
 
@@ -49,13 +49,11 @@ public class InstallationService implements InstallationServiceMBean {
      */
     public synchronized ObjectName loadNewInstaller(String installJarURL) {
         try {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Loading new installer from " + installJarURL);
-            }
+            logger.debug("Loading new installer from {}", installJarURL);
             ComponentInstaller installer = doLoadNewInstaller(installJarURL, false);
             return installer.getObjectName();
         } catch (Throwable t) {
-            LOG.error("Deployment failed", t);
+            logger.error("Deployment failed", t);
             if (t instanceof Error) {
                 throw (Error) t;
             }
@@ -84,7 +82,7 @@ public class InstallationService implements InstallationServiceMBean {
             return installer != null ? installer.getObjectName() : null;
         } catch (Exception e) {
             String errStr = "Error loading installer: " + componentName;
-            LOG.error(errStr, e);
+            logger.error(errStr, e);
             return null;
         }
     }
@@ -111,7 +109,7 @@ public class InstallationService implements InstallationServiceMBean {
             }
         } catch (Exception e) {
             String errStr = "Error unloading installer: " + componentName;
-            LOG.error(errStr, e);
+            logger.error(errStr, e);
         }
         return result;
     }
@@ -180,7 +178,7 @@ public class InstallationService implements InstallationServiceMBean {
                 throw new DeploymentException("JBI descriptor is not a shared library descriptor");
             }
             String slName = desc.getSharedLibrary().getIdentification().getName();
-            LOG.info("Installing shared library " + slName);
+            logger.info("Installing shared library {}", slName);
             if (deployer.getSharedLibrary(slName) != null) {
                 throw new DeploymentException("ShareLib " + slName + " is already installed");
             }

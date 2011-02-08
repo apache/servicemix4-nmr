@@ -16,8 +16,6 @@
  */
 package org.apache.servicemix.nmr.examples.nmr.client;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.nmr.api.Channel;
 import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.Exchange;
@@ -26,12 +24,15 @@ import org.apache.servicemix.nmr.api.Pattern;
 import org.apache.servicemix.nmr.api.Status;
 import org.apache.servicemix.nmr.api.Reference;
 import org.apache.servicemix.nmr.api.service.ServiceHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 public class Client implements InitializingBean, DisposableBean, Runnable {
 
-    private static final transient Log LOG = LogFactory.getLog(Client.class);
+    private final Logger logger = LoggerFactory.getLogger(Client.class);
+
     private NMR nmr;
 
     private Thread sendRequestThread;
@@ -72,13 +73,13 @@ public class Client implements InitializingBean, DisposableBean, Runnable {
                     e.setTarget(ref);
                     e.getIn().setBody("Hello");
                     client.sendSync(e);
-                    LOG.info("Response from Endpoint " + e.getOut().getBody());
+                    logger.info("Response from Endpoint {}", e.getOut().getBody());
                     // Send back the Done status
                     e.setStatus(Status.Done);
                     client.send(e);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    LOG.error(e.getMessage());
+                    logger.error(e.getMessage());
                 }
                 // Sleep a bit
                 try {

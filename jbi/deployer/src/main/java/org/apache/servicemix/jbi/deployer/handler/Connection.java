@@ -26,9 +26,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.deployer.utils.FileUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A URL connection to handle the JBI to OSGi transformation
@@ -36,7 +36,7 @@ import org.apache.servicemix.jbi.deployer.utils.FileUtil;
  */
 public class Connection extends URLConnection {
 
-    private static Log logger = LogFactory.getLog(Connection.class);
+    private final Logger logger = LoggerFactory.getLogger(Connection.class);
 
     private final Parser parser;
 

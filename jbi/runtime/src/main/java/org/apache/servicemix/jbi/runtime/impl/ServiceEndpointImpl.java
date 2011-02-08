@@ -21,14 +21,14 @@ import java.util.Map;
 import javax.jbi.servicedesc.ServiceEndpoint;
 import javax.xml.namespace.QName;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.DocumentFragment;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.jbi.runtime.impl.utils.DOMUtil;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * A basic implementation of ServiceEndpoint
@@ -42,7 +42,7 @@ public class ServiceEndpointImpl implements ServiceEndpoint {
     public static final String JBI_ENDPOINT_NAME = "end-point-name";
     public static final String XMLNS_NAMESPACE = "http://www.w3.org/2000/xmlns/";
 
-    private static final Log LOG = LogFactory.getLog(ServiceEndpointImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(ServiceEndpointImpl.class);
 
     private final Map<String, ?> properties;
     private final QName serviceName;
@@ -74,7 +74,7 @@ public class ServiceEndpointImpl implements ServiceEndpoint {
             fragment.appendChild(epr);
             return fragment;
         } catch (Exception e) {
-            LOG.warn("Unable to create reference for ServiceEndpoint " + this, e);
+            logger.warn("Unable to create reference for ServiceEndpoint {}", this, e);
             return null;
         }
     }

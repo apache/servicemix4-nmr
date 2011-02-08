@@ -152,7 +152,7 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
                 return name;
             }
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            logger.error(e.getMessage());
             throw new JBIException(e);
         }
     }
@@ -230,7 +230,7 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
         try {
             deleteStorage();
         } catch (IOException e) {
-            LOGGER.warn("Error cleaning persistent state for component: " + getName(), e);
+            logger.warn("Error cleaning persistent state for component: " + getName(), e);
         }
         // Uninstall bundle
         uninstallBundle();
@@ -288,7 +288,7 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
         for (int i = 0; i < classPathNames.length; i++) {
             File f = new File(installRoot, classPathNames[i]);
             if (!f.exists()) {
-                LOGGER.warn("Component classpath entry not found: '" + classPathNames[i] + "'");
+                logger.warn("Component classpath entry not found: '" + classPathNames[i] + "'");
             }
             try {
                 urls.add(f.getCanonicalFile().toURL());
@@ -337,7 +337,7 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
                 initialized = true;
             }
         } catch (JBIException e) {
-            LOGGER.error("Could not initialize bootstrap", e);
+            logger.error("Could not initialize bootstrap", e);
             throw new DeploymentException(e);
         }
     }
@@ -349,7 +349,7 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
                 Thread.currentThread().setContextClassLoader(bootstrap.getClass().getClassLoader());
                 bootstrap.cleanUp();
             } catch (JBIException e) {
-                LOGGER.error("Could not initialize bootstrap", e);
+                logger.error("Could not initialize bootstrap", e);
                 throw new DeploymentException(e);
             } finally {
                 initialized = false;
@@ -377,13 +377,13 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
             Class bootstrapClass = cl.loadClass(descriptor.getBootstrapClassName());
             return (Bootstrap) bootstrapClass.newInstance();
         } catch (ClassNotFoundException e) {
-            LOGGER.error("Class not found: " + descriptor.getBootstrapClassName(), e);
+            logger.error("Class not found: " + descriptor.getBootstrapClassName(), e);
             throw new DeploymentException(e);
         } catch (InstantiationException e) {
-            LOGGER.error("Could not instantiate : " + descriptor.getBootstrapClassName(), e);
+            logger.error("Could not instantiate : " + descriptor.getBootstrapClassName(), e);
             throw new DeploymentException(e);
         } catch (IllegalAccessException e) {
-            LOGGER.error("Illegal access on: " + descriptor.getBootstrapClassName(), e);
+            logger.error("Illegal access on: " + descriptor.getBootstrapClassName(), e);
             throw new DeploymentException(e);
         } finally {
             Thread.currentThread().setContextClassLoader(oldCl);
@@ -429,7 +429,7 @@ public class ComponentInstaller extends AbstractInstaller implements InstallerMB
         if (props != null && props.size() > 0) {
             ObjectName on = getInstallerConfigurationMBean();
             if (on == null) {
-                LOGGER.warn("Could not find installation configuration MBean. Installation properties will be ignored.");
+                logger.warn("Could not find installation configuration MBean. Installation properties will be ignored.");
             } else {
                 MBeanServer mbs = deployer.getEnvironment().getMBeanServer();
                 for (Object o : props.keySet()) {

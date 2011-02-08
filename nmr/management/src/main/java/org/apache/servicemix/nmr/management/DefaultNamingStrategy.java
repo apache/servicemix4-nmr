@@ -16,6 +16,9 @@
  */
 package org.apache.servicemix.nmr.management;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -23,14 +26,11 @@ import java.util.Map;
 import javax.management.ObjectName;
 import javax.management.MalformedObjectNameException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 /**
  */
 public class DefaultNamingStrategy implements NamingStrategy {
 
-    private static final Log LOG = LogFactory.getLog(DefaultNamingStrategy.class);
+    private final static Logger logger = LoggerFactory.getLogger(DefaultNamingStrategy.class);
 
     private String jmxDomainName;
 
@@ -94,7 +94,7 @@ public class DefaultNamingStrategy implements NamingStrategy {
         } catch (MalformedObjectNameException e) {
             // shouldn't happen
             String error = "Could not create ObjectName for " + props;
-            LOG.error(error, e);
+            logger.error(error, e);
             throw new RuntimeException(error);
         }
         return result;
@@ -106,9 +106,9 @@ public class DefaultNamingStrategy implements NamingStrategy {
         try {
             result = new ObjectName(tmp);
         } catch (MalformedObjectNameException e) {
-            LOG.error("Failed to build ObjectName:", e);
+            logger.error("Failed to build ObjectName:", e);
         } catch (NullPointerException e) {
-            LOG.error("Failed to build ObjectName:", e);
+            logger.error("Failed to build ObjectName:", e);
         }
         return result;
     }

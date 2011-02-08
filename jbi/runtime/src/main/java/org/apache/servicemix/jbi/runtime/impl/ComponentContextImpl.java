@@ -35,10 +35,10 @@ import javax.wsdl.PortType;
 import javax.wsdl.Service;
 import javax.wsdl.Port;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.runtime.ComponentRegistry;
 import org.apache.servicemix.jbi.runtime.ComponentWrapper;
 import org.apache.servicemix.jbi.runtime.impl.utils.DOMUtil;
@@ -54,7 +54,7 @@ public class ComponentContextImpl extends AbstractComponentContext {
 
     public static final int DEFAULT_QUEUE_CAPACITY = 1024;
 
-    private static final Log LOG = LogFactory.getLog(ComponentContextImpl.class);
+    private final Logger logger = LoggerFactory.getLogger(ComponentContextImpl.class);
 
     protected ComponentWrapper component;
     protected Map<String,?> properties;
@@ -86,7 +86,7 @@ public class ComponentContextImpl extends AbstractComponentContext {
         try {
             dc.close();
         } catch (MessagingException e) {
-            LOG.warn("Error when closing the delivery channel", e);
+            logger.warn("Error when closing the delivery channel", e);
         }
         componentRegistry.getNmr().getEndpointRegistry().unregister(componentEndpoint, properties);
     }
@@ -206,15 +206,11 @@ public class ComponentContextImpl extends AbstractComponentContext {
     protected QName[] getInterfaces(Document document, ServiceEndpoint serviceEndpoint) {
         try {
             if (document == null || document.getDocumentElement() == null) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Endpoint " + serviceEndpoint + " has no service description");
-                }
+                logger.debug("Endpoint {} has no service description", serviceEndpoint);
                 return null;
             }
             if (!WSDL1_NAMESPACE.equals(document.getDocumentElement().getNamespaceURI())) {
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Endpoint " + serviceEndpoint + " has a non WSDL1 service description");
-                }
+                logger.debug("Endpoint {} has a non WSDL1 service description", serviceEndpoint);
                 return null;
             }
             WSDLReader reader = WSDLFactory.newInstance().newWSDLReader();
@@ -227,42 +223,36 @@ public class ComponentContextImpl extends AbstractComponentContext {
                     && definition.getServices().keySet().size() == 0) {
                 PortType portType = (PortType) definition.getPortTypes().values().iterator().next();
                 QName interfaceName = portType.getQName();
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Endpoint " + serviceEndpoint + " implements interface " + interfaceName);
-                }
+                logger.debug("Endpoint {} implements interface {}", serviceEndpoint, interfaceName);
                 return new QName[] { interfaceName };
             } else {
                 Service service = definition.getService(serviceEndpoint.getServiceName());
                 if (service == null) {
-                    LOG.info("Endpoint " + serviceEndpoint + " has a service description, but no matching service found in "
-                                    + definition.getServices().keySet());
+                    logger.info("Endpoint {} has a service description, but no matching service found in {}", serviceEndpoint, definition.getServices().keySet());
                     return null;
                 }
                 Port port = service.getPort(serviceEndpoint.getEndpointName());
                 if (port == null) {
-                    LOG.info("Endpoint " + serviceEndpoint + " has a service description, but no matching endpoint found in "
-                                    + service.getPorts().keySet());
+                    logger.info("Endpoint {} has a service description, but no matching endpoint found in {}", serviceEndpoint, service.getPorts().keySet());
                     return null;
                 }
                 if (port.getBinding() == null) {
-                    LOG.info("Endpoint " + serviceEndpoint + " has a service description, but no binding found");
+                    logger.info("Endpoint {} has a service description, but no binding found", serviceEndpoint);
                     return null;
                 }
                 if (port.getBinding().getPortType() == null) {
-                    LOG.info("Endpoint " + serviceEndpoint + " has a service description, but no port type found");
+                    logger.info("Endpoint {} has a service description, but no port type found", serviceEndpoint);
                     return null;
                 }
                 QName interfaceName = port.getBinding().getPortType().getQName();
-                if (LOG.isDebugEnabled()) {
-                    LOG.debug("Endpoint " + serviceEndpoint + " implements interface " + interfaceName);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("Endpoint {} implements interface {}", serviceEndpoint, interfaceName);
                 }
                 return new QName[] { interfaceName };
             }
         } catch (Throwable e) {
-            LOG.warn("Error retrieving interfaces from service description: " + e.getMessage());
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Error retrieving interfaces from service description", e);
-            }
+            logger.warn("Error retrieving interfaces from service description: {}", e.getMessage());
+            logger.debug("Error retrieving interfaces from service description", e);
             return null;
         }
         

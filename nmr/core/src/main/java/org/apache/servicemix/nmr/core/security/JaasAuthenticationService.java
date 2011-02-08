@@ -28,25 +28,23 @@ import javax.security.auth.callback.PasswordCallback;
 import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.security.auth.login.LoginContext;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.nmr.api.security.AuthenticationService;
 import org.apache.servicemix.nmr.api.security.CertificateCallback;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An implementation of the AuthenticationService based on JAAS.
  */
 public class JaasAuthenticationService implements AuthenticationService {
 
-    private static final Log LOG = LogFactory.getLog(JaasAuthenticationService.class);
+    private final Logger logger = LoggerFactory.getLogger(JaasAuthenticationService.class);
 
     public void authenticate(Subject subject,
                              String domain,
                              final String user,
                              final Object credentials) throws GeneralSecurityException {
-        if (LOG.isDebugEnabled()) {
-            LOG.debug("Authenticating '" + user + "' with '" + credentials + "'");
-        }
+        logger.debug("Authenticating '{}' with '{}'", user, credentials);
         LoginContext loginContext = new LoginContext(domain, subject, new CallbackHandler() {
             public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
                 for (int i = 0; i < callbacks.length; i++) {

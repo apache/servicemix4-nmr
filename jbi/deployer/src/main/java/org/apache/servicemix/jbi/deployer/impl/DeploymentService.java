@@ -23,8 +23,6 @@ import java.util.Set;
 import javax.jbi.management.DeploymentServiceMBean;
 import javax.jbi.management.LifeCycleMBean;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.deployer.Component;
 import org.apache.servicemix.jbi.deployer.ServiceAssembly;
 import org.apache.servicemix.jbi.deployer.ServiceUnit;
@@ -35,10 +33,12 @@ import org.apache.servicemix.jbi.deployer.descriptor.ServiceUnitDesc;
 import org.apache.servicemix.jbi.deployer.handler.Transformer;
 import org.apache.servicemix.jbi.deployer.utils.ManagementSupport;
 import org.osgi.framework.BundleContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DeploymentService implements DeploymentServiceMBean {
 
-    private static final Log LOG = LogFactory.getLog(DeploymentService.class);
+    private final Logger logger = LoggerFactory.getLogger(DeploymentService.class);
 
     private Deployer deployer;
     private BundleContext bundleContext;
@@ -87,7 +87,7 @@ public class DeploymentService implements DeploymentServiceMBean {
                 }
                 checkSus(sa.getServiceUnits());
                 String name = sa.getIdentification().getName();
-                LOG.info("Deploy ServiceAssembly " + name);
+                logger.info("Deploy ServiceAssembly {}", name);
                 ServiceAssemblyInstaller installer = new ServiceAssemblyInstaller(deployer, root, jarfile, autoStart);
                 installer.installBundle();
                 installer.init();
@@ -97,7 +97,7 @@ public class DeploymentService implements DeploymentServiceMBean {
                 throw new RuntimeException("location for deployment SA: " + saZipURL + " isn't a valid file");
             }
         } catch (Exception e) {
-            LOG.error("Error deploying service assembly", e);
+            logger.error("Error deploying service assembly", e);
             throw e;
         }
     }
@@ -179,7 +179,7 @@ public class DeploymentService implements DeploymentServiceMBean {
             sa.start();
             return ManagementSupport.createSuccessMessage("start service assembly successfully", serviceAssemblyName);
         } catch (Exception e) {
-            LOG.info("Error in start", e);
+            logger.info("Error in start", e);
             throw e;
         }
     }
@@ -193,7 +193,7 @@ public class DeploymentService implements DeploymentServiceMBean {
             sa.stop();
             return ManagementSupport.createSuccessMessage("stop service assembly successfully", serviceAssemblyName);
         } catch (Exception e) {
-            LOG.info("Error in stop", e);
+            logger.info("Error in stop", e);
             throw e;
         }
     }
@@ -207,7 +207,7 @@ public class DeploymentService implements DeploymentServiceMBean {
             sa.shutDown();
             return ManagementSupport.createSuccessMessage("shutdown service assembly successfully", serviceAssemblyName);
         } catch (Exception e) {
-            LOG.info("Error in shutdown", e);
+            logger.info("Error in shutdown", e);
             throw e;
         }
     }
@@ -220,7 +220,7 @@ public class DeploymentService implements DeploymentServiceMBean {
             }
             return sa.getCurrentState();
         } catch (Exception e) {
-            LOG.info("Error in getState", e);
+            logger.info("Error in getState", e);
             throw e;
         }
     }

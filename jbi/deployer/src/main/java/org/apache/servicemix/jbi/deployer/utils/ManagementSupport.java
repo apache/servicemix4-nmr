@@ -27,10 +27,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.servicemix.jbi.runtime.impl.utils.DOMUtil;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -75,7 +75,7 @@ public final class ManagementSupport {
 
     private static final String WRAPPER = "wrapper";
     
-    private static final Log LOG = LogFactory.getLog(ManagementSupport.class);
+    private final static Logger logger = LoggerFactory.getLogger(ManagementSupport.class);
 
     private ManagementSupport() {
     }
@@ -226,7 +226,7 @@ public final class ManagementSupport {
             }
             return DOMUtil.asIndentedXML(doc);
         } catch (Exception e) {
-            LOG.error("Error", e);
+            logger.error("Error", e);
             return null;
         }
     }
@@ -290,9 +290,7 @@ public final class ManagementSupport {
             Element e = createComponentFailure(task, component, info, null);
             return new DeploymentException(DOMUtil.asXML(e));
         } catch (Exception e) {
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Error creating management message", e);
-            }
+            logger.debug("Error creating management message", e);
             return new DeploymentException(info);
         }
     }
@@ -364,7 +362,7 @@ public final class ManagementSupport {
                                                                       "Unable to parse result string", e);
                 }
             } catch (Exception e2) {
-                LOG.error(e2);
+                logger.error("", e2);
                 result = null;
             }
         }
