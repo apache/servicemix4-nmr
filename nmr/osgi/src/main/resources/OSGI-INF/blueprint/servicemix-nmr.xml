@@ -130,6 +130,9 @@
         <property name="managementStrategy" ref="managementStrategy"/>
     </bean>
 
+    <service ref="executorFactory" interface="org.apache.servicemix.executors.ExecutorFactory"/>
+
+    <!-- ExcutorFactory configurer -->
     <bean id="executorConfigurator" class="org.apache.servicemix.nmr.osgi.ExecutorConfigurator">
         <property name="executorFactory" ref="executorFactory"/>
     </bean>
