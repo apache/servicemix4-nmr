@@ -55,7 +55,7 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Description>${project.description}</Bundle-Description>
                         <Import-Package>
-                            org.osgi.service.command,
+                            org.osgi.service.command;resolution:=optional,
                             org.apache.felix.gogo.commands,
                             org.apache.karaf.shell.console,
                             *

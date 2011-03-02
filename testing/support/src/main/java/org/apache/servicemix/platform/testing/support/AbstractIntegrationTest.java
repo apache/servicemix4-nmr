@@ -100,6 +100,8 @@ public class AbstractIntegrationTest extends AbstractConfigurableBundleCreatorTe
             getBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.aopalliance"),
             getBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.asm"),
             getBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.junit"),
+            getBundle("org.apache.aries", "org.apache.aries.util"),
+            getBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
             getBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
             getBundle("org.springframework", "spring-beans"),
             getBundle("org.springframework", "spring-core"),

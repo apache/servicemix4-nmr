@@ -277,6 +277,9 @@ public class ManagementTest extends AbstractIntegrationTest {
             // Felix Config Admin
             mavenBundle("org.apache.felix", "org.apache.felix.configadmin"),
             // Blueprint
+            mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.asm"),
+            mavenBundle("org.apache.aries", "org.apache.aries.util"),
+            mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
             mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
             // Pax mvn handler
             mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),

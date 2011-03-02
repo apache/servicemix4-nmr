@@ -16,12 +16,10 @@
     limitations under the License.
 -->
 <features>
-    <repository>mvn:org.apache.karaf/apache-karaf/${karaf.version}/xml/features</repository>
+    <repository>mvn:org.apache.karaf.assemblies.features/standard/${karaf.version}/xml/features</repository>
+    <repository>mvn:org.apache.karaf.assemblies.features/enterprise/${karaf.version}/xml/features</repository>
     <feature name="naming" version="${version}">
         <bundle>mvn:org.apache.servicemix.naming/org.apache.servicemix.naming/${pom.version}</bundle>
-    </feature>
-    <feature name="transaction" version="${aries.transaction.version}">
-        <bundle>mvn:org.apache.aries.transaction/org.apache.aries.transaction.manager/${aries.transaction.version}</bundle>
     </feature>
     <feature name="document" version="${version}">
         <bundle>mvn:org.apache.servicemix.document/org.apache.servicemix.document/${pom.version}</bundle>
