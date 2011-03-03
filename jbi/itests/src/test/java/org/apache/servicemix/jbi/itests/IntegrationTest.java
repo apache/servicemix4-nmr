@@ -269,7 +269,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
             mavenBundle("org.apache.sshd", "sshd-core"),
             mavenBundle("org.apache.karaf", "org.apache.karaf.management"),
             mavenBundle("org.apache.karaf.jaas", "org.apache.karaf.jaas.config"),
-            mavenBundle("org.apache.felix.gogo", "org.apache.felix.gogo.runtime"),
+            mavenBundle("org.apache.felix", "org.apache.felix.gogo.runtime"),
             mavenBundle("org.apache.karaf.shell", "org.apache.karaf.shell.console"),
             mavenBundle("org.apache.karaf.shell", "org.apache.karaf.shell.osgi"),
             mavenBundle("org.apache.karaf.shell", "org.apache.karaf.shell.log").noStart(),

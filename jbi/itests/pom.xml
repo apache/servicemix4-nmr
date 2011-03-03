@@ -265,7 +265,7 @@
             <artifactId>sshd-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.felix.gogo</groupId>
+            <groupId>org.apache.felix</groupId>
             <artifactId>org.apache.felix.gogo.runtime</artifactId>
         </dependency>
         <dependency>
