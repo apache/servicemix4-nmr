@@ -292,6 +292,11 @@
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix</groupId>
+            <artifactId>servicemix-bean</artifactId>
+            <version>${servicemix.components.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix</groupId>
             <artifactId>servicemix-eip</artifactId>
             <version>${servicemix-eip.version}</version>
         </dependency>
@@ -308,6 +313,11 @@
             <version>${servicemix-http.version}</version>
             <type>zip</type>
             <classifier>installer</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix</groupId>
+            <artifactId>servicemix-file</artifactId>
+            <version>${servicemix.components.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix</groupId>
@@ -374,7 +384,7 @@
             <artifactId>camel-core</artifactId>
             <version>${camel.version}</version>
         </dependency>
-        
+
         <!-- Geronimo -->
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>

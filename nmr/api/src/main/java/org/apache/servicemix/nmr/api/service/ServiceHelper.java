@@ -92,7 +92,7 @@ public final class ServiceHelper {
      * @param to the target for the wire
      * @return the wire object
      */
-    public static Wire createWire(final Map<String, ?> from, final Map<String, Object> to) {
+    public static Wire createWire(final Map<String, ?> from, final Map<String, ?> to) {
         return new Wire() {
             public Map<String, ?> getFrom() {
                 return from;

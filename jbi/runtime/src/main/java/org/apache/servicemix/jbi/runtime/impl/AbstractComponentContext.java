@@ -36,6 +36,7 @@ import javax.management.ObjectName;
 import javax.naming.InitialContext;
 import javax.xml.namespace.QName;
 
+import org.apache.servicemix.jbi.runtime.ComponentRegistry;
 import org.apache.servicemix.jbi.runtime.ComponentWrapper;
 import org.apache.servicemix.jbi.runtime.impl.utils.DOMUtil;
 import org.apache.servicemix.jbi.runtime.impl.utils.URIResolver;
@@ -43,6 +44,7 @@ import org.apache.servicemix.jbi.runtime.impl.utils.WSAddressingConstants;
 import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
+import org.apache.servicemix.nmr.api.service.ServiceHelper;
 import org.apache.servicemix.nmr.management.Nameable;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -281,6 +283,15 @@ public abstract class AbstractComponentContext implements ComponentContext, MBea
         for (ComponentWrapper component : componentRegistry.getServices()) {
             ServiceEndpoint se = component.getComponent().resolveEndpointReference(epr);
             if (se != null) {
+                Map<String, ?> target = componentRegistry.getProperties(component);
+                componentRegistry.getNmr().getWireRegistry().register(
+                    ServiceHelper.createWire(
+                            ServiceHelper.createMap(Endpoint.ENDPOINT_NAME, se.getEndpointName(),
+                                                    Endpoint.SERVICE_NAME, se.getServiceName().toString()),
+                            ServiceHelper.createMap(ComponentRegistry.NAME, target.get(ComponentRegistry.NAME).toString(),
+                                                    ComponentRegistry.TYPE, target.get(ComponentRegistry.TYPE).toString())
+                    )
+                );
                 return se;
             }
         }

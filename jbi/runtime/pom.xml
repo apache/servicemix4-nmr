@@ -57,7 +57,17 @@
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix</groupId>
+            <artifactId>servicemix-bean</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix</groupId>
             <artifactId>servicemix-eip</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.servicemix</groupId>
+            <artifactId>servicemix-file</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
