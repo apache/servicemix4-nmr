@@ -144,7 +144,7 @@ public class EndpointRegistryImpl implements EndpointRegistry {
      * Should the Channel use sync delivery?
      */
     private boolean isChannelSyncDelivery(Map<String, ?> properties) {
-        return Boolean.TRUE.equals(properties.get(Endpoint.CHANNEL_SYNC_DELIVERY));
+        return getBoolean(properties.get(Endpoint.CHANNEL_SYNC_DELIVERY));
     }
 
     /**
@@ -309,5 +309,15 @@ public class EndpointRegistryImpl implements EndpointRegistry {
             }
         }
         return endpoints;
+    }
+
+    private static boolean getBoolean(Object o) {
+        if (o instanceof String) {
+            return Boolean.valueOf(o.toString());
+        } else if (o instanceof Boolean) {
+            return (Boolean) o;
+        } else {
+            return false;
+        }
     }
 }

@@ -79,12 +79,36 @@ public class EndpointRegistryImplTest extends TestCase {
         assertNotNull(r.choose(registry));
         assertFalse(r.choose(registry).iterator().hasNext());
     }
+
+    public void testRegisterWithoutSyncChannel() throws Exception {
+        DummyEndpoint endpoint = new DummyEndpoint();
+
+        Map<String, Object> properties = ServiceHelper.createMap(Endpoint.NAME, "endpoint-id");
+
+        registry.register(endpoint, properties);
+        assertFalse("Injected channel should not have shouldRunSynchronously enabled",
+                    endpoint.channel.isShouldRunSynchronously());
+    }
     
     public void testRegisterWithSyncChannel() throws Exception {
         DummyEndpoint endpoint = new DummyEndpoint();
 
         Map<String, Object> properties = ServiceHelper.createMap(Endpoint.NAME, "endpoint-id");
         properties.put(Endpoint.CHANNEL_SYNC_DELIVERY, true);
+
+        registry.register(endpoint, properties);
+        assertTrue("Injected channel should have shouldRunSynchronously enabled",
+                   endpoint.channel.isShouldRunSynchronously());
+    }
+
+    /*
+     * Test to ensure that the CHANNEL_SYNC_DELIVERY flag can also be set with a String instead of Boolean value
+     */
+    public void testStringChannelSyncDeliveryProperty() throws Exception {
+        DummyEndpoint endpoint = new DummyEndpoint();
+
+        Map<String, Object> properties = ServiceHelper.createMap(Endpoint.NAME, "endpoint-id");
+        properties.put(Endpoint.CHANNEL_SYNC_DELIVERY, "true");
 
         registry.register(endpoint, properties);
         assertTrue("Injected channel should have shouldRunSynchronously enabled",
