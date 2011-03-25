@@ -16,28 +16,22 @@
  */
 package org.apache.servicemix.nmr.core;
 
-import java.util.Map;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.concurrent.RejectedExecutionException;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import org.apache.servicemix.nmr.api.AbortedException;
-import org.apache.servicemix.nmr.api.Endpoint;
-import org.apache.servicemix.nmr.api.Exchange;
-import org.apache.servicemix.nmr.api.NMR;
-import org.apache.servicemix.nmr.api.Pattern;
-import org.apache.servicemix.nmr.api.Role;
-import org.apache.servicemix.nmr.api.Status;
+import org.apache.servicemix.executors.Executor;
+import org.apache.servicemix.executors.ExecutorAwareRunnable;
+import org.apache.servicemix.nmr.api.*;
 import org.apache.servicemix.nmr.api.event.ExchangeListener;
 import org.apache.servicemix.nmr.api.internal.InternalChannel;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
 import org.apache.servicemix.nmr.api.internal.InternalExchange;
-import org.apache.servicemix.executors.Executor;
-import org.apache.servicemix.executors.ExecutorAwareRunnable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * The {@link org.apache.servicemix.nmr.api.Channel} implementation.

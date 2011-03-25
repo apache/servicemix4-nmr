@@ -16,14 +16,6 @@
  */
 package org.apache.servicemix.platform.testing.support;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
-
 import org.apache.log4j.PropertyConfigurator;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceEvent;
@@ -36,6 +28,13 @@ import org.springframework.osgi.util.OsgiFilterUtils;
 import org.springframework.osgi.util.OsgiListenerUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
 
 
 public class AbstractIntegrationTest extends AbstractConfigurableBundleCreatorTests {
@@ -91,7 +90,7 @@ public class AbstractIntegrationTest extends AbstractConfigurableBundleCreatorTe
 
     protected String[] getTestFrameworkBundlesNames() {
         return new String[] {
-            getBundle("org.apache.geronimo.specs", "geronimo-servlet_2.5_spec"),
+            getBundle("org.apache.geronimo.specs", "geronimo-servlet_3.0_spec"),
             getBundle("org.osgi", "org.osgi.core"),
             getBundle("org.osgi", "org.osgi.compendium"),
             getBundle("org.apache.felix", "org.apache.felix.configadmin"),

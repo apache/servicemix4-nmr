@@ -45,7 +45,7 @@
     </feature>
     <feature name="jbi" version="${version}">
         <feature version="${version}">naming</feature>
-        <feature version="${aries.transaction.version}">transaction</feature>
+        <feature version="${aries.version}">transaction</feature>
         <feature version="${version}">nmr</feature>
         <feature version="${woodstox.version}">woodstox</feature>
         <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${servicemix.specs.version}</bundle>
