@@ -192,7 +192,7 @@ public class EndpointRegistryImplTest extends TestCase {
         ExecutorConfig config = (ExecutorConfig) field.get(endpoint.channel.getExecutor());
 
         // ensure that we have the core pool size value we requested
-        assertEquals(12, config.getCorePoolSize());
+        assertEquals(new Integer(12), config.getCorePoolSize());
 
         // let's make sure the endpoint is still available under the intended name
         InternalReference reference =
