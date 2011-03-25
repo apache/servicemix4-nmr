@@ -120,7 +120,7 @@ public class EndpointRegistryImpl implements EndpointRegistry {
                 name = EXECUTOR_DEFAULT;
             }
             name = EXECUTOR_PREFIX + name;
-            Executor executor = executorFactory.createExecutor(name);
+            Executor executor = executorFactory.createExecutor(name, (Map<String, Object>) properties);
 
             // Create channel
             ChannelImpl channel = new ChannelImpl(wrapper, executor, nmr);

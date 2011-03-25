@@ -311,4 +311,12 @@ public class ChannelImpl implements InternalChannel {
         }
     }
 
+    /**
+     * Provide access to the underlying Executor
+     *
+     * @return the excecutor instance
+     */
+    protected final Executor getExecutor() {
+        return executor;
+    }
 }

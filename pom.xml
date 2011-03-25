@@ -99,7 +99,7 @@
       <servicemix-shared.version>${servicemix.components.version}</servicemix-shared.version>
       <servicemix.legal.version>1.0</servicemix.legal.version>
       <servicemix.specs.version>1.7.0</servicemix.specs.version>
-      <servicemix-utils.version>1.4.0</servicemix-utils.version>
+      <servicemix-utils.version>1.5.0-SNAPSHOT</servicemix-utils.version>
       
       <!-- Spring -->
       <spring.version>3.0.5.RELEASE</spring.version>

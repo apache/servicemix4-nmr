@@ -16,6 +16,7 @@
  */
 package org.apache.servicemix.nmr.core;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import junit.framework.TestCase;
+import org.apache.servicemix.executors.ExecutorFactory;
+import org.apache.servicemix.executors.impl.ExecutorConfig;
+import org.apache.servicemix.executors.impl.ExecutorImpl;
 import org.apache.servicemix.nmr.api.Channel;
 import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.EndpointRegistry;
@@ -170,6 +174,31 @@ public class EndpointRegistryImplTest extends TestCase {
         Iterable<InternalEndpoint> endpoints = reference.choose(registry);
         assertNotNull(endpoints);
         assertFalse(endpoints.iterator().hasNext());
+    }
+
+    /**
+     * Test to ensure that the underlying executor can be configured by adding additional properties when registering
+     * the endpoint
+     */
+    public void testConfigureChannelOnRegistration() throws Exception {
+        DummyEndpoint endpoint = new DummyEndpoint();
+        registry.register(endpoint, ServiceHelper.createMap(Endpoint.NAME, "some.endpoint.name",
+                                                            ExecutorFactory.CORE_POOL_SIZE, "12"));
+
+
+        // a bit of reflection magic to find the executor config
+        Field field = ExecutorImpl.class.getDeclaredField("config");
+        field.setAccessible(true);
+        ExecutorConfig config = (ExecutorConfig) field.get(endpoint.channel.getExecutor());
+
+        // ensure that we have the core pool size value we requested
+        assertEquals(12, config.getCorePoolSize());
+
+        // let's make sure the endpoint is still available under the intended name
+        InternalReference reference =
+                (InternalReference) registry.lookup(ServiceHelper.createMap(Endpoint.NAME, "some.endpoint.name"));
+        assertNotNull(reference.choose(registry));
+        assertTrue(reference.choose(registry).iterator().hasNext());
     }
 
     private Endpoint createWiredEndpoint(Map<String, Object> from) {

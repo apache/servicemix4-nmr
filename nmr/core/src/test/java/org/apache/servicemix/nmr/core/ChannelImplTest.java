@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 import junit.framework.TestCase;
 
+import org.apache.servicemix.executors.ExecutorFactory;
 import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.nmr.api.Channel;
 import org.apache.servicemix.nmr.api.Pattern;
@@ -175,6 +176,31 @@ public class ChannelImplTest extends TestCase {
         assertNotNull(ep2.exchange);
         assertEquals(Status.Error, e.getStatus());
     }
+
+    /**
+     * Test to ensure that adding additional configuration properties to the endpoint registration properties
+     * does not interfere with normal exchange routing
+     *
+     * @throws Exception
+     */
+    public void testSendToEndpointWithAdditionalConfig() throws Exception {
+        nmr.getEndpointRegistry().register(new PingPongEndpoint(),
+                                           ServiceHelper.createMap(Endpoint.NAME, "pingpong",
+                                                                   ExecutorFactory.CORE_POOL_SIZE, "10"));
+
+        Channel channel = nmr.createChannel();
+        Exchange exchange = channel.createExchange(Pattern.InOut);
+        exchange.getIn().setBody(PingPongEndpoint.PING);
+        exchange.setTarget(nmr.getEndpointRegistry().lookup(ServiceHelper.createMap(Endpoint.NAME, "pingpong")));
+
+        channel.sendSync(exchange);
+
+        assertEquals(Status.Active, exchange.getStatus());
+        assertEquals(PingPongEndpoint.PONG, exchange.getOut().getBody());
+
+        exchange.setStatus(Status.Done);
+        channel.send(exchange);
+    }
     
     public void testChangeThreadNameForSyncExchange() throws Exception {
         final BlockingEndpoint blocking = new BlockingEndpoint(1);
@@ -246,6 +272,27 @@ public class ChannelImplTest extends TestCase {
             channel.send(exchange);
         }
 
+    }
+
+    protected static class PingPongEndpoint implements Endpoint {
+
+        protected static final String PING = "ping";
+        protected static final String PONG = "pong";
+
+        private Channel channel;
+
+        public void setChannel(Channel channel) {
+            this.channel = channel;
+        }
+
+        public synchronized void process(Exchange exchange) {
+            if (exchange.getStatus() == Status.Active) {
+                if (PING.equals(exchange.getIn().getBody(String.class))) {
+                    exchange.getOut().setBody("pong");
+                    channel.send(exchange);
+                }
+            }
+        }
     }
     
     private static class BlockingEndpoint implements Endpoint {
