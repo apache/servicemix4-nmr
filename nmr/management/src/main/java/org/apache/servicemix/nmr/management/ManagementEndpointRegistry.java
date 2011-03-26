@@ -170,7 +170,7 @@ public class ManagementEndpointRegistry implements ExchangeListener {
                 logger.trace("Source endpoint: {} (known endpoints: {})", id, endpoints);
                 ManagedEndpoint me = endpoints.get(id);
                 if (me == null) {
-                	logger.trace("No managed endpoint registered with id: {}", id);
+                    logger.trace("No managed endpoint registered with id: {}", id);
                   
                 } else {
                     me.incrementOutbound();

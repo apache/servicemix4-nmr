@@ -58,7 +58,7 @@ public class SmxPlatform implements OsgiPlatform {
 
     private static final String FELIX_CONFIG_PROPERTY = "config.properties";
 
-    public final static String	FRAMEWORK_STORAGE = "org.osgi.framework.storage";
+    public final static String FRAMEWORK_STORAGE = "org.osgi.framework.storage";
 
     private static final String DELIM_START = "${";
     private static final String DELIM_STOP = "}";

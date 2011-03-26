@@ -44,7 +44,7 @@ public class ManagementTest extends AbstractIntegrationTest {
 
     @Test
     public void testInstallUninstall() throws Exception {
-    	
+        
         String smxShared = localMavenBundle("org.apache.servicemix", "servicemix-shared",
                                             getArtifactVersion("org.apache.servicemix", "servicemix-shared"),
                                             "installer", "zip").getPath();
@@ -308,11 +308,11 @@ public class ManagementTest extends AbstractIntegrationTest {
             mavenBundle("org.springframework.osgi", "spring-osgi-extender"),
 
             // Bundles for NMR + JBI
-        	mavenBundle("org.fusesource.commonman", "commons-management"),
-        	mavenBundle("org.apache.xbean", "xbean-naming"),
-        	mavenBundle("org.apache.servicemix.naming", "org.apache.servicemix.naming"),
+            mavenBundle("org.fusesource.commonman", "commons-management"),
+            mavenBundle("org.apache.xbean", "xbean-naming"),
+            mavenBundle("org.apache.servicemix.naming", "org.apache.servicemix.naming"),
             mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.ant"),
-			   mavenBundle("javax.mail", "mail"),
+               mavenBundle("javax.mail", "mail"),
             mavenBundle("org.codehaus.woodstox", "stax2-api"),
             mavenBundle("org.codehaus.woodstox", "woodstox-core-asl"),
             mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.wsdl4j"),
@@ -328,7 +328,7 @@ public class ManagementTest extends AbstractIntegrationTest {
             mavenBundle("org.apache.servicemix.nmr", "org.apache.servicemix.nmr.core"),
             mavenBundle("org.apache.servicemix.nmr", "org.apache.servicemix.nmr.spring"),
             mavenBundle("org.apache.servicemix.nmr", "org.apache.servicemix.nmr.osgi"),
-			mavenBundle("org.apache.servicemix.nmr", "org.apache.servicemix.nmr.management"),
+            mavenBundle("org.apache.servicemix.nmr", "org.apache.servicemix.nmr.management"),
             mavenBundle("org.apache.servicemix.jbi", "org.apache.servicemix.jbi.runtime"),
             mavenBundle("org.apache.servicemix.jbi", "org.apache.servicemix.jbi.deployer"),
             mavenBundle("org.apache.servicemix.jbi", "org.apache.servicemix.jbi.osgi"),

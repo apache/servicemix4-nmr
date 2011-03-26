@@ -116,7 +116,7 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
     private Storage storage;
 
     public Deployer() throws JBIException {
-    	jbiRootDir = new File(System.getProperty("karaf.base"), System.getProperty("jbi.cache", "data/jbi/"));
+        jbiRootDir = new File(System.getProperty("karaf.base"), System.getProperty("jbi.cache", "data/jbi/"));
         jbiRootDir.mkdirs();
         // Create listener registry
         listenerRegistry = new ListenerRegistryImpl();
@@ -227,9 +227,9 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
         deployedComponentsTracker.open();
         // Track deployed service assemblies
         deployedAssembliesTracker = new ServiceTracker(bundleContext, DeployedAssembly.class.getName(), null) {
-        	
+            
             public Object addingService(ServiceReference serviceReference) {
-            	Object o = super.addingService(serviceReference);
+                Object o = super.addingService(serviceReference);
                 
                 registerDeployedServiceAssembly(serviceReference, (DeployedAssembly) o);
                 return o;
@@ -390,7 +390,7 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
         logger.debug("Registering JBI Shared Library");
         registerService(bundle, SharedLibrary.class.getName(), sl, props);
         if (!getEnvironment().isManaged(sl)) {
-        	getEnvironment().manageObject(sl);
+            getEnvironment().manageObject(sl);
         }
         // Check pending bundles
         checkPendingInstallers();
@@ -418,7 +418,7 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
             registerService(bundle, javax.jbi.component.Component.class.getName(), innerComponent, props);
         }
         if (!getEnvironment().isManaged(component)) {
-        	getEnvironment().manageObject(component);
+            getEnvironment().manageObject(component);
         }
         return component;
     }
@@ -439,8 +439,8 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
         logger.debug("Registering JBI service assembly");
         registerService(bundle, ServiceAssembly.class.getName(), sa, props);
         if (!getEnvironment().isManaged(sa)) {
-        	//check if this SA is managed, this is the case that restart SA bundle
-        	getEnvironment().manageObject(sa);
+            //check if this SA is managed, this is the case that restart SA bundle
+            getEnvironment().manageObject(sa);
         }
         return sa;
     }
@@ -483,10 +483,10 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
             }
             components.remove(component.getName());
             try {
-				getEnvironment().unmanageObject(component);
-			} catch (Exception e) {
-				logger.error("Error unmanage component: {}", component.getName(), e);
-			}
+                getEnvironment().unmanageObject(component);
+            } catch (Exception e) {
+                logger.error("Error unmanage component: {}", component.getName(), e);
+            }
         }
     }
 
@@ -496,10 +496,10 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
             pendingAssemblies.remove(assembly);
             unregisterServices(assembly.getBundle());
             try {
-				getEnvironment().unmanageObject(assembly);
-			} catch (Exception e) {
-				logger.error("Error unmanage service assembly: {}", assembly.getName(), e);
-			}
+                getEnvironment().unmanageObject(assembly);
+            } catch (Exception e) {
+                logger.error("Error unmanage service assembly: {}", assembly.getName(), e);
+            }
             for (ServiceUnitImpl su : assembly.getServiceUnitsList()) {
                 su.getComponentImpl().removeServiceUnit(su);
             }
@@ -511,10 +511,10 @@ public class Deployer implements SynchronousBundleListener, LifeCycleListener {
             // TODO: shutdown all components
             sharedLibraries.remove(library.getName());
             try {
-				getEnvironment().unmanageObject(library);
-			} catch (Exception e) {
-				logger.error("Error unmanage sharedlibrary: {}", library.getName(), e);
-			}
+                getEnvironment().unmanageObject(library);
+            } catch (Exception e) {
+                logger.error("Error unmanage sharedlibrary: {}", library.getName(), e);
+            }
         }
     }
 

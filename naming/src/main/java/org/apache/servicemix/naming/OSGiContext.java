@@ -46,8 +46,8 @@ public class OSGiContext extends ImmutableContext {
      * Retrieves the named object.
      * See {@link #lookup(javax.naming.Name)} for details.
      * @param name the name of the object to look up
-     * @return	the object bound to <tt>name</tt>
-     * @throws	NamingException if a naming exception is encountered
+     * @return    the object bound to <tt>name</tt>
+     * @throws    NamingException if a naming exception is encountered
      */
     public Object lookup(String name) throws NamingException {
         if (name.startsWith("osgi:")) {

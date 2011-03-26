@@ -687,8 +687,8 @@
                           <stripVersion>true</stripVersion>
                       </configuration>
                   </execution>
-	          </executions>
-	      </plugin>
+              </executions>
+          </plugin>
           <plugin>
               <artifactId>maven-remote-resources-plugin</artifactId>
               <version>1.1</version>

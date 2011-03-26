@@ -40,7 +40,7 @@
     <bean id="jbiHandler" class="org.apache.servicemix.jbi.deployer.handler.URLHandler" />
 
     <service ref="jbiHandler" interface="org.osgi.service.url.URLStreamHandlerService">
-    	<service-properties>
+        <service-properties>
             <entry key="url.handler.protocol" value="jbi"/>
         </service-properties>
     </service>

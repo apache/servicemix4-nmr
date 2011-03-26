@@ -95,7 +95,7 @@ public abstract class AbstractJmsRequestorPool extends AbstractMessageListenerCo
 
     public void initialize() {
         // Prepare taskExecutor and maxMessagesPerTask.
-    	getTaskExecutor();
+        getTaskExecutor();
 
         // Proceed with actual listener initialization.
         super.initialize();
@@ -118,7 +118,7 @@ public abstract class AbstractJmsRequestorPool extends AbstractMessageListenerCo
      * @see #setTaskExecutor
      */
     protected void doRescheduleTask(Object task) {
-    	getTaskExecutor().execute((Runnable) task);
+        getTaskExecutor().execute((Runnable) task);
     }
 
     //-------------------------------------------------------------------------

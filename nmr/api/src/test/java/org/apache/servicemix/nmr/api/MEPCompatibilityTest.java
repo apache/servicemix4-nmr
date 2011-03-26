@@ -25,8 +25,8 @@ import junit.framework.TestCase;
  */
 public class MEPCompatibilityTest extends TestCase {
 
-	public void testInOptOutCompatibility() {
-		assertNotNull(Pattern.fromWsdlUri("http://www.w3.org/2004/08/wsdl/in-opt-out"));
-	}
+    public void testInOptOutCompatibility() {
+        assertNotNull(Pattern.fromWsdlUri("http://www.w3.org/2004/08/wsdl/in-opt-out"));
+    }
 
 }

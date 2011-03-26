@@ -144,7 +144,7 @@ public class ExchangeUtils {
                 transformer.transform((DOMSource) object, new StreamResult(buffer));
                 result = buffer.toString();
             } else if (object instanceof InternalExchange) {
-            	result = "";
+                result = "";
             } else if (object != null) {
                 result = object.toString();
             } else {

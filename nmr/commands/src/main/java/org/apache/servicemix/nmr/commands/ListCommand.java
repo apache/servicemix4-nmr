@@ -36,11 +36,11 @@ public class ListCommand extends NmrCommandSupport {
         if (reference != null) {
             NMR nmr = (NMR)getBundleContext().getService(reference);
             if (nmr != null) {
-            	Set<Endpoint> endpoints = nmr.getEndpointRegistry().getServices();
-            	for (Endpoint endpoint : endpoints) {
-            		String name = (String)nmr.getEndpointRegistry().getProperties(endpoint).get(Endpoint.NAME);
-            		System.out.println(name);
-            	}
+                Set<Endpoint> endpoints = nmr.getEndpointRegistry().getServices();
+                for (Endpoint endpoint : endpoints) {
+                    String name = (String)nmr.getEndpointRegistry().getProperties(endpoint).get(Endpoint.NAME);
+                    System.out.println(name);
+                }
             }
         }
         System.out.println();

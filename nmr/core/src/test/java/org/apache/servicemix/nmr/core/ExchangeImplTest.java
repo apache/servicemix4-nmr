@@ -182,55 +182,55 @@ public class ExchangeImplTest extends TestCase {
         assertNotNull(e.getProviderLock(true));
     }
 
-	public void testInOnly() {
-		Exchange e = new ExchangeImpl(Pattern.InOnly);
-		assertNotNull(e.getIn());
-		assertNull(e.getOut());
-		assertNull(e.getFault());
-	}
+    public void testInOnly() {
+        Exchange e = new ExchangeImpl(Pattern.InOnly);
+        assertNotNull(e.getIn());
+        assertNull(e.getOut());
+        assertNull(e.getFault());
+    }
 
-	public void testRobustInOnly() {
-		Exchange e = new ExchangeImpl(Pattern.RobustInOnly);
-		assertNotNull(e.getIn());
-		assertNull(e.getOut());
-		assertNotNull(e.getFault());
-	}
+    public void testRobustInOnly() {
+        Exchange e = new ExchangeImpl(Pattern.RobustInOnly);
+        assertNotNull(e.getIn());
+        assertNull(e.getOut());
+        assertNotNull(e.getFault());
+    }
 
-	public void testInOut() {
-		Exchange e = new ExchangeImpl(Pattern.InOut);
-		assertNotNull(e.getIn());
-		assertNotNull(e.getOut());
-		assertNotNull(e.getFault());
-	}
+    public void testInOut() {
+        Exchange e = new ExchangeImpl(Pattern.InOut);
+        assertNotNull(e.getIn());
+        assertNotNull(e.getOut());
+        assertNotNull(e.getFault());
+    }
 
-	public void testInOptionalOut() {
-		Exchange e = new ExchangeImpl(Pattern.InOptionalOut);
-		assertNotNull(e.getIn());
-		assertNotNull(e.getOut());
-		assertNotNull(e.getFault());
-	}
+    public void testInOptionalOut() {
+        Exchange e = new ExchangeImpl(Pattern.InOptionalOut);
+        assertNotNull(e.getIn());
+        assertNotNull(e.getOut());
+        assertNotNull(e.getFault());
+    }
 
-	public void testCancel() throws InterruptedException {
-	    final InternalExchange e = new ExchangeImpl(Pattern.InOnly);
-	    final CountDownLatch latch = new CountDownLatch(1);
-	    Thread thread = new Thread() {
-	        @Override
-	        public void run() {
-	            try {
-	                e.getConsumerLock(true).acquire();
-	                latch.countDown();
-	            } catch (InterruptedException e) {
-	                fail(e.getMessage());
-	            }
-	        }
-	    };
-	    thread.start();
-	    //let's sleep for a moment to make sure the thread has acquired the lock
-	    Thread.sleep(150);
-	    e.cancel();
-	    assertTrue("Exchange should have been cancelled", latch.await(1, TimeUnit.SECONDS));
-	    assertEquals(Status.Error, e.getStatus());
-	}
+    public void testCancel() throws InterruptedException {
+        final InternalExchange e = new ExchangeImpl(Pattern.InOnly);
+        final CountDownLatch latch = new CountDownLatch(1);
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    e.getConsumerLock(true).acquire();
+                    latch.countDown();
+                } catch (InterruptedException e) {
+                    fail(e.getMessage());
+                }
+            }
+        };
+        thread.start();
+        //let's sleep for a moment to make sure the thread has acquired the lock
+        Thread.sleep(150);
+        e.cancel();
+        assertTrue("Exchange should have been cancelled", latch.await(1, TimeUnit.SECONDS));
+        assertEquals(Status.Error, e.getStatus());
+    }
 
     public static Map<String, Object> createMap(String... data) {
         Map<String, Object> props = new HashMap<String, Object>();

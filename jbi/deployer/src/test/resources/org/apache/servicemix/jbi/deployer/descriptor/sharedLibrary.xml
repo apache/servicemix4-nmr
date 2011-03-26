@@ -19,17 +19,17 @@
 -->
 <!-- jbi.xml file for a sample shared library. -->
 <jbi version="1.0" xmlns="http://java.sun.com/xml/ns/jbi"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
-	<!-- identification information about this shared library-->
-	<shared-library>
-		<identification>
-			<name>TestSharedLibrary</name>
-			<description>This is a test shared library.</description>
-		</identification>
-		<shared-library-class-path>
-			<path-element>.</path-element>
-			<path-element>test.jar</path-element>
-		</shared-library-class-path>
-	</shared-library>
+    <!-- identification information about this shared library-->
+    <shared-library>
+        <identification>
+            <name>TestSharedLibrary</name>
+            <description>This is a test shared library.</description>
+        </identification>
+        <shared-library-class-path>
+            <path-element>.</path-element>
+            <path-element>test.jar</path-element>
+        </shared-library-class-path>
+    </shared-library>
 </jbi>

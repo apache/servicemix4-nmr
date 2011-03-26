@@ -24,24 +24,24 @@ package org.apache.servicemix.nmr.api;
  */
 public class ServiceMixException extends RuntimeException {
 
-	/**
-	 * Generated serial version UID
-	 */
-	private static final long serialVersionUID = -4589808461481157493L;
+    /**
+     * Generated serial version UID
+     */
+    private static final long serialVersionUID = -4589808461481157493L;
 
-	public ServiceMixException() {
-	}
+    public ServiceMixException() {
+    }
 
-	public ServiceMixException(String message) {
-		super(message);
-	}
+    public ServiceMixException(String message) {
+        super(message);
+    }
 
-	public ServiceMixException(Throwable cause) {
-		super(cause);
-	}
+    public ServiceMixException(Throwable cause) {
+        super(cause);
+    }
 
-	public ServiceMixException(String message, Throwable cause) {
-		super(message, cause);
-	}
+    public ServiceMixException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
 }

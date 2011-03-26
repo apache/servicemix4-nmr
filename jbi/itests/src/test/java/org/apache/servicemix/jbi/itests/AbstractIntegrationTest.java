@@ -163,7 +163,7 @@ public abstract class AbstractIntegrationTest {
     public static String getArtifactVersion( final String groupId, final String artifactId ) {
         final Properties dependencies = new Properties();
         try {
-        	
+            
             dependencies.load(new FileInputStream(new File(System.getProperty("basedir"), "target/classes/META-INF/maven/dependencies.properties")));
             final String version = dependencies.getProperty( groupId + "/" + artifactId + "/version" );
             if( version == null ) {
