@@ -72,7 +72,7 @@
       <servicemix.nmr.version>${project.version}</servicemix.nmr.version>
 
       <!-- ActiveMQ -->
-      <activemq.version>5.4.2</activemq.version>
+      <activemq.version>5.5-SNAPSHOT</activemq.version>
       
       <!-- Camel -->
       <camel.version>2.7.0</camel.version>
