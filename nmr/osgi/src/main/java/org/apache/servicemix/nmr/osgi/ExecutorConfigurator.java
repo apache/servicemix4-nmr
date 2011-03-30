@@ -63,8 +63,8 @@ public class ExecutorConfigurator implements ManagedService {
                     getConfig(configs, key).setQueueSize(getInt(properties, key));
                 } else if (key.endsWith(".shutdownDelay")) {
                     getConfig(configs, key).setShutdownDelay(getLong(properties, key));
-                } else if (key.endsWith(".allowCoreThreadsTimeout")) {
-                    getConfig(configs, key).setAllowCoreThreadsTimeout(getBool(properties, key));
+                } else if (key.endsWith(".allowCoreThreadTimeOut")) {
+                    getConfig(configs, key).setAllowCoreThreadTimeOut(getBool(properties, key));
                 } else if (key.endsWith(".bypassIfSynchronous")) {
                     getConfig(configs, key).setBypassIfSynchronous(getBool(properties, key));
                 } else if (key.equals("corePoolSize")) {
@@ -81,8 +81,8 @@ public class ExecutorConfigurator implements ManagedService {
                     executorFactory.getDefaultConfig().setQueueSize(getInt(properties, key));
                 } else if (key.equals("shutdownDelay")) {
                     executorFactory.getDefaultConfig().setShutdownDelay(getLong(properties, key));
-                } else if (key.equals("allowCoreThreadsTimeout")) {
-                    executorFactory.getDefaultConfig().setAllowCoreThreadsTimeout(getBool(properties, key));
+                } else if (key.equals("allowCoreThreadTimeOut")) {
+                    executorFactory.getDefaultConfig().setAllowCoreThreadTimeOut(getBool(properties, key));
                 } else if (key.equals("bypassIfSynchronous")) {
                     executorFactory.getDefaultConfig().setBypassIfSynchronous(getBool(properties, key));
                 }

@@ -120,7 +120,7 @@
     <bean id="executorFactory" class="org.apache.servicemix.executors.impl.ExecutorFactoryImpl">
         <property name="defaultConfig">
             <bean class="org.apache.servicemix.executors.impl.ExecutorConfig">
-                <property name="allowCoreThreadsTimeout" value="${allowCoreThreadsTimeout}"/>
+                <property name="allowCoreThreadTimeOut" value="${allowCoreThreadTimeOut}"/>
                 <property name="corePoolSize" value="${corePoolSize}"/>
                 <property name="maximumPoolSize" value="${maximumPoolSize}"/>
                 <property name="queueSize" value="${queueSize}"/>
@@ -147,7 +147,7 @@
     <cm:property-placeholder persistent-id="org.apache.servicemix.nmr">
         <cm:default-properties>
             <cm:property name="nmrId" value="org.apache.servicemix.NMR"/>
-            <cm:property name="allowCoreThreadsTimeout" value="true"/>
+            <cm:property name="allowCoreThreadTimeOut" value="true"/>
             <cm:property name="corePoolSize" value="4"/>
             <cm:property name="maximumPoolSize" value="-1"/>
             <cm:property name="queueSize" value="1024"/>
