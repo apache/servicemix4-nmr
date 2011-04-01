@@ -72,6 +72,13 @@ public interface Endpoint {
     String CHANNEL_SYNC_DELIVERY = "CHANNEL_SYNC_DELIVERY";
 
     /**
+     * If this property is set to <code>true</code>, the endpoint code
+     * will be run as the <code>Subject</code> passed along with the message
+     * being sent to it.
+     */
+    String RUN_AS_SUBJECT = "RUN_AS_SUBJECT";
+
+    /**
      * Set the channel so that the endpoint can send exchanges back
      * when they are processed or act as a consumer itself.
      * This method will be called by the NMR while the endpoint is registered.

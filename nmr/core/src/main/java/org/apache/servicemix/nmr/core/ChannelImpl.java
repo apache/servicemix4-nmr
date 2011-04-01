@@ -26,6 +26,9 @@ import org.apache.servicemix.nmr.api.internal.InternalExchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.security.auth.Subject;
+import java.security.PrivilegedActionException;
+import java.security.PrivilegedExceptionAction;
 import java.util.Map;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.Semaphore;
@@ -51,6 +54,7 @@ public class ChannelImpl implements InternalChannel {
     private String name;
     private AtomicBoolean closed = new AtomicBoolean();
     private boolean shouldRunSynchronously;
+    private boolean runAsSubject;
 
     public ChannelImpl(InternalEndpoint endpoint, Executor executor, NMR nmr) {
         this.endpoint = endpoint;
@@ -71,6 +75,23 @@ public class ChannelImpl implements InternalChannel {
 
     public void setShouldRunSynchronously(boolean shouldRunSynchronously) {
         this.shouldRunSynchronously = shouldRunSynchronously;
+    }
+
+    /**
+     * Will the endpoint code be invoked on behalf of the 'in' message subject?
+     */
+    public boolean isRunAsSubject() {
+        return runAsSubject;
+    }
+
+    /**
+     * Configure whether or not the endpoint will be invoked on behalf of the subject
+     * found on the in message or not.  Defaults to <code>false</code>.
+     *
+     * @param runAsSubject
+     */
+    public void setRunAsSubject(boolean runAsSubject) {
+        this.runAsSubject = runAsSubject;
     }
 
     /**
@@ -243,11 +264,16 @@ public class ChannelImpl implements InternalChannel {
             // rather than delivering the exchange
             // TODO:
             // Process exchange
-            endpoint.process(exchange);
+            Subject subject = exchange.getIn().getSecuritySubject();
+            if (isRunAsSubject() && subject != null) {
+                process(endpoint, exchange, subject);
+            } else {
+                endpoint.process(exchange);
+            }
         } catch (RuntimeException e) {
             handleFailure(exchange, e, false);
         }
-    }                             
+    }
 
     /**
      * Dispatch the exchange to the NMR
@@ -318,5 +344,25 @@ public class ChannelImpl implements InternalChannel {
      */
     protected final Executor getExecutor() {
         return executor;
+    }
+
+    /**
+     * Make the endpoint process the exchange on behalf of the provided security Subject.
+     *
+     * @param endpoint the target endpoint
+     * @param exchange the exchange to be processed
+     * @param subject the subject that the endpoint is to be invoked by
+     */
+    private void process(final InternalEndpoint endpoint, final InternalExchange exchange, final Subject subject) {
+        try {
+            Subject.doAs(subject, new PrivilegedExceptionAction<Object>() {
+                public Object run() throws Exception {
+                    endpoint.process(exchange);
+                    return null;
+                }
+            });
+        } catch (PrivilegedActionException e) {
+            throw new NmrRuntimeException("Unable to invoke endpoint on behalf of " + subject, e);
+        }
     }
 }

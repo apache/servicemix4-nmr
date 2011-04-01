@@ -125,6 +125,7 @@ public class EndpointRegistryImpl implements EndpointRegistry {
             // Create channel
             ChannelImpl channel = new ChannelImpl(wrapper, executor, nmr);
             channel.setShouldRunSynchronously(isChannelSyncDelivery(properties));
+            channel.setRunAsSubject(isRunAsSubject(properties));
             wrapper.setChannel(channel);
             
             wrappers.put(wrapper, endpoint);
@@ -145,6 +146,13 @@ public class EndpointRegistryImpl implements EndpointRegistry {
      */
     private boolean isChannelSyncDelivery(Map<String, ?> properties) {
         return getBoolean(properties.get(Endpoint.CHANNEL_SYNC_DELIVERY));
+    }
+
+    /*
+     * Should the Channel invoke the endpoint on behalf of the Subject in the mesage?
+     */
+    private boolean isRunAsSubject(Map<String, ?> properties) {
+        return getBoolean(properties.get(Endpoint.RUN_AS_SUBJECT));
     }
 
     /**
