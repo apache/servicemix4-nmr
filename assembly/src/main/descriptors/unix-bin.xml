@@ -93,7 +93,13 @@
             <fileMode>0644</fileMode>
         </fileSet>
         <fileSet>
-            <directory>target/classes/bin</directory>
+            <directory>src/main/distribution/etc</directory>
+            <outputDirectory>/etc/</outputDirectory>
+            <lineEnding>unix</lineEnding>
+            <fileMode>0644</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/distribution/bin</directory>
             <includes>
                 <include>start</include>
                 <include>stop</include>
