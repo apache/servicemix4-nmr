@@ -26,7 +26,7 @@
     </feature>
     <feature name="nmr" version="${version}">
         <feature>document</feature>
-        <bundle>mvn:org.apache.servicemix/servicemix-utils/${servicemix-utils.version}</bundle>
+        <bundle>mvn:org.apache.servicemix/servicemix-utils/${servicemix.utils.version}</bundle>
         <bundle>mvn:org.fusesource.commonman/commons-management/${commons-management.version}</bundle>
         <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.api/${pom.version}</bundle>
         <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.core/${pom.version}</bundle>
@@ -52,7 +52,7 @@
         <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jbi-api-1.0/${servicemix.specs.version}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.wsdl4j/${wsdl4j.bundle.version}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.ant/${ant.bundle.version}</bundle>
-        <bundle>mvn:org.apache.servicemix/servicemix-common/${servicemix-shared.version}</bundle>
+        <bundle>mvn:org.apache.servicemix/servicemix-common/${servicemix.components.version}</bundle>
         <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.runtime/${pom.version}</bundle>
         <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.osgi/${pom.version}</bundle>
         <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.deployer/${pom.version}</bundle>

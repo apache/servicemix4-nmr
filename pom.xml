@@ -22,10 +22,10 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <groupId>org.apache.servicemix</groupId>
-    <artifactId>servicemix-pom</artifactId>
-    <relativePath>../servicemix-pom/pom.xml</relativePath>
-    <version>5</version>
+    <groupId>org.apache.servicemix.nmr</groupId>
+    <artifactId>parent</artifactId>
+    <relativePath>parent/pom.xml</relativePath>
+    <version>1.5.0-SNAPSHOT</version>
   </parent>
 
   <groupId>org.apache.servicemix.nmr</groupId>
@@ -35,6 +35,7 @@
   <name>Apache ServiceMix :: NMR</name>
 
   <modules>
+      <module>parent</module>
       <module>branding</module>
       <module>document</module>
       <module>naming</module>
@@ -66,17 +67,8 @@
       <sonar.skippedModules>examples</sonar.skippedModules>
 
       <!-- OSGi (Felix framework, Aries, Karaf, Equinox) -->
-      <aries.version>0.3</aries.version>
       <felix.plugin.version>2.1.0</felix.plugin.version>
-      <karaf.version>2.2.0</karaf.version>
-      <servicemix.nmr.version>${project.version}</servicemix.nmr.version>
 
-      <!-- ActiveMQ -->
-      <activemq.version>5.5.0</activemq.version>
-      
-      <!-- Camel -->
-      <camel.version>2.7.0</camel.version>
-      
       <!-- Geronimo -->
       <geronimo-jms.version>1.1.1</geronimo-jms.version>
       <geronimo-jta.version>1.1.1</geronimo-jta.version>
@@ -92,15 +84,8 @@
       
       <!-- Components and SMX Resources -->
       <servicemix3.version>3.3.2</servicemix3.version>
-      <servicemix.components.version>2011.02-SNAPSHOT</servicemix.components.version>
-      <servicemix-eip.version>${servicemix.components.version}</servicemix-eip.version>
-      <servicemix-http.version>${servicemix.components.version}</servicemix-http.version>
-      <servicemix-jsr181.version>${servicemix.components.version}</servicemix-jsr181.version>
-      <servicemix-shared.version>${servicemix.components.version}</servicemix-shared.version>
       <servicemix.legal.version>1.0</servicemix.legal.version>
-      <servicemix.specs.version>1.7.0</servicemix.specs.version>
-      <servicemix-utils.version>1.5.0-SNAPSHOT</servicemix-utils.version>
-      
+
       <!-- Spring -->
       <spring.version>3.0.5.RELEASE</spring.version>
       <spring.import.range>[2.5,4)</spring.import.range>
@@ -147,35 +132,6 @@
 
   <dependencyManagement>
     <dependencies>
-        <!-- Aries (bits not defined in Karaf pom.xm only) -->
-        <dependency>
-            <groupId>org.apache.aries.transaction</groupId>
-            <artifactId>org.apache.aries.transaction.manager</artifactId>
-            <version>${aries.version}</version>
-        </dependency>
-        
-
-        <!-- Karaf -->
-        <dependency>
-            <groupId>org.apache.karaf</groupId>
-            <artifactId>karaf</artifactId>
-            <version>${karaf.version}</version>
-            <type>pom</type>
-            <scope>import</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.karaf</groupId>
-            <artifactId>apache-karaf</artifactId>
-            <version>${karaf.version}</version>
-            <type>tar.gz</type>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.karaf</groupId>
-            <artifactId>apache-karaf</artifactId>
-            <version>${karaf.version}</version>
-            <type>zip</type>
-        </dependency>
-
         <!-- ServiceMix Legal -->
         <dependency>
             <groupId>org.apache.servicemix.legal</groupId>
@@ -183,106 +139,12 @@
             <version>${servicemix.legal.version}</version>
             <type>xml</type>
         </dependency>
-        
-        <!-- ServiceMix NMR -->
-        <dependency>
-            <groupId>org.apache.servicemix.nmr</groupId>
-            <artifactId>org.apache.servicemix.nmr.api</artifactId>
-            <version>${servicemix.nmr.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.nmr</groupId>
-            <artifactId>org.apache.servicemix.nmr.branding</artifactId>
-            <version>${servicemix.nmr.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.nmr</groupId>
-            <artifactId>org.apache.servicemix.nmr.commands</artifactId>
-            <version>${servicemix.nmr.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.nmr</groupId>
-            <artifactId>org.apache.servicemix.nmr.core</artifactId>
-            <version>${servicemix.nmr.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.nmr</groupId>
-            <artifactId>org.apache.servicemix.nmr.management</artifactId>
-            <version>${servicemix.nmr.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.nmr</groupId>
-            <artifactId>org.apache.servicemix.nmr.osgi</artifactId>
-            <version>${servicemix.nmr.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.nmr</groupId>
-            <artifactId>org.apache.servicemix.nmr.spring</artifactId>
-            <version>${servicemix.nmr.version}</version>
-        </dependency>
-        
-        <!-- ServiceMix NMR Document -->
-        <dependency>
-            <groupId>org.apache.servicemix.document</groupId>
-            <artifactId>org.apache.servicemix.document</artifactId>
-            <version>${servicemix.nmr.version}</version>
-        </dependency>
-        
-        <!-- ServiceMix NMR JBI -->
-        <dependency>
-            <groupId>org.apache.servicemix.jbi</groupId>
-            <artifactId>org.apache.servicemix.jbi.commands</artifactId>
-            <version>${servicemix.nmr.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.jbi</groupId>
-            <artifactId>org.apache.servicemix.jbi.deployer</artifactId>
-            <version>${servicemix.nmr.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.jbi</groupId>
-            <artifactId>org.apache.servicemix.jbi.osgi</artifactId>
-            <version>${servicemix.nmr.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.jbi</groupId>
-            <artifactId>org.apache.servicemix.jbi.runtime</artifactId>
-            <version>${servicemix.nmr.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.jbi</groupId>
-            <artifactId>org.apache.servicemix.jbi.runtime</artifactId>
-            <version>${servicemix.nmr.version}</version>
-            <type>test-jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.jbi.cluster</groupId>
-            <artifactId>org.apache.servicemix.jbi.cluster.engine</artifactId>
-            <version>${servicemix.nmr.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.jbi.cluster</groupId>
-            <artifactId>org.apache.servicemix.jbi.cluster.requestor</artifactId>
-            <version>${servicemix.nmr.version}</version>
-        </dependency>
-        
-        <!-- ServiceMix NMR Naming -->
-        <dependency>
-            <groupId>org.apache.servicemix.naming</groupId>
-            <artifactId>org.apache.servicemix.naming</artifactId>
-            <version>${servicemix.nmr.version}</version>
-        </dependency>
-        
+
         <!-- ServiceMix Components and Resources -->
         <dependency>
             <groupId>org.apache.servicemix</groupId>
             <artifactId>servicemix-core</artifactId>
             <version>${servicemix3.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix</groupId>
-            <artifactId>servicemix-common</artifactId>
-            <version>${servicemix-shared.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix</groupId>
@@ -292,19 +154,19 @@
         <dependency>
             <groupId>org.apache.servicemix</groupId>
             <artifactId>servicemix-eip</artifactId>
-            <version>${servicemix-eip.version}</version>
+            <version>${servicemix.components.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix</groupId>
             <artifactId>servicemix-eip</artifactId>
-            <version>${servicemix-eip.version}</version>
+            <version>${servicemix.components.version}</version>
             <type>zip</type>
             <classifier>installer</classifier>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix</groupId>
             <artifactId>servicemix-http</artifactId>
-            <version>${servicemix-http.version}</version>
+            <version>${servicemix.components.version}</version>
             <type>zip</type>
             <classifier>installer</classifier>
         </dependency>
@@ -316,67 +178,24 @@
         <dependency>
             <groupId>org.apache.servicemix</groupId>
             <artifactId>servicemix-jsr181</artifactId>
-            <version>${servicemix-jsr181.version}</version>
+            <version>${servicemix.components.version}</version>
             <type>zip</type>
             <classifier>installer</classifier>
         </dependency>
         <dependency>
             <groupId>org.apache.servicemix</groupId>
             <artifactId>servicemix-shared</artifactId>
-            <version>${servicemix-shared.version}</version>
+            <version>${servicemix.components.version}</version>
             <type>zip</type>
             <classifier>installer</classifier>
         </dependency>
-        
-        <!-- ServiceMix Utils -->
-        <dependency>
-            <groupId>org.apache.servicemix</groupId>
-            <artifactId>servicemix-utils</artifactId>
-            <version>${servicemix-utils.version}</version>
-        </dependency>
-        
+
         <!-- ServiceMix Samples -->
         <dependency>
             <groupId>org.apache.servicemix.samples.wsdl-first</groupId>
             <artifactId>wsdl-first-sa</artifactId>
             <version>${servicemix3.version}</version>
             <type>zip</type>
-        </dependency>
-        
-        <!-- ServiceMix Specs -->
-        <dependency>
-            <groupId>org.apache.servicemix.specs</groupId>
-            <artifactId>org.apache.servicemix.specs.activation-api-1.1</artifactId>
-            <version>${servicemix.specs.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.specs</groupId>
-            <artifactId>org.apache.servicemix.specs.jbi-api-1.0</artifactId>
-            <version>${servicemix.specs.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.servicemix.specs</groupId>
-            <artifactId>org.apache.servicemix.specs.stax-api-1.0</artifactId>
-            <version>${servicemix.specs.version}</version>
-        </dependency>
-        
-        <!-- ActiveMQ -->
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-core</artifactId>
-            <version>${activemq.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-pool</artifactId>
-            <version>${activemq.version}</version>
-        </dependency>
-        
-        <!-- Camel -->
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-core</artifactId>
-            <version>${camel.version}</version>
         </dependency>
 
         <!-- Geronimo -->
