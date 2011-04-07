@@ -110,6 +110,7 @@
                             *
                         </Import-Package>
                         <Export-Package>${project.artifactId}*;version=${project.version};-noimport:=true</Export-Package>
+                        <Export-Service>org.fusesource.commons.management.ManagementStrategy</Export-Service>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                     </instructions>
                 </configuration>
