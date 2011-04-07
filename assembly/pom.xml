@@ -32,6 +32,10 @@
     <packaging>pom</packaging>
     <name>Apache ServiceMix :: NMR :: Assembly</name>
 
+    <properties>
+       <asm.bundle.version>3.3_1</asm.bundle.version>
+    </properties>
+
     <dependencies>
 
         <!-- Karaf (distribution and features) -->
@@ -48,6 +52,12 @@
             <classifier>features</classifier>
         </dependency>
 
+        <!-- Scala (used for scripting) -->
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+        </dependency>
+
     </dependencies>
     
     <build>
@@ -60,7 +70,27 @@
                 </includes>
             </resource>
         </resources>
+
         <plugins>
+            <plugin>
+                <groupId>org.scala-tools</groupId>
+                <artifactId>maven-scala-plugin</artifactId>
+                <version>2.15.0</version>
+                <executions>
+                    <execution>
+                        <id>add-features-to-startup</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>script</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <keepGeneratedScript>true</keepGeneratedScript>
+                    <scriptFile>${project.basedir}/src/main/scripts/DefineProperties.scala</scriptFile>
+                    <includeScopes>plugin</includeScopes>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -149,6 +179,7 @@
                                 <descriptor>file:${basedir}/target/classes/features.xml</descriptor>
                             </descriptors>
                             <features>
+                                <feature>obr</feature>
                                 <feature>nmr</feature>
                                 <feature>nmr-audit</feature>
                                 <feature>jbi</feature>

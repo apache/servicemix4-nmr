@@ -99,6 +99,7 @@
       <jencks.version>2.2</jencks.version>
       <junit.version>4.7</junit.version>
       <lucene.version>2.4.1</lucene.version>
+      <scala.version>2.8.1</scala.version>
       <slf4j.version>1.6.1</slf4j.version>
       <woodstox.version>4.0.8</woodstox.version>
       <woodstox.stax2-api.version>3.0.2</woodstox.stax2-api.version>
@@ -187,6 +188,13 @@
             <version>${servicemix.components.version}</version>
             <type>zip</type>
             <classifier>installer</classifier>
+        </dependency>
+
+        <!-- Scala -->
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>${scala.version}</version>
         </dependency>
 
         <!-- ServiceMix Samples -->
