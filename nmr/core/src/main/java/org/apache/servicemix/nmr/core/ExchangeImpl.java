@@ -19,7 +19,6 @@ package org.apache.servicemix.nmr.core;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.Semaphore;
 
 import javax.xml.namespace.QName;
@@ -34,6 +33,7 @@ import org.apache.servicemix.nmr.api.Type;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
 import org.apache.servicemix.nmr.api.internal.InternalExchange;
 import org.apache.servicemix.nmr.core.util.ExchangeUtils;
+import org.apache.servicemix.nmr.core.util.UuidGenerator;
 
 /**
  * The default {@link Exchange} implementation.
@@ -72,7 +72,7 @@ public class ExchangeImpl implements InternalExchange {
      * @param pattern the pattern of this exchange
      */
     public ExchangeImpl(Pattern pattern) {
-        this.id = UUID.randomUUID().toString();
+        this.id = UuidGenerator.getUUID();
         this.status = Status.Active;
         this.role = Role.Consumer;
         this.pattern = pattern;

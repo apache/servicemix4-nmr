@@ -16,10 +16,9 @@
  */
 package org.apache.servicemix.nmr.core;
 
-import java.util.UUID;
 import java.util.Map;
 import java.util.Collections;
-import java.util.concurrent.Executors;
+
 
 import org.apache.servicemix.nmr.api.Channel;
 import org.apache.servicemix.nmr.api.Endpoint;
@@ -27,6 +26,7 @@ import org.apache.servicemix.nmr.api.Exchange;
 import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.nmr.api.internal.InternalChannel;
 import org.apache.servicemix.nmr.api.internal.InternalEndpoint;
+import org.apache.servicemix.nmr.core.util.UuidGenerator;
 import org.apache.servicemix.executors.Executor;
 
 /**
@@ -43,7 +43,7 @@ public class ClientChannel extends ChannelImpl {
     protected static class ClientEndpoint implements InternalEndpoint {
 
         private InternalChannel channel;
-        private String id = UUID.randomUUID().toString(); 
+        private String id = UuidGenerator.getUUID(); 
 
         public String getId() {
             return id;
