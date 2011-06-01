@@ -107,6 +107,7 @@
                         <Private-Package>${project.artifactId}.impl</Private-Package>
                         <Bundle-Activator>org.apache.servicemix.document.impl.Activator</Bundle-Activator>
                         <Export-Package>${project.artifactId}*;version=${project.version};-noimport:=true</Export-Package>
+                        <Export-Service>org.apache.servicemix.document.DocumentRepository</Export-Service>
                         <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
                     </instructions>
                 </configuration>
