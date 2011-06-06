@@ -95,7 +95,7 @@
       <derby.version>10.5.3.0_1</derby.version>
       <easymock.version>2.4</easymock.version>
       <hsqldb.version>1.8.0.7</hsqldb.version>
-      <javax.mail.version>1.4.3</javax.mail.version>
+      <javax.mail.version>1.4.4</javax.mail.version>
       <jencks.version>2.2</jencks.version>
       <junit.version>4.7</junit.version>
       <lucene.version>2.4.1</lucene.version>
