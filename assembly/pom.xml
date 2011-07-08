@@ -33,7 +33,7 @@
     <name>Apache ServiceMix :: NMR :: Assembly</name>
 
     <properties>
-       <asm.bundle.version>3.3_1</asm.bundle.version>
+       <asm.bundle.version>3.3_2</asm.bundle.version>
     </properties>
 
     <dependencies>
