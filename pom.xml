@@ -101,8 +101,8 @@
       <lucene.version>2.4.1</lucene.version>
       <scala.version>2.8.1</scala.version>
       <slf4j.version>1.6.1</slf4j.version>
-      <woodstox.version>4.0.8</woodstox.version>
-      <woodstox.stax2-api.version>3.0.2</woodstox.stax2-api.version>
+      <woodstox.version>4.1.1</woodstox.version>
+      <woodstox.stax2-api.version>3.1.1</woodstox.stax2-api.version>
       <xbean.version>3.7</xbean.version>
       <equinox.version>3.6.0.v20100517</equinox.version>
       <!-- Maven Plugins -->
