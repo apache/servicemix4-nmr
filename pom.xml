@@ -88,7 +88,7 @@
       <!-- Spring -->
       <spring.version>3.0.5.RELEASE</spring.version>
       <spring.import.range>[2.5,4)</spring.import.range>
-      <spring.osgi.version>1.2.0</spring.osgi.version>
+      <spring.osgi.version>1.2.1</spring.osgi.version>
       
       <!-- Other Dependencies -->
       <commons-management.version>1.0</commons-management.version>
