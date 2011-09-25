@@ -90,7 +90,7 @@ public class AbstractIntegrationTest extends AbstractConfigurableBundleCreatorTe
 
     protected String[] getTestFrameworkBundlesNames() {
         return new String[] {
-            getBundle("org.apache.geronimo.specs", "geronimo-servlet_3.0_spec"),
+            getBundle("org.apache.geronimo.specs", "geronimo-servlet_2.5_spec"),
             getBundle("org.osgi", "org.osgi.core"),
             getBundle("org.osgi", "org.osgi.compendium"),
             getBundle("org.apache.felix", "org.apache.felix.configadmin"),

@@ -72,7 +72,7 @@
       <!-- Geronimo -->
       <geronimo-jms.version>1.1.1</geronimo-jms.version>
       <geronimo-jta.version>1.1.1</geronimo-jta.version>
-      <geronimo-servlet.version>1.0</geronimo-servlet.version>
+      <geronimo-servlet.version>1.1.2</geronimo-servlet.version>
       
       <!-- Bundles -->
       <ant.bundle.version>1.7.0_4</ant.bundle.version>
@@ -205,7 +205,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-servlet_3.0_spec</artifactId>
+            <artifactId>geronimo-servlet_2.5_spec</artifactId>
             <version>${geronimo-servlet.version}</version>
         </dependency>
                 
