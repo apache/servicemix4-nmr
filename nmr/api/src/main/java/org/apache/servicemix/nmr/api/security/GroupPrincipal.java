@@ -45,11 +45,12 @@ public class GroupPrincipal implements Principal {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
+        if (o == null 
+            || (!o.getClass().getName().equals("org.apache.karaf.jaas.modules.RolePrincipal") && getClass() != o.getClass())) {
+        	return false;
         }
-        final GroupPrincipal that = (GroupPrincipal) o;
-        if (!name.equals(that.name)) {
+        final Principal that = (Principal) o;
+        if (!name.equals(that.getName())) {
             return false;
         }
         return true;

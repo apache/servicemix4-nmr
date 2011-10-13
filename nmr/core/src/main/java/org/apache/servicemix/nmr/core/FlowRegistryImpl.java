@@ -16,6 +16,7 @@
  */
 package org.apache.servicemix.nmr.core;
 
+import java.security.Principal;
 import java.util.Collection;
 import java.util.Set;
 
@@ -95,9 +96,15 @@ public class FlowRegistryImpl extends ServiceRegistryImpl<Flow> implements FlowR
                             if (subject == null) {
                                 continue;
                             }
-                            acls.retainAll(subject.getPrincipals());
-                            if (acls.size() == 0) {
-                                continue;
+                            for (Principal groupPrincipal : acls) {
+                            	for (Principal principal: subject.getPrincipals()) {
+                            		if (groupPrincipal.equals(principal)) {
+                            			securityMatch = true;
+                            		}
+                            	}
+                            }
+                            if (!securityMatch) {
+                            	continue;
                             }
                         }
                     }
