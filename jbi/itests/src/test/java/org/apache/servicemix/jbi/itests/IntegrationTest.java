@@ -246,7 +246,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
             
 
             // hack system packages
-            systemPackages("org.apache.karaf.main.spi;version=2.4.0", "org.apache.karaf.jaas.boot;version=2.4.0"),
+            systemPackages("org.apache.karaf.main.spi;version=1.6.0", "org.apache.karaf.jaas.boot;version=1.6.0"),
             bootClasspathLibrary(mavenBundle("org.apache.karaf.jaas", "org.apache.karaf.jaas.boot")).afterFramework(),
             bootClasspathLibrary(mavenBundle("org.apache.karaf", "org.apache.karaf.main")).afterFramework(),
             bootClasspathLibrary(mavenBundle("org.apache.geronimo.specs", "geronimo-jta_1.1_spec")).beforeFramework(),
@@ -267,7 +267,7 @@ public class IntegrationTest extends AbstractIntegrationTest {
             // Bundles
             mavenBundle("org.apache.mina", "mina-core"),
             mavenBundle("org.apache.sshd", "sshd-core"),
-            mavenBundle("org.apache.karaf.management", "org.apache.karaf.management.server"),
+            mavenBundle("org.apache.karaf", "org.apache.karaf.management"),
             mavenBundle("org.apache.karaf.jaas", "org.apache.karaf.jaas.config"),
             mavenBundle("org.apache.felix", "org.apache.felix.gogo.runtime"),
             mavenBundle("org.apache.karaf.shell", "org.apache.karaf.shell.console"),
