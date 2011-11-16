@@ -266,7 +266,7 @@ public class ManagementTest extends AbstractIntegrationTest {
             ),
 
             // hack system packages
-            systemPackages("org.apache.karaf.main.spi;version=1.0.0", "org.apache.karaf.jaas.boot;version=0.9.0"),
+            systemPackages("org.apache.karaf.main.spi;version=2.4.0", "org.apache.karaf.jaas.boot;version=2.4.0"),
             bootClasspathLibrary(mavenBundle("org.apache.karaf.jaas", "org.apache.karaf.jaas.boot")).afterFramework(),
             bootClasspathLibrary(mavenBundle("org.apache.karaf", "org.apache.karaf.main")).afterFramework(),
             bootClasspathLibrary(mavenBundle("org.apache.geronimo.specs", "geronimo-jta_1.1_spec")).beforeFramework(),
@@ -292,8 +292,7 @@ public class ManagementTest extends AbstractIntegrationTest {
             mavenBundle("org.apache.karaf.shell", "org.apache.karaf.shell.console"),
             mavenBundle("org.apache.karaf.shell", "org.apache.karaf.shell.osgi"),
             mavenBundle("org.apache.karaf.shell", "org.apache.karaf.shell.log").noStart(),
-            mavenBundle("org.apache.karaf", "org.apache.karaf.management"),
-            
+            mavenBundle("org.apache.karaf.management", "org.apache.karaf.management.server"),
             equinox(),
 
             // Spring
