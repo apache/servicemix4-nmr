@@ -43,7 +43,6 @@
       <module>testing</module>
       <module>jbi</module>
       <module>bundle</module>
-      <module>assembly</module>
       <module>examples</module>
   </modules>
 
