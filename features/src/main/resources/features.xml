@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<features name="nmr-${version}">
+    <repository>mvn:org.apache.karaf.assemblies.features/standard/${karaf.version}/xml/features</repository>
+    <repository>mvn:org.apache.karaf.assemblies.features/enterprise/${karaf.version}/xml/features</repository>
+    <feature name="naming" version="${version}">
+        <bundle>mvn:org.apache.servicemix.naming/org.apache.servicemix.naming/${pom.version}</bundle>
+    </feature>
+    <feature name="document" version="${version}">
+        <bundle>mvn:org.apache.servicemix.document/org.apache.servicemix.document/${pom.version}</bundle>
+    </feature>
+    <feature name="nmr" version="${version}" resolver="(obr)">
+        <feature>document</feature>
+        <bundle dependency="true">mvn:org.apache.servicemix/servicemix-utils/${servicemix.utils.version}</bundle>
+        <bundle dependency="true">mvn:org.fusesource.commonman/commons-management/${commons-management.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.api/${pom.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.core/${pom.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.osgi/${pom.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.commands/${pom.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.management/${pom.version}</bundle>
+    </feature>
+    <feature name="nmr-audit" version="${version}">
+        <feature version="${version}">nmr</feature>
+        <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.audit/${pom.version}</bundle>
+    </feature>
+    <feature name="woodstox" version="${woodstox.version}">
+        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.0/${servicemix.specs.version}</bundle>
+        <bundle>mvn:org.codehaus.woodstox/stax2-api/${woodstox.stax2-api.version}</bundle>
+        <bundle>mvn:org.codehaus.woodstox/woodstox-core-asl/${woodstox.version}</bundle>
+    </feature>
+    <feature name="jbi" version="${version}" resolver="(obr)">
+        <feature version="${version}">naming</feature>
+        <feature version="${aries.version}">transaction</feature>
+        <feature version="${version}">nmr</feature>
+        <feature version="${woodstox.version}">woodstox</feature>
+        <bundle dependency="true">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${servicemix.specs.version}</bundle>
+        <bundle dependency="true">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.jbi-api-1.0/${servicemix.specs.version}</bundle>
+        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.wsdl4j/${wsdl4j.bundle.version}</bundle>
+        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.ant/${ant.bundle.version}</bundle>
+        <bundle dependency="true">mvn:org.apache.xbean/xbean-spring/${xbean.version}</bundle>
+        <bundle dependency="true">mvn:org.apache.xbean/xbean-classloader/${xbean.version}</bundle>
+        <bundle dependency="true">mvn:org.apache.servicemix/servicemix-common/${servicemix.components.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.runtime/${pom.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.osgi/${pom.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.deployer/${pom.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.jbi/org.apache.servicemix.jbi.commands/${pom.version}</bundle>
+    </feature>
+    <feature name="jbi-cluster" version="${version}" dependency="true">
+        <feature version="${version}">jbi</feature>
+        <feature version="${spring.version}">spring</feature>
+        <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jms_1.1_spec/${geronimo-jms.version}</bundle>
+        <bundle dependency="true">mvn:org.springframework/spring-jms/${spring.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.jbi.cluster/org.apache.servicemix.jbi.cluster.requestor/${pom.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.jbi.cluster/org.apache.servicemix.jbi.cluster.engine/${pom.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.jbi.cluster/org.apache.servicemix.jbi.cluster.config/${pom.version}</bundle>
+    </feature>
+    <feature name="examples-nmr" version="${version}">
+        <bundle>mvn:org.apache.servicemix.nmr.examples/org.apache.servicemix.nmr.examples.nmr.endpoint/${pom.version}</bundle>
+        <bundle>mvn:org.apache.servicemix.nmr.examples/org.apache.servicemix.nmr.examples.nmr.client/${pom.version}</bundle>
+    </feature>
+</features>

@@ -43,6 +43,7 @@
       <module>testing</module>
       <module>jbi</module>
       <module>bundle</module>
+      <module>features</module>
   </modules>
 
   <scm>
