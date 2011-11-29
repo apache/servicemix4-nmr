@@ -21,11 +21,7 @@ import org.apache.servicemix.nmr.api.Message;
 import javax.jbi.messaging.Fault;
 
 /**
- * Created by IntelliJ IDEA.
- * User: gnodet
- * Date: Oct 5, 2007
- * Time: 5:19:40 PM
- * To change this template use File | Settings | File Templates.
+ * ServiceMix implementation for JBI specification {@link Fault} interface
  */
 public class FaultImpl extends NormalizedMessageImpl implements Fault {
 

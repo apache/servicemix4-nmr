@@ -21,11 +21,7 @@ import org.apache.servicemix.nmr.api.Exchange;
 import javax.jbi.messaging.InOptionalOut;
 
 /**
- * Created by IntelliJ IDEA.
- * User: gnodet
- * Date: Oct 5, 2007
- * Time: 5:40:22 PM
- * To change this template use File | Settings | File Templates.
+ * ServiceMix implementation for JBI specification {@link InOptionalOut} interface
  */
 public class InOptionalOutImpl extends MessageExchangeImpl implements InOptionalOut {
 

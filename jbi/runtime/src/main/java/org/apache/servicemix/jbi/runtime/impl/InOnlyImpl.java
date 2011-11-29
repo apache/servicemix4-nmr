@@ -24,11 +24,7 @@ import javax.jbi.messaging.MessagingException;
 import javax.jbi.messaging.Fault;
 
 /**
- * Created by IntelliJ IDEA.
- * User: gnodet
- * Date: Oct 5, 2007
- * Time: 5:20:12 PM
- * To change this template use File | Settings | File Templates.
+ * ServiceMix implementation for JBI specification {@link InOnly} interface
  */
 public class InOnlyImpl extends MessageExchangeImpl implements InOnly {
 

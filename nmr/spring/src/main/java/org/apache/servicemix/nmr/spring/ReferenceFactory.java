@@ -31,11 +31,7 @@ import org.springframework.osgi.context.BundleContextAware;
 import org.springframework.osgi.service.importer.support.OsgiServiceProxyFactoryBean;
 
 /**
- * Created by IntelliJ IDEA.
- * User: gnodet
- * Date: Sep 10, 2007
- * Time: 11:48:42 AM
- * To change this template use File | Settings | File Templates.
+ * Spring factory bean to help creating NMR {@link Reference} instances
  */
 public class ReferenceFactory implements FactoryBean, InitializingBean, BundleContextAware {
 

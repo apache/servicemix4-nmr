@@ -46,7 +46,7 @@ public class BundleExtTest extends TestCase {
                         }
                     });
                 }
-                return null;  //To change body of implemented methods use File | Settings | File Templates.
+                return null;
             }
         }));
         ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext(new String[] {"bundle.xml"}, false);

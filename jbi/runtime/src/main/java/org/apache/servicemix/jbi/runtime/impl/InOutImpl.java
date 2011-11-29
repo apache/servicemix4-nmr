@@ -21,11 +21,7 @@ import org.apache.servicemix.nmr.api.Exchange;
 import javax.jbi.messaging.InOut;
 
 /**
- * Created by IntelliJ IDEA.
- * User: gnodet
- * Date: Oct 5, 2007
- * Time: 5:36:34 PM
- * To change this template use File | Settings | File Templates.
+ * ServiceMix implementation for JBI specification {@link InOut} interface
  */
 public class InOutImpl extends MessageExchangeImpl implements InOut {
 

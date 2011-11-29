@@ -78,7 +78,7 @@ public class DocumentRepositoryImplTest extends TestCase {
 
     public class Handler extends URLStreamHandler implements URLStreamHandlerSetter {
         protected void parseURL(URL u, String spec, int start, int limit) {
-            repository.parseURL(this, u, spec, start, limit);    //To change body of overridden methods use File | Settings | File Templates.
+            repository.parseURL(this, u, spec, start, limit);
         }
         public URLConnection openConnection(URL u) throws IOException {
             return repository.openConnection(u);

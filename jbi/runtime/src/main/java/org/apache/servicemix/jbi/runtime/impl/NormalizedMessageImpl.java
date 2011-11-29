@@ -26,11 +26,7 @@ import javax.security.auth.Subject;
 import java.util.Set;
 
 /**
- * Created by IntelliJ IDEA.
- * User: gnodet
- * Date: Oct 5, 2007
- * Time: 4:11:22 PM
- * To change this template use File | Settings | File Templates.
+ * ServiceMix implementation for JBI specification {@link NormalizedMessage} interface
  */
 public class NormalizedMessageImpl implements NormalizedMessage {
 
