@@ -36,7 +36,6 @@
 
   <modules>
       <module>parent</module>
-      <module>branding</module>
       <module>document</module>
       <module>naming</module>
       <module>nmr</module>
@@ -107,12 +106,6 @@
       <!-- Maven Plugins -->
       <depends-maven-plugin.version>1.2</depends-maven-plugin.version>
       <build-helper-maven-plugin.version>1.5</build-helper-maven-plugin.version>
-      <!-- 
-        Fix the assembly plugin version to avoid:
-        http://jira.codehaus.org/browse/MASSEMBLY-462
-      -->
-      <maven-assembly-plugin.version>2.2-beta-4</maven-assembly-plugin.version>
-      
   </properties>
   
 
@@ -415,11 +408,6 @@
                   <configuration>
                       <failIfNoTests>false</failIfNoTests>
                   </configuration>
-              </plugin>
-              <plugin>
-                  <groupId>org.apache.maven.plugins</groupId>
-                  <artifactId>maven-assembly-plugin</artifactId>
-                  <version>${maven-assembly-plugin.version}</version>
               </plugin>
               <plugin>
                   <groupId>org.apache.maven.plugins</groupId>
