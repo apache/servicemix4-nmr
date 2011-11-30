@@ -21,15 +21,12 @@
   <modelVersion>4.0.0</modelVersion>
   
   <parent>
-    <groupId>org.apache.servicemix</groupId>
-    <artifactId>servicemix-pom</artifactId>
-    <version>5</version>
-    <relativePath>../../servicemix-pom/pom.xml</relativePath>
+    <groupId>org.apache.servicemix.nmr</groupId>
+    <artifactId>nmr-parent</artifactId>
+    <version>1.5.0-SNAPSHOT</version>
   </parent>
   
-  <groupId>org.apache.servicemix.nmr</groupId>
   <artifactId>parent</artifactId>
-  <version>1.5.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Apache ServiceMix :: NMR :: Parent</name>
