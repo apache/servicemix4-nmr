@@ -98,6 +98,11 @@
            <groupId>org.fusesource.commonman</groupId>
            <artifactId>commons-management</artifactId>
        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

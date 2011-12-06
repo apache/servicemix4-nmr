@@ -37,6 +37,7 @@ import javax.management.ObjectName;
 import javax.naming.InitialContext;
 import javax.xml.namespace.QName;
 
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.DocumentFragment;
 
@@ -53,6 +54,8 @@ import org.apache.servicemix.nmr.management.Nameable;
  * processing. This is provided to the init() method of the component's {@link javax.jbi.component.Bootstrap} interface.
  */
 public class InstallationContextImpl implements InstallationContext, ComponentContext, MBeanNames {
+
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(InstallationContextImpl.class);
 
     private ComponentDesc descriptor;
     private Environment environment;
@@ -277,7 +280,13 @@ public class InstallationContextImpl implements InstallationContext, ComponentCo
     }
 
     public Logger getLogger(String suffix, String resourceBundleName) throws MissingResourceException, JBIException {
-        throw new IllegalStateException("This operation is not available at installation time");
+        LOGGER.warn("Method getLogger() should not be invoked on JBI InstallationContext according to the JBI specification");
+        try {
+            String name = suffix != null ? getComponentName() + suffix : getComponentName();
+            return Logger.getLogger(name, resourceBundleName);
+        } catch (IllegalArgumentException e) {
+            throw new JBIException("A logger can not be created using resource bundle " + resourceBundleName);
+        }
     }
 
     public MBeanNames getMBeanNames() {
