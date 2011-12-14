@@ -69,8 +69,4 @@
         <bundle>mvn:org.apache.servicemix.jbi.cluster/org.apache.servicemix.jbi.cluster.engine/${pom.version}</bundle>
         <bundle>mvn:org.apache.servicemix.jbi.cluster/org.apache.servicemix.jbi.cluster.config/${pom.version}</bundle>
     </feature>
-    <feature name="examples-nmr" version="${version}">
-        <bundle>mvn:org.apache.servicemix.nmr.examples/org.apache.servicemix.nmr.examples.nmr.endpoint/${pom.version}</bundle>
-        <bundle>mvn:org.apache.servicemix.nmr.examples/org.apache.servicemix.nmr.examples.nmr.client/${pom.version}</bundle>
-    </feature>
 </features>
