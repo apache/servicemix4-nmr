@@ -101,7 +101,7 @@
         <argument><null/></argument>
     </bean>
 
-    <cm:property-placeholder persistent-id="org.apache.servicemix.jbi">
+    <cm:property-placeholder persistent-id="org.apache.servicemix.jbi.deployer">
         <cm:default-properties>
             <cm:property name="shutdownTimeout" value="0"/>
         </cm:default-properties>
