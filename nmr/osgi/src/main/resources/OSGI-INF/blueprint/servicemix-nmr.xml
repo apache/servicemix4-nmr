@@ -132,16 +132,6 @@
 
     <service ref="executorFactory" interface="org.apache.servicemix.executors.ExecutorFactory"/>
 
-    <!-- ExcutorFactory configurer -->
-    <bean id="executorConfigurator" class="org.apache.servicemix.nmr.osgi.ExecutorConfigurator">
-        <property name="executorFactory" ref="executorFactory"/>
-    </bean>
-
-    <service ref="executorConfigurator" interface="org.osgi.service.cm.ManagedService">
-        <service-properties>
-            <entry key="service.pid" value="org.apache.servicemix.nmr"/>
-        </service-properties>
-    </service>
 
     <!-- Property place holder -->
     <cm:property-placeholder persistent-id="org.apache.servicemix.nmr">
