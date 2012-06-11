@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
+import java.util.StringTokenizer;
 import java.util.WeakHashMap;
 import java.util.regex.Pattern;
 
@@ -70,7 +71,12 @@ public class DefaultAuthorizationService implements AuthorizationService {
     }
 
     public Set<GroupPrincipal> getAcls(String endpoint, QName operation) {
-        String key = endpoint + "|" + (operation != null ? operation.toString() : "");
+    	StringTokenizer token = new StringTokenizer(endpoint, "|");
+    	endpoint = token.nextToken();
+    	String key = endpoint + "|" + (operation != null ? operation.toString() : "");
+        if (token.hasMoreTokens()) {
+        	endpoint = token.nextToken();
+        }
         Set<GroupPrincipal> acls = cache.get(key);
         if (acls == null) {
             acls = new HashSet<GroupPrincipal>();

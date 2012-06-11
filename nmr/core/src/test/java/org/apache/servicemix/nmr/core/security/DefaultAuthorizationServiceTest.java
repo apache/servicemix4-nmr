@@ -23,6 +23,7 @@ import javax.xml.namespace.QName;
 import junit.framework.TestCase;
 import org.apache.servicemix.nmr.api.security.AuthorizationEntry;
 import org.apache.servicemix.nmr.api.security.GroupPrincipal;
+import org.apache.servicemix.nmr.core.util.UuidGenerator;
 
 public class DefaultAuthorizationServiceTest extends TestCase {
 
@@ -36,7 +37,7 @@ public class DefaultAuthorizationServiceTest extends TestCase {
         addEntry("*", null, "*", AuthorizationEntry.Type.Add);
         addEntry("ep1", null, "role1", AuthorizationEntry.Type.Set);
 
-        Set<GroupPrincipal> acls = service.getAcls("ep1", null);
+        Set<GroupPrincipal> acls = service.getAcls(UuidGenerator.getUUID() + "|ep1", null);
         assertNotNull(acls);
         assertEquals(1, acls.size());
         assertTrue(acls.contains(new GroupPrincipal("role1")));

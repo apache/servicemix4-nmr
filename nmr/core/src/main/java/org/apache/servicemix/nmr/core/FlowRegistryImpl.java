@@ -90,7 +90,13 @@ public class FlowRegistryImpl extends ServiceRegistryImpl<Flow> implements FlowR
                     }
                     match = true;
                     if (authorizationService != null) {
-                        Set<GroupPrincipal> acls = authorizationService.getAcls(endpoint.getId(), exchange.getOperation());
+                    	String endpointName = (String) endpoint.getMetaData().get(Endpoint.ENDPOINT_NAME);
+                    	String uniqueName = endpoint.getId();
+                    	if (endpointName != null && endpointName.length() != 0) {
+                    		uniqueName = uniqueName + "|" + endpointName;  
+                    	}
+                        Set<GroupPrincipal> acls = authorizationService.getAcls(uniqueName, 
+                        		exchange.getOperation());
                         if (!acls.contains(GroupPrincipal.ANY)) {
                             Subject subject = exchange.getIn().getSecuritySubject();
                             if (subject == null) {
