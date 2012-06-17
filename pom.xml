@@ -101,7 +101,7 @@
       <slf4j.version>1.6.1</slf4j.version>
       <woodstox.version>4.1.1</woodstox.version>
       <woodstox.stax2-api.version>3.1.1</woodstox.stax2-api.version>
-      <xbean.version>3.7</xbean.version>
+      <xbean.version>3.11.1</xbean.version>
       <equinox.version>3.6.0.v20100517</equinox.version>
       <!-- Maven Plugins -->
       <depends-maven-plugin.version>1.2</depends-maven-plugin.version>
