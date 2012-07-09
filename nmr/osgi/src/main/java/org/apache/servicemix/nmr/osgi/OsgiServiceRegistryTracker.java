@@ -20,11 +20,14 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.servicemix.nmr.api.ServiceMixException;
 import org.apache.servicemix.nmr.api.service.ServiceRegistry;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A simple spring factory bean that will create an OSGi service tracker and notify the configured registry
@@ -37,6 +40,8 @@ public class OsgiServiceRegistryTracker<T> implements ServiceTrackerCustomizer {
     private ServiceRegistry<T> registry;
     private Class clazz;
     private ServiceTracker tracker;
+    
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public BundleContext getBundleContext() {
         return bundleContext;
@@ -74,8 +79,12 @@ public class OsgiServiceRegistryTracker<T> implements ServiceTrackerCustomizer {
     @SuppressWarnings("unchecked")
     public Object addingService(ServiceReference reference) {
         T service = (T) bundleContext.getService(reference);
-        Map properties = getServicePropertiesSnapshotAsMap(reference);
-        registry.register(service, properties);
+    	if (service == null) {
+            logger.warn("No service for serviceReference " + reference + " found.");           
+    	} else {    		
+            Map properties = getServicePropertiesSnapshotAsMap(reference);
+            registry.register(service, properties);
+    	}
         return service;
     }
 
