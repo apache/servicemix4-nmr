@@ -315,7 +315,6 @@ public class ManagementTest extends AbstractIntegrationTest {
             mavenBundle("org.codehaus.woodstox", "stax2-api"),
             mavenBundle("org.codehaus.woodstox", "woodstox-core-asl"),
             mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.wsdl4j"),
-            mavenBundle("org.apache.servicemix.specs", "org.apache.servicemix.specs.stax-api-1.0"),
             mavenBundle("org.apache.servicemix.specs", "org.apache.servicemix.specs.jbi-api-1.0"),
             mavenBundle("org.apache.servicemix.specs", "org.apache.servicemix.specs.activation-api-1.1"),
             mavenBundle("org.apache.geronimo.specs", "geronimo-jta_1.1_spec"),
