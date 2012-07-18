@@ -872,6 +872,11 @@
         <artifactId>org.apache.servicemix.specs.scripting-api-1.0</artifactId>
         <version>${servicemix.specs.version}</version>
       </dependency>
+      <dependency>
+        <groupId>org.apache.servicemix.specs</groupId>
+        <artifactId>org.apache.servicemix.specs.stax-api-1.0</artifactId>
+        <version>${servicemix.specs.version}</version>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 </project>

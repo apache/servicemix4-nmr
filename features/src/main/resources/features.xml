@@ -39,6 +39,7 @@
         <bundle>mvn:org.apache.servicemix.nmr/org.apache.servicemix.nmr.audit/${pom.version}</bundle>
     </feature>
     <feature name="woodstox" version="${woodstox.version}" start-level='50'>
+        <bundle>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.0/${servicemix.specs.version}</bundle>
         <bundle>mvn:org.codehaus.woodstox/stax2-api/${woodstox.stax2-api.version}</bundle>
         <bundle>mvn:org.codehaus.woodstox/woodstox-core-asl/${woodstox.version}</bundle>
     </feature>
