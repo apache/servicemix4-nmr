@@ -207,8 +207,12 @@ public class ChannelImpl implements InternalChannel {
             throw new ChannelClosedException();
         }
         // Log the exchange
-        logger.trace("Channel {} delivering exchange: {}", name, exchange.display(true));
-        logger.debug("Channel {} delivering exchange: {}", name, exchange.display(false));
+        if (logger.isTraceEnabled()) {
+            logger.trace("Channel {} delivering exchange: {}", name, exchange.display(true));
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("Channel {} delivering exchange: {}", name, exchange.display(false));
+        }
         // Handle case where the exchange has been sent synchronously
         Semaphore lock = exchange.getRole() == Role.Provider ? exchange.getConsumerLock(false)
                 : exchange.getProviderLock(false);
@@ -285,8 +289,12 @@ public class ChannelImpl implements InternalChannel {
             throw new ChannelClosedException();
         }
         // Log the exchange
-        logger.trace("Channel {} dispatching exchange: {}", name, exchange.display(true));
-        logger.debug("Channel {} dispatching exchange: {}", name, exchange.display(false));
+        if (logger.isTraceEnabled()) {
+            logger.trace("Channel {} dispatching exchange: {}", name, exchange.display(true));
+        }
+        if (logger.isDebugEnabled()) {
+            logger.debug("Channel {} dispatching exchange: {}", name, exchange.display(false));
+        }
         // Set source endpoint
         if (exchange.getSource() == null) {
             exchange.setSource(endpoint);
