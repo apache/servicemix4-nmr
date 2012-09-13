@@ -38,7 +38,6 @@ import org.apache.servicemix.nmr.core.InternalEndpointWrapper;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
-import org.osgi.service.prefs.Preferences;
 
 /**
  * Test cases for {@link AssemblyReferencesListener}
