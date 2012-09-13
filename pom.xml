@@ -84,7 +84,7 @@
       <servicemix.legal.version>1.0</servicemix.legal.version>
 
       <!-- Spring -->
-      <spring.version>3.0.6.RELEASE</spring.version>
+      <spring.version>3.0.7.RELEASE</spring.version>
       <spring.import.range>[2.5,4)</spring.import.range>
       <spring.osgi.version>1.2.1</spring.osgi.version>
       
