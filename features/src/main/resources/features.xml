@@ -45,7 +45,7 @@
     </feature>
     <feature name="jbi" version="${version}" resolver="(obr)" start-level='50'>
         <feature version="${version}">naming</feature>
-        <feature version="${aries.version}">transaction</feature>
+        <feature version="[${aries.version}, 1)">transaction</feature>
         <feature version="${version}">nmr</feature>
         <feature version="${woodstox.version}">woodstox</feature>
         <bundle dependency="true">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${servicemix.specs.version}</bundle>
@@ -62,7 +62,7 @@
     </feature>
     <feature name="jbi-cluster" version="${version}" dependency="true">
         <feature version="${version}">jbi</feature>
-        <feature version="${spring.version}">spring</feature>
+        <feature version="[${spring.version}, 4)">spring</feature>
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jms_1.1_spec/${geronimo-jms.version}</bundle>
         <bundle dependency="true">mvn:org.springframework/spring-jms/${spring.version}</bundle>
         <bundle>mvn:org.apache.servicemix.jbi.cluster/org.apache.servicemix.jbi.cluster.requestor/${pom.version}</bundle>
