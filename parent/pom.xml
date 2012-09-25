@@ -40,12 +40,12 @@
   <properties>
     <activemq.version>5.5.1</activemq.version>
     <aries.version>0.3</aries.version>
-    <camel.version>2.8.3</camel.version>
+    <camel.version>2.10.1</camel.version>
     <karaf.version>2.2.9</karaf.version>
     <servicemix.components.version>2011.02</servicemix.components.version>
     <servicemix.nmr.version>${project.version}</servicemix.nmr.version>
     <servicemix.utils.version>1.5.0</servicemix.utils.version>
-    <servicemix.specs.version>1.9.0</servicemix.specs.version>
+    <servicemix.specs.version>2.0.0</servicemix.specs.version>
   </properties>
 
   <!-- Managed dependencies -->

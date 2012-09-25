@@ -23,7 +23,7 @@ import org.apache.servicemix.nmr.api.Endpoint;
 import org.apache.servicemix.nmr.api.Status;
 import org.apache.servicemix.nmr.api.service.ServiceHelper;
 import org.apache.servicemix.jbi.cluster.requestor.Transacted;
-import org.apache.camel.converter.jaxp.StringSource;
+import org.apache.camel.StringSource;
 import org.springframework.beans.factory.DisposableBean;
 
 public class GenericInOutClusterEndpointTest extends AbstractClusterEndpointTest {

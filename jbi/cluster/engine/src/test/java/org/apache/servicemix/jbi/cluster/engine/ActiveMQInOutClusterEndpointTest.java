@@ -16,21 +16,8 @@
  */
 package org.apache.servicemix.jbi.cluster.engine;
 
-import javax.jms.ConnectionFactory;
-
-import org.apache.servicemix.nmr.api.Channel;
-import org.apache.servicemix.nmr.api.Exchange;
-import org.apache.servicemix.nmr.api.Pattern;
-import org.apache.servicemix.nmr.api.Endpoint;
-import org.apache.servicemix.nmr.api.Status;
-import org.apache.servicemix.nmr.api.NMR;
-import org.apache.servicemix.nmr.api.service.ServiceHelper;
-import org.apache.servicemix.jbi.cluster.requestor.Transacted;
-import org.apache.servicemix.jbi.cluster.requestor.GenericJmsRequestorPool;
 import org.apache.servicemix.jbi.cluster.requestor.ActiveMQJmsRequestorPool;
 import org.apache.servicemix.jbi.cluster.requestor.AbstractPollingRequestorPool;
-import org.apache.camel.converter.jaxp.StringSource;
-import org.apache.activemq.ActiveMQConnectionFactory;
 
 public class ActiveMQInOutClusterEndpointTest extends GenericInOutClusterEndpointTest {
 
