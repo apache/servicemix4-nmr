@@ -35,13 +35,14 @@
         <property name="flowRegistry" ref="flowRegistry"/>
         <property name="wireRegistry" ref="wireRegistry"/>
         <property name="executorFactory" ref="executorFactory"/>
-        <property name="managementStrategy" ref="managementStrategy"/>
         <property name="id" value="${nmrId}"/>
     </bean>
     <service ref="servicemix" interface="org.apache.servicemix.nmr.api.NMR"/>
 
     <!-- Retrieve ManagementStrategy from OSGi service registry -->
-    <reference id="managementStrategy" interface="org.fusesource.commons.management.ManagementStrategy"/>
+    <reference id="managementStrategy" interface="org.fusesource.commons.management.ManagementStrategy">
+        <reference-listener ref="servicemix" bind-method="bindManagementStrategy" unbind-method="unbindManagementStrategy" />
+    </reference>
 
     <!-- Flow registry and service tracker -->
     <bean id="flowRegistry" class="org.apache.servicemix.nmr.core.FlowRegistryImpl">

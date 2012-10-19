@@ -194,8 +194,12 @@ public class ServiceMix implements NMR {
      *
      * @param managementStrategy the management strategy
      */
-    public void setManagementStrategy(ManagementStrategy managementStrategy) {
+    public void bindManagementStrategy(ManagementStrategy managementStrategy) {
         this.managementStrategy = managementStrategy;
+    }
+
+    public void unbindManagementStrategy(ManagementStrategy ms) {
+        managementStrategy = null;
     }
 
     /**
@@ -227,7 +231,10 @@ public class ServiceMix implements NMR {
 
     private void fireEvent(EventObject event) {
         try {
-            getManagementStrategy().notify(event);
+            ManagementStrategy ms = getManagementStrategy();
+            if (ms != null) {
+                ms.notify(event);
+            }
         } catch (Exception e) {
             // ignore
         }
