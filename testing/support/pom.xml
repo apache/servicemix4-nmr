@@ -89,14 +89,28 @@
         <dependency>
             <groupId>org.springframework.osgi</groupId>
             <artifactId>spring-osgi-test</artifactId>
-            <!-- this dep pulls org.springframework.test 2.5.6.A, it should be excluded but a testcase depends on it 
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework</groupId>
                     <artifactId>org.springframework.test</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>org.springframework.aop</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>org.springframework.beans</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>org.springframework.context</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>org.springframework.core</artifactId>
+                </exclusion>
             </exclusions>
-            -->            
         </dependency>
         <dependency>
             <groupId>org.springframework.osgi</groupId>
@@ -130,6 +144,14 @@
             <groupId>org.ops4j.pax.url</groupId>
             <artifactId>pax-url-mvn</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -143,7 +165,6 @@
                         <Bundle-Description>${project.description}</Bundle-Description>
                         <Import-Package>
                             javax.management,
-                            org.springframework.jmx.support;version="${spring.import.range}",
                             org.apache.felix*;resolution:=optional,
                             org.apache.servicemix.platform.main;resolution:=optional,
                             org.apache.servicemix.platform.main.spi;resolution:=optional;version="1.0.0",
