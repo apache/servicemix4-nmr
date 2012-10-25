@@ -228,7 +228,11 @@ public abstract class AbstractComponentContext implements ComponentContext, MBea
     }
 
     public MBeanServer getMBeanServer() {
-        return componentRegistry.getEnvironment().getMBeanServer();
+        if (componentRegistry.getEnvironment() != null) {
+            return componentRegistry.getEnvironment().getMBeanServer();
+        } else {
+            return null;
+        }
     }
 
     public InitialContext getNamingContext() {
