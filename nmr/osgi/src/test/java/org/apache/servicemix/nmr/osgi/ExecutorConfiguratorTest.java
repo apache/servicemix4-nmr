@@ -21,7 +21,7 @@ import org.apache.servicemix.executors.impl.ExecutorFactoryImpl;
 import org.osgi.service.cm.ConfigurationException;
 
 /**
- * Test cases for {@link org.apache.servicemix.nmr.osgi.ExecutorConfigurator#updated(java.util.Dictionary)}
+ * Test cases for {@link org.apache.servicemix.nmr.osgi.ExecutorConfigurator#update(java.util.Map)}
  */
 public class ExecutorConfiguratorTest extends TestCase {
 
@@ -30,7 +30,7 @@ public class ExecutorConfiguratorTest extends TestCase {
         configurator.setExecutorFactory(new ExecutorFactoryImpl());
         
         try {
-            configurator.updated(null);
+            configurator.update(null);
             // this is OK
         } catch (Exception e) {
             e.printStackTrace();

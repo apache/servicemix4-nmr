@@ -133,6 +133,12 @@
 
     <service ref="executorFactory" interface="org.apache.servicemix.executors.ExecutorFactory"/>
 
+    <!-- ExecutorFactory configurer -->
+    <bean id="executorConfigurator" class="org.apache.servicemix.nmr.osgi.ExecutorConfigurator">
+        <cm:managed-properties persistent-id="org.apache.servicemix.nmr"
+                               update-strategy="component-managed" update-method="update" />
+        <property name="executorFactory" ref="executorFactory"/>
+    </bean>
 
     <!-- Property place holder -->
     <cm:property-placeholder persistent-id="org.apache.servicemix.nmr">

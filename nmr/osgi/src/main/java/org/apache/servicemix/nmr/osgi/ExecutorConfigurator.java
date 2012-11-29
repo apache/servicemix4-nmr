@@ -29,7 +29,7 @@ import java.util.Map;
 /**
  * A managed service that will update the configurations based on the ConfigAdmin configuration
  */
-public class ExecutorConfigurator implements ManagedService {
+public class ExecutorConfigurator {
 
     private ExecutorFactoryImpl executorFactory;
 
@@ -41,14 +41,14 @@ public class ExecutorConfigurator implements ManagedService {
         this.executorFactory = factory;
     }
 
-    public void updated(Dictionary properties) throws ConfigurationException {
+    public void update(Map properties) throws ConfigurationException {
         if (executorFactory.getDefaultConfig() == null) {
             executorFactory.setDefaultConfig(new ExecutorConfig(true, null));
         }
         Map<String, ExecutorConfig> configs = new HashMap<String, ExecutorConfig>();
         if (properties != null) {
-            for (Enumeration e = properties.keys(); e.hasMoreElements();) {
-                String key = (String) e.nextElement();
+            for (Object keyObject : properties.keySet()) {
+                String key = (String) keyObject;
                 if (key.endsWith(".corePoolSize")) {
                     getConfig(configs, key).setCorePoolSize(getInt(properties, key));
                 } else if (key.endsWith(".maximumPoolSize")) {
@@ -101,15 +101,15 @@ public class ExecutorConfigurator implements ManagedService {
         return config;
     }
 
-    private int getInt(Dictionary properties, String key) {
+    private int getInt(Map properties, String key) {
         return Integer.parseInt(properties.get(key).toString());
     }
 
-    private long getLong(Dictionary properties, String key) {
+    private long getLong(Map properties, String key) {
         return Long.parseLong(properties.get(key).toString());
     }
 
-    private boolean getBool(Dictionary properties, String key) {
+    private boolean getBool(Map properties, String key) {
         return Boolean.parseBoolean(properties.get(key).toString());
     }
 }
