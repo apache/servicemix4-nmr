@@ -42,9 +42,9 @@
     <aries.version>0.3</aries.version>
     <camel.version>2.10.3</camel.version>
     <karaf.version>2.2.10</karaf.version>
-    <servicemix.components.version>2012.01-SNAPSHOT</servicemix.components.version>
+    <servicemix.components.version>2013.01</servicemix.components.version>
     <servicemix.nmr.version>${project.version}</servicemix.nmr.version>
-    <servicemix.utils.version>1.6.0-SNAPSHOT</servicemix.utils.version>
+    <servicemix.utils.version>1.6.0</servicemix.utils.version>
     <servicemix.specs.version>2.2.0</servicemix.specs.version>
   </properties>
 
