@@ -24,7 +24,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.WeakHashMap;
 import java.util.regex.Pattern;
 
 import javax.xml.namespace.QName;
@@ -32,12 +31,16 @@ import javax.xml.namespace.QName;
 import org.apache.servicemix.nmr.api.security.AuthorizationService;
 import org.apache.servicemix.nmr.api.security.GroupPrincipal;
 import org.apache.servicemix.nmr.api.security.AuthorizationEntry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A default implementation of the authorization service.
  */
 public class DefaultAuthorizationService implements AuthorizationService {
 
+    private final Logger logger = LoggerFactory.getLogger(DefaultAuthorizationService.class);
+    
     private List<AuthorizationEntry> authorizationEntries;
     private Comparator<AuthorizationEntry> comparator;
     private Map<String, Set<GroupPrincipal>> cache;
@@ -65,7 +68,13 @@ public class DefaultAuthorizationService implements AuthorizationService {
     }
 
     public void unregister(AuthorizationEntry entry, Map<String,?> props) {
-        authorizationEntries.remove(entry);
+        try {
+            authorizationEntries.remove(entry);
+        } catch (Exception e) {
+            // blueprint can throw an exception here if the service representing 
+            // this AuthorizationEntry is already shutdown
+            logger.debug("Exception occurred while unregistering AuthorizationEntry service.", e);
+        }
         Collections.sort(authorizationEntries, comparator);
         cache.clear();
     }
