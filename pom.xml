@@ -99,7 +99,7 @@
       <lucene.version>2.4.1</lucene.version>
       <scala.version>2.8.1</scala.version>
       <slf4j.version>1.6.6</slf4j.version>
-      <woodstox.version>4.1.1</woodstox.version>
+      <woodstox.version>4.2.0</woodstox.version>
       <woodstox.stax2-api.version>3.1.1</woodstox.stax2-api.version>
       <xbean.version>3.11.1</xbean.version>
       <equinox.version>3.6.0.v20100517</equinox.version>
