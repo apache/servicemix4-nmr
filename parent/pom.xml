@@ -23,7 +23,7 @@
   <parent>
     <groupId>org.apache.servicemix.nmr</groupId>
     <artifactId>nmr-parent</artifactId>
-    <version>1.7.0-SNAPSHOT</version>
+    <version>1.6.1-SNAPSHOT</version>
   </parent>
   
   <artifactId>parent</artifactId>
@@ -40,8 +40,8 @@
   <properties>
     <activemq.version>5.7.0</activemq.version>
     <aries.version>0.3</aries.version>
-    <camel.version>2.10.3</camel.version>
-    <karaf.version>2.2.10</karaf.version>
+    <camel.version>2.10.5</camel.version>
+    <karaf.version>2.2.11</karaf.version>
     <servicemix.components.version>2013.01</servicemix.components.version>
     <servicemix.nmr.version>${project.version}</servicemix.nmr.version>
     <servicemix.utils.version>1.6.0</servicemix.utils.version>
