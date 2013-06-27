@@ -15,6 +15,212 @@
  * limitations under the License.
  */
 
+
+                   Apache ServiceMix NMR 1.6.1
+                   ===========================
+
+  Overview
+  --------
+
+  Apache ServiceMix NMR 1.6.1 contains a few bug fixes.  Compared to the 1.6.0 release, it also contains 
+  the following dependency upgrades:
+  - Upgrade from Camel 2.10.3 to Camel 2.10.5
+  - Upgrade from Karaf 2.10.0 to Karaf 2.11.0  
+
+  See the change log below for more informations.
+
+  Changelog
+  ---------
+
+  The following list shows the bug fixes and enhancements included in this release:
+  
+Release Notes - ServiceMix NMR - Version 1.6.1
+
+** Bug
+    * [SMX4NMR-307] - org.apache.servicemix.nmr.osgi can throw an exception when shutting down
+    * [SMX4NMR-312] - Upgrade to Woodstox 4.2.0
+    
+** Task
+    * [SMX4NMR-313] - Clean up old Spring references in NMR  
+
+ 
+
+                   Apache ServiceMix NMR 1.6.0
+                   ===========================
+  Overview
+  --------
+
+  Apache ServiceMix NMR 1.6.0 is a new release of the NMR project.  Its dependencies have been upgraded
+  to match the Apache ServiceMix 4.5.x release series.  It also includes a few more bug fixes.
+
+  See the change log below for more informations.
+
+  Changelog
+  ---------
+
+  The following list shows the bug fixes and enhancements included in this release:
+  
+Release Notes - ServiceMix NMR - Version 1.6.0
+
+** Bug
+    * [SMX4NMR-289] - Duplicate config cm:entities.
+    * [SMX4NMR-290] - nmr osgi bundle export duplicated OSGi service org.osgi.service.cm.ManagedService
+    * [SMX4NMR-291] - NMR FlowRegistryImpl should use endpoint name but not a UUID to retrieve related AuthorizationEntry
+    * [SMX4NMR-293] - should also specify start-level=50 for the features in nmr features.xml
+    * [SMX4NMR-294] - NPE from OsgiServiceRegistryTracker when service is unavailable
+    * [SMX4NMR-296] - Add logger guard checks for nmr/ChannelImpl to optimize for better performance
+    * [SMX4NMR-301] - Update dependencies to match features project
+    * [SMX4NMR-302] - Integration tests are taking too long to complete
+    * [SMX4NMR-303] - ensure nmr testing/support can pull in correct spring version
+    * [SMX4NMR-304] - add NPE guard for AbstractComponentContext.getMBeanServer
+    * [SMX4NMR-306] - Container freezes while installing jbi feature
+
+** Improvement
+    * [SMX4NMR-292] - Upgrade to XBean 3.11.1
+    * [SMX4NMR-298] - nmr features.xml should depend other features with version range
+
+** Task
+    * [SMX4NMR-285] - Upgrade to Karaf 2.2.4
+    * [SMX4NMR-295] - Remove StAX 1.0 dependency in woodstox feature
+    * [SMX4NMR-297] - upgrade to karaf 2.2.9
+    * [SMX4NMR-299] - upgrade to spring 3.0.7.RELEAS
+
+** Test
+    * [SMX4NMR-300] - add java7 package export for system bundle in testing/support  
+
+
+                   Apache ServiceMix NMR 1.5.0
+                   ===========================
+
+  Changelog
+  ---------
+
+  The following list shows the bug fixes and enhancements included in this release:
+  
+Release Notes - ServiceMix NMR - Version 1.5.0
+
+** Bug
+    * [SMX4NMR-212] - OSGi packaged SA deployment doesn't work anymore
+    * [SMX4NMR-214] - Error in Bootstrap init when accessing ComponentContext logger through the InstallationContext  
+    * [SMX4NMR-257] - nmr-audit needs removal of obsolete osgi imports after upgrading to karaf 2.2.0.
+    * [SMX4NMR-259] - org.springframework.osgi package version is incorrect for document module
+    * [SMX4NMR-260] - JBI EndpointReference created with ComponentContext.resolveEnpointReference don't work on ServiceMix 4
+    * [SMX4NMR-262] - Endpoint.CHANNEL_SYNC_DELIVERY property doesn't work when passed as string
+    * [SMX4NMR-272] - Unable to install JBI components on NMR assembly - XBean classes not available
+    * [SMX4NMR-279] - asm bundle version is not aligned between system repo and startup.properties
+    * [SMX4NMR-283] - NMR authorization doesn't work with Karaf JAAS LoginModule
+
+** Improvement
+    * [SMX4NMR-203] - Switch to Aries Transaction manager
+    * [SMX4NMR-252] - Expose ExecutorFactory into the OSGi Service Registry
+    * [SMX4NMR-253] - Allow configuring endpoint channel though properties at registration time
+    * [SMX4NMR-255] - Upgrade NMR to use Karaf 2.2.0
+    * [SMX4NMR-256] - Use 'import' scope to reduce number of managed dependencies
+    * [SMX4NMR-263] - Upgrade to ActiveMQ 5.5.0
+    * [SMX4NMR-264] - Make allowsCoreThreadTimeOut name consistent across mbeans and properties
+    * [SMX4NMR-265] - Allow invoking an endpoint as the Subject passed along in the Message
+    * [SMX4NMR-270] - Use ActiveMQUuidGenerator as the default uuid generator as its faster than the JDK UUID generator
+    * [SMX4NMR-273] - Use OBR resolver for NMR features.xml
+    * [SMX4NMR-274] - Add 'karaf-framework' to boot features to avoid uninstalling core Karaf bundles
+    * [SMX4NMR-286] - Upgrade to Camel 2.8.3
+    * [SMX4NMR-287] - Remove NMR assembly
+
+** Task
+    * [SMX4NMR-250] - Switch to use slf4j as logger (instead of commons-logging)
+    * [SMX4NMR-258] - Update to Karaf 2.2.0
+    * [SMX4NMR-261] - Upgrade to Camel 2.7
+    * [SMX4NMR-268] - Upgrade to CXF 2.4.1
+    * [SMX4NMR-275] - Upgrade to Java Mail 1.4.4
+    * [SMX4NMR-277] - Upgrade to Karaf 2.2.2
+    * [SMX4NMR-280] - update woodstox version
+    * [SMX4NMR-281] - upgrade to spring-dm 1.2.1
+    * [SMX4NMR-284] - upgrade to spring 3.0.6
+
+  
+
+                   Apache ServiceMix NMR 1.4.0
+                   ===========================
+
+  Changelog
+  ---------
+
+  The following list shows the bug fixes and enhancements included in this release:
+
+Release Notes - ServiceMix NMR - Version 1.4.0
+
+** Bug
+    * [SMX4NMR-211] - OSGi metadata for nmr/spring bundle is not correct
+    * [SMX4NMR-232] - JdbcAuditor throws NullPointerException
+    * [SMX4NMR-241] - rename persistent id org.apache.servicemix.jbi.cluster.config
+    * [SMX4NMR-243] - ExchangeUtils.display(Exchange exchange, boolean displayContent) prints out entire exchange content regardless displayContent value
+    * [SMX4NMR-246] - custom executor config by ID uses default hardcoded values rather than default configured values
+    * [SMX4NMR-248] - nmr itests failure due to missing dependencies
+
+** Improvement
+    * [SMX4NMR-201] - use spring2-dm from karaf which use spring2.5.6 inside
+    * [SMX4NMR-210] - more spring bundle need for AbstractIntegrationTest
+    * [SMX4NMR-225] - Upgrade to Karaf 2.1.0
+    * [SMX4NMR-226] - Upgrade to Camel 2.5.0
+    * [SMX4NMR-244] - Upgrade to Karaf 2.1.3
+    * [SMX4NMR-245] - Upgrade to Spring 3.0.5.RELEASE
+    * [SMX4NMR-247] - Upgrade to Camel 2.6.0
+    * [SMX4NMR-251] - Upgrade to ServiceMix Components 2011.01
+
+** Task
+    * [SMX4NMR-249] - Release NMR 1.4.0 
+ 
+
+ 
+                   Apache ServiceMix NMR 1.3.0
+                   ===========================
+
+  Changelog
+  ---------
+
+  The following list shows the bug fixes and enhancements included in this release:
+
+Release Notes - ServiceMix NMR - Version 1.3.0
+
+** Bug
+    * [SMX4NMR-190] - can't refresh JBI deployer bundle
+    * [SMX4NMR-191] - need add null checker for endpoint in SimpleClusterRegistration
+    * [SMX4NMR-192] - missing "()" when there's only one element in the filter
+    * [SMX4NMR-194] - JBI cluster exception on console at shutdown 
+    * [SMX4NMR-196] - Inconsistent use of Endpoint.INTERFACE_NAME and Endpoint.SERVICE_NAME
+    * [SMX4NMR-198] - Update nmr to use aries version of blueprint and latest Felix/Karaf stuff that also uses aries
+    * [SMX4NMR-207] - Create a feature description for woodstox
+    * [SMX4NMR-216] - Shutdown issue with the management layer
+    * [SMX4NMR-219] - prevent potential deadloop from ExchangeUtils
+    * [SMX4NMR-224] - ExecutorConfigurator doesn't provide executorFactory property
+    * [SMX4NMR-228] - NPE in ExecutorConfigurator when no configuration settings available
+    * [SMX4NMR-235] - NMR bundles import Spring classes with version range [2.5,3)
+
+** Improvement
+    * [SMX4NMR-186] - Upgrade to ActiveMQ 5.3.2
+    * [SMX4NMR-189] - Allow configuring injected Channel to bypass thread pool (per endpoint)
+    * [SMX4NMR-202] - Make sure there are no dependencies on spring / spring-dm
+    * [SMX4NMR-205] - Provide a clean custom namespace for the document registry
+    * [SMX4NMR-208] - Upgrade to Spring 3.x
+    * [SMX4NMR-209] - Remove dependencies on the preference service
+    * [SMX4NMR-218] - enable configure jbi component through system property
+    * [SMX4NMR-220] - platform/testing/support should use jaxp related api from system bundle, keep it same as we do currently in kit
+    * [SMX4NMR-222] - Ability to configure thread pools for NMR endpoints
+    * [SMX4NMR-223] - Upgrade to ActiveMQ 5.4.1
+    * [SMX4NMR-229] - Upgrade to XBean 3.7
+    * [SMX4NMR-231] - Upgrade to Karaf 2.1.1
+    * [SMX4NMR-236] - Upgrade to Karaf 2.1.2
+    * [SMX4NMR-238] - Upgrade to ActiveMQ 5.4.2
+    * [SMX4NMR-240] - Upgrade to SMX components 2010.02
+
+** Task
+    * [SMX4NMR-197] - Upgrade to Camel 2.4.0
+    * [SMX4NMR-199] - upgrade to use new karaf artifacts
+    * [SMX4NMR-230] - Release NMR 1.3.0
+
+** Test
+    * [SMX4NMR-227] - ChannelImpl#testChangeThreadNameForSyncExchange fails on some CI build boxes
+ 
+
                    Apache ServiceMix NMR 1.2.0
                    ===========================
 
