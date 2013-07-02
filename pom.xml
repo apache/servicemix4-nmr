@@ -73,11 +73,11 @@
       <geronimo-servlet.version>1.1.2</geronimo-servlet.version>
       
       <!-- Bundles -->
-      <ant.bundle.version>1.7.0_4</ant.bundle.version>
-      <aopalliance.bundle.version>1.0_4</aopalliance.bundle.version>
-      <asm.bundle.version>2.2.3_4</asm.bundle.version>      <!-- spring osgi test requires ASM 2 instead of 3 -->
+      <ant.bundle.version>1.7.0_6</ant.bundle.version>
+      <aopalliance.bundle.version>1.0_6</aopalliance.bundle.version>
+      <asm.bundle.version>2.2.3_5</asm.bundle.version>      <!-- spring osgi test requires ASM 2 instead of 3 -->
       <cglib.bundle.version>2.1_3_6</cglib.bundle.version>
-      <wsdl4j.bundle.version>1.6.2_3</wsdl4j.bundle.version>
+      <wsdl4j.bundle.version>1.6.2_6</wsdl4j.bundle.version>
       
       <!-- Components and SMX Resources -->
       <servicemix3.version>3.4.0</servicemix3.version>
