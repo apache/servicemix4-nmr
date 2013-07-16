@@ -24,8 +24,8 @@
 
   Apache ServiceMix NMR 1.6.1 contains a few bug fixes.  Compared to the 1.6.0 release, it also contains 
   the following dependency upgrades:
-  - Upgrade from Camel 2.10.3 to Camel 2.10.5
-  - Upgrade from Karaf 2.10.0 to Karaf 2.11.0  
+  - Upgrade from Camel 2.10.3 to Camel 2.10.6
+  - Upgrade from Karaf 2.2.10 to Karaf 2.2.11  
 
   See the change log below for more informations.
 
