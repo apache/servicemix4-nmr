@@ -110,6 +110,7 @@
             <property name="rank" value="-2147483648"/>
             <property name="roles" value="*"/>
             <property name="type" value="Set"/>
+            <property name="containerRolePrincipalClassName" value="${containerRolePrincipalClassName}"/>
         </bean>
     </service>
 
@@ -149,6 +150,7 @@
             <cm:property name="maximumPoolSize" value="-1"/>
             <cm:property name="queueSize" value="1024"/>
             <cm:property name="bypassIfSynchronous" value="true"/>
+            <cm:property name="containerRolePrincipalClassName" value="org.apache.karaf.jaas.boot.principal.RolePrincipal"/>
         </cm:default-properties>
     </cm:property-placeholder>
 

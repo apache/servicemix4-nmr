@@ -29,6 +29,7 @@ public class GroupPrincipal implements Principal {
 
     private final String name;
     private transient int hash;
+    private String containerRolePrincipalClassName = "org.apache.karaf.jaas.boot.principal.RolePrincipal";
 
     public GroupPrincipal(String name) {
         if (name == null) {
@@ -37,6 +38,11 @@ public class GroupPrincipal implements Principal {
         this.name = name;
     }
 
+    public GroupPrincipal(String name, String containerRolePrincipalClassName) {
+        this(name);
+        this.containerRolePrincipalClassName = containerRolePrincipalClassName;
+    }
+    
     public String getName() {
         return name;
     }
@@ -46,7 +52,7 @@ public class GroupPrincipal implements Principal {
             return true;
         }
         if (o == null 
-            || (!o.getClass().getName().equals("org.apache.karaf.jaas.modules.RolePrincipal") && getClass() != o.getClass())) {
+            || (!o.getClass().getName().equals(containerRolePrincipalClassName) && getClass() != o.getClass())) {
         	return false;
         }
         final Principal that = (Principal) o;

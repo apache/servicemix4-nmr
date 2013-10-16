@@ -39,6 +39,7 @@ public class DefaultAuthorizationEntry implements AuthorizationEntry {
     private QName operation;
     private Type type = Type.Add;
     private int rank;
+    private String containerRolePrincipalClassName;
 
     public DefaultAuthorizationEntry() {
     }
@@ -164,8 +165,21 @@ public class DefaultAuthorizationEntry implements AuthorizationEntry {
         StringTokenizer iter = new StringTokenizer(roles, ",");
         while (iter.hasMoreTokens()) {
             String name = iter.nextToken().trim();
-            s.add(new GroupPrincipal(name));
+            if (this.containerRolePrincipalClassName != null 
+                && this.containerRolePrincipalClassName.length() > 0) {
+                s.add(new GroupPrincipal(name, this.containerRolePrincipalClassName));
+            } else {
+                s.add(new GroupPrincipal(name));
+            }
         }
         return s;
+    }
+
+    public String getContainerRolePrincipalClassName() {
+        return containerRolePrincipalClassName;
+    }
+
+    public void setContainerRolePrincipalClassName(String containerRolePrincipalClassName) {
+        this.containerRolePrincipalClassName = containerRolePrincipalClassName;
     }
 }
