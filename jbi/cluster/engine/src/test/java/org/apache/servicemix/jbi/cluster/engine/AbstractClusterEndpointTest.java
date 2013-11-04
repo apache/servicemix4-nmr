@@ -30,7 +30,7 @@ import javax.transaction.TransactionManager;
 
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.Service;
-import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.ActiveMQXAConnectionFactory;
 import org.apache.activemq.pool.XaPooledConnectionFactory;
 import org.apache.servicemix.nmr.api.NMR;
 import org.apache.servicemix.nmr.api.Endpoint;
@@ -103,7 +103,7 @@ public abstract class AbstractClusterEndpointTest extends AutoFailTestSupport {
     }
 
     protected ConnectionFactory createConnectionFactory() {
-        ActiveMQConnectionFactory cf = new ActiveMQConnectionFactory("tcp://localhost:" + port);
+        ActiveMQXAConnectionFactory cf = new ActiveMQXAConnectionFactory("tcp://localhost:" + port);
         XaPooledConnectionFactory cnf = new XaPooledConnectionFactory(cf);
         cnf.setTransactionManager(transactionManager);
         return cnf;

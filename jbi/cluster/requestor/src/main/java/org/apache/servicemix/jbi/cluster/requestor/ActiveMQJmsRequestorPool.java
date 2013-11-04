@@ -33,7 +33,7 @@ import javax.transaction.xa.XAResource;
 import org.apache.activemq.ActiveMQSession;
 import org.apache.activemq.MessageAvailableConsumer;
 import org.apache.activemq.MessageAvailableListener;
-import org.apache.activemq.pool.PooledSession;
+import org.apache.activemq.jms.pool.PooledSession;
 import org.springframework.jms.JmsException;
 
 public class ActiveMQJmsRequestorPool extends AbstractPollingRequestorPool implements ExceptionListener {

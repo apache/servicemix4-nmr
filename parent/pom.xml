@@ -38,11 +38,11 @@
 
   <!-- Properties -->
   <properties>
-    <activemq.version>5.8.0</activemq.version>
+    <activemq.version>5.9.0</activemq.version>
     <aries.version>0.3</aries.version>
     <camel.version>2.12.1</camel.version>
     <karaf.version>2.2.11</karaf.version>
-    <servicemix.components.version>2013.01</servicemix.components.version>
+    <servicemix.components.version>2013.02-SNAPSHOT</servicemix.components.version>
     <servicemix.nmr.version>${project.version}</servicemix.nmr.version>
     <servicemix.utils.version>1.6.0</servicemix.utils.version>
     <servicemix.specs.version>2.2.0</servicemix.specs.version>
