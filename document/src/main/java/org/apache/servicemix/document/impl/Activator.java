@@ -16,6 +16,8 @@
  */
 package org.apache.servicemix.document.impl;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.Properties;
 
 import org.apache.servicemix.document.DocumentRepository;
@@ -29,7 +31,7 @@ public class Activator implements BundleActivator {
     private ServiceRegistration registration;
 
     public void start(BundleContext context) throws Exception {
-        Properties properties = new Properties();
+        Dictionary<String, Object> properties = new Hashtable<String, Object>();
         properties.put("url.handler.protocol", "document");
         registration = context.registerService(
                             new String[] { DocumentRepository.class.getName(), URLStreamHandlerService.class.getName() },

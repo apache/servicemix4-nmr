@@ -17,11 +17,7 @@
 package org.apache.servicemix.document.impl.blueprint;
 
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.aries.blueprint.ParserContext;
 import org.apache.aries.blueprint.mutable.MutableBeanMetadata;
@@ -48,7 +44,7 @@ public class NamespaceHandler implements org.apache.aries.blueprint.NamespaceHan
     public static final String REPOSITORY = "repository";
 
     public static ServiceRegistration register(BundleContext context) {
-        Properties props = new Properties();
+        Dictionary<String, Object> props = new Hashtable<String, Object>();
         props.put("osgi.service.blueprint.namespace", "http://servicemix.apache.org/schema/document");
         return context.registerService(
                 new String[] { org.apache.aries.blueprint.NamespaceHandler.class.getName() },

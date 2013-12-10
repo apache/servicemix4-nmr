@@ -26,13 +26,8 @@ import org.fusesource.commons.management.ManagementStrategy;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
 import org.ops4j.pax.exam.Option;
-import static org.ops4j.pax.exam.container.def.PaxRunnerOptions.localRepository;
-import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.systemProperty;
-import static org.ops4j.pax.exam.CoreOptions.systemPackages;
-import static org.ops4j.pax.exam.CoreOptions.bootClasspathLibrary;
-import static org.ops4j.pax.exam.CoreOptions.equinox;
-import static org.ops4j.pax.exam.CoreOptions.when;
+
+import static org.ops4j.pax.exam.CoreOptions.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -279,8 +274,8 @@ public class ManagementTest extends AbstractIntegrationTest {
             // Blueprint
             mavenBundle("org.apache.servicemix.bundles", "org.apache.servicemix.bundles.asm"),
             mavenBundle("org.apache.aries", "org.apache.aries.util"),
-            mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy"),
-            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint"),
+            mavenBundle("org.apache.aries.proxy", "org.apache.aries.proxy.impl"),
+            mavenBundle("org.apache.aries.blueprint", "org.apache.aries.blueprint.core"),
             // Pax mvn handler
             mavenBundle("org.ops4j.pax.url", "pax-url-mvn"),
 

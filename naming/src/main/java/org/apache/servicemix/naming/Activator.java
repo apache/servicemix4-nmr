@@ -16,6 +16,8 @@
  */
 package org.apache.servicemix.naming;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
 import java.util.Properties;
 
 import javax.naming.spi.InitialContextFactoryBuilder;
@@ -39,7 +41,7 @@ public class Activator implements BundleActivator {
         osgiIcfb = new OSGiInitialContextFactoryBuilder(bundleContext, new OSGiContext(new OSGiServicesContext(bundleContext)));
         globalIcfb = new GlobalInitialContextFactoryBuilder();
         GlobalContextManager.setGlobalContext(new WritableContext());
-        Properties props = new Properties();
+        Dictionary<String, Object> props = new Hashtable<String, Object>();
         props.put(Constants.SERVICE_RANKING, Integer.valueOf(-1));
         registration = bundleContext.registerService(InitialContextFactoryBuilder.class.getName(), globalIcfb, props);
     }
